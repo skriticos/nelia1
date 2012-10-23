@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
 
-import os, sys, pprint
+# ---------------- import modules -------------------
 
-TEST = True
+import os, sys, pprint
+from PySide.QtCore import *
+from PySide.QtGui import *
+
+# ---------------- create global data container ---------------------
 
 data = {}
+
+# ----------------- define some functions that we'll need -------------------
 
 def AddRootEntry(name, entrytype, status, category, priority, challenge, version, lastchange, code):
 
 	"""
-	Explanation and stuff..
+	Add a root entry (that is displayed on the start page) to the global data structure).
+
 	entrytype = spark, project, product, archive
 	status = none, planned, scheduled, active, maintain, decommission
 	category = tool, application, library, protocol, other
@@ -33,10 +40,28 @@ def AddRootEntry(name, entrytype, status, category, priority, challenge, version
 			'code' : code }
 	return data[name]
 
-if TEST:
-	AddRootEntry(name='test', entrytype='spark', status='none', category='tool',
-	             priority=1, challenge=3, version='0.0.0', lastchange=1350571150, code=True)
-	AddRootEntry(name='test2', entrytype='spark', status='none', category='protocol',
-	             priority=1, challenge=2, version='0.0.0', lastchange=1350571153, code=True)
-	print(data)
+
+# ------------------ MAIN LOGIC ------------------------
+
+AddRootEntry(name='test', entrytype='spark', status='none', category='tool',
+	priority=1, challenge=3, version='0.0.0', lastchange=1350571150, code=True)
+AddRootEntry(name='test2', entrytype='spark', status='none', category='protocol',
+	priority=1, challenge=2, version='0.0.0', lastchange=1350571153, code=True)
+
+# ------------------ GUI stuff ---------------------------
+application = QApplication(sys.argv) 
+
+mainwindow = QMainWindow()
+mainwindow.setWindowTitle('foo')
+
+# XXX: we are building a model mapping module, see tmodmap.py
+
+mainlisting = QTableView()
+
+
+# ------------------- show and run -----------------------
+mainwindow.show()
+sys.exit(application.exec_())
+
+# vim: set ts=8 sw=8 noexpandtab:
 
