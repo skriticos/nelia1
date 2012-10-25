@@ -1,0 +1,197 @@
+#!/usr/bin/env python3
+
+import os, sys, pprint, time
+from PySide.QtCore import *
+from PySide.QtGui import *
+
+
+class MainListing(QTableView):
+
+    """
+        Stores the data for the main listing and contains the 
+        interactions with the table.
+    """
+
+    def __init__(self, parent):
+
+        super().__init__(parent)
+        
+        self.data = { 'lastid' : 0}
+        
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(
+            ['Name', 'Entry Type', 'Status', 'Category', 
+             'Priority', 'Challenge', 'Version', 'Last Changed', 'ID'])
+        self.setModel(self.model)
+
+        self.setSortingEnabled(True)
+        self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+    def addNewRow(self, name, entrytype, category, priority, challange):
+
+        entryid = self.data['lastid'] + 1
+        entry = [
+            name, entrytype, 'Spark', category,
+            priority, challange, '0.0.0',
+            int(time.time())
+        ]
+
+        self.data[entryid] = entry
+        self.data['lastid'] += 1
+        
+        self.model.appendRow([
+            QStandardItem(name),
+            QStandardItem(entrytype),
+            QStandardItem('Spark'),
+            QStandardItem(category),
+            QStandardItem(str(priority)),
+            QStandardItem(str(challange)),
+            QStandardItem('0.0.0'),
+            QStandardItem(str(int(time.time()))),
+            QStandardItem(str(entryid))
+        ])
+
+
+class CreateRootEntryWidget(QDialog):
+
+    def __init__(self, parent):
+
+        super().__init__(parent)
+        
+        self.setWindowTitle('Create new entry')
+        self.setGeometry(200,200,500,300)
+        self.setModal(True)
+
+        self.createButton = QPushButton('Create', self)
+        self.createButton.clicked.connect(self.onCreateClick)
+        self.cancelButton = QPushButton('Cancel', self)
+        self.cancelButton.clicked.connect(self.hide)
+        
+        self.inputName = QLineEdit(self)
+        self.inputEntryType = QComboBox();
+        self.inputEntryType.addItem('Utility')
+        self.inputEntryType.addItem('Application')
+        self.inputEntryType.addItem('Library')
+        self.inputEntryType.addItem('Protocol')
+        self.inputEntryType.addItem('Other')
+
+        self.inputCategory = QComboBox()
+        self.inputCategory.addItem('Internet')
+        self.inputCategory.addItem('Development')
+        self.inputCategory.addItem('Accessory')
+        self.inputCategory.addItem('Media')
+        self.inputCategory.addItem('Game')
+        self.inputCategory.addItem('Office')
+        self.inputCategory.addItem('Education')
+        self.inputCategory.addItem('Science')
+        self.inputCategory.addItem('Engineering')
+        self.inputCategory.addItem('Graphics')
+        self.inputCategory.addItem('System')
+        self.inputCategory.addItem('Customization')
+        self.inputCategory.addItem('Other')
+        
+        self.inputPriority = QSpinBox(self)
+        self.inputChallange = QSpinBox(self)
+
+        formlay = QFormLayout()
+        formlay.addRow('Name', self.inputName)
+        formlay.addRow('Entry Type', self.inputEntryType)
+        formlay.addRow('Category', self.inputCategory)
+        formlay.addRow('Priority', self.inputPriority)
+        formlay.addRow('Challenge', self.inputChallange)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch()
+        hbox.addWidget(self.cancelButton)
+        hbox.addWidget(self.createButton)
+
+        vbox = QVBoxLayout()
+        vbox.addLayout(formlay)
+        vbox.addLayout(hbox)
+
+        self.setLayout(vbox)
+
+    def show(self):
+        
+        self.inputName.clear()
+        self.inputEntryType.setCurrentIndex(0)
+        self.inputCategory.setCurrentIndex(0)
+        self.inputPriority.setValue(0)
+        self.inputChallange.setValue(0)
+
+        super().show()
+
+    def onCreateClick(self):
+
+        self.parent().table.addNewRow(
+            self.inputName.text(), self.inputEntryType.currentText(),
+            self.inputCategory.currentText(), 
+            self.inputPriority.value(), self.inputChallange.value())
+
+        self.hide()
+
+
+class MainWindow(QMainWindow):
+    """
+        This is the class folr the main window, 
+        which contains the rool entry control and display.
+    """
+
+    def __init__(self, app):
+
+        super().__init__()
+        self.app = app
+
+        self.createRootEntryWidget = CreateRootEntryWidget(self)
+
+        self.setWindowTitle('Nelia')
+        self.setGeometry(100,100,1000,600)
+        self.table = MainListing(self)
+        self.setCentralWidget(self.table)
+
+        self.mnuFile = self.menuBar().addMenu('File')
+        self.mnuActions = self.menuBar().addMenu('Actions')
+
+        self.actNewRootEntry = QAction('&New..', self, triggered=self.createRootEntryWidget.show)
+        self.mnuActions.addAction(self.actNewRootEntry)
+
+        # stub
+        self.actChangeEntry = QAction('&Edit..', self)
+        self.mnuActions.addAction(self.actChangeEntry)
+
+        # stub
+        self.actDeleteEntry = QAction('&Delete..', self)
+        self.mnuActions.addAction(self.actDeleteEntry)
+
+        # stub
+        self.actSave = QAction('&Save', self)
+        self.mnuFile.addAction(self.actSave)
+
+        self.mnuFile.addSeparator()
+
+        # stub
+        self.actPreferences = QAction('P&references..', self)
+        self.mnuFile.addAction(self.actPreferences)
+
+        self.mnuFile.addSeparator()
+
+        self.actQuit = QAction('&Quit', self, triggered=self.app.exit)
+        self.mnuFile.addAction(self.actQuit)
+
+        self.setWindowIcon(QIcon('icon.png'))        
+
+        self.show()
+
+    def serialize(self):
+
+        pass
+
+
+if __name__ == '__main__':
+    application = QApplication(sys.argv) 
+    main_window = MainWindow(application)
+    sys.exit(application.exec_())
+
+
+# vim: set ts=4 sw=4 ai si expandtab:
+
