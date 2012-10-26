@@ -4,12 +4,19 @@ import os, sys, pprint, time
 from PySide.QtCore import *
 from PySide.QtGui import *
 
+"""
+Acess currently marked elemnt index
+        print (self.parent().table.currentIndex().column())
+        print (self.parent().table.currentIndex().row())
+"""
 
 class MainListing(QTableView):
 
     """
         Stores the data for the main listing and contains the 
         interactions with the table.
+
+        XXX: move data to model?
     """
 
     def __init__(self, parent):
@@ -26,6 +33,22 @@ class MainListing(QTableView):
 
         self.setSortingEnabled(True)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+    def editActiveRow(self, name, entrytype, category, priority, challange):
+
+        rowindex = self.currentIndex().row()
+        child = self.model.index(rowindex, 8) # 8 = ID column
+        entryid = self.model.itemFromIndex(child).text()
+
+        # stub
+
+    def removeActiveRow(self):
+    
+        rowindex = self.currentIndex().row()
+        child = self.model.index(rowindex, 8) # 8 = ID column
+        entryid = self.model.itemFromIndex(child).text()
+        del self.data[int(entryid)]
+        self.model.removeRow(rowindex)
 
     def addNewRow(self, name, entrytype, category, priority, challange):
 
@@ -50,9 +73,42 @@ class MainListing(QTableView):
             QStandardItem(str(int(time.time()))),
             QStandardItem(str(entryid))
         ])
+    
+    def changeRow(self, itemid, rowindex, name, entrytype, 
+                  category, priority, challange):
+
+        status = self.model.itemFromIndex(
+            self.model.index(rowindex, 2)).text()
+        
+        version = self.model.itemFromIndex(
+            self.model.index(rowindex, 6)).text()
+        
+        entry = [
+            name, entrytype, status, category,
+            priority, challange, version,
+            int(time.time())
+        ]
+
+        self.data[itemid] = entry
+
+        tabdat = (
+            (0, name), 
+            (1, entrytype),
+            (2, status),
+            (3, category),
+            (4, priority),
+            (5, challange),
+            (6, version),
+            (7, int(time.time())),
+            (8, itemid)
+        )
+
+        for index, value in tabdat:
+            self.model.setData(
+                self.model.index(rowindex, index), value)
 
 
-class CreateRootEntryWidget(QDialog):
+class EditEntryWidget(QDialog):
 
     def __init__(self, parent):
 
@@ -62,6 +118,8 @@ class CreateRootEntryWidget(QDialog):
         self.setGeometry(200,200,500,300)
         self.setModal(True)
 
+        self.changeButton = QPushButton('Change', self)
+        self.changeButton.clicked.connect(self.onChangeClick)
         self.createButton = QPushButton('Create', self)
         self.createButton.clicked.connect(self.onCreateClick)
         self.cancelButton = QPushButton('Cancel', self)
@@ -104,6 +162,7 @@ class CreateRootEntryWidget(QDialog):
         hbox.addStretch()
         hbox.addWidget(self.cancelButton)
         hbox.addWidget(self.createButton)
+        hbox.addWidget(self.changeButton)
 
         vbox = QVBoxLayout()
         vbox.addLayout(formlay)
@@ -118,12 +177,69 @@ class CreateRootEntryWidget(QDialog):
         self.inputCategory.setCurrentIndex(0)
         self.inputPriority.setValue(0)
         self.inputChallange.setValue(0)
+        self.changeButton.hide()
+        self.createButton.hide()
 
         super().show()
+
+    def showChange(self):
+
+        self.show()
+        self.changeButton.show()
+        
+        table = self.parent().table
+        model = table.model
+        rowindex = table.currentIndex().row()
+
+        # read the fields
+        self.inputName.setText(
+            model.itemFromIndex(
+            model.index(rowindex, 0)).text())
+        
+        self.inputEntryType.setCurrentIndex(
+            self.inputEntryType.findText(
+            model.itemFromIndex(
+            model.index(rowindex, 1)).text()))
+
+        self.inputCategory.setCurrentIndex(
+            self.inputCategory.findText(
+            model.itemFromIndex(
+            model.index(rowindex, 3)).text()))
+
+        self.inputPriority.setValue(
+            int(
+            model.itemFromIndex(
+            model.index(rowindex, 4)).text()))
+
+        self.inputChallange.setValue(
+            int(
+            model.itemFromIndex(
+            model.index(rowindex, 5)).text()))
+        
+    def showCreate(self):
+
+            self.show()
+            self.createButton.show()
 
     def onCreateClick(self):
 
         self.parent().table.addNewRow(
+            self.inputName.text(), self.inputEntryType.currentText(),
+            self.inputCategory.currentText(), 
+            self.inputPriority.value(), self.inputChallange.value())
+
+        self.hide()
+
+    def onChangeClick(self):
+
+        table = self.parent().table
+        model = table.model
+        rowindex = table.currentIndex().row()
+
+        itemid = int(model.itemFromIndex(
+            model.index(rowindex, 8)).text())
+
+        self.parent().table.changeRow(itemid, rowindex,
             self.inputName.text(), self.inputEntryType.currentText(),
             self.inputCategory.currentText(), 
             self.inputPriority.value(), self.inputChallange.value())
@@ -142,31 +258,140 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.app = app
 
-        self.createRootEntryWidget = CreateRootEntryWidget(self)
+        self.editEntryWidget = EditEntryWidget(self)
 
         self.setWindowTitle('Nelia')
         self.setGeometry(100,100,1000,600)
         self.table = MainListing(self)
         self.setCentralWidget(self.table)
 
-        self.mnuFile = self.menuBar().addMenu('File')
-        self.mnuActions = self.menuBar().addMenu('Actions')
+        self.mnuFile = self.menuBar().addMenu('&File')
+        self.mnuView = self.menuBar().addMenu('&View')
+        self.mnuActions = self.menuBar().addMenu('&Actions')
+        self.mnuBrowse = self.menuBar().addMenu('&Browse')
+        self.mnuDeploy = self.menuBar().addMenu('&Deploy')
+        self.mnuConfig = self.menuBar().addMenu('&Config')
+        self.mnuHelp = self.menuBar().addMenu('&Help')
 
-        self.actNewRootEntry = QAction('&New..', self, triggered=self.createRootEntryWidget.show)
-        self.mnuActions.addAction(self.actNewRootEntry)
+        # config menu
+        # stub
+        self.actConfigFiles = QAction('&ConfigFiles..', self)
+        self.mnuConfig.addAction(self.actConfigFiles)
+        
+        # stub
+        self.actPackages = QAction('&Packages..', self)
+        self.mnuConfig.addAction(self.actPackages)
+        
+        # stub
+        self.actConnection = QAction('&Connection..', self)
+        self.mnuConfig.addAction(self.actConnection)
+
+        # deploy menu starts here
+        # stub
+        self.actCommit = QAction('&Commit..', self)
+        self.mnuDeploy.addAction(self.actCommit)
+        
+        # stub
+        self.actTest = QAction('&Test..', self)
+        self.mnuDeploy.addAction(self.actTest)
 
         # stub
-        self.actChangeEntry = QAction('&Edit..', self)
+        self.actDeploy = QAction('&Deploy..', self)
+        self.mnuDeploy.addAction(self.actDeploy)
+
+        # help menu starts here
+        # stub
+        self.actAbout = QAction('&About..', self)
+        self.mnuHelp.addAction(self.actAbout)
+
+        # view menu starts here
+        # stub
+        self.actDashboard = QAction('&Dashboard..', self)
+        self.mnuView.addAction(self.actDashboard)
+
+        # stub
+        self.actReport = QAction('&Report..', self)
+        self.mnuView.addAction(self.actReport)
+
+        # brows menu starts here
+        # stub
+        self.actOpenFolder = QAction('&Open Folder..', self)
+        self.mnuBrowse.addAction(self.actOpenFolder)
+
+        # stub
+        self.actBrowseRepository = QAction('&Browse Repository..', self)
+        self.mnuBrowse.addAction(self.actBrowseRepository)
+
+
+        # actions menu starts here
+        self.actNewEntry = QAction('&New..', self, triggered=self.editEntryWidget.showCreate)
+        self.mnuActions.addAction(self.actNewEntry)
+
+        self.actChangeEntry = QAction('&Edit..', self, triggered=self.editEntryWidget.showChange)
         self.mnuActions.addAction(self.actChangeEntry)
 
-        # stub
-        self.actDeleteEntry = QAction('&Delete..', self)
+        self.actDeleteEntry = QAction('&Delete..', self, triggered=self.table.removeActiveRow)
         self.mnuActions.addAction(self.actDeleteEntry)
 
+        self.mnuActions.addSeparator()
+        
+        # stub
+        self.actEntryPath = QAction('&Path..', self)
+        self.mnuActions.addAction(self.actEntryPath)
+
+        # stub
+        self.actEntryLog = QAction('&Log..', self)
+        self.mnuActions.addAction(self.actEntryLog)
+
+        # stub
+        self.actEntryMap = QAction('&Map..', self)
+        self.mnuActions.addAction(self.actEntryMap)
+        
+        # stub
+        self.actEntryData = QAction('&Data..', self)
+        self.mnuActions.addAction(self.actEntryData)
+        
+        # stub
+        self.actEntryProtocol = QAction('&Protocol..', self)
+        self.mnuActions.addAction(self.actEntryProtocol)
+        
+        # stub
+        self.actEntryBlueprint = QAction('&Blueprint..', self)
+        self.mnuActions.addAction(self.actEntryBlueprint)
+        
+        # stub
+        self.actEntryRoadmap = QAction('&Roadmap..', self)
+        self.mnuActions.addAction(self.actEntryRoadmap)
+        
+        # stub
+        self.actEntryIssues = QAction('&Issues..', self)
+        self.mnuActions.addAction(self.actEntryIssues)
+
+        # stub
+        self.actEntryFeatures = QAction('&Features..', self)
+        self.mnuActions.addAction(self.actEntryFeatures)
+
+        # stub, items to be refactored
+        self.actEntryRefactor = QAction('&Refactor..', self)
+        self.mnuActions.addAction(self.actEntryRefactor)
+
+        # file menu starts here
+        # stub
+        self.actOpen = QAction('&Open..', self)
+        self.mnuFile.addAction(self.actOpen)
+        
         # stub
         self.actSave = QAction('&Save', self)
         self.mnuFile.addAction(self.actSave)
+        
+        # stub
+        self.actSaveAs = QAction('&Save as..', self)
+        self.mnuFile.addAction(self.actSaveAs)
 
+        # stub
+        self.actMerge = QAction('&Merge..', self)
+        self.mnuFile.addAction(self.actMerge)
+        
         self.mnuFile.addSeparator()
 
         # stub

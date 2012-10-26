@@ -39,17 +39,17 @@
 </node>
 </node>
 <node CREATED="1350734445227" ID="ID_667339652" MODIFIED="1350734479130" POSITION="left" TEXT="status">
-<node CREATED="1350734453626" ID="ID_827774791" MODIFIED="1351004533278">
+<node CREATED="1350734453626" ID="ID_827774791" MODIFIED="1351249952241">
 <richcontent TYPE="NODE"><html>
   <head>
     
   </head>
   <body>
     <p>
-      <b><font color="#ff0000">Next Steps</font></b>
+      <font color="#ff0000"><b>Next Steps </b></font>
     </p>
     <p>
-      - add (version pattern), change, delete root entry
+      - refactor root entry data model
     </p>
     <p>
       - data persistence via pickle
@@ -57,8 +57,21 @@
     <p>
       - create version primer
     </p>
+    <p>
+      - add log
+    </p>
+    <p>
+      &#160;-&gt; log all changes
+    </p>
+    <p>
+      &#160;-&gt; add manual log
+    </p>
+    <p>
+      &#160;-&gt; attach files
+    </p>
   </body>
-</html></richcontent>
+</html>
+</richcontent>
 </node>
 <node CREATED="1350738940188" FOLDED="true" ID="ID_1036838821" MODIFIED="1350897555148" TEXT="imperatives">
 <node CREATED="1350738946252" ID="ID_1231598678" MODIFIED="1350738995517" TEXT="flexible project design (i.e. roadmap, dependencies, additional utilities)"/>
@@ -135,7 +148,7 @@
 </html></richcontent>
 </node>
 </node>
-<node CREATED="1350916411339" FOLDED="true" ID="ID_1976257918" MODIFIED="1351067599936" TEXT="121021">
+<node CREATED="1350916411339" FOLDED="true" ID="ID_1976257918" MODIFIED="1351249440455" TEXT="121021">
 <node CREATED="1350916423663" ID="ID_1985292984" MODIFIED="1350917521947">
 <richcontent TYPE="NODE"><html>
   <head>
@@ -159,6 +172,39 @@
     </p>
   </body>
 </html></richcontent>
+</node>
+</node>
+<node CREATED="1351249441584" FOLDED="true" ID="ID_1675415632" MODIFIED="1351249929149" TEXT="121026">
+<node CREATED="1351249453101" ID="ID_165508381" MODIFIED="1351249926503">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      I'm making good progress. I have completed the main view and implemented adding new root entry nodes, changing root nodes and deleting rows.
+    </p>
+    <p>
+      
+    </p>
+    <p>
+      Next, I'll refactor the root data storage (I'm maintaining the data twice now, in the table.model and the table.data.) As I want to have a somewhat solid data storage API (so I can make Nelia permanent in there), and for that I should have the data part clean.
+    </p>
+    <p>
+      
+    </p>
+    <p>
+      Then I'll have implemnet the persistence (save, save as, open and setting standard file in the preferences).
+    </p>
+    <p>
+      
+    </p>
+    <p>
+      After that, I'll add the logging (save all changes, add manual log entries and set default file to open on startup)
+    </p>
+  </body>
+</html>
+</richcontent>
 </node>
 </node>
 </node>
