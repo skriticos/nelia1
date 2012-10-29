@@ -273,7 +273,18 @@ class MainWindow(QMainWindow):
         self.mnuDeploy = self.menuBar().addMenu('&Deploy')
         self.mnuProto = self.menuBar().addMenu('&Prototype')
         self.mnuConfig = self.menuBar().addMenu('&Config')
+        self.mnuStat = self.menuBar().addMenu('&Statistics')
         self.mnuHelp = self.menuBar().addMenu('&Help')
+
+        # statistics menu
+        self.actStatLoc = QAction('&Code..', self)
+        self.mnuStat.addAction(self.actStatLoc)
+        self.actStatDep = QAction('&Dependencies..', self)
+        self.mnuStat.addAction(self.actStatDep)
+        self.actPerf = QAction('&Performance..', self)
+        self.mnuStat.addAction(self.actPerf)
+        self.actCoverage = QAction('&Coverage..', self)
+        self.mnuStat.addAction(self.actCoverage)
 
         # prototype menu
         # stub
