@@ -22,9 +22,15 @@ class MainListing(QTableView):
         # Labels for the column headers
         # To get column numbers, use self.headers.index('Name') ..
         self.headers = [
-            'Name', 'Entry Type', 'Status', 
-            'Category', 'Priority', 'Challenge', 
-            'Version', 'Last Changed', 'ID' ]
+            'Name', 
+            'Entry Type', 
+            'Status', 
+            'Category', 
+            'Priority', 
+            'Challenge', 
+            'Version', 
+            'Last Changed', 
+            'ID' ]
         
         self.model.setHorizontalHeaderLabels(self.headers)
 
