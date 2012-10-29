@@ -39,17 +39,17 @@
 </node>
 </node>
 <node CREATED="1350734445227" ID="ID_667339652" MODIFIED="1350734479130" POSITION="left" TEXT="status">
-<node CREATED="1350734453626" ID="ID_827774791" MODIFIED="1351249952241">
+<node CREATED="1350734453626" ID="ID_827774791" MODIFIED="1351455431707">
 <richcontent TYPE="NODE"><html>
   <head>
     
   </head>
   <body>
     <p>
-      <font color="#ff0000"><b>Next Steps </b></font>
+      <b><font color="#ff0000">Next Steps </font></b>
     </p>
     <p>
-      - refactor root entry data model
+      - Prototype menu ?
     </p>
     <p>
       - data persistence via pickle
@@ -174,8 +174,8 @@
 </html></richcontent>
 </node>
 </node>
-<node CREATED="1351249441584" FOLDED="true" ID="ID_1675415632" MODIFIED="1351249929149" TEXT="121026">
-<node CREATED="1351249453101" ID="ID_165508381" MODIFIED="1351249926503">
+<node CREATED="1351249441584" FOLDED="true" ID="ID_1675415632" MODIFIED="1351263105542" TEXT="121026">
+<node CREATED="1351249453101" ID="ID_165508381" MODIFIED="1351263099658">
 <richcontent TYPE="NODE"><html>
   <head>
     
@@ -202,9 +202,17 @@
     <p>
       After that, I'll add the logging (save all changes, add manual log entries and set default file to open on startup)
     </p>
+    <p>
+      
+    </p>
+    <p>
+      16:50
+    </p>
+    <p>
+      Cancelled data refactoring. Don't want to pickle Qt classes, as the interface might break. Using python data structure (as before) and doing double mapping. I think it's worth it (and the overhead is calculable).
+    </p>
   </body>
-</html>
-</richcontent>
+</html></richcontent>
 </node>
 </node>
 </node>
