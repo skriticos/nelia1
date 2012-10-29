@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, sys, pprint, time
+import os, sys, pprint, time, pickle
 from PySide.QtCore import *
 from PySide.QtGui import *
 
@@ -40,6 +40,26 @@ class MainListing(QTableView):
 
         self.setSortingEnabled(True)
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+    def reload_data(self, data):
+
+        self.data = data
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(self.headers)
+        
+        for key in self.data:
+            if isinstance(key, int):
+                self.model.appendRow([
+                    QStandardItem(str(self.data[key][0])),
+                    QStandardItem(str(self.data[key][1])),
+                    QStandardItem(str(self.data[key][2])),
+                    QStandardItem(str(self.data[key][3])),
+                    QStandardItem(str(self.data[key][4])),
+                    QStandardItem(str(self.data[key][5])),
+                    QStandardItem(str(self.data[key][5])),
+                    QStandardItem(str(self.data[key][7])),
+                    QStandardItem(str(key))
+                ])
 
     def removeActiveRow(self):
     
@@ -272,6 +292,7 @@ class MainWindow(QMainWindow):
         self.table = MainListing(self)
         self.setCentralWidget(self.table)
 
+        # ---------- TOP LEVEL MENUBAR ----------
         self.mnuFile = self.menuBar().addMenu('&File')
         self.mnuView = self.menuBar().addMenu('&View')
         self.mnuActions = self.menuBar().addMenu('&Actions')
@@ -281,6 +302,29 @@ class MainWindow(QMainWindow):
         self.mnuConfig = self.menuBar().addMenu('&Config')
         self.mnuStat = self.menuBar().addMenu('&Statistics')
         self.mnuHelp = self.menuBar().addMenu('&Help')
+
+        # ------------ FILE MENU -------------------
+        self.actOpen = QAction('&Open..', self, triggered=self.openFile)
+        self.mnuFile.addAction(self.actOpen)
+        
+        self.actSave = QAction('&Save', self, triggered=self.save)
+        self.mnuFile.addAction(self.actSave)
+        
+        self.actSaveAs = QAction('Sa&ve as..', self, triggered=self.saveAs)
+        self.mnuFile.addAction(self.actSaveAs)
+
+        self.actMerge = QAction('&Merge..', self)
+        self.mnuFile.addAction(self.actMerge)
+        
+        self.mnuFile.addSeparator()
+
+        self.actPreferences = QAction('P&references..', self)
+        self.mnuFile.addAction(self.actPreferences)
+
+        self.mnuFile.addSeparator()
+
+        self.actQuit = QAction('&Quit', self, triggered=self.app.exit)
+        self.mnuFile.addAction(self.actQuit)
 
         # statistics menu
         self.actStatLoc = QAction('&Code..', self)
@@ -403,33 +447,6 @@ class MainWindow(QMainWindow):
         self.actEntryRefactor = QAction('&Refactor..', self)
         self.mnuActions.addAction(self.actEntryRefactor)
 
-        # file menu starts here
-        # stub
-        self.actOpen = QAction('&Open..', self)
-        self.mnuFile.addAction(self.actOpen)
-        
-        self.actSave = QAction('&Save', self, triggered=self.save)
-        self.mnuFile.addAction(self.actSave)
-        
-        # stub
-        self.actSaveAs = QAction('Sa&ve as..', self, triggered=self.saveAs)
-        self.mnuFile.addAction(self.actSaveAs)
-
-        # stub
-        self.actMerge = QAction('&Merge..', self)
-        self.mnuFile.addAction(self.actMerge)
-        
-        self.mnuFile.addSeparator()
-
-        # stub
-        self.actPreferences = QAction('P&references..', self)
-        self.mnuFile.addAction(self.actPreferences)
-
-        self.mnuFile.addSeparator()
-
-        self.actQuit = QAction('&Quit', self, triggered=self.app.exit)
-        self.mnuFile.addAction(self.actQuit)
-
         self.setWindowIcon(QIcon('icon.png'))        
 
         self.show()
@@ -438,17 +455,34 @@ class MainWindow(QMainWindow):
 
         if self.path == '':
             self.saveAs()
+        
+        data = {}
+        data['self.table.data'] = self.table.data
+
+        with open(self.path, 'wb') as f:
+            pickle.dump(data, f, 3)
 
     def saveAs(self):
 
         file_name = QFileDialog.getSaveFileName(
-            self, 'Save Nelia file', os.path.expanduser('~'), 'Nelia Files (*.nelia)')[0]
+            self, 'Save Nelia file', os.path.expanduser('~/Documents/save.nelia'), 'Nelia Files (*.nelia)')[0]
 
         if file_name.rfind('.nelia') != len(file_name) - 6:
             file_name += '.nelia'
 
-        # stub CONTINUE HERE
+        self.path = file_name
+        self.save()
 
+    def openFile(self):
+    
+        self.path = QFileDialog.getOpenFileName(
+            self, 'Open Nelia file', os.path.expanduser('~/Documents'), 'Nelia Files (*.nelia)')[0]
+
+        data = {}
+        with open(self.path, 'rb') as f:
+            data = pickle.load(f)
+
+        self.table.reload_data(data['self.table.data'])
 
 if __name__ == '__main__':
     application = QApplication(sys.argv) 
