@@ -4,11 +4,6 @@ import os, sys, pprint, time
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-"""
-Acess currently marked elemnt index
-        print (self.parent().table.currentIndex().column())
-        print (self.parent().table.currentIndex().row())
-"""
 
 class MainListing(QTableView):
 
@@ -124,27 +119,34 @@ class EditEntryWidget(QDialog):
         self.cancelButton.clicked.connect(self.hide)
         
         self.inputName = QLineEdit(self)
+
         self.inputEntryType = QComboBox();
-        self.inputEntryType.addItem('Utility')
-        self.inputEntryType.addItem('Application')
-        self.inputEntryType.addItem('Library')
-        self.inputEntryType.addItem('Protocol')
-        self.inputEntryType.addItem('Other')
+        inputEntryTypeLabels = [
+            'Utility',
+            'Application',
+            'Library',
+            'Protocol',
+            'Other' ]
+        for label in inputEntryTypeLabels:
+            self.inputEntryType.addItem(label)
 
         self.inputCategory = QComboBox()
-        self.inputCategory.addItem('Internet')
-        self.inputCategory.addItem('Development')
-        self.inputCategory.addItem('Accessory')
-        self.inputCategory.addItem('Media')
-        self.inputCategory.addItem('Game')
-        self.inputCategory.addItem('Office')
-        self.inputCategory.addItem('Education')
-        self.inputCategory.addItem('Science')
-        self.inputCategory.addItem('Engineering')
-        self.inputCategory.addItem('Graphics')
-        self.inputCategory.addItem('System')
-        self.inputCategory.addItem('Customization')
-        self.inputCategory.addItem('Other')
+        inputCategoryLabels = [
+            'Internet',
+            'Development',
+            'Accessory',
+            'Media',
+            'Game',
+            'Office',
+            'Education',
+            'Science',
+            'Engineering',
+            'Graphics',
+            'System',
+            'Customization',
+            'Other' ]
+        for label in inputCategoryLabels:
+            self.inputCategory.addItem(label)
         
         self.inputPriority = QSpinBox(self)
         self.inputChallange = QSpinBox(self)
