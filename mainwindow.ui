@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainwindow</class>
+ <widget class="QMainWindow" name="mainwindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>804</width>
+    <height>593</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Nelia</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabw_root">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="tab_root_index">
+       <attribute name="title">
+        <string>Root Index</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QTableWidget" name="table_root_index">
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_log">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="title">
+        <string>Log</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QWidget" name="widget" native="true">
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>New log message:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>562</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="push_add_log">
+             <property name="text">
+              <string>&amp;Add</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="3">
+            <widget class="QTextEdit" name="text_add_log">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="autoFormatting">
+              <set>QTextEdit::AutoAll</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Log history:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QTableWidget" name="table_log_history">
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>804</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_new_db"/>
+    <addaction name="action_open_db"/>
+    <addaction name="action_save_db"/>
+    <addaction name="action_save_as_db"/>
+    <addaction name="action_merge_db"/>
+    <addaction name="separator"/>
+    <addaction name="action_preferences"/>
+    <addaction name="separator"/>
+    <addaction name="action_quit"/>
+   </widget>
+   <widget class="QMenu" name="menu_actions">
+    <property name="title">
+     <string>&amp;Actions</string>
+    </property>
+    <addaction name="action_new_entry"/>
+    <addaction name="action_change_entry"/>
+    <addaction name="action_delete_entry"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menu_project">
+    <property name="title">
+     <string>&amp;Project</string>
+    </property>
+    <addaction name="action_path"/>
+    <addaction name="action_log"/>
+    <addaction name="action_map"/>
+    <addaction name="action_data"/>
+    <addaction name="action_protocol"/>
+    <addaction name="action_blueprint"/>
+    <addaction name="action_roadmap"/>
+    <addaction name="action_issues"/>
+    <addaction name="action_features"/>
+    <addaction name="action_refactor"/>
+   </widget>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_about"/>
+    <addaction name="action_manual"/>
+   </widget>
+   <addaction name="menu_file"/>
+   <addaction name="menu_actions"/>
+   <addaction name="menu_project"/>
+   <addaction name="menu_help"/>
+  </widget>
+  <action name="action_open_db">
+   <property name="text">
+    <string>&amp;Open..</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_save_db">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_save_as_db">
+   <property name="text">
+    <string>Save &amp;As..</string>
+   </property>
+  </action>
+  <action name="action_preferences">
+   <property name="text">
+    <string>&amp;Preferences..</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="action_quit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="action_merge_db">
+   <property name="text">
+    <string>Merge..</string>
+   </property>
+  </action>
+  <action name="action_new_db">
+   <property name="text">
+    <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="action_new_entry">
+   <property name="text">
+    <string>&amp;New..</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="action_change_entry">
+   <property name="text">
+    <string>&amp;Change..</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="action_delete_entry">
+   <property name="text">
+    <string>&amp;Delete</string>
+   </property>
+  </action>
+  <action name="action_path">
+   <property name="text">
+    <string>Path..</string>
+   </property>
+  </action>
+  <action name="action_log">
+   <property name="text">
+    <string>Log..</string>
+   </property>
+  </action>
+  <action name="action_map">
+   <property name="text">
+    <string>Map..</string>
+   </property>
+  </action>
+  <action name="action_data">
+   <property name="text">
+    <string>Data..</string>
+   </property>
+  </action>
+  <action name="action_protocol">
+   <property name="text">
+    <string>Protocol..</string>
+   </property>
+  </action>
+  <action name="action_blueprint">
+   <property name="text">
+    <string>Blueprint..</string>
+   </property>
+  </action>
+  <action name="action_roadmap">
+   <property name="text">
+    <string>Roadmap..</string>
+   </property>
+  </action>
+  <action name="action_issues">
+   <property name="text">
+    <string>Issues..</string>
+   </property>
+  </action>
+  <action name="action_features">
+   <property name="text">
+    <string>Features..</string>
+   </property>
+  </action>
+  <action name="action_refactor">
+   <property name="text">
+    <string>Refactor..</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>&amp;About..</string>
+   </property>
+  </action>
+  <action name="action_manual">
+   <property name="text">
+    <string>&amp;Manual..</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>action_quit</sender>
+   <signal>triggered()</signal>
+   <receiver>mainwindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>432</x>
+     <y>316</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
