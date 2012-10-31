@@ -1,4 +1,6 @@
 *.pyc
 *.tmp
+*.swp
+tags
 *cache*
 __pycache__
