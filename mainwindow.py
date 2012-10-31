@@ -15,6 +15,7 @@ from PySide import QtGui
 from PySide import QtUiTools
 from indextablectrl import IndexTableCtrl
 from newchangeindex import NewChangeIndex
+from logctrl import LogCtrl
 
 from pprint import pprint
 
@@ -39,6 +40,9 @@ class MainWindow(QtCore.QObject):
 
         # NEW/CHANGE DIALOG SETUP
         self.new_change_index = NewChangeIndex(self.index_table_ctrl)
+
+        # LOG CTRL
+        self.log_ctrl = LogCtrl(self, self.ui)
         
         # CONNECT SIGNALS
         self.ui.action_save_db.triggered.connect(self.save)
@@ -55,6 +59,7 @@ class MainWindow(QtCore.QObject):
         
         data = {}
         data['.index_table_ctrl.data'] = self.index_table_ctrl.data
+        data['.log_ctrl.data'] = self.log_ctrl.data
 
         with open(self.path, 'wb') as f:
             pickle.dump(data, f, 3)
@@ -85,6 +90,7 @@ class MainWindow(QtCore.QObject):
             data = pickle.load(f)
 
         self.index_table_ctrl.reload_data(data['.index_table_ctrl.data'])
+        self.log_ctrl.reload_data(data['.log_ctrl.data'])
 
 
 # vim: set ts=4 sw=4 ai si expandtab:
