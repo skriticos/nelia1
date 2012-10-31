@@ -41,11 +41,7 @@
          <number>0</number>
         </property>
         <item row="0" column="0">
-         <widget class="QTableWidget" name="table_root_index">
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-         </widget>
+         <widget class="QTableView" name="table_root_index"/>
         </item>
        </layout>
       </widget>
