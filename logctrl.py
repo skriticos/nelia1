@@ -65,7 +65,7 @@ class LogCtrl(QtCore.QObject):
 
     def reload_data(self, data):
 
-        pass
+        self.data = data
 
 
 # vim: set ts=4 sw=4 ai si expandtab:
