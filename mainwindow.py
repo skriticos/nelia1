@@ -36,7 +36,7 @@ class MainWindow(QtCore.QObject):
         self.ui.setWindowIcon(QtGui.QIcon('img/icon.png'))
         
         self.index_table_ctrl = \
-            IndexTableCtrl(self.ui.table_root_index)
+            IndexTableCtrl(self.ui.table_root_index, self)
 
         # NEW/CHANGE DIALOG SETUP
         self.new_change_index = NewChangeIndex(self.index_table_ctrl)
@@ -48,24 +48,36 @@ class MainWindow(QtCore.QObject):
         self.ui.action_save_db.triggered.connect(self.save)
         self.ui.action_save_as_db.triggered.connect(self.saveAs)
         self.ui.action_open_db.triggered.connect(self.openFile)
-
+        self.ui.table_root_index.selectionModel().selectionChanged.connect(self.indexSelectionChanged)
+        self.ui.action_new_entry.triggered.connect(self.new_change_index.showCreate)
         self.ui.tabw_root.currentChanged.connect(self.tabChanged)
-
-        self.ui.action_new_entry.triggered.connect(
-            self.new_change_index.showCreate)
 
         # SET CONTROL STATES
         self.reset_controls()
 
-    def reset_controls(self):
-
-        self.ui.tabw_root.setTabEnabled(1, False)
+    def getIndexEntryId(self):
+        
+        rowindex = self.ui.table_root_index.currentIndex().row()
+        child = self.index_table_ctrl.model.index(rowindex, 8)
+        return self.index_table_ctrl.model.itemFromIndex(child).text()
 
     def tabChanged(self):
 
-        # handle tab changed
-        print ('tab changed')
-        pass
+        if self.ui.tabw_root.tabText(
+                self.ui.tabw_root.currentIndex()) == 'Log':
+            self.log_ctrl.activated(self.getIndexEntryId())
+
+    def indexSelectionChanged(self):
+
+        rowindex = self.ui.table_root_index.currentIndex().row()
+        child = self.index_table_ctrl.model.index(rowindex, 8)
+        entryid = self.index_table_ctrl.model.itemFromIndex(child).text()
+
+        self.ui.tabw_root.setTabEnabled(1, True)
+
+    def reset_controls(self):
+
+        self.ui.tabw_root.setTabEnabled(1, False)
 
     def save(self):
 

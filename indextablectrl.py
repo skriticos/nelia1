@@ -21,10 +21,11 @@ class IndexTableCtrl(QtCore.QObject):
         interactions with the table.
     """
 
-    def __init__(self, table_view):
+    def __init__(self, table_view, parent):
         
         super().__init__()
 
+        self.parent = parent
         self.view = table_view
         self.model = QtGui.QStandardItemModel()
         self.headers = [
@@ -92,6 +93,17 @@ class IndexTableCtrl(QtCore.QObject):
             QtGui.QStandardItem(str(int(time.time()))),
             QtGui.QStandardItem(str(entryid))
         ])
+
+        self.parent.log_ctrl.addEventLogEntry(
+            entryid, 'user', 'project index', 'Added project {}'.format(name),
+            'Added project {} at {} with the following fields:'.format(name, int(time.time())) +
+            '\nEntry Type: {}'.format(entrytype) +
+            '\nStatus: Spark' +
+            '\nCategory: {}'.format(category) +
+            '\nPriority: {}'.format(priority) +
+            '\nChallenge: {}'.format(challange) +
+            '\nVersion: 0.0.0' +
+            '\nID: {}'.format(entryid))
     
     def changeRow(self, itemid, rowindex, name, entrytype, 
                   category, priority, challange):

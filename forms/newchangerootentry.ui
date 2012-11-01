@@ -199,12 +199,18 @@
      <property name="text">
       <string>Create</string>
      </property>
+     <property name="autoDefault">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item row="1" column="3">
     <widget class="QPushButton" name="push_change">
      <property name="text">
       <string>Change</string>
+     </property>
+     <property name="autoDefault">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
