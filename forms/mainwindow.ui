@@ -54,6 +54,9 @@
         </property>
         <item row="0" column="0">
          <widget class="QTableView" name="table_root_index">
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::SingleSelection</enum>
           </property>
