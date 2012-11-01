@@ -49,9 +49,24 @@ class MainWindow(QtCore.QObject):
         self.ui.action_save_as_db.triggered.connect(self.saveAs)
         self.ui.action_open_db.triggered.connect(self.openFile)
 
+        self.ui.tabw_root.currentChanged.connect(self.tabChanged)
+
         self.ui.action_new_entry.triggered.connect(
             self.new_change_index.showCreate)
-        
+
+        # SET CONTROL STATES
+        self.reset_controls()
+
+    def reset_controls(self):
+
+        self.ui.tabw_root.setTabEnabled(1, False)
+
+    def tabChanged(self):
+
+        # handle tab changed
+        print ('tab changed')
+        pass
+
     def save(self):
 
         if self.path == '':
