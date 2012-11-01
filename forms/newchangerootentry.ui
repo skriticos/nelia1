@@ -221,5 +221,22 @@
   <tabstop>push_cancel</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>push_cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>new_change_root_entry</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>159</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>196</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
