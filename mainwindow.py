@@ -8,7 +8,7 @@ Component:			Main window
 This file contains the MainWindow class for Nelia.
 """
 
-import os, pickle, time
+import os, pickle, time, gzip
 
 from PySide import QtCore
 from PySide import QtGui
@@ -88,8 +88,11 @@ class MainWindow(QtCore.QObject):
         data['.index_table_ctrl.data'] = self.index_table_ctrl.data
         data['.log_ctrl.data'] = self.log_ctrl.data
 
+        pickled_data = pickle.dumps(data, 3)
+        compressed_data = gzip.compress(pickled_data)
+
         with open(self.path, 'wb') as f:
-            pickle.dump(data, f, 3)
+            f.write(compressed_data)
 
     def saveAs(self):
 
@@ -107,6 +110,10 @@ class MainWindow(QtCore.QObject):
 
     def openFile(self):
     
+        print ('add decompression')
+        pass
+
+
         self.path = QtGui.QFileDialog.getOpenFileName(
             self.ui, 'Open Nelia file', 
             os.path.expanduser('~/Documents'), 
