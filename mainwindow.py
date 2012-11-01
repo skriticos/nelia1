@@ -2,8 +2,8 @@
 
 
 """
-Application Name: 	Nelia
-Component:			Main window
+Application Name:       Nelia
+Component:                      Main window
 
 This file contains the MainWindow class for Nelia.
 """
@@ -119,9 +119,12 @@ class MainWindow(QtCore.QObject):
             os.path.expanduser('~/Documents'), 
             'Nelia Files (*.nelia)')[0]
 
-        data = {}
+        file_buffer = ''
         with open(self.path, 'rb') as f:
-            data = pickle.load(f)
+                file_buffer = f.read()
+
+        decompressed = gzip.decompress(file_buffer)
+        data = pickle.loads(decompressed)
 
         self.index_table_ctrl.reload_data(data['.index_table_ctrl.data'])
         self.log_ctrl.reload_data(data['.log_ctrl.data'])
