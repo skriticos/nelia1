@@ -36,6 +36,9 @@ class LogCtrl(QtCore.QObject):
 
         self.history_model.clear()
         self.history_model.setHorizontalHeaderLabels(self.headers)
+
+        self.main_window.line_log_summary.clear()
+        self.main_window.text_log_entry.clear()
         
         for key, entry in self.data[int(item_id)].items():
             self.history_model.appendRow([
@@ -61,7 +64,6 @@ class LogCtrl(QtCore.QObject):
             self.data[int(item_id)] = {}
         self.data[int(item_id)][int(time.time())] = {
                 'source': source, 'destination': destination, 'summary': summary, 'details': details}
-        print (self.data)
 
     def reload_data(self, data):
 
