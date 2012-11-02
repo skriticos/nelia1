@@ -16,6 +16,7 @@ from PySide import QtUiTools
 from indextablectrl import IndexTableCtrl
 from newchangeindex import NewChangeIndex
 from logctrl import LogCtrl
+from featurectrl import FeatureCtrl
 
 from pprint import pprint
 
@@ -43,6 +44,7 @@ class MainWindow(QtCore.QObject):
 
         # LOG CTRL
         self.log_ctrl = LogCtrl(self, self.ui)
+        self.feature_ctrl = FeatureCtrl(self, self.ui)
         
         # CONNECT SIGNALS
         self.ui.action_save_db.triggered.connect(self.save)
@@ -67,6 +69,10 @@ class MainWindow(QtCore.QObject):
                 self.ui.tabw_root.currentIndex()) == 'Log':
             self.log_ctrl.activated(self.getIndexEntryId())
 
+        if self.ui.tabw_root.tabText(
+                self.ui.tabw_root.currentIndex()) == 'Feature':
+            self.feature_ctrl.activated(self.getIndexEntryId())
+
     def indexSelectionChanged(self):
 
         rowindex = self.ui.table_root_index.currentIndex().row()
@@ -74,10 +80,12 @@ class MainWindow(QtCore.QObject):
         entryid = self.index_table_ctrl.model.itemFromIndex(child).text()
 
         self.ui.tabw_root.setTabEnabled(1, True)
+        self.ui.tabw_root.setTabEnabled(2, True)
 
     def reset_controls(self):
 
         self.ui.tabw_root.setTabEnabled(1, False)
+        self.ui.tabw_root.setTabEnabled(2, False)
 
     def save(self):
 
@@ -87,6 +95,7 @@ class MainWindow(QtCore.QObject):
         data = {}
         data['.index_table_ctrl.data'] = self.index_table_ctrl.data
         data['.log_ctrl.data'] = self.log_ctrl.data
+        data['.feature_ctrl.data'] = self.feature_ctrl.data
 
         pickled_data = pickle.dumps(data, 3)
         compressed_data = gzip.compress(pickled_data)
@@ -110,10 +119,6 @@ class MainWindow(QtCore.QObject):
 
     def openFile(self):
     
-        print ('add decompression')
-        pass
-
-
         self.path = QtGui.QFileDialog.getOpenFileName(
             self.ui, 'Open Nelia file', 
             os.path.expanduser('~/Documents'), 
@@ -128,6 +133,7 @@ class MainWindow(QtCore.QObject):
 
         self.index_table_ctrl.reload_data(data['.index_table_ctrl.data'])
         self.log_ctrl.reload_data(data['.log_ctrl.data'])
+        self.feature_ctrl.reload_data(data['.feature_ctrl.data'])
 
 
 # vim: set ts=4 sw=4 ai si expandtab:
