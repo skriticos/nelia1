@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 
-
 """
 Application Name:       Nelia
 Component:                      Main window
@@ -70,7 +69,7 @@ class MainWindow(QtCore.QObject):
             self.log_ctrl.activated(self.getIndexEntryId())
 
         if self.ui.tabw_root.tabText(
-                self.ui.tabw_root.currentIndex()) == 'Feature':
+                self.ui.tabw_root.currentIndex()) == 'Features':
             self.feature_ctrl.activated(self.getIndexEntryId())
 
     def indexSelectionChanged(self):
