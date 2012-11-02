@@ -340,12 +340,15 @@
      <string>&amp;Project</string>
     </property>
     <addaction name="action_path"/>
-    <addaction name="action_log"/>
+    <addaction name="separator"/>
     <addaction name="action_map"/>
     <addaction name="action_data"/>
     <addaction name="action_protocol"/>
-    <addaction name="action_blueprint"/>
+    <addaction name="separator"/>
+    <addaction name="action_log"/>
     <addaction name="action_roadmap"/>
+    <addaction name="separator"/>
+    <addaction name="action_blueprint"/>
     <addaction name="action_issues"/>
     <addaction name="action_features"/>
     <addaction name="action_refactor"/>
@@ -457,7 +460,7 @@
   </action>
   <action name="action_blueprint">
    <property name="text">
-    <string>Blueprint..</string>
+    <string>Concepts..</string>
    </property>
   </action>
   <action name="action_roadmap">
