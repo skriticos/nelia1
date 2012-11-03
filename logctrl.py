@@ -14,20 +14,20 @@ from PySide import QtGui
 
 class LogCtrl(QtCore.QObject):
     
-    def __init__(self, parent, main_window):
+    def __init__(self, parent, ui):
         
         super().__init__()
 
         self.parent = parent
-        self.main_window = main_window
+        self.ui = ui
 
         self.data = {}
 
-        self.main_window.push_add_log.clicked.connect(self.addLogEntry)
+        self.ui.push_add_log.clicked.connect(self.addLogEntry)
         
         self.headers = ['Source', 'Destination', 'Summary', 'Timestamp']
         self.history_model = QtGui.QStandardItemModel()
-        self.main_window.table_log_history.setModel(self.history_model)
+        self.ui.table_log_history.setModel(self.history_model)
 
 
     def activated(self, item_id):
@@ -37,8 +37,8 @@ class LogCtrl(QtCore.QObject):
         self.history_model.clear()
         self.history_model.setHorizontalHeaderLabels(self.headers)
 
-        self.main_window.line_log_summary.clear()
-        self.main_window.text_log_entry.clear()
+        self.ui.line_log_summary.clear()
+        self.ui.text_log_entry.clear()
         
         for key, entry in self.data[int(item_id)].items():
             self.history_model.appendRow([
@@ -47,15 +47,15 @@ class LogCtrl(QtCore.QObject):
                 QtGui.QStandardItem(str(entry['summary'])),
                 QtGui.QStandardItem(str(key))])
 
-        self.main_window.table_log_history.sortByColumn(3, QtCore.Qt.DescendingOrder)
+        self.ui.table_log_history.sortByColumn(3, QtCore.Qt.DescendingOrder)
 
     def addLogEntry(self):
   
         self.addEventLogEntry(
             self.active_item_id,
             'user', 'user log', 
-            self.main_window.line_log_summary.text(),
-            self.main_window.text_log_entry.toHtml())
+            self.ui.line_log_summary.text(),
+            self.ui.text_log_entry.toHtml())
         self.activated(self.active_item_id)
 
     def addEventLogEntry(self, item_id, source, destination, summary, details):
