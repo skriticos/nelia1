@@ -28,6 +28,7 @@ class FeatureCtrl(QtCore.QObject):
             'Type', 
             'Priority', 
             'Target Rel.', 
+            'Status',
             'Timestamp'
         ]
 
@@ -55,6 +56,7 @@ class FeatureCtrl(QtCore.QObject):
                 QtGui.QStandardItem(str(entry['feature_type'])),
                 QtGui.QStandardItem(str(entry['priority'])),
                 QtGui.QStandardItem(str(entry['target_release'])),
+                QtGui.QStandardItem(str(entry['status'])),
                 QtGui.QStandardItem(str(key))])
 
         self.ui.table_feature_list.sortByColumn(4, QtCore.Qt.DescendingOrder)
@@ -83,12 +85,13 @@ class FeatureCtrl(QtCore.QObject):
                 'priority': priority,
                 'target_release': target_release,
                 'description': description,
-                'dependency': dependency
+                'dependency': dependency,
+                'status': 'planned'
         }
 
         self.parent.log_ctrl.addEventLogEntry(
             item_id, 'user', 'features', 'Added feature {}'.format(name),
-            'Added feature {} at {} with the following fields:'.format(name, int(time.time())) +
+            'Added feature "{}" at {} with the following fields:'.format(name, int(time.time())) +
             '\nFeature Type: {}'.format(feature_type) +
             '\nPriority: {}'.format(priority) +
             '\nTarget Release: {}'.format(target_release))
@@ -96,7 +99,6 @@ class FeatureCtrl(QtCore.QObject):
     def reload_data(self, data):
 
         self.data = data
-
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
