@@ -7,6 +7,9 @@ UNIVERSAL DATA AND METHOD ACCESS
 module name
 access key
 
+NOTE: HAVE TO FIGURE OUT STEP BY STEP SERIALIZATION (E.G. DON'T SAVE EVERYTHING MODELS)
+      IF POSSIBLE, THIS SHOULD HAPPEN TRANSPARENTLY
+
 GUI CONTROL ELEMENTS
 
 [add module] (recursive)
@@ -28,6 +31,16 @@ Preferences module, path variable (string typei
    ./preferences/&path (format(str), get, set)
 
 NOTE: &PATH IS THE GUI ELEMENT FOR INPUT, STR FORMAT, GET->STR AND SET(STR) SUPPORTED
+
+Chache module (not saved):
+
+	./cache/xy
+
+Module x:
+
+	./mod_x/var_y (cache)
+
+NOTE: VAR_Y IS NOT SAVED WHEN SERIALIZING
 
 Projects module, project index:
 
