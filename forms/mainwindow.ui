@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="iconSize">
        <size>
@@ -46,7 +46,7 @@
       </property>
       <widget class="QWidget" name="tab_root_index">
        <attribute name="title">
-        <string>Root Index</string>
+        <string>Project Index</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <property name="margin">
@@ -139,6 +139,11 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_data">
+       <attribute name="title">
+        <string>Data</string>
+       </attribute>
+      </widget>
       <widget class="QWidget" name="tab_features">
        <attribute name="title">
         <string>Features</string>
@@ -213,17 +218,47 @@
             <widget class="QComboBox" name="combo_feature_type">
              <item>
               <property name="text">
-               <string>Storage</string>
+               <string>Data Input</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>User Interaction</string>
+               <string>Data Edit</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Communication</string>
+               <string>Data View</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Aggregated Data View</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Correlated Data View</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Data Storage</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Summary View</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Compression</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Network</string>
               </property>
              </item>
              <item>

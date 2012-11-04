@@ -1,13 +1,66 @@
 
 - ...
-- add feature details view
-- add feature dependencies
-- change root new/change widget to dialog
+- add data modelling
 - add modify root widget
 - add issue list
 - add refactoring list
 - add roadmap
-- add data modelling
 - ...
 
+WORKFLOW TAB
+- e.g. log, ammend log
+- e.g. feature, ammend feature details, change feature details, add subfeatuers, change feature status
+
+DATA TAB
+- formats
+- addressing
+- storage
+
+GENERAL CONCEPTS TAB
+- generic (e.g. version handling over the different modules)
+- interconnecitons and communication of modules
+- addressing
+- signal handling
+- storage / logging / testing / debugging / build ?
+
+REFACTORING TAB
+- form, add, change status
+- affects
+
+GENERAL QUESTIONS TAB
+- how do you address data (from root)
+- how do you store data? how do you access it
+  - database?
+  - binary serialize?
+  - plain text serialize? (e.g. json, xml, python)
+- how do the modules talk to each other? (map)
+- gui (how is it done?, conventions)
+- what external interfaces do you have (system, storage, other apps, databases)
+- what data formats are you supporting?
+
+FEATURES TAB
+- add dependencies
+- dynamically create target release dropdown choices
+- add subfeature
+
+LOG TAB
+- n/a
+
+PROJECT INDEX
+- n/a
+
+ROADMAP TAB
+- create widget
+- implement widegt
+- calculate required tasks for milestones
+- multiple branches (e.g. mainline, stable 1.1.x, stable 1.2.x, discontinued 1.0.x)
+
+ISSUES TAB
+- general fields, description, status, priority
+- affected branches
+- target release
+
+LIFECYCLE TAB
+- manage branches (mark branches as 'experimental', 'prototype', 'dev',
+  'beta', 'feature', 'bugfix' and 'discontinued')
 

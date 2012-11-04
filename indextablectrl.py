@@ -30,7 +30,7 @@ class IndexTableCtrl(QtCore.QObject):
         self.model = QtGui.QStandardItemModel()
         self.headers = [
             'Name', 
-            'Entry Type', 
+            'Project Type', 
             'Status', 
             'Category', 
             'Priority', 
@@ -97,7 +97,7 @@ class IndexTableCtrl(QtCore.QObject):
         self.parent.log_ctrl.addEventLogEntry(
             entryid, 'user', 'project index', 'Added project {}'.format(name),
             'Added project {} at {} with the following fields:'.format(name, int(time.time())) +
-            '\nEntry Type: {}'.format(entrytype) +
+            '\nProject Type: {}'.format(entrytype) +
             '\nStatus: Spark' +
             '\nCategory: {}'.format(category) +
             '\nPriority: {}'.format(priority) +
