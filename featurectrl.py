@@ -29,7 +29,8 @@ class FeatureCtrl(QtCore.QObject):
             'Priority', 
             'Target Rel.', 
             'Status',
-            'Timestamp'
+            'Timestamp',
+            'Id'
         ]
 
         self.ui.push_feature_add.clicked.connect(self.addFeatureEntryManual)
@@ -37,9 +38,9 @@ class FeatureCtrl(QtCore.QObject):
         self.feature_model = QtGui.QStandardItemModel()
         self.ui.table_feature_list.setModel(self.feature_model)
 
-    def activated(self, item_id):
+    def activated(self, project_id):
 
-        self.active_item_id = int(item_id)
+        self.active_project_id = int(project_id)
         
         self.feature_model.clear()
         self.feature_model.setHorizontalHeaderLabels(self.headers)
@@ -51,50 +52,58 @@ class FeatureCtrl(QtCore.QObject):
         self.ui.text_feature_description.clear()
 
         # in case no features have been added yet (to avoid trace message)
-        if not self.active_item_id in self.data:
+        if not self.active_project_id in self.data:
             return
 
-        for key, entry in self.data[int(item_id)].items():
-            self.feature_model.appendRow([
-                QtGui.QStandardItem(str(entry['name'])),
-                QtGui.QStandardItem(str(entry['feature_type'])),
-                QtGui.QStandardItem(str(entry['priority'])),
-                QtGui.QStandardItem(str(entry['target_release'])),
-                QtGui.QStandardItem(str(entry['status'])),
-                QtGui.QStandardItem(str(key))])
+        for key, entry in self.data[int(project_id)].items():
+            if isinstance(key, int):
+                self.feature_model.appendRow([
+                    QtGui.QStandardItem(str(entry['name'])),
+                    QtGui.QStandardItem(str(entry['feature_type'])),
+                    QtGui.QStandardItem(str(entry['priority'])),
+                    QtGui.QStandardItem(str(entry['target_release'])),
+                    QtGui.QStandardItem(str(entry['status'])),
+                    QtGui.QStandardItem(str(entry['timestamp'])),
+                    QtGui.QStandardItem(str(key))])
 
-        self.ui.table_feature_list.sortByColumn(4, QtCore.Qt.DescendingOrder)
+        self.ui.table_feature_list.sortByColumn(5, QtCore.Qt.DescendingOrder)
 
     def addFeatureEntryManual(self):
   
         self.addFeatureEntry(
-            self.active_item_id,
+            self.active_project_id,
             self.ui.line_feature_name.text(),
             self.ui.combo_feature_type.currentText(),
             self.ui.combo_feature_priority.currentText(),
             self.ui.combo_feature_target_release.currentText(),
-            self.ui.text_feature_description.toHtml(),
+            self.ui.text_feature_description.toPlainText(),
             None
         )
-        self.activated(self.active_item_id)
+        self.activated(self.active_project_id)
 
-    def addFeatureEntry(self, item_id, name, feature_type, priority, 
+    def addFeatureEntry(self, project_id, name, feature_type, priority, 
                         target_release, description, dependency):
 
-        if not int(item_id) in self.data:
-            self.data[int(item_id)] = {}
-        self.data[int(item_id)][int(time.time())] = {
+        project_id = int(project_id)
+
+        if not project_id in self.data:
+            self.data[project_id] = {'lastid': 0}
+
+        self.data[project_id][self.data[project_id]['lastid']] = {
                 'name': name,
                 'feature_type': feature_type,
                 'priority': priority,
                 'target_release': target_release,
                 'description': description,
                 'dependency': dependency,
-                'status': 'planned'
+                'status': 'planned',
+                'timestamp': int(time.time())
         }
 
+        self.data[project_id]['lastid'] += 1
+
         self.parent.log_ctrl.addEventLogEntry(
-            item_id, 'user', 'features', 'Added feature {}'.format(name),
+            project_id, 'user', 'features', 'Added feature {}'.format(name),
             'Added feature "{}" at {} with the following fields:'.format(name, int(time.time())) +
             '\nFeature Type: {}'.format(feature_type) +
             '\nPriority: {}'.format(priority) +

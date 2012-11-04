@@ -27,7 +27,7 @@ class LogCtrl(QtCore.QObject):
         self.parent = parent
         self.ui = ui
 
-        self.data = {'lastid' : 0}
+        self.data = {}
 
         self.ui.push_add_log.clicked.connect(self.addLogEntry)
         
@@ -76,13 +76,14 @@ class LogCtrl(QtCore.QObject):
         self.ui.text_log_entry.clear()
         
         for key, entry in self.data[int(project_id)].items():
-            self.history_model.appendRow([
-                QtGui.QStandardItem(str(entry['source'])),
-                QtGui.QStandardItem(str(entry['destination'])),
-                QtGui.QStandardItem(str(entry['summary'])),
-                QtGui.QStandardItem(str(entry['timestamp'])),
-                QtGui.QStandardItem(str(key))
-            ])
+            if isinstance(key, int):
+                self.history_model.appendRow([
+                    QtGui.QStandardItem(str(entry['source'])),
+                    QtGui.QStandardItem(str(entry['destination'])),
+                    QtGui.QStandardItem(str(entry['summary'])),
+                    QtGui.QStandardItem(str(entry['timestamp'])),
+                    QtGui.QStandardItem(str(key))
+                ])
 
         self.ui.table_log_history.sortByColumn(3, QtCore.Qt.DescendingOrder)
 
@@ -98,12 +99,15 @@ class LogCtrl(QtCore.QObject):
 
     def addEventLogEntry(self, project_id, source, destination, summary, details):
 
-        if not int(project_id) in self.data:
-            self.data[int(project_id)] = {}
-        self.data[int(project_id)][self.data['lastid']] = {
+        project_id = int(project_id)
+
+        if not project_id in self.data:
+            self.data[project_id] = {'lastid': 0}
+
+        self.data[project_id][self.data[project_id]['lastid']] = {
                 'source': source, 'destination': destination, 'summary':
                 summary, 'details': details, 'timestamp': int(time.time())}
-        self.data['lastid'] += 1
+        self.data[project_id]['lastid'] += 1
 
     def reload_data(self, data):
 
