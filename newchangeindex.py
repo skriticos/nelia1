@@ -15,7 +15,7 @@ from PySide import QtUiTools
 
 class NewChangeIndex(QtCore.QObject):
     
-    def __init__(self, index_table_ctrl):
+    def __init__(self, parent, index_table_ctrl):
         
         super().__init__()
         self.index_table_ctrl = index_table_ctrl
@@ -27,7 +27,7 @@ class NewChangeIndex(QtCore.QObject):
         uifile.open(QtCore.QFile.ReadOnly)
         self.ui = loader.load(uifile)
         uifile.close()
-        
+
         # CONNECT SIGNALS
         self.ui.push_create.clicked.connect(self.onCreateClick)
         self.ui.push_change.clicked.connect(self.onChangeClick)

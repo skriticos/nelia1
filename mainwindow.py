@@ -39,7 +39,7 @@ class MainWindow(QtCore.QObject):
             IndexTableCtrl(self.ui.table_root_index, self)
 
         # NEW/CHANGE DIALOG SETUP
-        self.new_change_index = NewChangeIndex(self.index_table_ctrl)
+        self.new_change_index = NewChangeIndex(self, self.index_table_ctrl)
 
         # LOG CTRL
         self.log_ctrl = LogCtrl(self, self.ui)

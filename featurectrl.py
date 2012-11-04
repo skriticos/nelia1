@@ -50,6 +50,10 @@ class FeatureCtrl(QtCore.QObject):
         self.ui.combo_feature_target_release.setCurrentIndex(0)
         self.ui.text_feature_description.clear()
 
+        # in case no features have been added yet (to avoid trace message)
+        if not self.active_item_id in self.data:
+            return
+
         for key, entry in self.data[int(item_id)].items():
             self.feature_model.appendRow([
                 QtGui.QStandardItem(str(entry['name'])),
