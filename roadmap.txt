@@ -1,0 +1,12 @@
+
+- change feature address model (add id)
+- add feature details view
+- change root new/change widget to dialog
+- add modify root widget
+- add issue list
+- add refactoring list
+- add roadmap
+- add data modelling
+- ...
+
+
