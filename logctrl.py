@@ -42,25 +42,28 @@ class LogCtrl(QtCore.QObject):
         self.log_details = loader.load(uifile)
         uifile.close()
 
-        # self.ui.table_log_history.activated.connect(self.showDetails)
+        self.ui.table_log_history.activated.connect(self.showDetails)
 
-        """
     def showDetails(self):
    
         # GET LOG ITEM
         rowindex = self.ui.table_log_history.currentIndex().row()
         child = self.history_model.index(rowindex, 4)
-        entryid = self.history_model.itemFromIndex(child).text()
+        log_id = self.history_model.itemFromIndex(child).text()
 
-        # self.log_details.line_timestamp.setText(
+        project_id = self.active_project_id
+        log_entry = self.data[project_id][int(log_id)]
+
+        project_name = self.parent.getActiveProjectName()
+
+        self.log_details.line_project_name.setText(project_name)
+        self.log_details.line_timestamp.setText(str(log_entry['timestamp']))
+        self.log_details.line_source.setText(log_entry['source'])
+        self.log_details.line_destination.setText(log_entry['destination'])
+        self.log_details.line_summary.setText(log_entry['summary'])
+        self.log_details.text_details.setDocument(QtGui.QTextDocument(log_entry['details']))
 
         self.log_details.show()
-
-        print (entryid)
-
-        print ('show details triggered')
-        pass
-        """
 
     def activated(self, project_id):
 
@@ -90,7 +93,7 @@ class LogCtrl(QtCore.QObject):
             'user', 
             'user log', 
             self.ui.line_log_summary.text(),
-            self.ui.text_log_entry.toHtml())
+            self.ui.text_log_entry.toPlainText())
         self.activated(self.active_project_id)
 
     def addEventLogEntry(self, project_id, source, destination, summary, details):

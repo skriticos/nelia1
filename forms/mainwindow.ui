@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="iconSize">
        <size>
@@ -107,7 +107,7 @@
               <bool>true</bool>
              </property>
              <property name="autoFormatting">
-              <set>QTextEdit::AutoAll</set>
+              <set>QTextEdit::AutoNone</set>
              </property>
             </widget>
            </item>
@@ -241,7 +241,7 @@
            <item row="1" column="4" rowspan="5">
             <widget class="QTextEdit" name="text_feature_description">
              <property name="autoFormatting">
-              <set>QTextEdit::AutoAll</set>
+              <set>QTextEdit::AutoNone</set>
              </property>
             </widget>
            </item>

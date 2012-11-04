@@ -56,6 +56,12 @@ class MainWindow(QtCore.QObject):
         # SET CONTROL STATES
         self.reset_controls()
 
+    def getActiveProjectName(self):
+
+        rowindex = self.ui.table_root_index.currentIndex().row()
+        child = self.index_table_ctrl.model.index(rowindex, 0)
+        return self.index_table_ctrl.model.itemFromIndex(child).text()
+
     def getIndexEntryId(self):
         
         rowindex = self.ui.table_root_index.currentIndex().row()
