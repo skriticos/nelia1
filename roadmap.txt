@@ -1,6 +1,7 @@
 
-- change feature address model (add id)
+- ...
 - add feature details view
+- add feature dependencies
 - change root new/change widget to dialog
 - add modify root widget
 - add issue list

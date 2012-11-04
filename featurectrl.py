@@ -10,6 +10,7 @@ This file contains the class that controls feature entries.
 import time
 from PySide import QtCore
 from PySide import QtGui
+from PySide import QtUiTools
 
 
 class FeatureCtrl(QtCore.QObject):
@@ -37,6 +38,40 @@ class FeatureCtrl(QtCore.QObject):
         
         self.feature_model = QtGui.QStandardItemModel()
         self.ui.table_feature_list.setModel(self.feature_model)
+        
+        # FEATURE DETAILS WIDGET SETUP
+        loader = QtUiTools.QUiLoader()
+        uifile = QtCore.QFile('forms/feature_details.ui')
+        uifile.open(QtCore.QFile.ReadOnly)
+        self.feature_details = loader.load(uifile)
+        uifile.close()
+        
+        self.ui.table_feature_list.activated.connect(self.showFeatureDetails)
+
+    def showFeatureDetails(self):
+
+        # GET FEATURE ITEM
+        rowindex = self.ui.table_feature_list.currentIndex().row()
+        child = self.feature_model.index(rowindex, 6)
+        feature_id = int(self.feature_model.itemFromIndex(child).text())
+
+        project_id = self.active_project_id
+        feature_entry = self.data[project_id][feature_id]
+
+        project_name = self.parent.getActiveProjectName()
+
+
+        self.feature_details.line_project_name.setText(project_name)
+        self.feature_details.line_priority.setText(feature_entry['priority'])
+        self.feature_details.line_status.setText(feature_entry['status'])
+        self.feature_details.line_name.setText(feature_entry['name'])
+        self.feature_details.line_target_release.setText(feature_entry['target_release'])
+        self.feature_details.line_timestamp.setText(str(feature_entry['timestamp']))
+        self.feature_details.line_type.setText(feature_entry['feature_type'])
+        self.feature_details.text_details.setDocument(QtGui.QTextDocument(feature_entry['description']))
+
+        self.feature_details.show()
+
 
     def activated(self, project_id):
 
