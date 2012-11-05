@@ -254,21 +254,5 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>project_diag_new</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>300</x>
-     <y>225</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>201</x>
-     <y>127</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
 </ui>

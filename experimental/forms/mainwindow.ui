@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <property name="iconSize">
        <size>
@@ -65,6 +65,11 @@
       <widget class="QWidget" name="tab_data">
        <attribute name="title">
         <string>Data</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_workflow">
+       <attribute name="title">
+        <string>Workflow</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="tab_roadmap">

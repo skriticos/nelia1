@@ -12,40 +12,66 @@ class MainWindow(QObject):
         
         super().__init__()
 
-        self.savdat = savdat
-        self.rundat = rundat
+        sd = self.savdat = savdat
+        rd = self.rundat = rundat
 
         # MAINWINDOW WIDGET SETUP
         loader = QtUiTools.QUiLoader()
         uifile = QFile('forms/mainwindow.ui')
         uifile.open(QFile.ReadOnly)
-        self.ui = loader.load(uifile)
+        ui = loader.load(uifile)
         uifile.close()
-        self.ui.setWindowIcon(QIcon('img/icon.png'))
+        ui.setWindowIcon(QIcon('img/icon.png'))
       
         # POPULATE DATA INDEX
-        rundat['modules'].append('mainwindow')
-        rundat['mainwindow'] = self
-        rundat['mainwindow.ui'] = self.ui
-        rundat['mainwindow.tabwidget_main'] = self.ui.tabwidget_main
-        rundat['mainwindow.tab_project'] = self.ui.tab_project
-        rundat['mainwindow:show'] = self.show
-        rundat['mainwindow:tabChanged'] = self.tabChanged
+        rd['modules'].append('mainwindow')
+        rd['mainwindow'] = self
+        rd['mainwindow.ui'] = ui
+        rd['mainwindow.tabwidget_main'] = ui.tabwidget_main
+        rd['mainwindow.tab_project'] = ui.tab_project
+        rd['mainwindow.tab_log'] = ui.tab_log
+        rd['mainwindow.tab_data'] = ui.tab_data
+        rd['mainwindow.tab_workflow'] = ui.tab_workflow
+        rd['mainwindow.tab_roadmap'] = ui.tab_roadmap
+        rd['mainwindow.tab_repository'] = ui.tab_repository
+        rd['mainwindow:show'] = self.show
+        rd['mainwindow:tabChanged'] = self.tabChanged
+        rd['mainwindow:enableTabs'] = self.enableTabs
+        rd['mainwindow:dissableTabs'] = self.dissableTabs
+
+        # DISSABLE TABS UNTIL PROJECT SELECTED
+        self.dissableTabs()
         
         # INITIATE CHILD WIDGETS
-        self.project = NxProject(savdat, rundat)
+        project = NxProject(sd, rd)
        
         # CONNECT SIGNALS AND SLOTS
-        rundat['mainwindow.tabwidget_main'].currentChanged.connect(rundat['mainwindow:tabChanged'])
+        rd['mainwindow.tabwidget_main'].currentChanged.connect(rd['mainwindow:tabChanged'])
 
         # FOR DEBUGGING (UNTIL WE HAVE DEBUG LOG)
         from pprint import pprint
         pprint(savdat)
         pprint(rundat)
 
+    def enableTabs(self):
+
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(1, True)
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(2, True)
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(3, True)
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(4, True)
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(5, True)
+
+    def dissableTabs(self):
+        
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(1, False)
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(2, False)
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(3, False)
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(4, False)
+        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(5, False)
+
     def show(self):
 
-        self.ui.show()
+        self.rundat['mainwindow.ui'].show()
 
     def tabChanged(self):
 
