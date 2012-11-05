@@ -22,6 +22,7 @@ class MainWindow(QObject):
         ui = loader.load(uifile)
         uifile.close()
         ui.setWindowIcon(QIcon('img/icon.png'))
+        ui.setGeometry(100,70,1000,600)
       
         # POPULATE DATA INDEX
         rd['modules'].append('mainwindow')

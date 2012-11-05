@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>729</width>
-    <height>558</height>
+    <width>470</width>
+    <height>257</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <property name="iconSize">
        <size>
@@ -92,62 +92,10 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>729</width>
+     <width>470</width>
      <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_file">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="action_new_db"/>
-    <addaction name="action_open_db"/>
-    <addaction name="action_save_db"/>
-    <addaction name="action_save_as_db"/>
-    <addaction name="action_merge_db"/>
-    <addaction name="separator"/>
-    <addaction name="action_preferences"/>
-    <addaction name="separator"/>
-    <addaction name="action_quit"/>
-   </widget>
-   <widget class="QMenu" name="menu_actions">
-    <property name="title">
-     <string>&amp;Actions</string>
-    </property>
-    <addaction name="action_new_entry"/>
-    <addaction name="action_change_entry"/>
-    <addaction name="action_delete_entry"/>
-    <addaction name="separator"/>
-   </widget>
-   <widget class="QMenu" name="menu_project">
-    <property name="title">
-     <string>&amp;Project</string>
-    </property>
-    <addaction name="action_path"/>
-    <addaction name="separator"/>
-    <addaction name="action_map"/>
-    <addaction name="action_data"/>
-    <addaction name="action_protocol"/>
-    <addaction name="separator"/>
-    <addaction name="action_log"/>
-    <addaction name="action_roadmap"/>
-    <addaction name="separator"/>
-    <addaction name="action_blueprint"/>
-    <addaction name="action_issues"/>
-    <addaction name="action_features"/>
-    <addaction name="action_refactor"/>
-   </widget>
-   <widget class="QMenu" name="menu_help">
-    <property name="title">
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="action_about"/>
-    <addaction name="action_manual"/>
-   </widget>
-   <addaction name="menu_file"/>
-   <addaction name="menu_actions"/>
-   <addaction name="menu_project"/>
-   <addaction name="menu_help"/>
   </widget>
   <action name="action_open_db">
    <property name="text">
