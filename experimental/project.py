@@ -57,7 +57,6 @@ class NxProject(QObject):
         rd['project']['ui'] = ui
         rd['project']['push_open'] = ui.push_project_open
         rd['project']['push_save'] = ui.push_project_save
-        rd['project']['push_saveas'] = ui.push_project_saveas
         rd['project']['push_new'] = ui.push_project_new
         rd['project']['push_edit'] = ui.push_project_edit
         rd['project']['push_delete'] = ui.push_project_delete
@@ -65,9 +64,11 @@ class NxProject(QObject):
         rd['project']['diag_new'] = new_diag
         rd['project']['diag_new_name'] = new_diag.line_name
         rd['project']['diag_new_type'] = new_diag.combo_type
+        rd['project']['diag_new_status'] = new_diag.combo_status
         rd['project']['diag_new_category'] = new_diag.combo_category
         rd['project']['diag_new_priority'] = new_diag.spin_priority
         rd['project']['diag_new_challenge'] = new_diag.spin_challenge
+        rd['project']['diag_new_version'] = new_diag.line_version
         rd['project']['diag_new_basepath'] = new_diag.line_basepath
         rd['project']['diag_new_browse_path'] = new_diag.push_browse_path
         rd['project'][':showNewProjectDiag'] = self.showNewProjectDiag
@@ -89,9 +90,11 @@ class NxProject(QObject):
         rd['project']['diag_new_name'].clear()
         rd['project']['diag_new_basepath'].clear()
         rd['project']['diag_new_type'].setCurrentIndex(0)
+        rd['project']['diag_new_status'].setCurrentIndex(0)
         rd['project']['diag_new_category'].setCurrentIndex(0)
         rd['project']['diag_new_priority'].setValue(0)
         rd['project']['diag_new_challenge'].setValue(0)
+        rd['project']['diag_new_version'].setText('0.0.0')
 
         # SHOW WIDGET
         rd['project']['diag_new'].show()
@@ -114,11 +117,14 @@ class NxProject(QObject):
             rd['project']['diag_new_name'].text(),
             rd['project']['diag_new_basepath'].text(),
             rd['project']['diag_new_type'].currentText(),
+            rd['project']['diag_new_status'].currentText(),
             rd['project']['diag_new_category'].currentText(),
             rd['project']['diag_new_priority'].value(),
-            rd['project']['diag_new_challenge'].value())
+            rd['project']['diag_new_challenge'].value(),
+            rd['project']['diag_new_version'].text()
+            )
 
-    def addProject(self, name, basepath, ptype, category, priority, challenge):
+    def addProject(self, name, basepath, ptype, status, category, priority, challenge, version):
 
         sd = self.savdat
         rd = self.rundat
@@ -131,9 +137,11 @@ class NxProject(QObject):
         sd['project'][pid]['name']      = name
         sd['project'][pid]['basepath']  = basepath
         sd['project'][pid]['type']      = ptype
+        sd['project'][pid]['status']    = status
         sd['project'][pid]['category']  = category
         sd['project'][pid]['priority']  = priority
         sd['project'][pid]['challenge'] = challenge
+        sd['project'][pid]['version']   = version
         sd['project'][pid]['timestamp'] = timestamp
         sd['project']['lastid'] += 1
         
@@ -141,11 +149,11 @@ class NxProject(QObject):
         rd['project']['table_model_index'].insertRow(0, [
             QStandardItem(name),
             QStandardItem(ptype),
-            QStandardItem('Spark'),
+            QStandardItem(status),
             QStandardItem(category),
             QStandardItem(str(priority)),
             QStandardItem(str(challenge)),
-            QStandardItem('0.0.0'),
+            QStandardItem(version),
             QStandardItem(str(timestamp)),
             QStandardItem(pid)
         ])

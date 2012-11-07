@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
-    <height>256</height>
+    <width>364</width>
+    <height>309</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Name:</string>
+      <string>&amp;Name:</string>
      </property>
      <property name="buddy">
       <cstring>line_name</cstring>
@@ -39,7 +39,7 @@
    <item row="1" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Type:</string>
+      <string>&amp;Type:</string>
      </property>
      <property name="buddy">
       <cstring>combo_type</cstring>
@@ -75,17 +75,17 @@
      </item>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="3" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Category:</string>
+      <string>&amp;Category:</string>
      </property>
      <property name="buddy">
       <cstring>combo_category</cstring>
      </property>
     </widget>
    </item>
-   <item row="2" column="1" colspan="2">
+   <item row="3" column="1" colspan="2">
     <widget class="QComboBox" name="combo_category">
      <item>
       <property name="text">
@@ -149,53 +149,53 @@
      </item>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Priority:</string>
+      <string>&amp;Priority:</string>
      </property>
      <property name="buddy">
       <cstring>spin_priority</cstring>
      </property>
     </widget>
    </item>
-   <item row="3" column="1" colspan="2">
+   <item row="5" column="1" colspan="2">
     <widget class="QSpinBox" name="spin_priority"/>
    </item>
-   <item row="4" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>Challenge:</string>
+      <string>C&amp;hallenge:</string>
      </property>
      <property name="buddy">
       <cstring>spin_challenge</cstring>
      </property>
     </widget>
    </item>
-   <item row="4" column="1" colspan="2">
+   <item row="6" column="1" colspan="2">
     <widget class="QSpinBox" name="spin_challenge"/>
    </item>
-   <item row="5" column="0">
+   <item row="8" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
-      <string>Basepath:</string>
+      <string>&amp;Basepath:</string>
      </property>
      <property name="buddy">
       <cstring>line_basepath</cstring>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="8" column="1">
     <widget class="QLineEdit" name="line_basepath"/>
    </item>
-   <item row="5" column="2">
+   <item row="8" column="2">
     <widget class="QPushButton" name="push_browse_path">
      <property name="text">
       <string>...</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="0" colspan="3">
+   <item row="9" column="0" colspan="3">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="locale">
       <locale language="English" country="UnitedStates"/>
@@ -208,14 +208,98 @@
      </property>
     </widget>
    </item>
+   <item row="7" column="1" colspan="2">
+    <widget class="QLineEdit" name="line_version"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>&amp;Status:</string>
+     </property>
+     <property name="buddy">
+      <cstring>combo_status</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QComboBox" name="combo_status">
+     <item>
+      <property name="text">
+       <string>Spark</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Plan</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Design</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Implement</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Test</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Document</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Release</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Iterate</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Maintain</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Decommission</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Dead</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>&amp;Version:</string>
+     </property>
+     <property name="buddy">
+      <cstring>line_version</cstring>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>line_name</tabstop>
   <tabstop>combo_type</tabstop>
+  <tabstop>combo_status</tabstop>
   <tabstop>combo_category</tabstop>
   <tabstop>spin_priority</tabstop>
   <tabstop>spin_challenge</tabstop>
+  <tabstop>line_version</tabstop>
   <tabstop>line_basepath</tabstop>
   <tabstop>push_browse_path</tabstop>
   <tabstop>buttonBox</tabstop>

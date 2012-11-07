@@ -33,8 +33,6 @@ class MainWindow(QObject):
         rd['mainwindow']['tabwidget_main'] = ui.tabwidget_main
         rd['mainwindow']['tab_project'] = ui.tab_project
         rd['mainwindow']['tab_log'] = ui.tab_log
-        rd['mainwindow']['tab_data'] = ui.tab_data
-        rd['mainwindow']['tab_workflow'] = ui.tab_workflow
         rd['mainwindow']['tab_roadmap'] = ui.tab_roadmap
         rd['mainwindow']['tab_repository'] = ui.tab_repository
         rd['mainwindow'][':show'] = self.show
@@ -58,12 +56,12 @@ class MainWindow(QObject):
 
     def enableTabs(self):
 
-        for i in range(1,5):
+        for i in range(1,4):
             self.rundat['mainwindow']['tabwidget_main'].setTabEnabled(i, True)
 
     def dissableTabs(self):
         
-        for i in range(1,5):
+        for i in range(1,4):
             self.rundat['mainwindow']['tabwidget_main'].setTabEnabled(i, False)
 
     def show(self):
