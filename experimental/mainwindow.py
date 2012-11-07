@@ -15,6 +15,10 @@ class MainWindow(QObject):
         sd = self.savdat = savdat
         rd = self.rundat = rundat
 
+        rd['modules'].append('mainwindow')
+        rd['mainwindow'] = {}
+        sd['mainwindow'] = {}
+
         # MAINWINDOW WIDGET SETUP
         loader = QtUiTools.QUiLoader()
         uifile = QFile('forms/mainwindow.ui')
@@ -25,20 +29,18 @@ class MainWindow(QObject):
         ui.setGeometry(100,70,1000,600)
       
         # POPULATE DATA INDEX
-        rd['modules'].append('mainwindow')
-        rd['mainwindow'] = self
-        rd['mainwindow.ui'] = ui
-        rd['mainwindow.tabwidget_main'] = ui.tabwidget_main
-        rd['mainwindow.tab_project'] = ui.tab_project
-        rd['mainwindow.tab_log'] = ui.tab_log
-        rd['mainwindow.tab_data'] = ui.tab_data
-        rd['mainwindow.tab_workflow'] = ui.tab_workflow
-        rd['mainwindow.tab_roadmap'] = ui.tab_roadmap
-        rd['mainwindow.tab_repository'] = ui.tab_repository
-        rd['mainwindow:show'] = self.show
-        rd['mainwindow:tabChanged'] = self.tabChanged
-        rd['mainwindow:enableTabs'] = self.enableTabs
-        rd['mainwindow:dissableTabs'] = self.dissableTabs
+        rd['mainwindow']['ui'] = ui
+        rd['mainwindow']['tabwidget_main'] = ui.tabwidget_main
+        rd['mainwindow']['tab_project'] = ui.tab_project
+        rd['mainwindow']['tab_log'] = ui.tab_log
+        rd['mainwindow']['tab_data'] = ui.tab_data
+        rd['mainwindow']['tab_workflow'] = ui.tab_workflow
+        rd['mainwindow']['tab_roadmap'] = ui.tab_roadmap
+        rd['mainwindow']['tab_repository'] = ui.tab_repository
+        rd['mainwindow'][':show'] = self.show
+        rd['mainwindow'][':tabChanged'] = self.tabChanged
+        rd['mainwindow'][':enableTabs'] = self.enableTabs
+        rd['mainwindow'][':dissableTabs'] = self.dissableTabs
 
         # DISSABLE TABS UNTIL PROJECT SELECTED
         self.dissableTabs()
@@ -47,7 +49,7 @@ class MainWindow(QObject):
         project = NxProject(sd, rd)
        
         # CONNECT SIGNALS AND SLOTS
-        rd['mainwindow.tabwidget_main'].currentChanged.connect(rd['mainwindow:tabChanged'])
+        rd['mainwindow']['tabwidget_main'].currentChanged.connect(rd['mainwindow'][':tabChanged'])
 
         # FOR DEBUGGING (UNTIL WE HAVE DEBUG LOG)
         from pprint import pprint
@@ -56,28 +58,22 @@ class MainWindow(QObject):
 
     def enableTabs(self):
 
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(1, True)
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(2, True)
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(3, True)
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(4, True)
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(5, True)
+        for i in range(1,5):
+            self.rundat['mainwindow']['tabwidget_main'].setTabEnabled(i, True)
 
     def dissableTabs(self):
         
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(1, False)
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(2, False)
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(3, False)
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(4, False)
-        self.rundat['mainwindow.tabwidget_main'].setTabEnabled(5, False)
+        for i in range(1,5):
+            self.rundat['mainwindow']['tabwidget_main'].setTabEnabled(i, False)
 
     def show(self):
 
-        self.rundat['mainwindow.ui'].show()
+        self.rundat['mainwindow']['ui'].show()
 
     def tabChanged(self):
 
         # PREPARE DATA
-        tab_widget = self.rundat['mainwindow.tabwidget_main']
+        tab_widget = self.rundat['mainwindo']['tabwidget_main']
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
 
         # ACT ON CHANGE
