@@ -1,5 +1,4 @@
 ...
-+ add status and version to new project dialog
 + edit project
 + delete project
 + save, saveas & load
@@ -20,4 +19,7 @@
   + package
   + deploy
 + test
++ add copy notice
++ package (deb)
++ deploy to UCS (4.99?)
 ...

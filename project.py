@@ -37,9 +37,16 @@ class NxProject(QObject):
         uifile.open(QFile.ReadOnly)
         new_diag = loader.load(uifile)
         uifile.close()
+        
+        uifile = QFile('forms/project_diag_edit.ui')
+        uifile.open(QFile.ReadOnly)
+        edit_diag = loader.load(uifile)
+        uifile.close()
 
         new_diag.setParent(rd['mainwindow']['ui'])
         new_diag.setWindowFlags(Qt.Dialog)
+        edit_diag.setParent(rd['mainwindow']['ui'])
+        edit_diag.setWindowFlags(Qt.Dialog)
 
         rd['project']['table_project_list'] = ui.table_project_list
 
@@ -61,6 +68,7 @@ class NxProject(QObject):
         rd['project']['push_edit'] = ui.push_project_edit
         rd['project']['push_delete'] = ui.push_project_delete
         rd['project']['push_details'] = ui.push_project_details
+
         rd['project']['diag_new'] = new_diag
         rd['project']['diag_new_name'] = new_diag.line_name
         rd['project']['diag_new_type'] = new_diag.combo_type
@@ -71,16 +79,82 @@ class NxProject(QObject):
         rd['project']['diag_new_version'] = new_diag.line_version
         rd['project']['diag_new_basepath'] = new_diag.line_basepath
         rd['project']['diag_new_browse_path'] = new_diag.push_browse_path
+        
+        rd['project']['diag_edit'] = edit_diag
+        rd['project']['diag_edit_name'] = edit_diag.line_name
+        rd['project']['diag_edit_type'] = edit_diag.combo_type
+        rd['project']['diag_edit_status'] = edit_diag.combo_status
+        rd['project']['diag_edit_category'] = edit_diag.combo_category
+        rd['project']['diag_edit_priority'] = edit_diag.spin_priority
+        rd['project']['diag_edit_challenge'] = edit_diag.spin_challenge
+        rd['project']['diag_edit_version'] = edit_diag.line_version
+        rd['project']['diag_edit_basepath'] = edit_diag.line_basepath
+        rd['project']['diag_edit_browse_path'] = edit_diag.push_browse_path
+        
         rd['project'][':showNewProjectDiag'] = self.showNewProjectDiag
         rd['project'][':onNewProjectDiag'] = self.onNewProjectDiag
         rd['project'][':onBrowseNewPath'] = self.onBrowseNewPath
+        rd['project'][':showEditProjectDiag'] = self.showEditProjectDiag
+        rd['project'][':onEditProjectDiag'] = self.onEditProjectDiag
+        rd['project'][':onBrowseEditPath'] = self.onBrowseEditPath
         rd['project'][':addProject'] = self.addProject
         rd['project'][':reset'] = self.reset
+        rd['project'][':getSelectedProject'] = self.getSelectedProject
+        rd['project'][':getActiveRow'] = self.getActiveRow
+        rd['project'][':getSelectedProject'] = self.getSelectedProject
 
         # CONNECT SIGNALS AND SLOTS
         rd['project']['push_new'].clicked.connect(rd['project'][':showNewProjectDiag'])
+        rd['project']['push_edit'].clicked.connect(rd['project'][':showEditProjectDiag'])
         rd['project']['diag_new'].accepted.connect(rd['project'][':onNewProjectDiag'])
+        rd['project']['diag_edit'].accepted.connect(rd['project'][':onEditProjectDiag'])
         rd['project']['diag_new_browse_path'].clicked.connect(rd['project'][':onBrowseNewPath'])
+        rd['project']['diag_edit_browse_path'].clicked.connect(rd['project'][':onBrowseEditPath'])
+
+        rd['project']['table_project_list'].selectionModel().selectionChanged.connect(
+            self.selectionChanged)
+
+    def selectionChanged(self):
+
+        pass
+        # print(self.getSelectedProject())
+
+    def getSelectedProject(self):
+
+        rd = self.rundat
+
+        table = rd['project']['table_project_list']
+        model = rd['project']['table_model_index']
+
+        row = table.currentIndex().row()
+        index = model.index(row, 8)
+        return model.itemFromIndex(index).text()
+
+    def getActiveRow(self):
+
+        return self.rundat['project']['table_project_list'].currentIndex().row()
+
+    def setComboValue(self, combo, text):
+
+        combo.setCurrentIndex(combo.findText(text))
+
+    def showEditProjectDiag(self):
+
+        sd = self.savdat
+        rd = self.rundat
+
+        project_id = self.getSelectedProject()
+
+        rd['project']['diag_edit_name'].setText(sd['project'][project_id]['name'])
+        rd['project']['diag_edit_basepath'].setText(sd['project'][project_id]['basepath'])
+        rd['project']['diag_edit_version'].setText(sd['project'][project_id]['version'])
+        self.setComboValue(rd['project']['diag_edit_type'], sd['project'][project_id]['type'])
+        self.setComboValue(rd['project']['diag_edit_status'], sd['project'][project_id]['status'])
+        self.setComboValue(rd['project']['diag_edit_category'], sd['project'][project_id]['category'])
+        rd['project']['diag_edit_priority'].setValue(sd['project'][project_id]['priority'])
+        rd['project']['diag_edit_challenge'].setValue(sd['project'][project_id]['challenge'])
+
+        rd['project']['diag_edit'].show()
 
     def showNewProjectDiag(self):
 
@@ -99,16 +173,59 @@ class NxProject(QObject):
         # SHOW WIDGET
         rd['project']['diag_new'].show()
 
-    def onBrowseNewPath(self):
+    def onBrowseEditPath(self):
 
-        # callback for the path chooser in the create new project dialog
+        self.rundat['project']['diag_edit_basepath'].setText( 
+            QFileDialog.getExistingDirectory(
+            self.rundat['project']['diag_edit'],
+            'Choose project base path',
+            os.path.expanduser('~')))
+
+    def onBrowseNewPath(self):
 
         self.rundat['project']['diag_new_basepath'].setText( 
             QFileDialog.getExistingDirectory(
             self.rundat['project']['diag_new'],
             'Choose project base path',
             os.path.expanduser('~')))
+
+    def onEditProjectDiag(self):
         
+        sd = self.savdat
+        rd = self.rundat
+
+        pid = self.getSelectedProject()
+        timestamp = int(time.time())
+
+        sd['project'][pid]['name'] = rd['project']['diag_edit_name'].text()
+        sd['project'][pid]['basepath'] = rd['project']['diag_edit_basepath'].text()
+        sd['project'][pid]['type'] = rd['project']['diag_edit_type'].currentText()
+        sd['project'][pid]['status'] = rd['project']['diag_edit_status'].currentText()
+        sd['project'][pid]['category'] = rd['project']['diag_edit_category'].currentText()
+        sd['project'][pid]['priority'] = rd['project']['diag_edit_priority'].value()
+        sd['project'][pid]['challenge'] = rd['project']['diag_edit_challenge'].value()
+        sd['project'][pid]['version'] = rd['project']['diag_edit_version'].text()
+        sd['project'][pid]['timestamp'] = timestamp
+
+        tabdat = (
+            (0, rd['project']['diag_edit_name'].text()),
+            (1, rd['project']['diag_edit_type'].currentText()),
+            (2, rd['project']['diag_edit_status'].currentText()),
+            (3, rd['project']['diag_edit_category'].currentText()),
+            (4, rd['project']['diag_edit_priority'].value()),
+            (5, rd['project']['diag_edit_challenge'].value()),
+            (6, rd['project']['diag_edit_version'].text()),
+            (7, str(timestamp))
+        )
+
+        model = rd['project']['table_model_index']
+
+        for index, value in tabdat:
+            model.setData(
+                model.index(self.getActiveRow(), index), value)
+
+        # TODO: add log entry
+
     def onNewProjectDiag(self):
 
         rd = self.rundat

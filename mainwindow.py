@@ -49,11 +49,6 @@ class MainWindow(QObject):
         # CONNECT SIGNALS AND SLOTS
         rd['mainwindow']['tabwidget_main'].currentChanged.connect(rd['mainwindow'][':tabChanged'])
 
-        # FOR DEBUGGING (UNTIL WE HAVE DEBUG LOG)
-        from pprint import pprint
-        pprint(savdat)
-        pprint(rundat)
-
     def enableTabs(self):
 
         for i in range(1,4):
