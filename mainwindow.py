@@ -1,144 +1,82 @@
 #! /usr/bin/env python3
 
-"""
-Application Name:       Nelia
-Component:                      Main window
-
-This file contains the MainWindow class for Nelia.
-"""
-
-import os, pickle, time, gzip
-
-from PySide import QtCore
-from PySide import QtGui
+from PySide.QtCore import *
+from PySide.QtGui import *
 from PySide import QtUiTools
-from indextablectrl import IndexTableCtrl
-from newchangeindex import NewChangeIndex
-from logctrl import LogCtrl
-from featurectrl import FeatureCtrl
 
-from pprint import pprint
+from project import NxProject
 
-class MainWindow(QtCore.QObject):
+class MainWindow(QObject):
     
-    def __init__(self):
+    def __init__(self, savdat, rundat):
         
         super().__init__()
-        self.path = ''
 
-        loader = QtUiTools.QUiLoader()
-        
+        sd = self.savdat = savdat
+        rd = self.rundat = rundat
+
+        rd['modules'].append('mainwindow')
+        rd['mainwindow'] = {}
+        sd['mainwindow'] = {}
+
         # MAINWINDOW WIDGET SETUP
-        uifile = QtCore.QFile('forms/mainwindow.ui')
-        uifile.open(QtCore.QFile.ReadOnly)
-        self.ui = loader.load(uifile)
+        loader = QtUiTools.QUiLoader()
+        uifile = QFile('forms/mainwindow.ui')
+        uifile.open(QFile.ReadOnly)
+        ui = loader.load(uifile)
         uifile.close()
-        self.ui.setWindowIcon(QtGui.QIcon('img/icon.png'))
+        ui.setWindowIcon(QIcon('img/icon.png'))
+        ui.setGeometry(100,70,1000,600)
+      
+        # POPULATE DATA INDEX
+        rd['mainwindow']['ui'] = ui
+        rd['mainwindow']['tabwidget_main'] = ui.tabwidget_main
+        rd['mainwindow']['tab_project'] = ui.tab_project
+        rd['mainwindow']['tab_log'] = ui.tab_log
+        rd['mainwindow']['tab_roadmap'] = ui.tab_roadmap
+        rd['mainwindow']['tab_repository'] = ui.tab_repository
+        rd['mainwindow'][':show'] = self.show
+        rd['mainwindow'][':tabChanged'] = self.tabChanged
+        rd['mainwindow'][':enableTabs'] = self.enableTabs
+        rd['mainwindow'][':dissableTabs'] = self.dissableTabs
+
+        # DISSABLE TABS UNTIL PROJECT SELECTED
+        self.dissableTabs()
         
-        self.index_table_ctrl = \
-            IndexTableCtrl(self.ui.table_root_index, self)
+        # INITIATE CHILD WIDGETS
+        project = NxProject(sd, rd)
+       
+        # CONNECT SIGNALS AND SLOTS
+        rd['mainwindow']['tabwidget_main'].currentChanged.connect(rd['mainwindow'][':tabChanged'])
 
-        # NEW/CHANGE DIALOG SETUP
-        self.new_change_index = NewChangeIndex(self, self.index_table_ctrl)
+        # FOR DEBUGGING (UNTIL WE HAVE DEBUG LOG)
+        from pprint import pprint
+        pprint(savdat)
+        pprint(rundat)
 
-        # LOG CTRL
-        self.log_ctrl = LogCtrl(self, self.ui)
-        self.feature_ctrl = FeatureCtrl(self, self.ui)
+    def enableTabs(self):
+
+        for i in range(1,4):
+            self.rundat['mainwindow']['tabwidget_main'].setTabEnabled(i, True)
+
+    def dissableTabs(self):
         
-        # CONNECT SIGNALS
-        self.ui.action_save_db.triggered.connect(self.save)
-        self.ui.action_save_as_db.triggered.connect(self.saveAs)
-        self.ui.action_open_db.triggered.connect(self.openFile)
-        self.ui.table_root_index.selectionModel().selectionChanged.connect(self.indexSelectionChanged)
-        self.ui.action_new_entry.triggered.connect(self.new_change_index.showCreate)
-        self.ui.tabw_root.currentChanged.connect(self.tabChanged)
+        for i in range(1,4):
+            self.rundat['mainwindow']['tabwidget_main'].setTabEnabled(i, False)
 
-        # SET CONTROL STATES
-        self.reset_controls()
+    def show(self):
 
-    def getActiveProjectName(self):
-
-        rowindex = self.ui.table_root_index.currentIndex().row()
-        child = self.index_table_ctrl.model.index(rowindex, 0)
-        return self.index_table_ctrl.model.itemFromIndex(child).text()
-
-    def getIndexEntryId(self):
-        
-        rowindex = self.ui.table_root_index.currentIndex().row()
-        child = self.index_table_ctrl.model.index(rowindex, 8)
-        return self.index_table_ctrl.model.itemFromIndex(child).text()
+        self.rundat['mainwindow']['ui'].show()
 
     def tabChanged(self):
 
-        if self.ui.tabw_root.tabText(
-                self.ui.tabw_root.currentIndex()) == 'Log':
-            self.log_ctrl.activated(self.getIndexEntryId())
+        # PREPARE DATA
+        tab_widget = self.rundat['mainwindo']['tabwidget_main']
+        cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
 
-        if self.ui.tabw_root.tabText(
-                self.ui.tabw_root.currentIndex()) == 'Features':
-            self.feature_ctrl.activated(self.getIndexEntryId())
-
-    def indexSelectionChanged(self):
-
-        rowindex = self.ui.table_root_index.currentIndex().row()
-        child = self.index_table_ctrl.model.index(rowindex, 8)
-        entryid = self.index_table_ctrl.model.itemFromIndex(child).text()
-
-        self.ui.tabw_root.setTabEnabled(1, True)
-        self.ui.tabw_root.setTabEnabled(2, True)
-
-    def reset_controls(self):
-
-        self.ui.tabw_root.setTabEnabled(1, False)
-        self.ui.tabw_root.setTabEnabled(2, False)
-
-    def save(self):
-
-        if self.path == '':
-            self.saveAs()
-        
-        data = {}
-        data['.index_table_ctrl.data'] = self.index_table_ctrl.data
-        data['.log_ctrl.data'] = self.log_ctrl.data
-        data['.feature_ctrl.data'] = self.feature_ctrl.data
-
-        pickled_data = pickle.dumps(data, 3)
-        compressed_data = gzip.compress(pickled_data)
-
-        with open(self.path, 'wb') as f:
-            f.write(compressed_data)
-
-    def saveAs(self):
-
-        file_name = QtGui.QFileDialog.getSaveFileName(
-            self.ui, 
-            'Save Nelia file', 
-            os.path.expanduser('~/Documents/save.nelia'), 
-            'Nelia Files (*.nelia)')[0]
-
-        if file_name.rfind('.nelia') != len(file_name) - 6:
-            file_name += '.nelia'
-
-        self.path = file_name
-        self.save()
-
-    def openFile(self):
-    
-        self.path = QtGui.QFileDialog.getOpenFileName(
-            self.ui, 'Open Nelia file', 
-            os.path.expanduser('~/Documents'), 
-            'Nelia Files (*.nelia)')[0]
-
-        file_buffer = ''
-        with open(self.path, 'rb') as f:
-                file_buffer = f.read()
-
-        decompressed = gzip.decompress(file_buffer)
-        data = pickle.loads(decompressed)
-
-        self.index_table_ctrl.reload_data(data['.index_table_ctrl.data'])
-        self.log_ctrl.reload_data(data['.log_ctrl.data'])
-        self.feature_ctrl.reload_data(data['.feature_ctrl.data'])
+        # ACT ON CHANGE
+        print('stub')
+        print('tab_changed', tab_widget, cur_tab_name)
 
 
 # vim: set ts=4 sw=4 ai si expandtab:

@@ -1,4 +1,26 @@
 
+---------------------------------------------------
+
+#include <iostream>
+
+int main(int argc, char argv)
+{
+	// module main created automatically
+
+	/main/var_app_name = "Sample Application"
+	std::cout << ./var_app_name
+
+	with /path/of/data as p
+		p/name = "myname"
+		p/type = "mytype"
+		p/group = "mygroup"
+}
+
+---------------------------------------------------
+
+
+
+
 UNIVERSAL DATA AND METHOD ACCESS
 
 --- HELP ---
