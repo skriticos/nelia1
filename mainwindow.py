@@ -66,7 +66,7 @@ class MainWindow(QObject):
     def tabChanged(self):
 
         # PREPARE DATA
-        tab_widget = self.rundat['mainwindo']['tabwidget_main']
+        tab_widget = self.rundat['mainwindow']['tabwidget_main']
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
 
         # ACT ON CHANGE

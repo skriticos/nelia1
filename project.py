@@ -67,7 +67,6 @@ class NxProject(QObject):
         rd['project']['push_new'] = ui.push_project_new
         rd['project']['push_edit'] = ui.push_project_edit
         rd['project']['push_delete'] = ui.push_project_delete
-        rd['project']['push_details'] = ui.push_project_details
 
         rd['project']['diag_new'] = new_diag
         rd['project']['diag_new_name'] = new_diag.line_name
@@ -132,7 +131,6 @@ class NxProject(QObject):
 
         del sd['project'][pid]
         rd['project']['table_model_index'].removeRow(row)
-
 
     def selectionChanged(self):
 
@@ -300,7 +298,6 @@ class NxProject(QObject):
         rd['mainwindow'][':enableTabs']()
         rd['project']['push_edit'].setEnabled(True)
         rd['project']['push_delete'].setEnabled(True)
-        rd['project']['push_details'].setEnabled(True)
 
         # TODO: add log entry
 
