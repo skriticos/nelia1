@@ -102,10 +102,12 @@ class NxProject(QObject):
         rd['project'][':getSelectedProject'] = self.getSelectedProject
         rd['project'][':getActiveRow'] = self.getActiveRow
         rd['project'][':getSelectedProject'] = self.getSelectedProject
+        rd['project'][':onDeleteProject'] = self.onDeleteProject
 
         # CONNECT SIGNALS AND SLOTS
         rd['project']['push_new'].clicked.connect(rd['project'][':showNewProjectDiag'])
         rd['project']['push_edit'].clicked.connect(rd['project'][':showEditProjectDiag'])
+        rd['project']['push_delete'].clicked.connect(rd['project'][':onDeleteProject'])
         rd['project']['diag_new'].accepted.connect(rd['project'][':onNewProjectDiag'])
         rd['project']['diag_edit'].accepted.connect(rd['project'][':onEditProjectDiag'])
         rd['project']['diag_new_browse_path'].clicked.connect(rd['project'][':onBrowseNewPath'])
@@ -114,10 +116,27 @@ class NxProject(QObject):
         rd['project']['table_project_list'].selectionModel().selectionChanged.connect(
             self.selectionChanged)
 
+    def onDeleteProject(self):
+
+        sd = self.savdat
+        rd = self.rundat
+
+        pid = self.getSelectedProject()
+        row = self.getActiveRow()
+
+        QMessageBox.question(
+            rd['project']['ui'],
+            'Delete project?',
+            'Delete project ' + pid + '?',
+            QMessageBox.Yes|QMessageBox.No)
+
+        del sd['project'][pid]
+        rd['project']['table_model_index'].removeRow(row)
+
+
     def selectionChanged(self):
 
         pass
-        # print(self.getSelectedProject())
 
     def getSelectedProject(self):
 

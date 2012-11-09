@@ -1,6 +1,4 @@
 ...
-+ edit project
-+ delete project
 + save, saveas & load
 + log display
 + log add dialog
