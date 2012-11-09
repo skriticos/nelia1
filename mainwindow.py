@@ -30,6 +30,7 @@ class MainWindow(QObject):
       
         # POPULATE DATA INDEX
         rd['mainwindow']['ui'] = ui
+        rd['mainwindow']['self'] = self
         rd['mainwindow']['tabwidget_main'] = ui.tabwidget_main
         rd['mainwindow']['tab_project'] = ui.tab_project
         rd['mainwindow']['tab_log'] = ui.tab_log

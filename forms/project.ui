@@ -62,7 +62,7 @@
    <item row="0" column="7">
     <widget class="QPushButton" name="push_project_save">
      <property name="enabled">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="text">
       <string>&amp;Save</string>
