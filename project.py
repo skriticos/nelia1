@@ -83,6 +83,7 @@ class NxProject(QObject):
         rd['project']['diag_new_version'] = new_diag.line_version
         rd['project']['diag_new_basepath'] = new_diag.line_basepath
         rd['project']['diag_new_browse_path'] = new_diag.push_browse_path
+        rd['project']['diag_new_detail'] =    new_diag.text_description
         
         rd['project']['diag_edit'] = edit_diag
         rd['project']['diag_edit_name'] = edit_diag.line_name
@@ -94,14 +95,14 @@ class NxProject(QObject):
         rd['project']['diag_edit_version'] = edit_diag.line_version
         rd['project']['diag_edit_basepath'] = edit_diag.line_basepath
         rd['project']['diag_edit_browse_path'] = edit_diag.push_browse_path
+        rd['project']['diag_edit_detail'] =    edit_diag.text_description
         
         rd['project'][':showNewProjectDiag'] = self.showNewProjectDiag
-        rd['project'][':onNewProjectDiag'] = self.onNewProjectDiag
+        rd['project'][':onSubmitNewProject'] = self.onSubmitNewProject
         rd['project'][':onBrowseNewPath'] = self.onBrowseNewPath
         rd['project'][':showEditProjectDiag'] = self.showEditProjectDiag
-        rd['project'][':onEditProjectDiag'] = self.onEditProjectDiag
+        rd['project'][':onSubmitProjectEdit'] = self.onSubmitProjectEdit
         rd['project'][':onBrowseEditPath'] = self.onBrowseEditPath
-        rd['project'][':addProject'] = self.addProject
         rd['project'][':reset'] = self.reset
         rd['project'][':getSelectedProject'] = self.getSelectedProject
         rd['project'][':getActiveRow'] = self.getActiveRow
@@ -116,8 +117,8 @@ class NxProject(QObject):
         rd['project']['push_edit'].clicked.connect(rd['project'][':showEditProjectDiag'])
         rd['project']['push_delete'].clicked.connect(rd['project'][':onDeleteProject'])
         rd['project']['push_open'].clicked.connect(rd['project'][':onOpen'])
-        rd['project']['diag_new'].accepted.connect(rd['project'][':onNewProjectDiag'])
-        rd['project']['diag_edit'].accepted.connect(rd['project'][':onEditProjectDiag'])
+        rd['project']['diag_new'].accepted.connect(rd['project'][':onSubmitNewProject'])
+        rd['project']['diag_edit'].accepted.connect(rd['project'][':onSubmitProjectEdit'])
         rd['project']['diag_new_browse_path'].clicked.connect(rd['project'][':onBrowseNewPath'])
         rd['project']['diag_edit_browse_path'].clicked.connect(rd['project'][':onBrowseEditPath'])
         rd['project']['push_save'].clicked.connect(rd['project'][':onSave'])
@@ -132,6 +133,86 @@ class NxProject(QObject):
         table.setColumnWidth(6, 80)
         table.setColumnWidth(7, 160)
         table.setColumnWidth(8, 80)
+
+    ####################   METHODS   #################### 
+
+    def showNewProjectDiag(self):
+
+        project = self.rundat['project']
+
+        # reset controls
+        project['diag_new_name'].clear()
+        project['diag_new_basepath'].clear()
+        project['diag_new_type'].setCurrentIndex(0)
+        project['diag_new_status'].setCurrentIndex(0)
+        project['diag_new_category'].setCurrentIndex(0)
+        project['diag_new_priority'].setValue(0)
+        project['diag_new_challenge'].setValue(0)
+        project['diag_new_version'].setText('0.0.0')
+        project['diag_new_detail'].clear()
+
+        # show widget
+        project['diag_new'].show()
+
+    def onSubmitNewProject(self):
+
+        run_project = self.rundat['project']
+        sav_project = self.savdat['project']
+
+        # retrive data from dialog fields
+        name = run_project['diag_new_name'].text()
+        basepath = run_project['diag_new_basepath'].text()
+        ptype = run_project['diag_new_type'].currentText()
+        status = run_project['diag_new_status'].currentText()
+        category = run_project['diag_new_category'].currentText()
+        priority = run_project['diag_new_priority'].value()
+        challenge = run_project['diag_new_challenge'].value()
+        version = run_project['diag_new_version'].text()
+        detail = run_project['diag_new_detail'].toPlainText()
+
+        timestamp = int(time.time())
+
+        # store data in savdat
+        pid = str(sav_project['lastid'])
+        sav_project['p'][pid] = {}
+        sav_project['p'][pid]['name']      = name
+        sav_project['p'][pid]['basepath']  = basepath
+        sav_project['p'][pid]['type']      = ptype
+        sav_project['p'][pid]['status']    = status
+        sav_project['p'][pid]['category']  = category
+        sav_project['p'][pid]['priority']  = priority
+        sav_project['p'][pid]['challenge'] = challenge
+        sav_project['p'][pid]['version']   = version
+        sav_project['p'][pid]['detail']    = detail
+        sav_project['p'][pid]['timestamp'] = timestamp
+        sav_project['lastid'] += 1
+      
+        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+
+        # instert row into table
+        run_project['table_model_index'].insertRow(0, [
+            QStandardItem(name),
+            QStandardItem(ptype),
+            QStandardItem(status),
+            QStandardItem(category),
+            QStandardItem(str(priority)),
+            QStandardItem(str(challenge)),
+            QStandardItem(version),
+            QStandardItem(disptime),
+            QStandardItem(pid)
+            ])
+
+        # enable controls
+        run_project['table_project_list'].selectRow(0)
+        run_project['table_project_list'].setFocus()
+
+        self.rundat['mainwindow'][':enableTabs']()
+
+        run_project['push_edit'].setEnabled(True)
+        run_project['push_delete'].setEnabled(True)
+        run_project['push_save'].setEnabled(True)
+
+        run_project['changed'] = True
 
     def onOpen(self):
 
@@ -253,35 +334,19 @@ class NxProject(QObject):
         sd = self.savdat
         rd = self.rundat
 
-        project_id = self.getSelectedProject()
+        pid = self.getSelectedProject()
 
-        rd['project']['diag_edit_name'].setText(sd['project']['p'][project_id]['name'])
-        rd['project']['diag_edit_basepath'].setText(sd['project']['p'][project_id]['basepath'])
-        rd['project']['diag_edit_version'].setText(sd['project']['p'][project_id]['version'])
-        self.setComboValue(rd['project']['diag_edit_type'], sd['project']['p'][project_id]['type'])
-        self.setComboValue(rd['project']['diag_edit_status'], sd['project']['p'][project_id]['status'])
-        self.setComboValue(rd['project']['diag_edit_category'], sd['project']['p'][project_id]['category'])
-        rd['project']['diag_edit_priority'].setValue(sd['project']['p'][project_id]['priority'])
-        rd['project']['diag_edit_challenge'].setValue(sd['project']['p'][project_id]['challenge'])
+        rd['project']['diag_edit_name'].setText(sd['project']['p'][pid]['name'])
+        rd['project']['diag_edit_basepath'].setText(sd['project']['p'][pid]['basepath'])
+        rd['project']['diag_edit_version'].setText(sd['project']['p'][pid]['version'])
+        self.setComboValue(rd['project']['diag_edit_type'], sd['project']['p'][pid]['type'])
+        self.setComboValue(rd['project']['diag_edit_status'], sd['project']['p'][pid]['status'])
+        self.setComboValue(rd['project']['diag_edit_category'], sd['project']['p'][pid]['category'])
+        rd['project']['diag_edit_priority'].setValue(sd['project']['p'][pid]['priority'])
+        rd['project']['diag_edit_challenge'].setValue(sd['project']['p'][pid]['challenge'])
+        rd['project']['diag_edit_detail'].setPlainText(sd['project']['p'][pid]['detail'])
 
         rd['project']['diag_edit'].show()
-
-    def showNewProjectDiag(self):
-
-        rd = self.rundat
-
-        # RESET CONTROLS
-        rd['project']['diag_new_name'].clear()
-        rd['project']['diag_new_basepath'].clear()
-        rd['project']['diag_new_type'].setCurrentIndex(0)
-        rd['project']['diag_new_status'].setCurrentIndex(0)
-        rd['project']['diag_new_category'].setCurrentIndex(0)
-        rd['project']['diag_new_priority'].setValue(0)
-        rd['project']['diag_new_challenge'].setValue(0)
-        rd['project']['diag_new_version'].setText('0.0.0')
-
-        # SHOW WIDGET
-        rd['project']['diag_new'].show()
 
     def onBrowseEditPath(self):
 
@@ -299,7 +364,7 @@ class NxProject(QObject):
             'Choose project base path',
             os.path.expanduser('~')))
 
-    def onEditProjectDiag(self):
+    def onSubmitProjectEdit(self):
         
         sd = self.savdat
         rd = self.rundat
@@ -315,6 +380,7 @@ class NxProject(QObject):
         sd['project']['p'][pid]['priority'] = rd['project']['diag_edit_priority'].value()
         sd['project']['p'][pid]['challenge'] = rd['project']['diag_edit_challenge'].value()
         sd['project']['p'][pid]['version'] = rd['project']['diag_edit_version'].text()
+        sd['project']['p'][pid]['detail'] = rd['project']['diag_edit_detail'].toPlainText()
         sd['project']['p'][pid]['timestamp'] = timestamp
         
         disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
@@ -336,67 +402,7 @@ class NxProject(QObject):
             model.setData(
                 model.index(self.getActiveRow(), index), value)
     
-        rd['project']['changed'] = True
-
-    def onNewProjectDiag(self):
-
-        rd = self.rundat
-
-        self.addProject(
-            rd['project']['diag_new_name'].text(),
-            rd['project']['diag_new_basepath'].text(),
-            rd['project']['diag_new_type'].currentText(),
-            rd['project']['diag_new_status'].currentText(),
-            rd['project']['diag_new_category'].currentText(),
-            rd['project']['diag_new_priority'].value(),
-            rd['project']['diag_new_challenge'].value(),
-            rd['project']['diag_new_version'].text()
-            )
-
-    def addProject(self, name, basepath, ptype, status, category, priority, challenge, version):
-
-        sd = self.savdat
-        rd = self.rundat
-
-        timestamp = int(time.time())
-
-        # store data in savdat
-        pid = str(sd['project']['lastid'])
-        sd['project']['p'][pid] = {}
-        sd['project']['p'][pid]['name']      = name
-        sd['project']['p'][pid]['basepath']  = basepath
-        sd['project']['p'][pid]['type']      = ptype
-        sd['project']['p'][pid]['status']    = status
-        sd['project']['p'][pid]['category']  = category
-        sd['project']['p'][pid]['priority']  = priority
-        sd['project']['p'][pid]['challenge'] = challenge
-        sd['project']['p'][pid]['version']   = version
-        sd['project']['p'][pid]['timestamp'] = timestamp
-        sd['project']['lastid'] += 1
-      
-        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
-
-        # instert row into table
-        rd['project']['table_model_index'].insertRow(0, [
-            QStandardItem(name),
-            QStandardItem(ptype),
-            QStandardItem(status),
-            QStandardItem(category),
-            QStandardItem(str(priority)),
-            QStandardItem(str(challenge)),
-            QStandardItem(version),
-            QStandardItem(disptime),
-            QStandardItem(pid)
-        ])
-
-        rd['project']['table_project_list'].selectRow(0)
         rd['project']['table_project_list'].setFocus()
-
-        rd['mainwindow'][':enableTabs']()
-        rd['project']['push_edit'].setEnabled(True)
-        rd['project']['push_delete'].setEnabled(True)
-        rd['project']['push_save'].setEnabled(True)
-
         rd['project']['changed'] = True
 
     def reset(self):
@@ -432,6 +438,7 @@ class NxProject(QObject):
             ])
         
         rd['project']['table_project_list'].selectRow(0)
+        rd['project']['table_project_list'].setFocus()
         
         rd['mainwindow'][':enableTabs']()
         rd['project']['push_edit'].setEnabled(True)
