@@ -357,6 +357,7 @@
   <tabstop>line_version</tabstop>
   <tabstop>line_basepath</tabstop>
   <tabstop>push_browse_path</tabstop>
+  <tabstop>text_description</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>
