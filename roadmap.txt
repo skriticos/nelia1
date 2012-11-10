@@ -1,14 +1,13 @@
 ...
-+ add project summary box
 + log display
-  - initialize log widegts (callbacks, names, table)
-  - add log entry command (+ activate details)
-  - details command
+  - activate details when new log
+  - load logs
+  - details command (from command and doubleclick)
 + roadmap widget
   + milestone widget
   + feature and issue tables
   + item amend / comment
-+ add project details box
++ add project details box (command and double click)
   - open project path
 + test
 + add copy notice and cleanup
