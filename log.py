@@ -19,6 +19,7 @@ class NxLog(QObject):
 
         sd['log'] = {}          # log save base
         sd['log']['p'] = {}     # log for projects
+        sd['log']['last_log_pid'] = None    # to check if reload log on tab change necessary
 
         run_log = rd['log']
         sav_log = sd['log']
@@ -44,16 +45,20 @@ class NxLog(QObject):
         # new project dialog setup
         uifile = QFile('forms/log_new_entry.ui')
         uifile.open(QFile.ReadOnly)
-        new_diag = loader.load(uifile)
+        diag_new = loader.load(uifile)
         uifile.close()
         
+        run_log['diag_new'] = diag_new
+
         uifile = QFile('forms/log_detail.ui')
         uifile.open(QFile.ReadOnly)
         detail_diag = loader.load(uifile)
         uifile.close()
+        
+        run_log['diag_detial'] = detail_diag
 
-        new_diag.setParent(run_log['ui'])
-        new_diag.setWindowFlags(Qt.Dialog)
+        diag_new.setParent(run_log['ui'])
+        diag_new.setWindowFlags(Qt.Dialog)
         detail_diag.setParent(run_log['ui'])
         detail_diag.setWindowFlags(Qt.Dialog)
 
@@ -69,14 +74,26 @@ class NxLog(QObject):
 
         model.setHorizontalHeaderLabels(history_headers)
         table.setModel(model)
+        table.setColumnWidth(0, 160)
+        table.setColumnWidth(1, 550)
         
         # populate data index
         run_log[':onShowTab'] = self.onShowTab
+        run_log[':onNewEntryClicked'] = self.onNewEntryClicked
+        run_log[':onNewEntrySubmit'] = self.onNewEntrySubmit
 
         run_log['ui_info_project_name'] = ui.line_project
         run_log['ui_cmd_new_entry'] = ui.push_new_entry
         run_log['ui_cmd_detail'] = ui.push_detail
         run_log['ui_table_history'] = ui.table_history
+
+        run_log['ui_diag_new_info_project'] = diag_new.line_project
+        run_log['ui_diag_new_input_summary'] = diag_new.line_summary
+        run_log['ui_diag_new_input_detail'] = diag_new.text_detail
+
+        # connect signals
+        run_log['ui_cmd_new_entry'].clicked.connect(run_log[':onNewEntryClicked'])
+        run_log['diag_new'].accepted.connect(run_log[':onNewEntrySubmit'])
 
     ####################   METHODS   #################### 
 
@@ -85,14 +102,64 @@ class NxLog(QObject):
         run_log = self.rundat['log']
         sav_log = self.savdat['log']
 
-        run_log['ui_info_project_name'].setText(self.rundat['project'][':getSelectedProjectName']())
+        project_name = self.rundat['project'][':getSelectedProjectName']()
+        run_log['ui_info_project_name'].setText(project_name)
+        run_log['ui_diag_new_info_project'].setText(project_name)
+
+        pid = self.rundat['project'][':getSelectedProject']()
+        
+        # create project id dict if not yet existent
+        if pid not in sav_log['p']:
+            sav_log['p'][pid] = {}              # project log container
+            sav_log['p'][pid]['lastlog'] = 0    # log counter
+            sav_log['p'][pid]['l'] = {}         # log entry container
+
+        run_log['last_log_pid'] = pid
+
+        run_log['ui_cmd_new_entry'].setFocus()
+        run_log['ui_table_history'].sortByColumn(0, Qt.DescendingOrder);
 
     ####################   CALLBACKS   #################### 
 
-    def onNewEntryButton(self):
+    def onNewEntryClicked(self):
     
         run_log = self.rundat['log']
         sav_log = self.savdat['log']
+
+        run_log['ui_diag_new_input_summary'].clear()
+        run_log['ui_diag_new_input_detail'].clear()
+
+        run_log['diag_new'].show()
+        
+        run_log['ui_diag_new_input_summary'].setFocus()
+
+    def onNewEntrySubmit(self):
+
+        run_log = self.rundat['log']
+        sav_log = self.savdat['log']
+
+        pid = self.rundat['project'][':getSelectedProject']()
+        lid = sav_log['p'][pid]['lastlog']
+
+        # store changes in savdat
+        timestamp = int(time.time())
+        log_entry = sav_log['p'][pid]['l'][lid] = {}
+        log_entry['timestamp'] = timestamp
+        summary = log_entry['summary'] = run_log['ui_diag_new_input_summary'].text()
+        detail = log_entry['detail'] = run_log['ui_diag_new_input_detail'].toPlainText()
+
+        # update history table
+        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+        run_log['table_model_history'].insertRow(0, [
+            QStandardItem(disptime),
+            QStandardItem(summary),
+            QStandardItem(str(lid))
+            ])
+        
+        sav_log['p'][pid]['lastlog'] += 1
+        
+        run_log['ui_table_history'].selectRow(0)
+        run_log['ui_table_history'].setFocus()
 
 # vim: set ts=4 sw=4 ai si expandtab:
 

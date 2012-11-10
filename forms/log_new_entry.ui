@@ -102,6 +102,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>line_summary</tabstop>
+  <tabstop>text_detail</tabstop>
+  <tabstop>buttonBox</tabstop>
+  <tabstop>line_project</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
