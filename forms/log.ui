@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>764</width>
-    <height>591</height>
+    <width>437</width>
+    <height>337</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Log</string>
@@ -48,7 +54,7 @@
     </widget>
    </item>
    <item row="1" column="2">
-    <widget class="QPushButton" name="push_details">
+    <widget class="QPushButton" name="push_detail">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -82,6 +88,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>push_new_entry</tabstop>
+  <tabstop>push_detail</tabstop>
+  <tabstop>table_history</tabstop>
+  <tabstop>line_project</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

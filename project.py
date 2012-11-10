@@ -107,10 +107,12 @@ class NxProject(QObject):
         rd['project'][':getSelectedProject'] = self.getSelectedProject
         rd['project'][':getActiveRow'] = self.getActiveRow
         rd['project'][':getSelectedProject'] = self.getSelectedProject
+        rd['project'][':getSelectedProjectName'] = self.getSelectedProjectName
         rd['project'][':onDeleteProject'] = self.onDeleteProject
         rd['project'][':onSaveAs'] = self.onSaveAs
         rd['project'][':onSave'] = self.onSave
         rd['project'][':onOpen'] = self.onOpen
+        rd['project'][':selectionChanged'] = self.selectionChanged
 
         # CONNECT SIGNALS AND SLOTS
         rd['project']['push_new'].clicked.connect(rd['project'][':showNewProjectDiag'])
@@ -124,7 +126,7 @@ class NxProject(QObject):
         rd['project']['push_save'].clicked.connect(rd['project'][':onSave'])
 
         rd['project']['table_project_list'].selectionModel().selectionChanged.connect(
-            self.selectionChanged)
+            rd['project'][':selectionChanged'])
         
         table = rd['project']['table_project_list']
         table.setColumnWidth(0, 200)
@@ -266,6 +268,8 @@ class NxProject(QObject):
 
         with open(rd['project']['savepath'], 'wb') as f:
             f.write(compressed_data)
+        
+        rd['project']['changed'] = False
 
     def onSaveAs(self):
 
@@ -308,7 +312,7 @@ class NxProject(QObject):
 
     def selectionChanged(self):
 
-        pass
+        self.rundat['project']['selected'] = int(self.rundat['project'][':getSelectedProject']())
 
     def getSelectedProject(self):
 
@@ -319,6 +323,17 @@ class NxProject(QObject):
 
         row = table.currentIndex().row()
         index = model.index(row, 8)
+        return model.itemFromIndex(index).text()
+
+    def getSelectedProjectName(self):
+
+        rd = self.rundat
+
+        table = rd['project']['table_project_list']
+        model = rd['project']['table_model_index']
+
+        row = table.currentIndex().row()
+        index = model.index(row, 0)
         return model.itemFromIndex(index).text()
 
     def getActiveRow(self):

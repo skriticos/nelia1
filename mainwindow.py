@@ -5,6 +5,7 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 
 from project import NxProject
+from log import NxLog
 
 class MainWindow(QObject):
     
@@ -35,7 +36,6 @@ class MainWindow(QObject):
         rd['mainwindow']['tab_project'] = ui.tab_project
         rd['mainwindow']['tab_log'] = ui.tab_log
         rd['mainwindow']['tab_roadmap'] = ui.tab_roadmap
-        rd['mainwindow']['tab_repository'] = ui.tab_repository
         rd['mainwindow'][':show'] = self.show
         rd['mainwindow'][':tabChanged'] = self.tabChanged
         rd['mainwindow'][':enableTabs'] = self.enableTabs
@@ -46,18 +46,19 @@ class MainWindow(QObject):
         
         # INITIATE CHILD WIDGETS
         project = NxProject(sd, rd)
+        log = NxLog(sd, rd)
        
         # CONNECT SIGNALS AND SLOTS
         rd['mainwindow']['tabwidget_main'].currentChanged.connect(rd['mainwindow'][':tabChanged'])
 
     def enableTabs(self):
 
-        for i in range(1,4):
+        for i in range(1,3):
             self.rundat['mainwindow']['tabwidget_main'].setTabEnabled(i, True)
 
     def dissableTabs(self):
         
-        for i in range(1,4):
+        for i in range(1,3):
             self.rundat['mainwindow']['tabwidget_main'].setTabEnabled(i, False)
 
     def show(self):
@@ -70,10 +71,8 @@ class MainWindow(QObject):
         tab_widget = self.rundat['mainwindow']['tabwidget_main']
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
 
-        # ACT ON CHANGE
-        print('stub')
-        print('tab_changed', tab_widget, cur_tab_name)
-
+        if cur_tab_name == 'Log':
+            self.rundat['log'][':onShowTab']()
 
 # vim: set ts=4 sw=4 ai si expandtab:
 

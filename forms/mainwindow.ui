@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>470</width>
-    <height>257</height>
+    <width>748</width>
+    <height>540</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,21 +56,10 @@
        <attribute name="title">
         <string>Log</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <property name="margin">
-         <number>0</number>
-        </property>
-       </layout>
       </widget>
       <widget class="QWidget" name="tab_roadmap">
        <attribute name="title">
         <string>Roadmap</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_6"/>
-      </widget>
-      <widget class="QWidget" name="tab_repository">
-       <attribute name="title">
-        <string>Repository</string>
        </attribute>
       </widget>
      </widget>
@@ -82,7 +71,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>470</width>
+     <width>748</width>
      <height>25</height>
     </rect>
    </property>
