@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>364</width>
-    <height>309</height>
+    <width>592</width>
+    <height>333</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,10 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="margin">
-    <number>9</number>
+    <number>5</number>
+   </property>
+   <property name="spacing">
+    <number>10</number>
    </property>
    <item row="0" column="0">
     <widget class="QLabel" name="label">
@@ -34,7 +37,27 @@
     </widget>
    </item>
    <item row="0" column="1" colspan="2">
-    <widget class="QLineEdit" name="line_name"/>
+    <widget class="QLineEdit" name="line_name">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLabel" name="label_9">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>2</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Description:</string>
+     </property>
+    </widget>
    </item>
    <item row="1" column="0">
     <widget class="QLabel" name="label_2">
@@ -71,6 +94,85 @@
      <item>
       <property name="text">
        <string>Other</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="3" rowspan="7">
+    <widget class="QPlainTextEdit" name="text_description">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>10</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>&amp;Status:</string>
+     </property>
+     <property name="buddy">
+      <cstring>combo_status</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QComboBox" name="combo_status">
+     <item>
+      <property name="text">
+       <string>Spark</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Plan</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Design</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Implement</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Test</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Document</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Release</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Iterate</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Maintain</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Decommission</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Dead</string>
       </property>
      </item>
     </widget>
@@ -149,7 +251,7 @@
      </item>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
       <string>&amp;Priority:</string>
@@ -159,10 +261,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1" colspan="2">
-    <widget class="QSpinBox" name="spin_priority"/>
-   </item>
-   <item row="6" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
       <string>C&amp;hallenge:</string>
@@ -172,10 +271,20 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="1" colspan="2">
-    <widget class="QSpinBox" name="spin_challenge"/>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>&amp;Version:</string>
+     </property>
+     <property name="buddy">
+      <cstring>line_version</cstring>
+     </property>
+    </widget>
    </item>
-   <item row="8" column="0">
+   <item row="6" column="1" colspan="2">
+    <widget class="QLineEdit" name="line_version"/>
+   </item>
+   <item row="7" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
       <string>&amp;Basepath:</string>
@@ -185,17 +294,30 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="1">
-    <widget class="QLineEdit" name="line_basepath"/>
+   <item row="7" column="1">
+    <widget class="QLineEdit" name="line_basepath">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>4</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
-   <item row="8" column="2">
+   <item row="7" column="2">
     <widget class="QPushButton" name="push_browse_path">
+     <property name="minimumSize">
+      <size>
+       <width>1</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="text">
       <string>...</string>
      </property>
     </widget>
    </item>
-   <item row="9" column="0" colspan="3">
+   <item row="8" column="0" colspan="4">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="locale">
       <locale language="English" country="UnitedStates"/>
@@ -208,87 +330,11 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="1" colspan="2">
-    <widget class="QLineEdit" name="line_version"/>
+   <item row="5" column="1" colspan="2">
+    <widget class="QSpinBox" name="spin_challenge"/>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_7">
-     <property name="text">
-      <string>&amp;Status:</string>
-     </property>
-     <property name="buddy">
-      <cstring>combo_status</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QComboBox" name="combo_status">
-     <item>
-      <property name="text">
-       <string>Spark</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Plan</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Design</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Implement</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Test</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Document</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Release</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Iterate</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Maintain</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Decommission</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Dead</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="label_8">
-     <property name="text">
-      <string>&amp;Version:</string>
-     </property>
-     <property name="buddy">
-      <cstring>line_version</cstring>
-     </property>
-    </widget>
+   <item row="4" column="1" colspan="2">
+    <widget class="QSpinBox" name="spin_priority"/>
    </item>
   </layout>
  </widget>
@@ -313,8 +359,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>227</x>
-     <y>228</y>
+     <x>232</x>
+     <y>327</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -329,8 +375,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>295</x>
-     <y>234</y>
+     <x>300</x>
+     <y>327</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
