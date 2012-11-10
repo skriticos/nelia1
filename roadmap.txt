@@ -1,25 +1,17 @@
 ...
 + add project summary box
-+ add project details box
 + log display
   - initialize log widegts (callbacks, names, table)
   - add log entry command (+ activate details)
   - details command
 + roadmap widget
-  + version line
-  + item add (feature, issue, refactor)
-  + item view
+  + milestone widget
+  + feature and issue tables
   + item amend / comment
-+ repository (configurable)
-  + open folder
-  + open editor
-  + comile
-  + test
-  + run
-  + package
-  + deploy
++ add project details box
+  - open project path
 + test
-+ add copy notice
++ add copy notice and cleanup
 + package (deb)
 + deploy to UCS (4.99?)
 ...
