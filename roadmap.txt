@@ -1,7 +1,10 @@
 ...
++ add project summary box
++ add project details box
 + log display
-+ log add dialog
-+ log details dialog
+  - initialize log widegts (callbacks, names, table)
+  - add log entry command (+ activate details)
+  - details command
 + roadmap widget
   + version line
   + item add (feature, issue, refactor)

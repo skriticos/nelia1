@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import os, time, gzip, pickle
+import os, time, gzip, pickle, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
@@ -57,7 +57,7 @@ class NxProject(QObject):
         # SETUP PROJECT TABLE
         model = rd['project']['table_model_index'] = QStandardItemModel()
         headers = rd['project']['table_model_index_headers'] = \
-            ['Name', 'Project Type', 'Status', 'Category', 'Priority', 'Challenge', 
+            ['Name', 'Project Type', 'Status', 'Category', 'Prio.', 'Chall.', 
              'Version', 'Last Changed', 'ID' ]
         model.setHorizontalHeaderLabels(headers)
         rd['project']['table_project_list'].setModel(model)
@@ -124,6 +124,14 @@ class NxProject(QObject):
 
         rd['project']['table_project_list'].selectionModel().selectionChanged.connect(
             self.selectionChanged)
+        
+        table = rd['project']['table_project_list']
+        table.setColumnWidth(0, 200)
+        table.setColumnWidth(4, 50)
+        table.setColumnWidth(5, 50)
+        table.setColumnWidth(6, 80)
+        table.setColumnWidth(7, 160)
+        table.setColumnWidth(8, 80)
 
     def onOpen(self):
 
@@ -145,6 +153,10 @@ class NxProject(QObject):
             'Open projects', 
             os.path.expanduser('~/Documents'), 
             'Nelia Files (*.spt)')[0]
+
+        # path dialog aborted
+        if rd['project']['savepath'] == '':
+            return
         
         file_buffer = ''
         with open(rd['project']['savepath'], 'rb') as f:
@@ -210,6 +222,8 @@ class NxProject(QObject):
 
         del sd['project']['p'][pid]
         rd['project']['table_model_index'].removeRow(row)
+        
+        rd['project']['changed'] = True
 
     def selectionChanged(self):
 
@@ -302,6 +316,8 @@ class NxProject(QObject):
         sd['project']['p'][pid]['challenge'] = rd['project']['diag_edit_challenge'].value()
         sd['project']['p'][pid]['version'] = rd['project']['diag_edit_version'].text()
         sd['project']['p'][pid]['timestamp'] = timestamp
+        
+        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
         tabdat = (
             (0, rd['project']['diag_edit_name'].text()),
@@ -311,7 +327,7 @@ class NxProject(QObject):
             (4, rd['project']['diag_edit_priority'].value()),
             (5, rd['project']['diag_edit_challenge'].value()),
             (6, rd['project']['diag_edit_version'].text()),
-            (7, str(timestamp))
+            (7, disptime)
         )
 
         model = rd['project']['table_model_index']
@@ -357,7 +373,9 @@ class NxProject(QObject):
         sd['project']['p'][pid]['version']   = version
         sd['project']['p'][pid]['timestamp'] = timestamp
         sd['project']['lastid'] += 1
-        
+      
+        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+
         # instert row into table
         rd['project']['table_model_index'].insertRow(0, [
             QStandardItem(name),
@@ -367,7 +385,7 @@ class NxProject(QObject):
             QStandardItem(str(priority)),
             QStandardItem(str(challenge)),
             QStandardItem(version),
-            QStandardItem(str(timestamp)),
+            QStandardItem(disptime),
             QStandardItem(pid)
         ])
 
@@ -391,7 +409,16 @@ class NxProject(QObject):
         model.clear()
         model.setHorizontalHeaderLabels(rd['project']['table_model_index_headers'])
 
+        table = rd['project']['table_project_list']
+        table.setColumnWidth(0, 200)
+        table.setColumnWidth(4, 50)
+        table.setColumnWidth(5, 50)
+        table.setColumnWidth(6, 80)
+        table.setColumnWidth(7, 160)
+        table.setColumnWidth(8, 80)
+
         for pid,project in sd['project']['p'].items():
+            disptime = datetime.datetime.fromtimestamp(project['timestamp']).isoformat()
             rd['project']['table_model_index'].insertRow(0, [
                 QStandardItem(project['name']),
                 QStandardItem(project['type']),
@@ -400,7 +427,7 @@ class NxProject(QObject):
                 QStandardItem(str(project['priority'])),
                 QStandardItem(str(project['challenge'])),
                 QStandardItem(project['version']),
-                QStandardItem(str(project['timestamp'])),
+                QStandardItem(disptime),
                 QStandardItem(str(pid))
             ])
         
