@@ -112,7 +112,7 @@ class NxProject(QObject):
         rd['project'][':onSaveAs'] = self.onSaveAs
         rd['project'][':onSave'] = self.onSave
         rd['project'][':onOpen'] = self.onOpen
-        rd['project'][':selectionChanged'] = self.selectionChanged
+        rd['project'][':updateTimestamp'] = self.updateTimestamp
 
         # CONNECT SIGNALS AND SLOTS
         rd['project']['push_new'].clicked.connect(rd['project'][':showNewProjectDiag'])
@@ -125,9 +125,6 @@ class NxProject(QObject):
         rd['project']['diag_edit_browse_path'].clicked.connect(rd['project'][':onBrowseEditPath'])
         rd['project']['push_save'].clicked.connect(rd['project'][':onSave'])
 
-        rd['project']['table_project_list'].selectionModel().selectionChanged.connect(
-            rd['project'][':selectionChanged'])
-        
         table = rd['project']['table_project_list']
         table.setColumnWidth(0, 200)
         table.setColumnWidth(4, 50)
@@ -135,6 +132,51 @@ class NxProject(QObject):
         table.setColumnWidth(6, 80)
         table.setColumnWidth(7, 160)
         table.setColumnWidth(8, 80)
+
+    ####################   UTILITY METHODS   #################### 
+
+    def updateTimestamp(self, timestamp):
+
+        # note: we assume that project is in active row
+        
+        rd = self.rundat
+        table = rd['project']['table_project_list']
+        model = rd['project']['table_model_index']
+        s_project = self.savdat['project']['p'][self.getSelectedProject()]
+        active_row = self.getActiveRow()
+        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+
+        # update timestamp in savdat
+        s_project['timestamp'] = timestamp
+
+        # update timestamp in project index
+        model.setItem(active_row, 7, QStandardItem(disptime))
+
+    def getSelectedProject(self):
+
+        rd = self.rundat
+
+        table = rd['project']['table_project_list']
+        model = rd['project']['table_model_index']
+
+        row = table.currentIndex().row()
+        index = model.index(row, 8)
+        return model.itemFromIndex(index).text()
+
+    def getSelectedProjectName(self):
+
+        rd = self.rundat
+
+        table = rd['project']['table_project_list']
+        model = rd['project']['table_model_index']
+
+        row = table.currentIndex().row()
+        index = model.index(row, 0)
+        return model.itemFromIndex(index).text()
+
+    def getActiveRow(self):
+
+        return self.rundat['project']['table_project_list'].currentIndex().row()
 
     ####################   METHODS   #################### 
 
@@ -251,9 +293,11 @@ class NxProject(QObject):
         # update savedat
         rd['mainwindow']['self'].savdat = sd
         rd['project']['self'].savdat = sd
+        rd['log']['self'].savdat = sd
 
         # reload project list
         self.reset()
+        rd['log'][':reset']()
 
     def onSave(self):
 
@@ -309,36 +353,6 @@ class NxProject(QObject):
         rd['project']['table_model_index'].removeRow(row)
         
         rd['project']['changed'] = True
-
-    def selectionChanged(self):
-
-        self.rundat['project']['selected'] = int(self.rundat['project'][':getSelectedProject']())
-
-    def getSelectedProject(self):
-
-        rd = self.rundat
-
-        table = rd['project']['table_project_list']
-        model = rd['project']['table_model_index']
-
-        row = table.currentIndex().row()
-        index = model.index(row, 8)
-        return model.itemFromIndex(index).text()
-
-    def getSelectedProjectName(self):
-
-        rd = self.rundat
-
-        table = rd['project']['table_project_list']
-        model = rd['project']['table_model_index']
-
-        row = table.currentIndex().row()
-        index = model.index(row, 0)
-        return model.itemFromIndex(index).text()
-
-    def getActiveRow(self):
-
-        return self.rundat['project']['table_project_list'].currentIndex().row()
 
     def setComboValue(self, combo, text):
 

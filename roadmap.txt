@@ -1,7 +1,5 @@
 ...
 + log display
-  - activate details when new log
-  - load logs
   - details command (from command and doubleclick)
 + roadmap widget
   + milestone widget

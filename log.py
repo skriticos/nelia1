@@ -19,7 +19,7 @@ class NxLog(QObject):
 
         sd['log'] = {}          # log save base
         sd['log']['p'] = {}     # log for projects
-        sd['log']['last_log_pid'] = None    # to check if reload log on tab change necessary
+        rd['log']['last_log_pid'] = None    # to check if reload log on tab change necessary
 
         run_log = rd['log']
         sav_log = sd['log']
@@ -91,6 +91,8 @@ class NxLog(QObject):
         run_log['ui_diag_new_input_summary'] = diag_new.line_summary
         run_log['ui_diag_new_input_detail'] = diag_new.text_detail
 
+        run_log[':reset'] = self.reset
+
         # connect signals
         run_log['ui_cmd_new_entry'].clicked.connect(run_log[':onNewEntryClicked'])
         run_log['diag_new'].accepted.connect(run_log[':onNewEntrySubmit'])
@@ -102,22 +104,59 @@ class NxLog(QObject):
         run_log = self.rundat['log']
         sav_log = self.savdat['log']
 
-        project_name = self.rundat['project'][':getSelectedProjectName']()
-        run_log['ui_info_project_name'].setText(project_name)
-        run_log['ui_diag_new_info_project'].setText(project_name)
-
         pid = self.rundat['project'][':getSelectedProject']()
         
-        # create project id dict if not yet existent
-        if pid not in sav_log['p']:
-            sav_log['p'][pid] = {}              # project log container
-            sav_log['p'][pid]['lastlog'] = 0    # log counter
-            sav_log['p'][pid]['l'] = {}         # log entry container
+        # reset form if necessary (project selection changed or project opened)
+        # note: we pretty much leave the widget alone when project selection has not
+        #       changed
+        
+        if run_log['last_log_pid'] == None \
+                or run_log['last_log_pid'] != pid:
 
-        run_log['last_log_pid'] = pid
+            project_name = self.rundat['project'][':getSelectedProjectName']()
+            run_log['ui_info_project_name'].setText(project_name)
+            run_log['ui_diag_new_info_project'].setText(project_name)
+        
+            table = run_log['table_log_history']
+            model = run_log['table_model_history']
 
-        run_log['ui_cmd_new_entry'].setFocus()
-        run_log['ui_table_history'].sortByColumn(0, Qt.DescendingOrder);
+            model.clear()
+            model.setHorizontalHeaderLabels(run_log['table_model_history_headers'])
+            table.setModel(model)
+            table.setColumnWidth(0, 160)
+            table.setColumnWidth(1, 550)
+        
+            # create project id dict if not yet existent
+            if pid not in sav_log['p']:
+                sav_log['p'][pid] = {}              # project log container
+                sav_log['p'][pid]['lastlog'] = 0    # log counter
+                sav_log['p'][pid]['l'] = {}         # log entry container
+
+            # if we have entries in log already (enable details, select first row)
+            if sav_log['p'][pid]['lastlog'] > 0:
+
+                # populate table
+                for key, value in sav_log['p'][pid]['l'].items():
+                    timestamp = value['timestamp']
+                    summary = value['summary']
+                    lid = key
+                    disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+                    run_log['table_model_history'].insertRow(0, [
+                        QStandardItem(disptime),
+                        QStandardItem(summary),
+                        QStandardItem(str(lid))
+                        ])
+
+                # set controls
+                run_log['ui_table_history'].selectRow(0)
+                run_log['ui_cmd_detail'].setEnabled(True)
+            else:
+                run_log['ui_cmd_detail'].setEnabled(False)
+
+            run_log['last_log_pid'] = pid
+            run_log['ui_table_history'].sortByColumn(0, Qt.DescendingOrder);
+
+        run_log['ui_table_history'].setFocus()
 
     ####################   CALLBACKS   #################### 
 
@@ -158,8 +197,17 @@ class NxLog(QObject):
         
         sav_log['p'][pid]['lastlog'] += 1
         
+        self.rundat['project'][':updateTimestamp'](timestamp)
+
         run_log['ui_table_history'].selectRow(0)
         run_log['ui_table_history'].setFocus()
+
+        run_log['ui_cmd_detail'].setEnabled(True)
+
+    def reset(self):
+    
+        # ensure log is reloaded when switched to after opening
+        self.rundat['log']['last_log_pid'] = None
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
