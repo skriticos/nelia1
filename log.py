@@ -203,6 +203,7 @@ class NxLog(QObject):
         run_log['ui_table_history'].setFocus()
 
         run_log['ui_cmd_detail'].setEnabled(True)
+        self.rundat['projects']['changed'] = True
 
     def reset(self):
     
