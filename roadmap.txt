@@ -7,6 +7,8 @@
   + item amend / comment
 + add project details box (command and double click)
   - open project path
++ global shortcut (ctrl+pgup/pgdown) -> switch between tabs
++ adjust all focuses (e.g. new project button on startup, etc.)
 + test
 + add copy notice and cleanup
 + package (deb)
