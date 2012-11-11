@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="margin">
     <number>5</number>
@@ -46,12 +49,12 @@
       <string>Timestamp:</string>
      </property>
      <property name="buddy">
-      <cstring>lineEdit_timestamp</cstring>
+      <cstring>line_timestamp</cstring>
      </property>
     </widget>
    </item>
    <item row="0" column="3">
-    <widget class="QLineEdit" name="lineEdit_timestamp">
+    <widget class="QLineEdit" name="line_timestamp">
      <property name="styleSheet">
       <string notr="true">background-color:palette(Window);</string>
      </property>

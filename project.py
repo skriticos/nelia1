@@ -161,7 +161,8 @@ class NxProject(QObject):
 
         row = table.currentIndex().row()
         index = model.index(row, 8)
-        return model.itemFromIndex(index).text()
+
+        return int(model.itemFromIndex(index).text())
 
     def getSelectedProjectName(self):
 
@@ -217,7 +218,7 @@ class NxProject(QObject):
         timestamp = int(time.time())
 
         # store data in savdat
-        pid = str(sav_project['lastid'])
+        pid = sav_project['lastid']
         sav_project['p'][pid] = {}
         sav_project['p'][pid]['name']      = name
         sav_project['p'][pid]['basepath']  = basepath
@@ -243,7 +244,7 @@ class NxProject(QObject):
             QStandardItem(str(challenge)),
             QStandardItem(version),
             QStandardItem(disptime),
-            QStandardItem(pid)
+            QStandardItem(str(pid))
             ])
 
         # enable controls
@@ -422,7 +423,8 @@ class NxProject(QObject):
             (4, rd['project']['diag_edit_priority'].value()),
             (5, rd['project']['diag_edit_challenge'].value()),
             (6, rd['project']['diag_edit_version'].text()),
-            (7, disptime)
+            (7, disptime),
+            (8, str(pid))
         )
 
         model = rd['project']['table_model_index']
