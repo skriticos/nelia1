@@ -308,6 +308,10 @@ class NxProject(QObject):
         if rd['project']['savepath'] == '':
             self.onSaveAs()
 
+        # save as dialog aborted
+        if rd['project']['savepath'] == '.spt':
+            return
+
         pickled_data = pickle.dumps(sd, 3)
         compressed_data = gzip.compress(pickled_data)
 
