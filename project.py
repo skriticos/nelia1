@@ -344,7 +344,7 @@ class NxProject(QObject):
         response = QMessageBox.question(
             rd['project']['ui'],
             'Delete project?',
-            'Delete project ' + pid + '?',
+            'Delete project ' + str(pid) + '?',
             QMessageBox.Yes|QMessageBox.No)
 
         if response == QMessageBox.StandardButton.No:
