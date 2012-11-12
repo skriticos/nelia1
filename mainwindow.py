@@ -6,6 +6,7 @@ from PySide import QtUiTools
 
 from project import NxProject
 from log import NxLog
+from roadmap import NxRoadmap
 
 class MainWindow(QObject):
     
@@ -47,6 +48,7 @@ class MainWindow(QObject):
         # INITIATE CHILD WIDGETS
         project = NxProject(sd, rd)
         log = NxLog(sd, rd)
+        roadmap = NxRoadmap(sd, rd)
        
         # CONNECT SIGNALS AND SLOTS
         rd['mainwindow']['tabwidget_main'].currentChanged.connect(rd['mainwindow'][':tabChanged'])
@@ -73,6 +75,8 @@ class MainWindow(QObject):
 
         if cur_tab_name == 'Log':
             self.rundat['log'][':onShowTab']()
+        if cur_tab_name == 'Roadmap':
+            self.rundat['roadmap'][':onShowTab']()
 
 # vim: set ts=4 sw=4 ai si expandtab:
 

@@ -1,8 +1,6 @@
 ...
-+ log display
-  - details command (from command and doubleclick)
 + roadmap widget
-  + milestone widget
+  + populate namespace
   + feature and issue tables
   + item amend / comment
 + add project details box (command and double click)

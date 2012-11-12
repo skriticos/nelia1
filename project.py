@@ -295,10 +295,12 @@ class NxProject(QObject):
         rd['mainwindow']['self'].savdat = sd
         rd['project']['self'].savdat = sd
         rd['log']['self'].savdat = sd
+        rd['roadmap']['self'].savdat = sd
 
         # reload project list
         self.reset()
         rd['log'][':reset']()
+        rd['roadmap'][':reset']()
 
     def onSave(self):
 

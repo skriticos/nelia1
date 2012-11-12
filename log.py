@@ -124,9 +124,10 @@ class NxLog(QObject):
     ####################   METHODS   #################### 
 
     def onShowTab(self):
-
+        
         run_log = self.rundat['log']
         sav_log = self.savdat['log']
+
 
         pid = self.rundat['project'][':getSelectedProject']()
         
