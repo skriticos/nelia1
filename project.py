@@ -196,6 +196,8 @@ class NxProject(QObject):
         project['diag_new_version'].setText('0.0.0')
         project['diag_new_detail'].clear()
 
+        project['diag_new_name'].setFocus()
+
         # show widget
         project['diag_new'].show()
 

@@ -6,7 +6,11 @@
 + add project details box (command and double click)
   - open project path
 + global shortcut (ctrl+pgup/pgdown) -> switch between tabs
++ global shortcut save
 + adjust all focuses (e.g. new project button on startup, etc.)
++ bugfix (secondary)
+  + fix double cursor bug (log widget, focusing bug)
+    -> add log via keyboard, then again. two I beams..
 + test
 + add copy notice and cleanup
 + package (deb)

@@ -195,7 +195,6 @@ class NxLog(QObject):
         run_log['ui_diag_new_input_detail'].clear()
 
         run_log['diag_new'].show()
-        
         run_log['ui_diag_new_input_summary'].setFocus()
 
     def onNewEntrySubmit(self):

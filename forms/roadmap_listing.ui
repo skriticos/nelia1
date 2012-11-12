@@ -46,7 +46,11 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="fil_line_project"/>
+       <widget class="QLineEdit" name="fil_line_project">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -117,7 +121,11 @@
        <widget class="QTableView" name="fil_table_item_list"/>
       </item>
       <item row="1" column="1">
-       <widget class="QPlainTextEdit" name="fil_text_description"/>
+       <widget class="QPlainTextEdit" name="fil_text_description">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

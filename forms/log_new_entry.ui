@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>686</width>
-    <height>551</height>
+    <width>599</width>
+    <height>562</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>New Log Entry..</string>
+   <string>New Log Entry</string>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
@@ -19,42 +19,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <property name="margin">
-    <number>5</number>
-   </property>
-   <property name="spacing">
-    <number>10</number>
-   </property>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>&amp;Summary:</string>
-     </property>
-     <property name="buddy">
-      <cstring>line_summary</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="line_summary"/>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>18</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>&amp;Detail:</string>
-     </property>
-     <property name="buddy">
-      <cstring>text_detail</cstring>
-     </property>
-    </widget>
-   </item>
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
@@ -87,7 +52,58 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
+   <item row="1" column="0" colspan="2">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>&amp;Summary:</string>
+        </property>
+        <property name="buddy">
+         <cstring>line_summary</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="line_summary"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>18</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>&amp;Detail:</string>
+        </property>
+        <property name="buddy">
+         <cstring>text_detail</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QPlainTextEdit" name="text_detail">
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
+        <property name="tabChangesFocus">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -96,9 +112,6 @@
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QPlainTextEdit" name="text_detail"/>
    </item>
   </layout>
  </widget>
@@ -117,8 +130,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>462</y>
+     <x>262</x>
+     <y>545</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -133,8 +146,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>325</x>
-     <y>462</y>
+     <x>330</x>
+     <y>545</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
