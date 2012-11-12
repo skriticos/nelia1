@@ -35,12 +35,12 @@
          <string>Project:</string>
         </property>
         <property name="buddy">
-         <cstring>g_line_project</cstring>
+         <cstring>rmap_line_project</cstring>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="g_line_project">
+       <widget class="QLineEdit" name="rmap_line_project">
         <property name="styleSheet">
          <string notr="true">background-color:palette(Window);</string>
         </property>
@@ -62,7 +62,7 @@
        <number>10</number>
       </property>
       <item row="0" column="0">
-       <widget class="QPushButton" name="g_push_manage_milestone">
+       <widget class="QPushButton" name="rmap_push_manage_milestone">
         <property name="text">
          <string>Manage &amp;Milestones..</string>
         </property>
@@ -82,7 +82,7 @@
        </spacer>
       </item>
       <item row="0" column="3">
-       <widget class="QPushButton" name="g_push_edit_feature">
+       <widget class="QPushButton" name="rmap_push_edit_feature">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -92,14 +92,14 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QPushButton" name="g_push_add_feature">
+       <widget class="QPushButton" name="rmap_push_add_feature">
         <property name="text">
          <string>Add &amp;Feature..</string>
         </property>
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QPushButton" name="g_push_delete_feature">
+       <widget class="QPushButton" name="rmap_push_delete_feature">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -141,14 +141,14 @@
        </spacer>
       </item>
       <item row="0" column="6">
-       <widget class="QPushButton" name="g_push_add_issue">
+       <widget class="QPushButton" name="rmap_push_add_issue">
         <property name="text">
          <string>Add &amp;Issue..</string>
         </property>
        </widget>
       </item>
       <item row="0" column="7">
-       <widget class="QPushButton" name="g_push_edit_issue">
+       <widget class="QPushButton" name="rmap_push_edit_issue">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -158,7 +158,7 @@
        </widget>
       </item>
       <item row="0" column="8">
-       <widget class="QPushButton" name="g_push_delete_issue">
+       <widget class="QPushButton" name="rmap_push_delete_issue">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -183,7 +183,7 @@
        <widget class="QWidget" name="widget_2" native="true">
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="0">
-          <widget class="QLabel" name="sm_table_open_issues">
+          <widget class="QLabel" name="label_many">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -191,15 +191,15 @@
             </size>
            </property>
            <property name="text">
-            <string>Ope&amp;n Issues</string>
+            <string>Ope&amp;n Issues:</string>
            </property>
            <property name="buddy">
-            <cstring>tableView_2</cstring>
+            <cstring>rmap_table_open_issues</cstring>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QTableView" name="tableView_2">
+          <widget class="QTableView" name="rmap_table_open_issues">
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
@@ -221,7 +221,7 @@
        <widget class="QWidget" name="widget" native="true">
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="1" column="0">
-          <widget class="QTableView" name="sm_table_open_features">
+          <widget class="QTableView" name="rmap_table_open_features">
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
@@ -248,7 +248,7 @@
             <string>Open Fea&amp;tures:</string>
            </property>
            <property name="buddy">
-            <cstring>sm_table_open_features</cstring>
+            <cstring>rmap_table_open_features</cstring>
            </property>
           </widget>
          </item>
@@ -280,7 +280,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="2" column="1">
-          <widget class="QPushButton" name="sm_push_open_features">
+          <widget class="QPushButton" name="rmap_push_open_features">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -298,7 +298,7 @@
             <string>O&amp;pen Issues:</string>
            </property>
            <property name="buddy">
-            <cstring>sm_push_open_issues</cstring>
+            <cstring>rmap_push_open_issues</cstring>
            </property>
           </widget>
          </item>
@@ -316,7 +316,7 @@
           </spacer>
          </item>
          <item row="4" column="1">
-          <widget class="QPushButton" name="sm_push_closed_features">
+          <widget class="QPushButton" name="rmap_push_closed_features">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -329,7 +329,7 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QPushButton" name="sm_push_closed_issues">
+          <widget class="QPushButton" name="rmap_push_closed_issues">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -342,7 +342,7 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QPushButton" name="sm_push_open_issues">
+          <widget class="QPushButton" name="rmap_push_open_issues">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -373,7 +373,7 @@
             <string>&amp;Closed Features:</string>
            </property>
            <property name="buddy">
-            <cstring>sm_push_closed_features</cstring>
+            <cstring>rmap_push_closed_features</cstring>
            </property>
           </widget>
          </item>
@@ -396,7 +396,7 @@
             <string>&amp;Open Features:</string>
            </property>
            <property name="buddy">
-            <cstring>sm_push_open_features</cstring>
+            <cstring>rmap_push_open_features</cstring>
            </property>
           </widget>
          </item>
@@ -406,7 +406,7 @@
             <string>Close&amp;d Issues:</string>
            </property>
            <property name="buddy">
-            <cstring>sm_push_closed_issues</cstring>
+            <cstring>rmap_push_closed_issues</cstring>
            </property>
           </widget>
          </item>
@@ -429,12 +429,12 @@
             <string>Mileston&amp;e:</string>
            </property>
            <property name="buddy">
-            <cstring>sm_combo_milestone</cstring>
+            <cstring>rmap_combo_milestone</cstring>
            </property>
           </widget>
          </item>
          <item row="1" column="1" colspan="2">
-          <widget class="QComboBox" name="sm_combo_milestone">
+          <widget class="QComboBox" name="rmap_combo_milestone">
            <item>
             <property name="text">
              <string>1.1.3 (+1, next)</string>
@@ -471,7 +471,7 @@
           </spacer>
          </item>
          <item row="2" column="1" colspan="2">
-          <widget class="QLineEdit" name="om_line_milestone_next">
+          <widget class="QLineEdit" name="rmap_line_milestone_next">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -514,12 +514,12 @@
                <string>Open:</string>
               </property>
               <property name="buddy">
-               <cstring>om_push_feature_open</cstring>
+               <cstring>rmap_push_all_feature_open</cstring>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QPushButton" name="om_push_feature_open">
+             <widget class="QPushButton" name="rmap_push_all_feature_open">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -537,12 +537,12 @@
                <string>Closed:</string>
               </property>
               <property name="buddy">
-               <cstring>om_push_feature_close</cstring>
+               <cstring>rmap_push_all_feature_close</cstring>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QPushButton" name="om_push_feature_close">
+             <widget class="QPushButton" name="rmap_push_all_feature_close">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -609,7 +609,7 @@
             <string>Next milestone:</string>
            </property>
            <property name="buddy">
-            <cstring>om_line_milestone_next</cstring>
+            <cstring>rmap_line_milestone_next</cstring>
            </property>
           </widget>
          </item>
@@ -631,12 +631,12 @@
                <string>Open:</string>
               </property>
               <property name="buddy">
-               <cstring>om_push_issue_open</cstring>
+               <cstring>rmap_push_all_issue_open</cstring>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QPushButton" name="om_push_issue_open">
+             <widget class="QPushButton" name="rmap_push_all_issue_open">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -654,12 +654,12 @@
                <string>Closed:</string>
               </property>
               <property name="buddy">
-               <cstring>om_push_issue_close</cstring>
+               <cstring>rmap_push_all_issue_close</cstring>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QPushButton" name="om_push_issue_close">
+             <widget class="QPushButton" name="rmap_push_all_issue_close">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -701,7 +701,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="om_line_milestone_sum">
+          <widget class="QLineEdit" name="rmap_line_milestone_sum">
            <property name="styleSheet">
             <string notr="true">background-color:palette(Window);</string>
            </property>
@@ -714,7 +714,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="om_line_milestone_completed">
+          <widget class="QLineEdit" name="rmap_line_milestone_completed">
            <property name="styleSheet">
             <string notr="true">background-color:palette(Window);</string>
            </property>
@@ -735,24 +735,24 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>g_push_manage_milestone</tabstop>
-  <tabstop>g_push_add_feature</tabstop>
-  <tabstop>g_push_edit_feature</tabstop>
-  <tabstop>g_push_add_issue</tabstop>
-  <tabstop>g_push_edit_issue</tabstop>
-  <tabstop>sm_combo_milestone</tabstop>
-  <tabstop>sm_table_open_features</tabstop>
-  <tabstop>tableView_2</tabstop>
-  <tabstop>sm_push_open_features</tabstop>
-  <tabstop>sm_push_open_issues</tabstop>
-  <tabstop>sm_push_closed_features</tabstop>
-  <tabstop>sm_push_closed_issues</tabstop>
-  <tabstop>om_line_milestone_next</tabstop>
-  <tabstop>om_push_feature_open</tabstop>
-  <tabstop>om_push_feature_close</tabstop>
-  <tabstop>om_push_issue_open</tabstop>
-  <tabstop>om_push_issue_close</tabstop>
-  <tabstop>g_line_project</tabstop>
+  <tabstop>rmap_push_manage_milestone</tabstop>
+  <tabstop>rmap_push_add_feature</tabstop>
+  <tabstop>rmap_push_edit_feature</tabstop>
+  <tabstop>rmap_push_add_issue</tabstop>
+  <tabstop>rmap_push_edit_issue</tabstop>
+  <tabstop>rmap_combo_milestone</tabstop>
+  <tabstop>rmap_table_open_features</tabstop>
+  <tabstop>rmap_table_open_issues</tabstop>
+  <tabstop>rmap_push_open_features</tabstop>
+  <tabstop>rmap_push_open_issues</tabstop>
+  <tabstop>rmap_push_closed_features</tabstop>
+  <tabstop>rmap_push_closed_issues</tabstop>
+  <tabstop>rmap_line_milestone_next</tabstop>
+  <tabstop>rmap_push_all_feature_open</tabstop>
+  <tabstop>rmap_push_all_feature_close</tabstop>
+  <tabstop>rmap_push_all_issue_open</tabstop>
+  <tabstop>rmap_push_all_issue_close</tabstop>
+  <tabstop>rmap_line_project</tabstop>
  </tabstops>
  <resources/>
  <connections/>
