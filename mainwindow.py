@@ -41,6 +41,8 @@ class MainWindow(QObject):
         rd['mainwindow'][':tabChanged'] = self.tabChanged
         rd['mainwindow'][':enableTabs'] = self.enableTabs
         rd['mainwindow'][':dissableTabs'] = self.dissableTabs
+        rd['mainwindow'][':onTabForward'] = self.onTabForward
+        rd['mainwindow'][':onTabBackward'] = self.onTabBackward
 
         # DISSABLE TABS UNTIL PROJECT SELECTED
         self.dissableTabs()
@@ -52,6 +54,45 @@ class MainWindow(QObject):
        
         # CONNECT SIGNALS AND SLOTS
         rd['mainwindow']['tabwidget_main'].currentChanged.connect(rd['mainwindow'][':tabChanged'])
+
+        # close window shortcut
+        close_window_shortcut = QShortcut(QKeySequence('Ctrl+w'), ui)
+        close_window_shortcut.activated.connect(ui.close)
+
+        switch_widget_forward = QShortcut(QKeySequence('Ctrl+PgUp'), ui)
+        switch_widget_forward.activated.connect(rd['mainwindow'][':onTabForward'])
+        
+        switch_widget_backward = QShortcut(QKeySequence('Ctrl+PgDown'), ui)
+        switch_widget_backward.activated.connect(rd['mainwindow'][':onTabBackward'])
+
+        QObject.installEventFilter(ui, self)
+
+    def eventFilter(self, obj, event):
+
+        if obj == self.rundat['mainwindow']['ui']:
+            if isinstance(event, QCloseEvent):
+                print ('closing window')
+        return True
+
+    def onTabForward(self):
+
+        # get current tab index
+        tab_index = self.rundat['mainwindow']['tabwidget_main'].currentIndex()
+
+        # get max index
+        tab_count = self.rundat['mainwindow']['tabwidget_main'].count()
+
+        # next tab
+        if tab_index+1 == tab_count:
+            self.rundat['mainwindow']['tabwidget_main'].setCurrentTabIndex(0)
+
+        print (tab_index, tab_count)
+
+        print ('tab forward')
+
+    def onTabBackward(self):
+        
+        print ('tab backward')
 
     def enableTabs(self):
 
