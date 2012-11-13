@@ -199,10 +199,22 @@ class NxRoadmap(QObject):
         fil.setParent(self.rundat['mainwindow']['ui'])
         fil.setWindowFlags(Qt.Dialog)
 
-        # methods
+        # methods (pushbuttons)
         self.rundat['roadmap'][':onManageMilestoneClick'] = self.onManageMilestoneClick
         self.rundat['roadmap'][':onAddFeatureClick'] = self.onAddFeatureClick
         self.rundat['roadmap'][':onAddIssueClick'] = self.onAddIssueClick
+        self.rundat['roadmap'][':onEditFeatureClick'] = self.onEditFeatureClick
+        self.rundat['roadmap'][':onEditIssueClick'] = self.onEditIssueClick
+        self.rundat['roadmap'][':onDeleteFeature'] = self.onDeleteFeature
+        self.rundat['roadmap'][':onDeleteIssue'] = self.onDeleteIssue
+        self.rundat['roadmap'][':onSelectedFeatureOpen'] = self.onSelectedFeatureOpen
+        self.rundat['roadmap'][':onSelectedFeatureClosed'] = self.onSelectedFeatureClosed
+        self.rundat['roadmap'][':onSelectedIssueOpen'] = self.onSelectedIssueOpen
+        self.rundat['roadmap'][':onSelectedIssueClosed'] = self.onSelectedIssueClosed
+        self.rundat['roadmap'][':onAllFeatureOpen'] = self.onAllFeatureOpen
+        self.rundat['roadmap'][':onAllFetaureClose'] = self.onAllFetaureClose
+        self.rundat['roadmap'][':onAllIssueOpen'] = self.onAllIssueOpen
+        self.rundat['roadmap'][':onAllIssueClosed'] = self.onAllIssueClosed
 
         # CALLBACKS
         self.rundat['roadmap']['rmap_push_manage_milestone'].clicked.connect(
@@ -211,20 +223,28 @@ class NxRoadmap(QObject):
             self.rundat['roadmap'][':onAddFeatureClick'])
         self.rundat['roadmap']['rmap_push_add_issue'].clicked.connect(
             self.rundat['roadmap'][':onAddIssueClick'])
-        '''
-        onEditFeatureClick
-        onEditIssueClick
-        onDeleteFeature
-        onDeleteIssue
-        onSelectedFeatureOpen
-        onSelectedFeatureClosed
-        onSelectedIssueOpen
-        onSelectedIssueClosed
-        onAllFeatureOpen
-        onAllFetaureClose
-        onAllIssueOpen
-        onAllIssueClosed
-        '''
+        self.rundat['roadmap']['rmap_push_edit_feature'].clicked.connect(
+            self.rundat['roadmap'][':onEditFeatureClick'])
+        self.rundat['roadmap']['rmap_push_edit_issue'].clicked.connect(
+            self.rundat['roadmap'][':onEditIssueClick'])
+        self.rundat['roadmap']['rmap_push_delete_feature'].clicked.connect(
+            self.rundat['roadmap'][':onDeleteFeature'])
+        self.rundat['roadmap']['rmap_push_open_features'].clicked.connect(
+            self.rundat['roadmap'][':onSelectedFeatureOpen'])
+        self.rundat['roadmap']['rmap_push_closed_features'].clicked.connect(
+            self.rundat['roadmap'][':onSelectedFeatureClosed'])
+        self.rundat['roadmap']['rmap_push_open_issues'].clicked.connect(
+            self.rundat['roadmap'][':onSelectedIssueOpen'])
+        self.rundat['roadmap']['rmap_push_closed_issues'].clicked.connect(
+            self.rundat['roadmap'][':onSelectedIssueClosed'])
+        self.rundat['roadmap']['rmap_push_all_feature_open'].clicked.connect(
+            self.rundat['roadmap'][':onAllFeatureOpen'])
+        self.rundat['roadmap']['rmap_push_all_feature_close'].clicked.connect(
+            self.rundat['roadmap'][':onAllFetaureClose'])
+        self.rundat['roadmap']['rmap_push_all_issue_open'].clicked.connect(
+            self.rundat['roadmap'][':onAllIssueOpen'])
+        self.rundat['roadmap']['rmap_push_all_issue_close'].clicked.connect(
+            self.rundat['roadmap'][':onAllIssueClosed'])
         
     ####################   METHODS   #################### 
     def onShowTab(self):
