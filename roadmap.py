@@ -51,6 +51,7 @@ class NxRoadmap(QObject):
         af = loader.load(uifile)
         uifile.close()
 
+        self.rundat['roadmap']['af'] = af
         self.rundat['roadmap']['af_combo_target'] = af.af_combo_target
         self.rundat['roadmap']['af_line_name'] = af.af_line_name
         self.rundat['roadmap']['af_line_project'] = af.af_line_project
@@ -65,6 +66,7 @@ class NxRoadmap(QObject):
         ai = loader.load(uifile)
         uifile.close()
 
+        self.rundat['roadmap']['ai'] = ai
         self.rundat['roadmap']['ai_combo_low'] = ai.ai_combo_low
         self.rundat['roadmap']['ai_combo_medium'] = ai.ai_combo_medium
         self.rundat['roadmap']['ai_combo_target'] = ai.ai_combo_target
@@ -81,6 +83,7 @@ class NxRoadmap(QObject):
         ef = loader.load(uifile)
         uifile.close()
 
+        self.rundat['roadmap']['ef'] = ef
         self.rundat['roadmap']['ef_combo_target'] = ef.ef_combo_target
         self.rundat['roadmap']['ef_line_name'] = ef.ef_line_name
         self.rundat['roadmap']['ef_line_project'] = ef.ef_line_project
@@ -99,6 +102,7 @@ class NxRoadmap(QObject):
         ei = loader.load(uifile)
         uifile.close()
 
+        self.rundat['roadmap']['ei'] = ei
         self.rundat['roadmap']['ei_combo_low'] = ei.ei_combo_low
         self.rundat['roadmap']['ei_combo_medium'] = ei.ei_combo_medium
         self.rundat['roadmap']['ei_combo_target'] = ei.ei_combo_target
@@ -117,18 +121,20 @@ class NxRoadmap(QObject):
         fil = loader.load(uifile)
         uifile.close()
 
+        self.rundat['roadmap']['fil'] = fil
         self.rundat['roadmap']['fil_line_project'] = fil.fil_line_project
         self.rundat['roadmap']['fil_push_delete'] = fil.fil_push_delete
         self.rundat['roadmap']['fil_push_edit'] = fil.fil_push_edit
         self.rundat['roadmap']['fil_table_item_list'] = fil.fil_table_item_list
         self.rundat['roadmap']['fil_text_description'] = fil.fil_text_description
 
-        # roadmap main widget, prefix: rmap
+        # roadmap main widget, prefix: rmap == ui
         uifile = QFile('forms/roadmap.ui')
         uifile.open(QFile.ReadOnly)
         rmap = loader.load(uifile)
         uifile.close()
 
+        self.rundat['roadmap']['rmap'] = rmap
         self.rundat['roadmap']['rmap_combo_milestone'] = rmap.rmap_combo_milestone
         self.rundat['roadmap']['rmap_line_milestone_completed'] = rmap.rmap_line_milestone_completed
         self.rundat['roadmap']['rmap_line_milestone_next'] = rmap.rmap_line_milestone_next
@@ -158,6 +164,7 @@ class NxRoadmap(QObject):
         rmm = loader.load(uifile)
         uifile.close()
 
+        self.rundat['roadmap']['rmm'] = rmm
         self.rundat['roadmap']['rmm_combo_parent'] = rmm.rmm_combo_parent
         self.rundat['roadmap']['rmm_line_custom'] = rmm.rmm_line_custom
         self.rundat['roadmap']['rmm_line_project'] = rmm.rmm_line_project
