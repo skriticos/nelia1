@@ -5,6 +5,17 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 
+"""
+roadmap prefixes:
+    rmap = roadmap widget
+    rmm  = roadmap milestone manage
+    fil  = generic feature/issue list
+    af   = add feature
+    ai   = add issue
+    ef   = edit feature
+    ei   = edit issue
+"""
+
 class NxRoadmap(QObject):
     
     def __init__(self, savdat, rundat):
