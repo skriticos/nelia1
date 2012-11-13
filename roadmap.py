@@ -37,20 +37,8 @@ class NxRoadmap(QObject):
 
         # mainwindow widget setup
         loader = QtUiTools.QUiLoader()
-        uifile = QFile('forms/roadmap.ui')
-        uifile.open(QFile.ReadOnly)
-        ui = loader.load(uifile)
-        uifile.close()
 
-        parent_widget = rd['mainwindow']['tab_roadmap']
-        ui.setParent(parent_widget)
-        grid = QGridLayout()
-        grid.addWidget(ui, 0, 0)
-        grid.setContentsMargins(0, 5, 0, 0)
-        parent_widget.setLayout(grid)
-        
         # pre-populate data index
-        run_roadmap['ui'] = ui
         run_roadmap['self'] = self
 
         run_roadmap[':reset'] = self.reset
@@ -145,6 +133,13 @@ class NxRoadmap(QObject):
         rmap = loader.load(uifile)
         uifile.close()
 
+        parent_widget = rd['mainwindow']['tab_roadmap']
+        rmap.setParent(parent_widget)
+        grid = QGridLayout()
+        grid.addWidget(rmap, 0, 0)
+        grid.setContentsMargins(0, 5, 0, 0)
+        parent_widget.setLayout(grid)
+        
         self.rundat['roadmap']['rmap'] = rmap
         self.rundat['roadmap']['rmap_combo_milestone'] = rmap.rmap_combo_milestone
         self.rundat['roadmap']['rmap_line_milestone_completed'] = rmap.rmap_line_milestone_completed
@@ -189,9 +184,49 @@ class NxRoadmap(QObject):
         self.rundat['roadmap']['rmm_spin_minor'] = rmm.rmm_spin_minor
         self.rundat['roadmap']['rmm_spin_patch'] = rmm.rmm_spin_patch
         self.rundat['roadmap']['rmm_table_milestones'] = rmm.rmm_table_milestones
+       
+        # config
+        rmm.setParent(self.rundat['mainwindow']['ui'])
+        rmm.setWindowFlags(Qt.Dialog)
+        af.setParent(self.rundat['mainwindow']['ui'])
+        af.setWindowFlags(Qt.Dialog)
+        ai.setParent(self.rundat['mainwindow']['ui'])
+        ai.setWindowFlags(Qt.Dialog)
+        ef.setParent(self.rundat['mainwindow']['ui'])
+        ef.setWindowFlags(Qt.Dialog)
+        ei.setParent(self.rundat['mainwindow']['ui'])
+        ei.setWindowFlags(Qt.Dialog)
+        fil.setParent(self.rundat['mainwindow']['ui'])
+        fil.setWindowFlags(Qt.Dialog)
 
+        # methods
+        self.rundat['roadmap'][':onManageMilestoneClick'] = self.onManageMilestoneClick
+        self.rundat['roadmap'][':onAddFeatureClick'] = self.onAddFeatureClick
+        self.rundat['roadmap'][':onAddIssueClick'] = self.onAddIssueClick
+
+        # CALLBACKS
+        self.rundat['roadmap']['rmap_push_manage_milestone'].clicked.connect(
+            self.rundat['roadmap'][':onManageMilestoneClick'])
+        self.rundat['roadmap']['rmap_push_add_feature'].clicked.connect(
+            self.rundat['roadmap'][':onAddFeatureClick'])
+        self.rundat['roadmap']['rmap_push_add_issue'].clicked.connect(
+            self.rundat['roadmap'][':onAddIssueClick'])
+        '''
+        onEditFeatureClick
+        onEditIssueClick
+        onDeleteFeature
+        onDeleteIssue
+        onSelectedFeatureOpen
+        onSelectedFeatureClosed
+        onSelectedIssueOpen
+        onSelectedIssueClosed
+        onAllFeatureOpen
+        onAllFetaureClose
+        onAllIssueOpen
+        onAllIssueClosed
+        '''
+        
     ####################   METHODS   #################### 
-
     def onShowTab(self):
 
         run_roadmap = self.rundat['roadmap']
@@ -203,6 +238,40 @@ class NxRoadmap(QObject):
     
         # ensure roadmap is reloaded when switched to after opening
         self.rundat['roadmap']['last_roadmap_pid'] = None
+
+
+    ####################   CALLBACKS   #################### 
+    def onManageMilestoneClick(self):
+        print ('pressed')
+
+    def onAddFeatureClick(self):
+        pass
+    def onAddIssueClick(self):
+        pass
+    def onEditFeatureClick(self):
+        pass
+    def onEditIssueClick(self):
+        pass
+    def onDeleteFeature(self):
+        pass
+    def onDeleteIssue(self):
+        pass
+    def onSelectedFeatureOpen(self):
+        pass
+    def onSelectedFeatureClosed(self):
+        pass
+    def onSelectedIssueOpen(self):
+        pass
+    def onSelectedIssueClosed(self):
+        pass
+    def onAllFeatureOpen(self):
+        pass
+    def onAllFetaureClose(self):
+        pass
+    def onAllIssueOpen(self):
+        pass
+    def onAllIssueClosed(self):
+        pass
 
 # vim: set ts=4 sw=4 ai si expandtab:
 

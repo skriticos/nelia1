@@ -72,7 +72,14 @@ class MainWindow(QObject):
         if obj == self.rundat['mainwindow']['ui']:
             if isinstance(event, QCloseEvent):
                 print ('closing window')
-        return True
+                print ('note: implement closing routine')
+
+        res = False
+        try:
+            res = QObject.eventFilter(self.rundat['mainwindow']['ui'], obj, event)
+        except:
+            pass
+        return res
 
     def onTabForward(self):
 
@@ -84,15 +91,23 @@ class MainWindow(QObject):
 
         # next tab
         if tab_index+1 == tab_count:
-            self.rundat['mainwindow']['tabwidget_main'].setCurrentTabIndex(0)
-
-        print (tab_index, tab_count)
-
-        print ('tab forward')
+            self.rundat['mainwindow']['tabwidget_main'].setCurrentIndex(0)
+        elif self.rundat['mainwindow']['tabwidget_main'].isTabEnabled(tab_index+1):
+            self.rundat['mainwindow']['tabwidget_main'].setCurrentIndex(tab_index+1)
 
     def onTabBackward(self):
         
-        print ('tab backward')
+        # get current tab index
+        tab_index = self.rundat['mainwindow']['tabwidget_main'].currentIndex()
+
+        # get max index
+        tab_count = self.rundat['mainwindow']['tabwidget_main'].count()
+        
+        if tab_index == 0:
+            if self.rundat['mainwindow']['tabwidget_main'].isTabEnabled(tab_count-1):
+                self.rundat['mainwindow']['tabwidget_main'].setCurrentIndex(tab_count-1)
+        else:
+            self.rundat['mainwindow']['tabwidget_main'].setCurrentIndex(tab_index-1)
 
     def enableTabs(self):
 
