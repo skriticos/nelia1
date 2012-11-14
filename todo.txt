@@ -1,6 +1,5 @@
 ...
 + roadmap widget
-  + create data protocol for roadmap (milestones, features, issuses)
   + add milestone
   + delete milestone
   + reload milestones (on load)

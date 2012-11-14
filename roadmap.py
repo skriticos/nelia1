@@ -254,6 +254,26 @@ class NxRoadmap(QObject):
         if self.rundat['roadmap']['last_roadmap_pid'] == None \
                 or self.rundat['roadmap']['last_roadmap_pid'] != pid:
 
+            if pid not in self.savdat['roadmap']['p']:
+                # create container for project
+                self.savdat['roadmap']['p'][pid] = {}
+                # setup features and issues
+                self.savdat['roadmap']['p'][pid]['feature'] = {}
+                self.savdat['roadmap']['p'][pid]['feature']['nextfeature'] = 0
+                self.savdat['roadmap']['p'][pid]['feature']['f'] = {}
+                self.savdat['roadmap']['p'][pid]['issue'] = {}
+                self.savdat['roadmap']['p'][pid]['issue']['nextissue'] = 0
+                self.savdat['roadmap']['p'][pid]['issue']['i'] = {}
+                #  setup milestone
+                self.savdat['roadmap']['p'][pid]['milestone'] = {}
+                self.savdat['roadmap']['p'][pid]['milestone']['nextmilestone'] = 1
+                self.savdat['roadmap']['p'][pid]['milestone']['m'] = {}
+                #  setup first milestone
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][0] = {}
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][0]['name'] = '0.0.1'
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][0]['f'] = {}
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][0]['i'] = {}
+
             # new pid, reset view!
             project_name = self.rundat['project'][':getSelectedProjectName']()
 
