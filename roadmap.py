@@ -249,10 +249,68 @@ class NxRoadmap(QObject):
     ####################   METHODS   #################### 
     def onShowTab(self):
 
-        run_roadmap = self.rundat['roadmap']
-        sav_roadmap = self.savdat['roadmap']
-
         pid = self.rundat['project'][':getSelectedProject']()
+        
+        if self.rundat['roadmap']['last_roadmap_pid'] == None \
+                or self.rundat['roadmap']['last_roadmap_pid'] != pid:
+
+            # new pid, reset view!
+            project_name = self.rundat['project'][':getSelectedProjectName']()
+
+            self.rundat['roadmap']['rmap_line_project'].setText(project_name)
+            self.rundat['roadmap']['rmm_line_project'].setText(project_name)
+            self.rundat['roadmap']['af_line_project'].setText(project_name)
+            self.rundat['roadmap']['ef_line_project'].setText(project_name)
+            self.rundat['roadmap']['ai_line_project'].setText(project_name)
+            self.rundat['roadmap']['ei_line_project'].setText(project_name)
+            self.rundat['roadmap']['fil_line_project'].setText(project_name)
+
+            '''
+            run_log['ui_info_project_name'].setText(project_name)
+            run_log['ui_diag_new_info_project'].setText(project_name)
+            run_log['ui_diag_detail_info_project'].setText(project_name)
+        
+            table = run_log['table_log_history']
+            model = run_log['table_model_history']
+
+            model.clear()
+            model.setHorizontalHeaderLabels(run_log['table_model_history_headers'])
+            table.setModel(model)
+            table.setColumnWidth(0, 160)
+            table.setColumnWidth(1, 550)
+        
+            # create project id dict if not yet existent
+            if pid not in sav_log['p']:
+                sav_log['p'][pid] = {}              # project log container
+                sav_log['p'][pid]['lastlog'] = 0    # log counter
+                sav_log['p'][pid]['l'] = {}         # log entry container
+
+            # if we have entries in log already (enable details, select first row)
+            if sav_log['p'][pid]['lastlog'] > 0:
+
+                # populate table
+                for key, value in sav_log['p'][pid]['l'].items():
+                    timestamp = value['timestamp']
+                    summary = value['summary']
+                    lid = key
+                    disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+                    run_log['table_model_history'].insertRow(0, [
+                        QStandardItem(disptime),
+                        QStandardItem(summary),
+                        QStandardItem(str(lid))
+                        ])
+
+                # set controls
+                run_log['ui_table_history'].selectRow(0)
+                run_log['ui_cmd_detail'].setEnabled(True)
+            else:
+                run_log['ui_cmd_detail'].setEnabled(False)
+
+            run_log['last_log_pid'] = pid
+            run_log['ui_table_history'].sortByColumn(0, Qt.DescendingOrder);
+
+        run_log['ui_table_history'].setFocus()
+            '''
 
     def reset(self):
     
@@ -262,20 +320,30 @@ class NxRoadmap(QObject):
 
     ####################   CALLBACKS   #################### 
     def onManageMilestoneClick(self):
-        print ('pressed')
+
+        self.rundat['roadmap']['rmm'].show()
 
     def onAddFeatureClick(self):
-        pass
+        
+        self.rundat['roadmap']['af'].show()
+
     def onAddIssueClick(self):
-        pass
+
+        self.rundat['roadmap']['ai'].show()
+
     def onEditFeatureClick(self):
-        pass
+
+        self.rundat['roadmap']['ef'].show()
+
     def onEditIssueClick(self):
-        pass
+
+        self.rundat['roadmap']['ei'].show()
+
     def onDeleteFeature(self):
         pass
     def onDeleteIssue(self):
         pass
+
     def onSelectedFeatureOpen(self):
         pass
     def onSelectedFeatureClosed(self):
