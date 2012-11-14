@@ -1,0 +1,24 @@
+...
++ roadmap widget
+  + create data protocol for roadmap (milestones, features, issuses)
+  + add milestone
+  + delete milestone
+  + reload milestones (on load)
+  + move milestone (up, down)
+  + add feature
+  + reload features
+  + add issue
+  + reload issues
+  + edit feature properties, add feature comment
+  + edit issue properties, add issue comment
+  + delete issue / feature
+  + display listings for items on milestone selection / overall
++ project details (description, explore)
++ global shortcut save
++ handle exit
++ cleanup save/load/new/exit workflows (verification dialogs)
++ display niggiles (focus on tab change, double cursor)..
++ add copyright notice and cleanup
++ package (deb)
++ deploy to UCS (4.95)
+...
