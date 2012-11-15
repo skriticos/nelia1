@@ -215,6 +215,7 @@ class NxRoadmap(QObject):
         self.rundat['roadmap'][':onAllFetaureClose'] = self.onAllFetaureClose
         self.rundat['roadmap'][':onAllIssueOpen'] = self.onAllIssueOpen
         self.rundat['roadmap'][':onAllIssueClosed'] = self.onAllIssueClosed
+        self.rundat['roadmap'][':onAddRoadmap'] = self.onAddRoadmap
 
         # CALLBACKS
         self.rundat['roadmap']['rmap_push_manage_milestone'].clicked.connect(
@@ -245,6 +246,9 @@ class NxRoadmap(QObject):
             self.rundat['roadmap'][':onAllIssueOpen'])
         self.rundat['roadmap']['rmap_push_all_issue_close'].clicked.connect(
             self.rundat['roadmap'][':onAllIssueClosed'])
+
+        self.rundat['roadmap']['rmm_push_add'].clicked.connect(
+            self.rundat['roadmap'][':onAddRoadmap'])
         
     ####################   METHODS   #################### 
     def onShowTab(self):
@@ -290,13 +294,6 @@ class NxRoadmap(QObject):
             self.rundat['roadmap']['fil_line_project'].setText(project_name)
 
             # process milestone list (update widgets)
-            # #1: rmap_combo_milestone
-            # #2: rmm_combo_parent
-            # #3: rmm_table_milestones
-            # #4: rmap_push_open_features
-            # #5: rmap_push_open_issues
-            # #6: rmap_push_closed_features
-            # #7: rmap_push_closed_issues
             smref = self.savdat['roadmap']['p'][pid]['milestone']
             rmref = self.rundat['roadmap']
             rmref['selected'] = smref['current'] + 1 # the currently selected milestone (next by default)
@@ -325,6 +322,12 @@ class NxRoadmap(QObject):
             self.rundat['roadmap']['rmap_combo_milestone'].clear()
             self.rundat['roadmap']['rmap_combo_milestone'].addItems(items)
             self.rundat['roadmap']['rmap_combo_milestone'].setCurrentIndex(index_of_next)
+            self.rundat['roadmap']['rmm_combo_parent'].clear()
+            self.rundat['roadmap']['rmm_combo_parent'].addItems(items)
+            self.rundat['roadmap']['rmm_combo_parent'].setCurrentIndex(smref['nextmilestone']-2)
+
+            # populate milestone table (milestone name, relation, features (1/2), issues (4/6))
+            rmm_table_header = ['Name', 'Delta', 'Features', 'Issues']
 
     def reset(self):
     
@@ -373,6 +376,12 @@ class NxRoadmap(QObject):
     def onAllIssueOpen(self):
         pass
     def onAllIssueClosed(self):
+        pass
+
+    ####################   MANAGE MILESTONES   #################### 
+
+    def onAddRoadmap(self):
+
         pass
 
 # vim: set ts=4 sw=4 ai si expandtab:
