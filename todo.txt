@@ -8,8 +8,11 @@
   + reload milestones (on load)
   + move milestone (up, down)
   + add feature
+  + complete feature
   + reload features
+  + !! add milestone complted widget
   + add issue
+  + complete issue
   + reload issues
   + edit feature properties, add feature comment
   + edit issue properties, add issue comment

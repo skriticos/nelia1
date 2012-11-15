@@ -299,10 +299,32 @@ class NxRoadmap(QObject):
             # #7: rmap_push_closed_issues
             smref = self.savdat['roadmap']['p'][pid]['milestone']
             rmref = self.rundat['roadmap']
-            rmref['selected'] = smref['m']['current'] + 1
-            for minst_idx in range(mref['nextmilestone']):
+            rmref['selected'] = smref['current'] + 1 # the currently selected milestone (next by default)
 
-                pass
+            # iterate through milestones
+            items = []
+            current = smref['current'] # int
+            index_of_next = 0
+            for idx in range(1, smref['nextmilestone']):
+                item_name = smref['m'][idx]['name']
+                item_name += '   ('
+                if idx > current:
+                    item_name += '+'
+                    item_name += str(idx-current)
+                    if idx-current == 1:
+                        item_name += ', next'
+                        index_of_next = idx-1
+                    item_name += ')'
+                elif idx == current:
+                    item_name += '+0, current)'
+                else:
+                    item_name += '-'
+                    item_name += str(current-idx)
+                    item_name += ')'
+                items.append(item_name)
+            self.rundat['roadmap']['rmap_combo_milestone'].clear()
+            self.rundat['roadmap']['rmap_combo_milestone'].addItems(items)
+            self.rundat['roadmap']['rmap_combo_milestone'].setCurrentIndex(index_of_next)
 
     def reset(self):
     
