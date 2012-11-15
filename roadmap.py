@@ -254,6 +254,9 @@ class NxRoadmap(QObject):
         if self.rundat['roadmap']['last_roadmap_pid'] == None \
                 or self.rundat['roadmap']['last_roadmap_pid'] != pid:
 
+            self.rundat['roadmap']['selected_milestone_delta'] = 1
+
+            # create pid data if not already done
             if pid not in self.savdat['roadmap']['p']:
                 # create container for project
                 self.savdat['roadmap']['p'][pid] = {}
@@ -266,13 +269,14 @@ class NxRoadmap(QObject):
                 self.savdat['roadmap']['p'][pid]['issue']['i'] = {}
                 #  setup milestone
                 self.savdat['roadmap']['p'][pid]['milestone'] = {}
-                self.savdat['roadmap']['p'][pid]['milestone']['nextmilestone'] = 1
+                self.savdat['roadmap']['p'][pid]['milestone']['current'] = 0 # no milestone reached yet
+                self.savdat['roadmap']['p'][pid]['milestone']['nextmilestone'] = 2
                 self.savdat['roadmap']['p'][pid]['milestone']['m'] = {}
                 #  setup first milestone
-                self.savdat['roadmap']['p'][pid]['milestone']['m'][0] = {}
-                self.savdat['roadmap']['p'][pid]['milestone']['m'][0]['name'] = '0.0.1'
-                self.savdat['roadmap']['p'][pid]['milestone']['m'][0]['f'] = {}
-                self.savdat['roadmap']['p'][pid]['milestone']['m'][0]['i'] = {}
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][1] = {}
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][1]['name'] = '0.0.1'
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][1]['fid'] = set() # list of feature ids
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][1]['iid'] = set() # list of issue ids
 
             # new pid, reset view!
             project_name = self.rundat['project'][':getSelectedProjectName']()
@@ -285,52 +289,20 @@ class NxRoadmap(QObject):
             self.rundat['roadmap']['ei_line_project'].setText(project_name)
             self.rundat['roadmap']['fil_line_project'].setText(project_name)
 
-            '''
-            run_log['ui_info_project_name'].setText(project_name)
-            run_log['ui_diag_new_info_project'].setText(project_name)
-            run_log['ui_diag_detail_info_project'].setText(project_name)
-        
-            table = run_log['table_log_history']
-            model = run_log['table_model_history']
+            # process milestone list (update widgets)
+            # #1: rmap_combo_milestone
+            # #2: rmm_combo_parent
+            # #3: rmm_table_milestones
+            # #4: rmap_push_open_features
+            # #5: rmap_push_open_issues
+            # #6: rmap_push_closed_features
+            # #7: rmap_push_closed_issues
+            smref = self.savdat['roadmap']['p'][pid]['milestone']
+            rmref = self.rundat['roadmap']
+            rmref['selected'] = smref['m']['current'] + 1
+            for minst_idx in range(mref['nextmilestone']):
 
-            model.clear()
-            model.setHorizontalHeaderLabels(run_log['table_model_history_headers'])
-            table.setModel(model)
-            table.setColumnWidth(0, 160)
-            table.setColumnWidth(1, 550)
-        
-            # create project id dict if not yet existent
-            if pid not in sav_log['p']:
-                sav_log['p'][pid] = {}              # project log container
-                sav_log['p'][pid]['lastlog'] = 0    # log counter
-                sav_log['p'][pid]['l'] = {}         # log entry container
-
-            # if we have entries in log already (enable details, select first row)
-            if sav_log['p'][pid]['lastlog'] > 0:
-
-                # populate table
-                for key, value in sav_log['p'][pid]['l'].items():
-                    timestamp = value['timestamp']
-                    summary = value['summary']
-                    lid = key
-                    disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
-                    run_log['table_model_history'].insertRow(0, [
-                        QStandardItem(disptime),
-                        QStandardItem(summary),
-                        QStandardItem(str(lid))
-                        ])
-
-                # set controls
-                run_log['ui_table_history'].selectRow(0)
-                run_log['ui_cmd_detail'].setEnabled(True)
-            else:
-                run_log['ui_cmd_detail'].setEnabled(False)
-
-            run_log['last_log_pid'] = pid
-            run_log['ui_table_history'].sortByColumn(0, Qt.DescendingOrder);
-
-        run_log['ui_table_history'].setFocus()
-            '''
+                pass
 
     def reset(self):
     

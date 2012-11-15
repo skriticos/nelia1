@@ -1,6 +1,9 @@
 ...
 + roadmap widget
   + add milestone
+    + populate milestone widget (dropdown list, next milestone, if MMP) and rmap
+	+ add entry
+	+ update milestone list (in rmm and rmap)
   + delete milestone
   + reload milestones (on load)
   + move milestone (up, down)
