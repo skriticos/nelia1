@@ -182,7 +182,6 @@ class NxRoadmap(QObject):
         self.rundat['roadmap']['rmm_radio_mmp'] = rmm.rmm_radio_mmp
         self.rundat['roadmap']['rmm_spin_major'] = rmm.rmm_spin_major
         self.rundat['roadmap']['rmm_spin_minor'] = rmm.rmm_spin_minor
-        self.rundat['roadmap']['rmm_spin_patch'] = rmm.rmm_spin_patch
         self.rundat['roadmap']['rmm_table_milestones'] = rmm.rmm_table_milestones
        
         # config
@@ -216,6 +215,7 @@ class NxRoadmap(QObject):
         self.rundat['roadmap'][':onAllIssueOpen'] = self.onAllIssueOpen
         self.rundat['roadmap'][':onAllIssueClosed'] = self.onAllIssueClosed
         self.rundat['roadmap'][':onAddRoadmap'] = self.onAddRoadmap
+        self.rundat['roadmap'][':rebuildRoadmapIndex'] = self.rebuildRoadmapIndex
 
         # CALLBACKS
         self.rundat['roadmap']['rmap_push_manage_milestone'].clicked.connect(
@@ -251,10 +251,69 @@ class NxRoadmap(QObject):
             self.rundat['roadmap'][':onAddRoadmap'])
         
     ####################   METHODS   #################### 
+
+    def rebuildRoadmapIndex(self):
+
+        # rebuild roadmap index for currently selected project
+        # this is required when milestones are reached or deleted
+
+        """
+            2.0 (+2) .. id 10
+            1.2 (+1, next) .. id 9
+            1.1 (+0, current) .. id 7
+            1.0 (-1, previous) .. id 5
+            0.4 (-2) .. id 4
+            0.2 (-3) .. id 3
+            0.1 (-4) .. id 1
+            =>
+            ID -> VERSION, DELTA, LABEL,
+                  FEATURES, FEATURES COMPLETED,
+                  ISSUES, ISSUES COMPLETED
+            {1: ['0.1', -4, '-4', 19, 19, 12, 12], # all features and issues of past are completed
+             3: ['0.2', -3, '-3', 32, 32, 24, 24],
+             4: ['0.4', -2, '-2', 10, 10, 30, 30],
+             5: ['1.0', -1, '-1, previous', 40, 40, 21, 21],
+             7: ['1.1', +0, '+0, current', 2, 1, 7, 5], # current version is always a mixed bag
+             9: ['1.2', +1, '+1, next', 8, 0, 3, 0], # future issues and features are reparented if completed ahead of schedule
+             10: ['2.0', +2, '+2', 64, 0, 2, 0]
+            }
+        """
+        pid = self.rundat['project'][':getSelectedProject']()
+        pbase = self.savdat['roadmap']['p'][pid]
+        mbase = pbase['milestone']
+        index = pbase['index'] = {}
+        index['milestone_list_items'] = []
+
+        for idx in range(1, mbase['nextmilestone']):
+
+            # break out of loop if milestone was deleted
+            if idx not in mbase['m']:
+                continue
+
+            # compute roadmap label
+            item_name = mbase['m'][idx]['name']
+            item_name += '   ('
+            current = mbase['current']
+            if idx > current:
+                item_name += '+'
+                item_name += str(idx-current)
+                if idx-current == 1:
+                    item_name += ', next'
+                    index_of_next = idx-1
+                item_name += ')'
+            elif idx == current:
+                item_name += '+0, current)'
+            else:
+                item_name += '-'
+                item_name += str(current-idx)
+                item_name += ')'
+            index['milestone_list_items'].append(item_name)
+
     def onShowTab(self):
 
         pid = self.rundat['project'][':getSelectedProject']()
         
+        # project selection changed or new project
         if self.rundat['roadmap']['last_roadmap_pid'] == None \
                 or self.rundat['roadmap']['last_roadmap_pid'] != pid:
 
@@ -278,7 +337,7 @@ class NxRoadmap(QObject):
                 self.savdat['roadmap']['p'][pid]['milestone']['m'] = {}
                 #  setup first milestone
                 self.savdat['roadmap']['p'][pid]['milestone']['m'][1] = {}
-                self.savdat['roadmap']['p'][pid]['milestone']['m'][1]['name'] = '0.0.1'
+                self.savdat['roadmap']['p'][pid]['milestone']['m'][1]['name'] = '0.1'
                 self.savdat['roadmap']['p'][pid]['milestone']['m'][1]['fid'] = set() # list of feature ids
                 self.savdat['roadmap']['p'][pid]['milestone']['m'][1]['iid'] = set() # list of issue ids
 
@@ -297,37 +356,26 @@ class NxRoadmap(QObject):
             smref = self.savdat['roadmap']['p'][pid]['milestone']
             rmref = self.rundat['roadmap']
             rmref['selected'] = smref['current'] + 1 # the currently selected milestone (next by default)
-
-            # iterate through milestones
-            items = []
-            current = smref['current'] # int
-            index_of_next = 0
-            for idx in range(1, smref['nextmilestone']):
-                item_name = smref['m'][idx]['name']
-                item_name += '   ('
-                if idx > current:
-                    item_name += '+'
-                    item_name += str(idx-current)
-                    if idx-current == 1:
-                        item_name += ', next'
-                        index_of_next = idx-1
-                    item_name += ')'
-                elif idx == current:
-                    item_name += '+0, current)'
-                else:
-                    item_name += '-'
-                    item_name += str(current-idx)
-                    item_name += ')'
-                items.append(item_name)
-            self.rundat['roadmap']['rmap_combo_milestone'].clear()
-            self.rundat['roadmap']['rmap_combo_milestone'].addItems(items)
-            self.rundat['roadmap']['rmap_combo_milestone'].setCurrentIndex(index_of_next)
-            self.rundat['roadmap']['rmm_combo_parent'].clear()
-            self.rundat['roadmap']['rmm_combo_parent'].addItems(items)
-            self.rundat['roadmap']['rmm_combo_parent'].setCurrentIndex(smref['nextmilestone']-2)
-
+            
             # populate milestone table (milestone name, relation, features (1/2), issues (4/6))
-            rmm_table_header = ['Name', 'Delta', 'Features', 'Issues']
+            rmm_table_header = ['Name', 'Delta', 'Features', 'Issues', 'Id']
+            table = self.rundat['roadmap']['rmm_table_milestones']
+            model = QStandardItemModel()
+            model.setHorizontalHeaderLabels(rmm_table_header)
+            table.setModel(model)
+
+            self.rundat['roadmap'][':rebuildRoadmapIndex']()
+            pbase = self.savdat['roadmap']['p'][pid]
+            mbase = pbase['milestone']
+            index = pbase['index']
+
+            # populate combo boxes
+            self.rundat['roadmap']['rmap_combo_milestone'].clear()
+            self.rundat['roadmap']['rmap_combo_milestone'].addItems(index['milestone_list_items'])
+            self.rundat['roadmap']['rmap_combo_milestone'].setCurrentIndex(0)
+            self.rundat['roadmap']['rmm_combo_parent'].clear()
+            self.rundat['roadmap']['rmm_combo_parent'].addItems(index['milestone_list_items'])
+            self.rundat['roadmap']['rmm_combo_parent'].setCurrentIndex(smref['nextmilestone']-2)
 
     def reset(self):
     

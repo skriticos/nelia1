@@ -262,7 +262,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>&amp;MMP:</string>
+            <string>&amp;MM:</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -272,6 +272,9 @@
          <item row="2" column="1">
           <widget class="QWidget" name="widget_5" native="true">
            <layout class="QFormLayout" name="formLayout">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+            </property>
             <item row="0" column="0">
              <widget class="QLabel" name="label_3">
               <property name="sizePolicy">
@@ -321,32 +324,6 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Patch:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QSpinBox" name="rmm_spin_patch">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="value">
-               <number>0</number>
-              </property>
-             </widget>
-            </item>
            </layout>
           </widget>
          </item>
@@ -384,7 +361,7 @@
           <widget class="QComboBox" name="rmm_combo_parent">
            <item>
             <property name="text">
-             <string>0.0.0 (+0, current)</string>
+             <string>0.0 (+0, current)</string>
             </property>
            </item>
           </widget>
@@ -445,7 +422,6 @@
   <tabstop>rmm_radio_mmp</tabstop>
   <tabstop>rmm_spin_major</tabstop>
   <tabstop>rmm_spin_minor</tabstop>
-  <tabstop>rmm_spin_patch</tabstop>
   <tabstop>rmm_radio_custom</tabstop>
   <tabstop>rmm_line_custom</tabstop>
   <tabstop>rmm_table_milestones</tabstop>
@@ -515,22 +491,6 @@
     <hint type="destinationlabel">
      <x>650</x>
      <y>227</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rmm_radio_mmp</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>rmm_spin_patch</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>492</x>
-     <y>181</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>658</x>
-     <y>259</y>
     </hint>
    </hints>
   </connection>

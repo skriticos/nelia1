@@ -1,5 +1,7 @@
 ...
 + roadmap widget
+  + roadmap rundat data structure for display
+    + milestone list -> names, deltas, open / closed issues / features
   + add milestone
     + populate milestone widget (dropdown list, next milestone, if MMP) and rmap
 	+ add entry

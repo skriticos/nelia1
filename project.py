@@ -80,7 +80,6 @@ class NxProject(QObject):
         rd['project']['diag_new_category'] = new_diag.combo_category
         rd['project']['diag_new_priority'] = new_diag.spin_priority
         rd['project']['diag_new_challenge'] = new_diag.spin_challenge
-        rd['project']['diag_new_version'] = new_diag.line_version
         rd['project']['diag_new_basepath'] = new_diag.line_basepath
         rd['project']['diag_new_browse_path'] = new_diag.push_browse_path
         rd['project']['diag_new_detail'] =    new_diag.text_description
@@ -92,7 +91,6 @@ class NxProject(QObject):
         rd['project']['diag_edit_category'] = edit_diag.combo_category
         rd['project']['diag_edit_priority'] = edit_diag.spin_priority
         rd['project']['diag_edit_challenge'] = edit_diag.spin_challenge
-        rd['project']['diag_edit_version'] = edit_diag.line_version
         rd['project']['diag_edit_basepath'] = edit_diag.line_basepath
         rd['project']['diag_edit_browse_path'] = edit_diag.push_browse_path
         rd['project']['diag_edit_detail'] =    edit_diag.text_description
@@ -193,7 +191,6 @@ class NxProject(QObject):
         project['diag_new_category'].setCurrentIndex(0)
         project['diag_new_priority'].setValue(0)
         project['diag_new_challenge'].setValue(0)
-        project['diag_new_version'].setText('0.0.0')
         project['diag_new_detail'].clear()
 
         project['diag_new_name'].setFocus()
@@ -214,7 +211,6 @@ class NxProject(QObject):
         category = run_project['diag_new_category'].currentText()
         priority = run_project['diag_new_priority'].value()
         challenge = run_project['diag_new_challenge'].value()
-        version = run_project['diag_new_version'].text()
         detail = run_project['diag_new_detail'].toPlainText()
 
         timestamp = int(time.time())
@@ -229,7 +225,6 @@ class NxProject(QObject):
         sav_project['p'][pid]['category']  = category
         sav_project['p'][pid]['priority']  = priority
         sav_project['p'][pid]['challenge'] = challenge
-        sav_project['p'][pid]['version']   = version
         sav_project['p'][pid]['detail']    = detail
         sav_project['p'][pid]['timestamp'] = timestamp
         sav_project['lastid'] += 1
@@ -244,7 +239,7 @@ class NxProject(QObject):
             QStandardItem(category),
             QStandardItem(str(priority)),
             QStandardItem(str(challenge)),
-            QStandardItem(version),
+            QStandardItem('0.0'),
             QStandardItem(disptime),
             QStandardItem(str(pid))
             ])
@@ -376,7 +371,6 @@ class NxProject(QObject):
 
         rd['project']['diag_edit_name'].setText(sd['project']['p'][pid]['name'])
         rd['project']['diag_edit_basepath'].setText(sd['project']['p'][pid]['basepath'])
-        rd['project']['diag_edit_version'].setText(sd['project']['p'][pid]['version'])
         self.setComboValue(rd['project']['diag_edit_type'], sd['project']['p'][pid]['type'])
         self.setComboValue(rd['project']['diag_edit_status'], sd['project']['p'][pid]['status'])
         self.setComboValue(rd['project']['diag_edit_category'], sd['project']['p'][pid]['category'])
@@ -417,7 +411,6 @@ class NxProject(QObject):
         sd['project']['p'][pid]['category'] = rd['project']['diag_edit_category'].currentText()
         sd['project']['p'][pid]['priority'] = rd['project']['diag_edit_priority'].value()
         sd['project']['p'][pid]['challenge'] = rd['project']['diag_edit_challenge'].value()
-        sd['project']['p'][pid]['version'] = rd['project']['diag_edit_version'].text()
         sd['project']['p'][pid]['detail'] = rd['project']['diag_edit_detail'].toPlainText()
         sd['project']['p'][pid]['timestamp'] = timestamp
         
@@ -430,7 +423,7 @@ class NxProject(QObject):
             (3, rd['project']['diag_edit_category'].currentText()),
             (4, rd['project']['diag_edit_priority'].value()),
             (5, rd['project']['diag_edit_challenge'].value()),
-            (6, rd['project']['diag_edit_version'].text()),
+            (6, '0.0'), # FIXME: get this from milestones
             (7, disptime),
             (8, str(pid))
         )
@@ -471,7 +464,7 @@ class NxProject(QObject):
                 QStandardItem(project['category']),
                 QStandardItem(str(project['priority'])),
                 QStandardItem(str(project['challenge'])),
-                QStandardItem(project['version']),
+                QStandardItem('0.0'), # FIXME: get this from milestones
                 QStandardItem(disptime),
                 QStandardItem(str(pid))
             ])

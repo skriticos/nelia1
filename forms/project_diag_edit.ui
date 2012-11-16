@@ -26,6 +26,16 @@
    <property name="spacing">
     <number>10</number>
    </property>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="line_basepath">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>4</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
@@ -107,7 +117,7 @@
      </item>
     </widget>
    </item>
-   <item row="1" column="3" rowspan="7">
+   <item row="1" column="3" rowspan="6">
     <widget class="QPlainTextEdit" name="text_description">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -281,19 +291,6 @@
     </widget>
    </item>
    <item row="6" column="0">
-    <widget class="QLabel" name="label_8">
-     <property name="text">
-      <string>&amp;Version:</string>
-     </property>
-     <property name="buddy">
-      <cstring>line_version</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1" colspan="2">
-    <widget class="QLineEdit" name="line_version"/>
-   </item>
-   <item row="7" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
       <string>&amp;Basepath:</string>
@@ -303,17 +300,7 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
-    <widget class="QLineEdit" name="line_basepath">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>4</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="2">
+   <item row="6" column="2">
     <widget class="QPushButton" name="push_browse_path">
      <property name="minimumSize">
       <size>
@@ -326,7 +313,7 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0" colspan="4">
+   <item row="7" column="0" colspan="4">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="locale">
       <locale language="English" country="UnitedStates"/>
@@ -354,7 +341,6 @@
   <tabstop>combo_category</tabstop>
   <tabstop>spin_priority</tabstop>
   <tabstop>spin_challenge</tabstop>
-  <tabstop>line_version</tabstop>
   <tabstop>line_basepath</tabstop>
   <tabstop>push_browse_path</tabstop>
   <tabstop>text_description</tabstop>
