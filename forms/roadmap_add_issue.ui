@@ -57,7 +57,13 @@
       <property name="spacing">
        <number>10</number>
       </property>
-      <item row="0" column="0">
+      <item row="1" column="0">
+       <widget class="QWidget" name="widget_3" native="true">
+        <zorder>label_5</zorder>
+        <zorder>ai_radio_critical</zorder>
+       </widget>
+      </item>
+      <item row="0" column="1">
        <widget class="QLabel" name="label_6">
         <property name="minimumSize">
          <size>
@@ -73,7 +79,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="1" column="1">
        <widget class="QPlainTextEdit" name="ai_text_description">
         <property name="plainText">
          <string>issue description</string>
@@ -133,126 +139,7 @@
       <property name="spacing">
        <number>10</number>
       </property>
-      <item row="1" column="2" colspan="3">
-       <widget class="QComboBox" name="ai_combo_target">
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>0</height>
-         </size>
-        </property>
-        <item>
-         <property name="text">
-          <string>0.1.0 (+1, next)</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QSpinBox" name="ai_spin_priority">
-        <property name="value">
-         <number>50</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Feature &amp;Name:</string>
-        </property>
-        <property name="buddy">
-         <cstring>ai_line_name</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QRadioButton" name="ai_radio_critical">
-        <property name="text">
-         <string>Critical</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>&amp;Priority:</string>
-        </property>
-        <property name="buddy">
-         <cstring>ai_spin_priority</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>T&amp;ype:</string>
-        </property>
-        <property name="buddy">
-         <cstring>ai_radio_high</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3" colspan="4">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>&amp;Target Milestone:</string>
-        </property>
-        <property name="buddy">
-         <cstring>ai_combo_target</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" colspan="5">
-       <widget class="QLineEdit" name="ai_line_name">
-        <property name="minimumSize">
-         <size>
-          <width>400</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>issue name</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QRadioButton" name="ai_radio_high">
-        <property name="text">
-         <string>High</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="4">
-       <widget class="QRadioButton" name="ai_combo_medium">
-        <property name="text">
-         <string>Medium</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="5">
-       <widget class="QRadioButton" name="ai_combo_low">
-        <property name="text">
-         <string>Low</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="5" colspan="2">
+      <item row="1" column="7">
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -265,6 +152,156 @@
         </property>
        </spacer>
       </item>
+      <item row="1" column="2" colspan="2">
+       <widget class="QComboBox" name="ai_combo_target">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>0.1 (+0.1)</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Feature &amp;Name:</string>
+        </property>
+        <property name="buddy">
+         <cstring>ai_line_name</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>&amp;Priority:</string>
+        </property>
+        <property name="buddy">
+         <cstring>ai_spin_priority</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>&amp;Target Milestone:</string>
+        </property>
+        <property name="buddy">
+         <cstring>ai_combo_target</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QSpinBox" name="ai_spin_priority">
+        <property name="value">
+         <number>50</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" colspan="8">
+       <widget class="QLineEdit" name="ai_line_name">
+        <property name="minimumSize">
+         <size>
+          <width>400</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>issue name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="8">
+       <widget class="QWidget" name="widget_5" native="true">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item row="0" column="4">
+          <widget class="QRadioButton" name="ai_combo_medium">
+           <property name="text">
+            <string>Medium</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QRadioButton" name="ai_radio_high">
+           <property name="text">
+            <string>High</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QRadioButton" name="ai_radio_critical">
+           <property name="text">
+            <string>Critical</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>T&amp;ype:</string>
+           </property>
+           <property name="buddy">
+            <cstring>ai_radio_high</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="6">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="5">
+          <widget class="QRadioButton" name="ai_combo_low">
+           <property name="text">
+            <string>Low</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>90</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -273,8 +310,6 @@
  <tabstops>
   <tabstop>ai_line_name</tabstop>
   <tabstop>ai_combo_target</tabstop>
-  <tabstop>ai_spin_priority</tabstop>
-  <tabstop>ai_radio_critical</tabstop>
   <tabstop>ai_text_description</tabstop>
   <tabstop>ai_line_project</tabstop>
   <tabstop>buttonBox</tabstop>

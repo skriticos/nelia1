@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
-    <height>643</height>
+    <width>791</width>
+    <height>634</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -140,14 +140,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="4">
-       <widget class="QRadioButton" name="af_radio_secondary">
-        <property name="text">
-         <string>Secondary</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" colspan="4">
+      <item row="0" column="2" colspan="10">
        <widget class="QLineEdit" name="af_line_name">
         <property name="minimumSize">
          <size>
@@ -157,56 +150,6 @@
         </property>
         <property name="text">
          <string>feature name</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3" colspan="3">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>&amp;Priority:</string>
-        </property>
-        <property name="buddy">
-         <cstring>af_spin_priority</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>T&amp;ype:</string>
-        </property>
-        <property name="buddy">
-         <cstring>af_radio_secondary</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QSpinBox" name="af_spin_priority">
-        <property name="value">
-         <number>50</number>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QRadioButton" name="af_radio_primary">
-        <property name="text">
-         <string>Primary</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -220,22 +163,22 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2" colspan="3">
+      <item row="1" column="2" colspan="2">
        <widget class="QComboBox" name="af_combo_target">
         <property name="minimumSize">
          <size>
-          <width>200</width>
+          <width>0</width>
           <height>0</height>
          </size>
         </property>
         <item>
          <property name="text">
-          <string>0.1.0 (+1, next)</string>
+          <string>0.1 (+0.1)</string>
          </property>
         </item>
        </widget>
       </item>
-      <item row="1" column="5">
+      <item row="1" column="11">
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -243,6 +186,82 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="9">
+       <widget class="QRadioButton" name="af_radio_primary">
+        <property name="text">
+         <string>Primary</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="10">
+       <widget class="QRadioButton" name="af_radio_secondary">
+        <property name="text">
+         <string>Secondary</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>&amp;Priority:</string>
+        </property>
+        <property name="buddy">
+         <cstring>af_spin_priority</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="8">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>T&amp;ype:</string>
+        </property>
+        <property name="buddy">
+         <cstring>af_radio_secondary</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QSpinBox" name="af_spin_priority">
+        <property name="value">
+         <number>50</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="7">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
           <height>20</height>
          </size>
         </property>
@@ -256,10 +275,7 @@
  <tabstops>
   <tabstop>af_line_name</tabstop>
   <tabstop>af_combo_target</tabstop>
-  <tabstop>af_spin_priority</tabstop>
-  <tabstop>af_radio_primary</tabstop>
   <tabstop>af_text_description</tabstop>
-  <tabstop>af_radio_secondary</tabstop>
   <tabstop>af_line_project</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
