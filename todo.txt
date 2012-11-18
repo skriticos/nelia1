@@ -1,25 +1,10 @@
 ...
 + roadmap widget
-  + roadmap rundat data structure for display
-    + milestone list -> names, deltas, open / closed issues / features
-  + add milestone
-    + populate milestone widget (dropdown list, next milestone, if MMP) and rmap
-	+ add entry
-	+ update milestone list (in rmm and rmap)
-  + delete milestone
-  + reload milestones (on load)
-  + move milestone (up, down)
   + add feature
-  + complete feature
-  + reload features
-  + !! add milestone complted widget
-  + add issue
-  + complete issue
-  + reload issues
-  + edit feature properties, add feature comment
-  + edit issue properties, add issue comment
-  + delete issue / feature
-  + display listings for items on milestone selection / overall
+    + insert feature in savedat
+	+ insert feature in roadmap table
+	+ if feature populates newest major/minor milestone, create new
+	+ set changed flag
 + project details (description, explore)
 + global shortcut save
 + handle exit

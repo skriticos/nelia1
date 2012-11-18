@@ -40,6 +40,11 @@ class NxRoadmap(QObject):
 
         self.rundat['roadmap'][':onShowTab'] = self.onShowTab
 
+        self.rundat['roadmap']['feature_headers'] = \
+            ['Name', 'Target', 'Prio.', 'Type', 'Compl.', 'ID']
+        self.rundat['roadmap']['issue_headers'] = \
+            ['Name', 'Target', 'Prio.', 'Sev.', 'Closed', 'ID']
+
         self.roadmap.rmap_push_add_feature.clicked.connect(self.showAddFeature)
         self.add_feature.accepted.connect(self.onSubmitNewFeature)
         
@@ -137,6 +142,39 @@ class NxRoadmap(QObject):
         self.add_feature.af_radio_secondary.setChecked(False)
         self.add_feature.af_radio_primary.setChecked(True)
         self.add_feature.af_spin_priority.setValue(50)
+
+        # reset tables
+        table = self.roadmap.rmap_table_features
+        model = self.rundat['roadmap']['feature_table_model'] = QStandardItemModel()
+        model.clear()
+
+        model.setHorizontalHeaderLabels(self.rundat['roadmap']['feature_headers'])
+        table.setModel(model)
+        
+        table.setColumnWidth(0, 200)
+        table.setColumnWidth(1, 50)
+        table.setColumnWidth(2, 50)
+        table.setColumnWidth(3, 50)
+        table.setColumnWidth(4, 68)
+        table.setColumnWidth(5, 50)
+
+        # TODO: POPULATE FEATURES TABLE ON TAB SWITCH
+
+        table = self.roadmap.rmap_table_issues
+        model = self.rundat['roadmap']['issue_table_model'] = QStandardItemModel()
+        model.clear()
+        
+        model.setHorizontalHeaderLabels(self.rundat['roadmap']['issue_headers'])
+        table.setModel(model)
+        
+        table.setColumnWidth(0, 200)
+        table.setColumnWidth(1, 50)
+        table.setColumnWidth(2, 50)
+        table.setColumnWidth(3, 50)
+        table.setColumnWidth(4, 68)
+        table.setColumnWidth(5, 50)
+
+        # TODO: POPULATE ISSUES TABLE ON TAB SWITCH
 
     def showAddFeature(self):
         
