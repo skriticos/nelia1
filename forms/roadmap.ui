@@ -61,7 +61,7 @@
       <property name="spacing">
        <number>10</number>
       </property>
-      <item row="0" column="7">
+      <item row="0" column="9">
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -74,35 +74,47 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="rmap_push_edit_feature">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Edit Fea&amp;ture..</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
+      <item row="0" column="3">
        <widget class="QPushButton" name="rmap_push_add_feature">
         <property name="text">
          <string>Add &amp;Feature..</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="rmap_push_delete_feature">
+      <item row="0" column="4">
+       <widget class="QPushButton" name="rmap_push_add_issue">
+        <property name="text">
+         <string>Add &amp;Issue..</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="rmap_combo_milestone">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <item>
+         <property name="text">
+          <string>0.1   (+0.1, f: 0/0, i: 0/0)</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="8">
+       <widget class="QPushButton" name="rmap_push_delete">
         <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Delete Feature</string>
+         <string>&amp;Delete</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <spacer name="horizontalSpacer_2">
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -117,37 +129,46 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="4">
-       <widget class="QPushButton" name="rmap_push_add_issue">
-        <property name="text">
-         <string>Add &amp;Issue..</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
-       <widget class="QPushButton" name="rmap_push_edit_issue">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Edit I&amp;ssue..</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="6">
-       <widget class="QPushButton" name="rmap_push_delete_issue">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="7">
+       <widget class="QPushButton" name="rmap_push_edit">
         <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Delete Issue</string>
+         <string>&amp;Edit..</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>&amp;Milestone:</string>
+        </property>
+        <property name="buddy">
+         <cstring>rmap_combo_milestone</cstring>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="2" column="0">
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QGridLayout" name="gridLayout_5">
       <property name="margin">
@@ -168,7 +189,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Ope&amp;n Issues:</string>
+            <string>I&amp;ssues:</string>
            </property>
            <property name="buddy">
             <cstring>rmap_table_open_issues</cstring>
@@ -222,7 +243,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Open Fea&amp;tures:</string>
+            <string>Fea&amp;tures:</string>
            </property>
            <property name="buddy">
             <cstring>rmap_table_open_features</cstring>
@@ -235,221 +256,15 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QGridLayout" name="gridLayout_9">
-      <property name="margin">
-       <number>5</number>
-      </property>
-      <property name="spacing">
-       <number>10</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QGroupBox" name="groupBox_3">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="title">
-         <string>Selected Milestone</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <property name="spacing">
-          <number>10</number>
-         </property>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>&amp;Open Features:</string>
-           </property>
-           <property name="buddy">
-            <cstring>rmap_push_open_features</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="rmap_push_open_features">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Mileston&amp;e:</string>
-           </property>
-           <property name="buddy">
-            <cstring>rmap_combo_milestone</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" colspan="4">
-          <widget class="QComboBox" name="rmap_combo_milestone">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <item>
-            <property name="text">
-             <string>0.1   (+0.1, f: 0/0, i: 0/0)</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="2" column="3">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>O&amp;pen Issues:</string>
-           </property>
-           <property name="buddy">
-            <cstring>rmap_push_open_issues</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="4">
-          <widget class="QPushButton" name="rmap_push_open_issues">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="3">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Close&amp;d Issues:</string>
-           </property>
-           <property name="buddy">
-            <cstring>rmap_push_closed_issues</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="4">
-          <widget class="QPushButton" name="rmap_push_closed_issues">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>&amp;Closed Features:</string>
-           </property>
-           <property name="buddy">
-            <cstring>rmap_push_closed_features</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QPushButton" name="rmap_push_closed_features">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="3" column="2">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>rmap_push_add_feature</tabstop>
-  <tabstop>rmap_push_edit_feature</tabstop>
-  <tabstop>rmap_push_add_issue</tabstop>
-  <tabstop>rmap_push_edit_issue</tabstop>
   <tabstop>rmap_combo_milestone</tabstop>
+  <tabstop>rmap_push_add_feature</tabstop>
+  <tabstop>rmap_push_add_issue</tabstop>
+  <tabstop>rmap_push_delete</tabstop>
   <tabstop>rmap_table_open_features</tabstop>
   <tabstop>rmap_table_open_issues</tabstop>
-  <tabstop>rmap_push_open_features</tabstop>
   <tabstop>rmap_line_project</tabstop>
  </tabstops>
  <resources/>
