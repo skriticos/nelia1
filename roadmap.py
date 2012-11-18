@@ -184,6 +184,27 @@ class NxRoadmap(QObject):
     
     def onSubmitNewFeature(self):
 
+        pid = self.rundat['project'][':getSelectedProject']()
+        
+        milestone = self.add_feature.af_combo_target.currentText()
+        t_major, t_minor = milestone[1:milestone.find(' ')].split('.')
+
+        new_feature = {
+            'name': self.add_feature.af_line_name.text(),
+            'target': [t_major, t_minor],
+            'priority': self.add_feature.af_spin_priority.value()
+        }
+
+        """
+                self.savdat['roadmap'][pid] = {
+                    'last_feature_id': 0,       # each feature has a unique id
+                    'last_issue_id': 0,         # same goes for issues
+                    'current_milestone': [0,0], # last completed milestone
+                    'last_major': 1,            # highest existing major version
+                    0: {1: {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}, # v0.1
+                    1: {0: {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}  # v1.0
+                }
+        """
         print('submitted new feature')
 
     def reset(self, savdat):
