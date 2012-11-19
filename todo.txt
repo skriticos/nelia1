@@ -1,11 +1,14 @@
 ...
 + roadmap widget
   + add feature
-    + insert feature in savedat
-	+ insert feature in roadmap table
-	+ if feature populates newest major/minor milestone, create new
+	+ add feature to top of the feature list, if milestone is active
+	+ take over current selection of selected feature from roadmap widget
 	+ set changed flag
-+ project details (description, explore)
+  + update feature / issue listing when changing version selection
+  + add issue / -> should probably refactore most of the add feature code
+  + edit feature/issue
+  + delete feature / issue
++ project description box on select
 + global shortcut save
 + handle exit
 + cleanup save/load/new/exit workflows (verification dialogs)
