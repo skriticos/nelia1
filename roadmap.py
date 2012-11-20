@@ -206,8 +206,6 @@ class NxRoadmap(QObject):
                     ref = self.savdat['roadmap'][pid][major][minor] # reference to loop milestone
                     bref = self.savdat['roadmap'][pid] # referece to pid base
 
-                    print(ref)
-
                     foc = len(ref['fo']) # number of open features
                     fcc = len(ref['fc']) # number of closed features
                     ioc = len(ref['io']) # number of open issues
@@ -246,6 +244,9 @@ class NxRoadmap(QObject):
         self.add_feature.af_combo_target.clear()
         self.add_feature.af_combo_target.addItems(self.rundat['roadmap']['combo_labels'])
         self.add_feature.af_combo_target.setCurrentIndex(self.rundat['roadmap']['next_combo_index'])
+
+        from pprint import pprint
+        pprint(self.savdat['roadmap'])
 
 
     def reset(self, savdat):

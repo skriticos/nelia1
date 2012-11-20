@@ -1,5 +1,7 @@
 ...
++ create a prototype showing a push button with menu
 + roadmap widget
+  + change combo boxes to push buttons with nested menus
   + add feature
 	+ add feature to top of the feature list, if milestone is active
 	+ take over current selection of selected feature from roadmap widget
