@@ -35,7 +35,7 @@ class MilestonePushButton(QPushButton):
 
         super().__init__('None', parent)
 
-        self.menuRoot = QMenu('root')
+        self.menuRoot = QMenu('root', self)
         self.setMenu(self.menuRoot)
         
         self.data = data
@@ -120,7 +120,7 @@ class MilestonePushButton(QPushButton):
                 action.triggered.connect(self.milestoneSelectionChanged)
                 self.rundat[major][minor]['action'] = action
 
-            menu = QMenu('v{}.x   f:{}/{}   i:{}/{}'.format(major, afo, afo+afc, aio, aio+aic))
+            menu = QMenu('v{}.x   f:{}/{}   i:{}/{}'.format(major, afo, afo+afc, aio, aio+aic), self)
             self.rundat[major]['menu'] = menu
             for minor in self.rundat[major]:
 

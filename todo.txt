@@ -7,6 +7,7 @@
 	+ add feature to top of the feature list, if milestone is active
 	+ take over current selection of selected feature from roadmap widget
 	+ set changed flag
+  + complete milestone
   + update feature / issue listing when changing version selection
   + add issue / -> should probably refactore most of the add feature code
   + edit feature/issue
