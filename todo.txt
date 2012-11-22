@@ -1,6 +1,5 @@
 ...
 + create a prototype showing a push button with menu
- + -> track down sigsegv
 + roadmap widget
   + change combo boxes to push buttons with nested menus
   + add feature
@@ -17,6 +16,7 @@
 + handle exit
 + cleanup save/load/new/exit workflows (verification dialogs)
 + display niggiles (focus on tab change, double cursor)..
++ create application icon
 + add copyright notice and cleanup
 + package (deb)
 + deploy to UCS (4.95)

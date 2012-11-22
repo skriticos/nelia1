@@ -80,7 +80,11 @@ class MPushButton(QPushButton):
                 label = 'v{}.{}   {}{}.{}   f:{}/{}   i:{}/{}'.format(major, minor, sign, majd, mind, fo, fo+fc, io, io+ic)
                 if major == self.selected[0] and minor == self.selected[1]:
                     self.setText(label)
+
+                import images
+                icon = QIcon('open.png')
                 action = QAction(label, self)
+                action.setIcon(icon)
                 action.triggered.connect(self.selectionChanged)
                 menu.addAction(action)
 
