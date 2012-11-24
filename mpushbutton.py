@@ -30,8 +30,7 @@ class MPushButton(QPushButton):
 
     def setData(self, data, version):
 
-        # select the next minor version
-        self.selected = data['current_milestone'][0], data['current_milestone'][1]+1
+        self.selected = version
         
         self.menuRoot.clear()
 
@@ -69,26 +68,36 @@ class MPushButton(QPushButton):
                 mind = 0
                 sign = '+'
                 # compute minor delta
+                label = ''
                 if majd == 0:
-                    mind = minor
-                elif majd > 0:
                     mind = minor - data['current_milestone'][1]
+                    if mind == 0:
+                        label = '◈   '
+                    else:
+                        label = '◇   '
+                elif majd > 0:
+                    mind = minor
+                    label = '◇   '
                 else:
                     mind = data['current_milestone'][1] + (len(data[major]) - minor)
                     sign = '-'
+                    label = '◆   '
 
-                label = 'v{}.{}   {}{}.{}   f:{}/{}   i:{}/{}'.format(major, minor, sign, majd, mind, fo, fo+fc, io, io+ic)
+                label += 'v{}.{}   {}{}.{}   f:{}/{}   i:{}/{}'.format(major, minor, sign, majd, mind, fo, fo+fc, io, io+ic)
                 if major == self.selected[0] and minor == self.selected[1]:
                     self.setText(label)
 
-                import images
-                icon = QIcon('open.png')
                 action = QAction(label, self)
-                action.setIcon(icon)
                 action.triggered.connect(self.selectionChanged)
                 menu.addAction(action)
 
-            menu.setTitle('v{}.x   f:{}/{}   i:{}/{}'.format(major, afo, afo+afc, aio, aio+aic))
+            if major == data['current_milestone'][0]:
+                    label = '◈   '
+            elif major > data['current_milestone'][0]:
+                    label = '◇   '
+            else:
+                    label = '◆   '
+            menu.setTitle(label + 'v{}.x   f:{}/{}   i:{}/{}'.format(major, afo, afo+afc, aio, aio+aic))
             self.menuRoot.addMenu(menu)
         
         self.setMenu(self.menuRoot)
@@ -108,7 +117,7 @@ class MPushButton(QPushButton):
         self.setText(text)
         
         if self.change_callback:
-            version_text = text.split(' ')[0][1:].split('.')
+            version_text = text.split(' ')[1][1:].split('.')
             for i,item in enumerate(version_text):
                 version_text[i] = int(version_text[i])
             self.change_callback((version_text[0], version_text[1]))
@@ -131,12 +140,20 @@ if __name__ == "__main__":
                                 'name': 'blah',
                                 'priority': 50,
                                 'target': [0, 1],
+                                'type': 'primary'},
+                            3: {'completed': 0,
+                                'created': 1353437587,
+                                'description': '',
+                                'name': 'blah',
+                                'priority': 50,
+                                'target': [0, 1],
                                 'type': 'primary'}},
                      'ic': {},
                      'io': {}},
-                 2: {'fc': {}, 'fo': {}, 'ic': {}, 'io': {}}},
+                 2: {'fc': {}, 'fo': {}, 'ic': {}, 'io': {}},
+                 3: {'fc': {}, 'fo': {}, 'ic': {}, 'io': {}}},
              1: {0: {'fc': {}, 'fo': {}, 'ic': {}, 'io': {}}},
-             'current_milestone': [0, 0],
+             'current_milestone': [0, 2],
              'last_feature_id': 2,
              'last_issue_id': 0,
              'last_major': 1}}
@@ -144,7 +161,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     pushButton = MPushButton()
-    pushButton.setData(data[0], (0,1))
+    pushButton.setData(data[0], (0,2))
     pushButton.show()
 
     sys.exit(app.exec_())

@@ -22,6 +22,12 @@ class Example(QtGui.QMainWindow):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
+
+        pb = QtGui.QPushButton('Push Button', self)
+        pb.setGeometry(50,50,250, 30)
+        m1 = QtGui.QMenu(pb)
+        m1.addAction(exitAction)
+        pb.setMenu(m1)
         
         self.setGeometry(300, 300, 250, 150)
         self.setWindowTitle('Menubar')    

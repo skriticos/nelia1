@@ -27,7 +27,7 @@ class MainWindow(QObject):
         uifile.open(QFile.ReadOnly)
         ui = loader.load(uifile)
         uifile.close()
-        ui.setWindowIcon(QIcon('img/icon.png'))
+        ui.setWindowIcon(QIcon('img/nelia-icon32.png'))
         ui.setGeometry(100,70,1000,600)
       
         # POPULATE DATA INDEX
