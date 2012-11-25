@@ -24,6 +24,9 @@ class NxRoadmap(QObject):
         self.roadmap = loader.load(uifile)
         uifile.close()
         
+        self.milestone_menu = QMenu(self.roadmap)
+        self.roadmap.rmap_push_milestone.setMenu(self.milestone_menu)        
+        
         parent_widget = self.rundat['mainwindow']['tab_roadmap']
         self.roadmap.setParent(parent_widget)
         grid = QGridLayout()
@@ -73,10 +76,16 @@ class NxRoadmap(QObject):
                 self.savdat['roadmap'][pid] = {
                     'last_feature_id': 0,       # each feature has a unique id
                     'last_issue_id': 0,         # same goes for issues
-                    'current_milestone': [0,0], # last completed milestone
-                    'last_major': 1,            # highest existing major version
-                    0: {1: {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}, # v0.1
-                    1: {0: {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}  # v1.0
+                    'current_milestone': (0,0), # last completed milestone
+                    # the next one is tricky:
+                    # versions are calculated from index of the below lists
+                    # outer list: major version, starting with 0
+                    # inner list: minor version, starting with n.0, 
+                    #             except the first, which starts with n.1
+                    'versions' : [
+                        [{'m': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
+                        [{'m': '1.0', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
+                    ]
                 }
 
             self.rundat['roadmap']['combo_labels'] = [] # store labels for combo boxes
@@ -186,6 +195,123 @@ class NxRoadmap(QObject):
 
         pid = self.rundat['project'][':getSelectedProject']()
         
+        rmap_push_milestone = self.roadmap.rmap_push_milestone
+        root_menu = self.milestone_menu
+        root_menu.clear()
+
+        versions = self.savdat['roadmap'][pid]['versions']
+        
+        x, y = self.savdat['roadmap'][pid]['current_milestone']
+        print('\nRUN WITH..\n', 'x:',x,'y:',y)
+
+        ### DELTA CALCULATION ###
+        # The following nested loop is somewhat hard to digest. It calculates
+        # the major and minor deltas of each milestone version compared to the
+        # current version. Δn is the difference of major versions, quite simple.
+        # Δm is the challangeing part: it is the total difference of minor
+        # milestone versions compared to the current one. E.g. If you are at
+        # version 3.4, version 1 and two have 5 milestones each, then the minor
+        # delta for 1.2 will be 2 + 5 + 4 = (-)11. Major will be -2 -> -2,12
+        # See nelia/calculations/version-delta.py for detailed test.
+        
+        # FIXME: move this code to the mpushbutton class
+        
+        # loop through major versions
+        Δn = 0
+        for n in range(len(versions)):
+            Δn = n - x
+            major_menu = QMenu(self.roadmap)
+
+            # loop through minor versions
+            Δm = 0
+            mfo = mfc = mio = mic = 0
+            for m in range(len(versions[n])):
+                
+                action = QAction(major_menu)
+                
+                fo = len(versions[n][m]['fo'])
+                fc = len(versions[n][m]['fc'])
+                io = len(versions[n][m]['io'])
+                ic = len(versions[n][m]['ic'])
+                                
+                # 0.x series starts with 0.1 instead of 0.0
+                if n == 0:
+                    m += 1
+
+                # current version = 0.0 (no milestones reached)
+                if x == 0 and y == 0:
+                    if n == 0:
+                        Δm = m
+                    if n > 0:
+                        Δm = sum(len(versions[s]) for s in range(n)) + m + 1
+                # current version = 0.y, y>0
+                if x == 0 and y > 0:
+                    if n > 0:
+                        Δm = sum(len(versions[s]) for s in range(1,n)) + m + len(versions[0]) - y + 1
+                    else:
+                        Δm = m - y
+                # current version = 1.y, y>=0
+                if x == 1:
+                    if n == x:
+                        Δm = m - y
+                    if n > x:
+                        Δm = sum(len(versions[s]) for s in range(x+1,n)) + m + len(versions[x]) - y
+                    if n < x:
+                        Δm = -1 * (y + (len(versions[0])-m))
+                        if n == 0:
+                            Δm -= 1
+                # current major version > 1
+                if x > 1:
+                    if n == x:
+                        Δm = m - y
+                    if n > x:
+                        Δm = sum(len(versions[s]) for s in range(x+1,n)) + m + len(versions[x]) - y
+                    if n < x:
+                        Δm = -1 * (
+                            (  len(versions[n]) - m)
+                             + sum(len(versions[s]) for s in range(n+1, x))
+                             + y  )
+                        if n == 0:
+                            Δm -= 1
+
+                # compute completion symbol
+                if Δm > 1:
+                    sign = '+'
+                    icon = '◇'
+                if Δm == 1:
+                    sign = '+'
+                    icon = '◈'
+                if Δm == 0:
+                    sign = ''
+                    icon = '◆'
+                if Δm < 0:
+                    sign = '-'
+                    icon = '◆'
+
+                # compute major and minor version combined delta
+                # notice how this has nothing to do with floating point
+                # instead it's two deltas, major, and combined minor
+                Δnm = '{}{},{}'.format(sign, abs(Δn), abs(Δm))
+
+
+
+                mfo += fo
+                mfc += fc
+                mio += io
+                mic += ic
+
+                # TODO: compute features and issues
+                action.setText('{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(icon,n,m,Δnm,fo,fo+fc,io,io+ic))
+                major_menu.addAction(action)
+
+                print('n:',n,'m:',m,'\tΔn:',Δn,'Δm:',Δm,'\tΔnm:', Δnm, '\ticon:',icon)
+            
+            # FIXME: icon should be properly computed for major milestone
+            major_menu.setTitle('{}   v{}.x   f:{}/{}   i:{}/{}'.format(
+                icon, n, mfo, mfo+mfc, mio, mio+mic))
+            root_menu.addMenu(major_menu)
+
+        """
         self.rundat['roadmap']['combo_labels'] = []
 
         # compute next milestone (current +0.1 or +1.0 if no more minor milestones exist)
@@ -247,7 +373,7 @@ class NxRoadmap(QObject):
 
         from pprint import pprint
         pprint(self.savdat['roadmap'])
-
+        """
 
     def reset(self, savdat):
     

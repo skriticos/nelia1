@@ -88,21 +88,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="rmap_combo_milestone">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <item>
-         <property name="text">
-          <string>0.1   (+0.1, f: 0/0, i: 0/0)</string>
-         </property>
-        </item>
-       </widget>
-      </item>
       <item row="0" column="8">
        <widget class="QPushButton" name="rmap_push_delete">
         <property name="enabled">
@@ -160,8 +145,12 @@
         <property name="text">
          <string>&amp;Milestone:</string>
         </property>
-        <property name="buddy">
-         <cstring>rmap_combo_milestone</cstring>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="rmap_push_milestone">
+        <property name="text">
+         <string>Milestone Selection</string>
         </property>
        </widget>
       </item>
@@ -259,7 +248,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>rmap_combo_milestone</tabstop>
   <tabstop>rmap_push_add_feature</tabstop>
   <tabstop>rmap_push_add_issue</tabstop>
   <tabstop>rmap_push_delete</tabstop>
