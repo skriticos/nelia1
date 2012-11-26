@@ -2,166 +2,197 @@
 
 from PySide.QtCore import *
 from PySide.QtGui import *
-from pprint import pprint
-import sys, os, time, re
+import sys
 
 class MPushButton(QPushButton):
 
     """
-        This class contains a push button with menu that is populating from the nelia
-        savdat data structure.
-
-        To create this class, you should initialize it with the label, parent and milestone
-        data.
-
-        Note: once you have created this button, you'll have to set data, or it stays
-              empty.
-
+        This class contains a push button with menu that is displaying the milestone
+        version and enables to select milestone versions (e.g. for current selection
+        or for feature / issue targets).
     """
 
-    def __init__(self, parent=None, change_callback=None):
+    def __init__(self, x, y, versions, parent=None, change_callback=None):
 
         super().__init__(parent)
 
-        self.parent = parent
+        self.x = x                  # current major milestone
+        self.y = y                  # current minor milestone
+        self.versions = versions    # milestone version data tree
+
         self.setText('        no data        ')
-        self.menuRoot = QMenu(self)
+        self.root_menu = QMenu(self)
+        self.setMenu(self.root_menu)
         self.change_callback = change_callback
 
-    def setData(self, data, version):
+        ### DELTA CALCULATION ###
+        # The following nested loop is somewhat hard to digest.
+        # (At least, it was quite hard to create). It calculates
+        # the major and minor deltas of each milestone version compared to the
+        # current version. Δn is the difference of major versions, quite simple.
+        # Δm is the challangeing part: it is the total difference of minor
+        # milestone versions compared to the current one. E.g. If you are at
+        # version 3.4, version 1 and two have 5 milestones each, then the minor
+        # delta for 1.2 will be 2 + 5 + 4 = (-)11. Major will be -2 -> -2,11
+        # See nelia/calculations/version-delta.py for detailed discussion.
 
-        self.selected = version
-        
-        self.menuRoot.clear()
+        # loop through major versions
+        Δn = 0
+        for n in range(len(versions)):
+            Δn = n - x
+            # major version menu instance (will be labeled further down)
+            major_menu = QMenu(self)
 
-        # filter out milestone meta information
-        version_data = {}
+            # loop through minor versions
+            Δm = 0
+            # reset major version feature counters
+            mfo = mfc = mio = mic = 0
+            for m in range(len(versions[n])):
 
-        for key in data:
+                # create action instance
+                action = QAction(self)
 
-            if isinstance(key, int):
-                version_data[key] = data[key]
-        
-        for major in range(len(version_data)):
+                # compute minor version feature / issue count
+                fo = len(versions[n][m]['fo'])
+                fc = len(versions[n][m]['fc'])
+                io = len(versions[n][m]['io'])
+                ic = len(versions[n][m]['ic'])
 
-            afo = afc = aio = aic = 0   # major version feature tracker
-            menu = QMenu(self)
+                # add to major version feature / issue count
+                mfo += fo
+                mfc += fc
+                mio += io
+                mic += ic
 
-            for minor in range(len(version_data[major])):
+                # 0.x series starts with 0.1 instead of 0.0
+                if n == 0:
+                    m += 1
 
-                if major == 0:
-                    minor += 1
-
-                fo = af = io = ic = 0
-                minst = version_data[major][minor]
-
-                fo = len(minst['fo'])
-                fc = len(minst['fc'])
-                io = len(minst['io'])
-                ic = len(minst['ic'])
-                afo += fo
-                afc += fc
-                aio += io
-                aic += ic
-
-                majd = major - data['current_milestone'][0] # milestone delta
-                mind = 0
-                sign = '+'
-                # compute minor delta
-                label = ''
-                if majd == 0:
-                    mind = minor - data['current_milestone'][1]
-                    if mind == 0:
-                        label = '◈   '
+                # current version = 0.0 (no milestones reached)
+                if x == 0 and y == 0:
+                    if n == 0:
+                        Δm = m
+                    if n > 0:
+                        Δm = sum(len(versions[s]) for s in range(n)) + m + 1
+                # current version = 0.y, y>0
+                if x == 0 and y > 0:
+                    if n > 0:
+                        Δm = sum(len(versions[s]) for s in range(1,n)) + m + len(versions[0]) - y + 1
                     else:
-                        label = '◇   '
-                elif majd > 0:
-                    mind = minor
-                    label = '◇   '
-                else:
-                    mind = data['current_milestone'][1] + (len(data[major]) - minor)
+                        Δm = m - y
+                # current version = 1.y, y>=0
+                if x == 1:
+                    if n == x:
+                        Δm = m - y
+                    if n > x:
+                        Δm = sum(len(versions[s]) for s in range(x+1,n)) + m + len(versions[x]) - y
+                    if n < x:
+                        Δm = -1 * (y + (len(versions[0])-m))
+                        if n == 0:
+                            Δm -= 1
+                # current major version > 1
+                if x > 1:
+                    if n == x:
+                        Δm = m - y
+                    if n > x:
+                        Δm = sum(len(versions[s]) for s in range(x+1,n)) + m + len(versions[x]) - y
+                    if n < x:
+                        Δm = -1 * (
+                            (  len(versions[n]) - m)
+                             + sum(len(versions[s]) for s in range(n+1, x))
+                             + y  )
+                        if n == 0:
+                            Δm -= 1
+
+                # compute completion symbol and sign
+                if Δm > 1:
+                    sign = '+'
+                    icon = '◇'
+                if Δm == 1:
+                    sign = '+'
+                    icon = '◈'
+                if Δm == 0:
+                    sign = ''
+                    icon = '◆'
+                if Δm < 0:
                     sign = '-'
-                    label = '◆   '
+                    icon = '◆'
 
-                label += 'v{}.{}   {}{}.{}   f:{}/{}   i:{}/{}'.format(major, minor, sign, majd, mind, fo, fo+fc, io, io+ic)
-                if major == self.selected[0] and minor == self.selected[1]:
+                # Compute major and minor version combined delta.
+                # Notice how this has nothing to do with floating point.
+                # Instead it's two deltas, major, and combined minor.
+                Δnm = '{}{},{}'.format(sign, abs(Δn), abs(Δm))
+
+                # compute minor version label, set it to action and add action to major_menu
+                label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(icon,n,m,Δnm,fo,fo+fc,io,io+ic)
+                if Δm == 1:
                     self.setText(label)
-
-                action = QAction(label, self)
+                    self.current_text = label
+                action.setText(label)
                 action.triggered.connect(self.selectionChanged)
-                menu.addAction(action)
+                major_menu.addAction(action)
 
-            if major == data['current_milestone'][0]:
-                    label = '◈   '
-            elif major > data['current_milestone'][0]:
-                    label = '◇   '
-            else:
-                    label = '◆   '
-            menu.setTitle(label + 'v{}.x   f:{}/{}   i:{}/{}'.format(major, afo, afo+afc, aio, aio+aic))
-            self.menuRoot.addMenu(menu)
-        
-        self.setMenu(self.menuRoot)
+                # print('n:',n,'m:',m,'\tΔn:',Δn,'Δm:',Δm,'\tΔnm:', Δnm, '\ticon:',icon)
+
+            # compute major version icon
+            if Δn > 0:
+                icon = '◇'
+            if Δn == 0:
+                icon = '◈'
+            if Δn < 0:
+                icon = '◆'
+
+            # set major version menu label and add it to the root menu
+            major_menu.setTitle('{}   v{}.x   f:{}/{}   i:{}/{}'.format(
+                icon, n, mfo, mfo+mfc, mio, mio+mic))
+            self.root_menu.addMenu(major_menu)
+
+    def getVersion():
+            """
+                Retrive currently seelected version.
+            """
+
+            x, y = self.current_text.split(' ')[3][1:].split('.')
+            return int(x), int(y)
 
     def selectionChanged(self):
-
         """
             This callback is invoked when a milestone is selected.
         """
-        # TODO: determine if newly selected milestone == old one, only update on new milestone
 
         old_text = self.text()
-        text = self.sender().text()
-        if old_text == text:
+        self.current_text = self.sender().text()
+        if old_text == self.current_text:
             return
 
-        self.setText(text)
-        
+        self.setText(self.current_text)
+
+        # execute external callback, e.g. for roadmap table widget update
         if self.change_callback:
-            version_text = text.split(' ')[1][1:].split('.')
-            for i,item in enumerate(version_text):
-                version_text[i] = int(version_text[i])
-            self.change_callback((version_text[0], version_text[1]))
+            x, y = self.getVersion()
+            self.change_callback(x, y, text)
 
 
+# test class
 if __name__ == "__main__":
 
-    data = \
-        {0: {0: {1: {'fc': {},
-                     'fo': {1: {'completed': 0,
-                                'created': 1353437574,
-                                'description': 'bar',
-                                'name': 'foo',
-                                'priority': 50,
-                                'target': [0, 1],
-                                'type': 'primary'},
-                            2: {'completed': 0,
-                                'created': 1353437587,
-                                'description': '',
-                                'name': 'blah',
-                                'priority': 50,
-                                'target': [0, 1],
-                                'type': 'primary'},
-                            3: {'completed': 0,
-                                'created': 1353437587,
-                                'description': '',
-                                'name': 'blah',
-                                'priority': 50,
-                                'target': [0, 1],
-                                'type': 'primary'}},
-                     'ic': {},
-                     'io': {}},
-                 2: {'fc': {}, 'fo': {}, 'ic': {}, 'io': {}},
-                 3: {'fc': {}, 'fo': {}, 'ic': {}, 'io': {}}},
-             1: {0: {'fc': {}, 'fo': {}, 'ic': {}, 'io': {}}},
-             'current_milestone': [0, 2],
-             'last_feature_id': 2,
-             'last_issue_id': 0,
-             'last_major': 1}}
+    import random, pprint
+    # print('### GENERATE TEST DATA ###')
+    data = []
+    for x in range(random.randint(5, 10)):
+        data.append([])
+        for y in range(random.randint(5, 10)):
+            if x == 0: y += 1
+            data[x].append({'m':'{}.{}'.format(x,y), 'fo':{}, 'fc':{}, 'io':{}, 'ic':{}})
+    # print('data: ')
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(data)
 
     app = QApplication(sys.argv)
 
-    pushButton = MPushButton()
-    pushButton.setData(data[0], (0,2))
+    # note: 4.2 is the current version in the following spec. The selection will be 4.3,
+    #       the next version.
+    pushButton = MPushButton(4, 2, data)
     pushButton.show()
 
     sys.exit(app.exec_())
