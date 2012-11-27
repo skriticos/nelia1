@@ -160,8 +160,8 @@ class NxRoadmap(QObject):
 
         self.add_feature.gridLayout_2.removeWidget(self.add_feature.push_target_milestone)
         self.add_feature.push_target_milestone.close()
-        self.add_feature.push_taget_milestone = MPushButton(x,y,versions,self.add_feature,None,self.selected_x,self.selected_y)
-        self.add_feature.gridLayout_2.addWidget(self.add_feature.push_taget_milestone, 1, 1, 1, 1);
+        self.add_feature.push_target_milestone = MPushButton(x,y,versions,self.add_feature,None,self.selected_x,self.selected_y)
+        self.add_feature.gridLayout_2.addWidget(self.add_feature.push_target_milestone, 1, 1, 1, 1);
 
         self.add_feature.af_line_name.clear()
         self.add_feature.af_text_description.clear()
@@ -172,10 +172,14 @@ class NxRoadmap(QObject):
         pid = self.rundat['project'][':getSelectedProject']()
         
         # prepare new feature data
-        milestone = self.add_feature.af_combo_target.currentText()
-        t_major, t_minor = milestone[1:milestone.find(' ')].split('.')
-        t_major = int(t_major)
-        t_minor = int(t_minor)
+        milestone = self.add_feature.push_target_milestone.text()
+        x, y = milestone.split(' ')[3][1:].split('.')
+        
+        x = int(x)
+        y = int(y)
+        if x == 0:
+            y -= 1
+
         ftype = None
         if self.add_feature.af_radio_primary.isChecked():
             ftype = 'primary'
@@ -184,7 +188,6 @@ class NxRoadmap(QObject):
 
         new_feature = {
             'name': self.add_feature.af_line_name.text(),
-            'target': [t_major, t_minor],
             'priority': self.add_feature.af_spin_priority.value(),
             'type': ftype,
             'description': self.add_feature.af_text_description.toPlainText(),
@@ -194,31 +197,32 @@ class NxRoadmap(QObject):
 
         # save new feature data
         last_feature_id = self.savdat['roadmap'][pid]['last_feature_id']
-        self.savdat['roadmap'][pid][t_major][t_minor]['fo'][last_feature_id+1] = new_feature
+        self.savdat['roadmap'][pid]['versions'][x][y]['fo'][last_feature_id+1] = new_feature
         self.savdat['roadmap'][pid]['last_feature_id'] += 1
 
 
+        # TODO: refactor next vesion creation on feature add
         '''
             0.1 -> 0.2
             1.0 -> 2.0, 1.1
-        '''
 
         # create new milestone, if necessary
-        if t_minor != 0 and t_major+1 in self.savdat['roadmap'][pid]: # minor milestone
+        if y != 0 and x+1 in self.savdat['roadmap'][pid]: # minor milestone
 
-            if t_minor+1 not in self.savdat['roadmap'][pid][t_major]: # next milestone does not exist yet
+            if y+1 not in self.savdat['roadmap'][pid][x]: # next milestone does not exist yet
                 
-                self.savdat['roadmap'][pid][t_major][t_minor+1] = \
+                self.savdat['roadmap'][pid][x][y+1] = \
                     {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
                    
-        elif t_major+1 not in self.savdat['roadmap'][pid]: # next major milestone does not exist yet
+        elif x+1 not in self.savdat['roadmap'][pid]: # next major milestone does not exist yet
 
             # x.1
-            self.savdat['roadmap'][pid][t_major][1] = \
+            self.savdat['roadmap'][pid][x][1] = \
                     {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
             # 1.x
-            self.savdat['roadmap'][pid][t_major+1] = { 0:
+            self.savdat['roadmap'][pid][x+1] = { 0:
                     {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}
+        '''
 
     def reset(self, savdat):
     
