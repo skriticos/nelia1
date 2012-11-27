@@ -4,6 +4,7 @@ import os, time, gzip, pickle, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+from mpushbutton import MPushButton
 
 class NxRoadmap(QObject):
     
@@ -11,11 +12,7 @@ class NxRoadmap(QObject):
         
         super().__init__()
 
-        self.savdat = savdat
         self.rundat = rundat
-        
-        self.rundat['roadmap'] = {'last_pid': None}  # roadmap save base
-        self.savdat['roadmap'] = {}
 
         # roadmap main widget, prefix: rmap == ui
         loader = QtUiTools.QUiLoader()
@@ -41,6 +38,8 @@ class NxRoadmap(QObject):
         self.add_feature.setParent(self.roadmap)
         self.add_feature.setWindowFlags(Qt.Dialog)
 
+        if 'roadmap' not in  self.rundat:
+            self.rundat['roadmap'] = {}
         self.rundat['roadmap'][':onShowTab'] = self.onShowTab
 
         self.rundat['roadmap']['feature_headers'] = \
@@ -50,6 +49,9 @@ class NxRoadmap(QObject):
 
         self.roadmap.rmap_push_add_feature.clicked.connect(self.showAddFeature)
         self.add_feature.accepted.connect(self.onSubmitNewFeature)
+
+        self.reset(savdat)
+        self.savdat['roadmap'] = {}
         
     ####################   METHODS   #################### 
 
@@ -91,7 +93,18 @@ class NxRoadmap(QObject):
             self.rundat['roadmap']['combo_labels'] = [] # store labels for combo boxes
             self.rundat['roadmap']['next_combo_index'] = 0 # index for next roadmap in combo boxes
 
-            self.update_combos()
+        x, y = self.savdat['roadmap'][pid]['current_milestone']
+        versions = self.savdat['roadmap'][pid]['versions']
+
+        self.roadmap.gridLayout_2.removeWidget(self.roadmap.rmap_push_milestone)
+        self.roadmap.rmap_push_milestone.close()
+
+        # create new widget
+        self.roadmap.rmap_push_milestone = MPushButton(x, y, versions, self.roadmap)
+
+        self.roadmap.gridLayout_2.addWidget(
+            self.roadmap.rmap_push_milestone, 0, 1, 1, 1)
+        self.roadmap.label_2.setBuddy(self.roadmap.rmap_push_milestone)
 
         self.add_feature.af_radio_secondary.setChecked(False)
         self.add_feature.af_radio_primary.setChecked(True)
@@ -190,75 +203,6 @@ class NxRoadmap(QObject):
                     {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}
 
         self.update_combos()
-
-    def update_combos(self):
-
-        pid = self.rundat['project'][':getSelectedProject']()
-        
-
-        """
-        self.rundat['roadmap']['combo_labels'] = []
-
-        # compute next milestone (current +0.1 or +1.0 if no more minor milestones exist)
-        next_milestone = [0,0]
-        c_major, c_minor = self.savdat['roadmap'][pid]['current_milestone']
-        if c_minor+1 in self.savdat['roadmap'][pid][c_major]:
-            next_milestone = [c_major, c_minor+1]
-        else:
-            next_milestone = [c_major+1, 0]
-        i = 0 # loop counter, used to determine next combo index
-
-        # populate roadmap selection combo
-        for major in self.savdat['roadmap'][pid]:
-            # loop through major milestones
-            if isinstance(major, int):
-                # loop through minor milestones
-                for minor in self.savdat['roadmap'][pid][major]:
-                    ref = self.savdat['roadmap'][pid][major][minor] # reference to loop milestone
-                    bref = self.savdat['roadmap'][pid] # referece to pid base
-
-                    foc = len(ref['fo']) # number of open features
-                    fcc = len(ref['fc']) # number of closed features
-                    ioc = len(ref['io']) # number of open issues
-                    icc = len(ref['ic']) # number of closed issues
-
-                    # check if we are at next milestone and store index if so
-                    if major == next_milestone[0] and minor == next_milestone[1]:
-                        self.rundat['roadmap']['next_combo_index'] = i
-
-                    # compute major and minor delta to current milestone
-                    majd = major - bref['current_milestone'][0] # milestone delta
-                    mind = 0
-                    sign = '+'
-                    # compute minor delta
-                    if majd == 0:
-                        mind = minor
-                    elif majd > 0:
-                        mind = minor - bref['current_milestone'][1]
-                    else:
-                        mind = bref['current_milestone'][1] + (len(bref[major]) - minor)
-                        sign = '-'
-
-                    # put together combo label for milestone
-                    vname = 'v{}.{}   {}{}.{}   f:{}/{}   i:{}/{}'.format(
-                        major, minor, sign, majd, mind, foc, fcc+foc, ioc, icc+ioc)
-
-                    self.rundat['roadmap']['combo_labels'].append(vname)
-
-                    i += 1 # advance loop counter
-
-        # populate combo box labels
-        self.roadmap.rmap_combo_milestone.clear()
-        self.roadmap.rmap_combo_milestone.addItems(self.rundat['roadmap']['combo_labels'])
-        self.roadmap.rmap_combo_milestone.setCurrentIndex(self.rundat['roadmap']['next_combo_index'])
-        
-        self.add_feature.af_combo_target.clear()
-        self.add_feature.af_combo_target.addItems(self.rundat['roadmap']['combo_labels'])
-        self.add_feature.af_combo_target.setCurrentIndex(self.rundat['roadmap']['next_combo_index'])
-
-        from pprint import pprint
-        pprint(self.savdat['roadmap'])
-        """
 
     def reset(self, savdat):
     

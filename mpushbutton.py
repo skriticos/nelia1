@@ -4,6 +4,8 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 import sys
 
+# NOTE: THIS IS MOSTLY PART OF ROADMAP WIDGETS
+
 class MPushButton(QPushButton):
 
     """
