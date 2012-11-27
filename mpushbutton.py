@@ -14,7 +14,7 @@ class MPushButton(QPushButton):
         or for feature / issue targets).
     """
 
-    def __init__(self, x, y, versions, parent=None, change_callback=None):
+    def __init__(self, x, y, versions, parent=None, change_callback=None, sel_x=None, sel_y=None):
 
         super().__init__(parent)
 
@@ -127,7 +127,10 @@ class MPushButton(QPushButton):
 
                 # compute minor version label, set it to action and add action to major_menu
                 label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(icon,n,m,Δnm,fo,fo+fc,io,io+ic)
-                if Δm == 1:
+                if sel_x == n and sel_y == m:
+                    self.setText(label)
+                    self.current_text = label
+                elif Δm == 1:
                     self.setText(label)
                     self.current_text = label
                 action.setText(label)

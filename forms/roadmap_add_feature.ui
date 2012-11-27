@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>791</width>
+    <width>790</width>
     <height>634</height>
    </rect>
   </property>
@@ -113,7 +113,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="QWidget" name="widget_4" native="true">
+    <widget class="QWidget" name="widget_par1" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
        <number>0</number>
@@ -130,26 +130,20 @@
       <property name="spacing">
        <number>10</number>
       </property>
+      <item row="1" column="5">
+       <widget class="QSpinBox" name="af_spin_priority">
+        <property name="value">
+         <number>50</number>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>&amp;Target Milestone:</string>
         </property>
         <property name="buddy">
-         <cstring>af_combo_target</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2" colspan="8">
-       <widget class="QLineEdit" name="af_line_name">
-        <property name="minimumSize">
-         <size>
-          <width>400</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>feature name</string>
+         <cstring>push_target_milestone</cstring>
         </property>
        </widget>
       </item>
@@ -163,22 +157,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2" colspan="2">
-       <widget class="QComboBox" name="af_combo_target">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <item>
-         <property name="text">
-          <string>0.1 (+0.1)</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="1" column="9">
+      <item row="1" column="8">
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -191,7 +170,7 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="5">
+      <item row="1" column="4">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>&amp;Priority:</string>
@@ -201,14 +180,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="6">
-       <widget class="QSpinBox" name="af_spin_priority">
-        <property name="value">
-         <number>50</number>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
+      <item row="1" column="3">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -223,6 +195,26 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="push_target_milestone">
+        <property name="text">
+         <string>PushButton</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="8">
+       <widget class="QLineEdit" name="af_line_name">
+        <property name="minimumSize">
+         <size>
+          <width>400</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>feature name</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -299,7 +291,6 @@
  </widget>
  <tabstops>
   <tabstop>af_line_name</tabstop>
-  <tabstop>af_combo_target</tabstop>
   <tabstop>af_text_description</tabstop>
   <tabstop>af_line_project</tabstop>
   <tabstop>buttonBox</tabstop>
@@ -313,8 +304,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>247</x>
-     <y>585</y>
+     <x>252</x>
+     <y>628</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -329,8 +320,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>315</x>
-     <y>585</y>
+     <x>320</x>
+     <y>628</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

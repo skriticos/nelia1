@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import os, time, gzip, pickle, datetime
+from pprint import pprint
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
@@ -57,11 +58,10 @@ class NxRoadmap(QObject):
 
     def onChangeVersionSelection(self, x, y, current_text):
 
-        print('selection changed')
-        print('x:', x, 'y:', y, 'current_text:', current_text)
+        self.selected_x = x
+        self.selected_y = y
 
         # TODO: reload feature / issue tables
-        # TODO: update add/edit feature/issue buttons?
 
     def onShowTab(self):
 
@@ -108,13 +108,12 @@ class NxRoadmap(QObject):
 
         self.roadmap.gridLayout_2.removeWidget(self.roadmap.rmap_push_milestone)
         self.roadmap.rmap_push_milestone.close()
-
         self.roadmap.rmap_push_milestone = MPushButton(x, y, versions, self.roadmap, self.onChangeVersionSelection)
-
-        self.roadmap.gridLayout_2.addWidget(
-            self.roadmap.rmap_push_milestone, 0, 1, 1, 1)
+        self.roadmap.gridLayout_2.addWidget(self.roadmap.rmap_push_milestone, 0, 1, 1, 1)
         self.roadmap.label_2.setBuddy(self.roadmap.rmap_push_milestone)
-
+        
+        self.selected_x, self.selected_y = self.roadmap.rmap_push_milestone.getVersion() 
+        
         # reset controls
         self.add_feature.af_radio_secondary.setChecked(False)
         self.add_feature.af_radio_primary.setChecked(True)
@@ -154,7 +153,16 @@ class NxRoadmap(QObject):
         # TODO: POPULATE ISSUES TABLE ON TAB SWITCH
 
     def showAddFeature(self):
-        
+
+        pid = self.rundat['project'][':getSelectedProject']()
+        x, y = self.savdat['roadmap'][pid]['current_milestone']
+        versions = self.savdat['roadmap'][pid]['versions']
+
+        self.add_feature.gridLayout_2.removeWidget(self.add_feature.push_target_milestone)
+        self.add_feature.push_target_milestone.close()
+        self.add_feature.push_taget_milestone = MPushButton(x,y,versions,self.add_feature,None,self.selected_x,self.selected_y)
+        self.add_feature.gridLayout_2.addWidget(self.add_feature.push_taget_milestone, 1, 1, 1, 1);
+
         self.add_feature.af_line_name.clear()
         self.add_feature.af_text_description.clear()
         self.add_feature.show()
