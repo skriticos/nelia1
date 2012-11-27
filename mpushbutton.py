@@ -149,7 +149,7 @@ class MPushButton(QPushButton):
                 icon, n, mfo, mfo+mfc, mio, mio+mic))
             self.root_menu.addMenu(major_menu)
 
-    def getVersion():
+    def getVersion(self):
             """
                 Retrive currently seelected version.
             """
@@ -172,7 +172,7 @@ class MPushButton(QPushButton):
         # execute external callback, e.g. for roadmap table widget update
         if self.change_callback:
             x, y = self.getVersion()
-            self.change_callback(x, y, text)
+            self.change_callback(x, y, self.current_text)
 
 
 # test class

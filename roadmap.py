@@ -55,6 +55,14 @@ class NxRoadmap(QObject):
         
     ####################   METHODS   #################### 
 
+    def onChangeVersionSelection(self, x, y, current_text):
+
+        print('selection changed')
+        print('x:', x, 'y:', y, 'current_text:', current_text)
+
+        # TODO: reload feature / issue tables
+        # TODO: update add/edit feature/issue buttons?
+
     def onShowTab(self):
 
         pid = self.rundat['project'][':getSelectedProject']()
@@ -93,19 +101,21 @@ class NxRoadmap(QObject):
             self.rundat['roadmap']['combo_labels'] = [] # store labels for combo boxes
             self.rundat['roadmap']['next_combo_index'] = 0 # index for next roadmap in combo boxes
 
+
+        # create MPushButton widget
         x, y = self.savdat['roadmap'][pid]['current_milestone']
         versions = self.savdat['roadmap'][pid]['versions']
 
         self.roadmap.gridLayout_2.removeWidget(self.roadmap.rmap_push_milestone)
         self.roadmap.rmap_push_milestone.close()
 
-        # create new widget
-        self.roadmap.rmap_push_milestone = MPushButton(x, y, versions, self.roadmap)
+        self.roadmap.rmap_push_milestone = MPushButton(x, y, versions, self.roadmap, self.onChangeVersionSelection)
 
         self.roadmap.gridLayout_2.addWidget(
             self.roadmap.rmap_push_milestone, 0, 1, 1, 1)
         self.roadmap.label_2.setBuddy(self.roadmap.rmap_push_milestone)
 
+        # reset controls
         self.add_feature.af_radio_secondary.setChecked(False)
         self.add_feature.af_radio_primary.setChecked(True)
         self.add_feature.af_spin_priority.setValue(50)
@@ -201,8 +211,6 @@ class NxRoadmap(QObject):
             # 1.x
             self.savdat['roadmap'][pid][t_major+1] = { 0:
                     {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}
-
-        self.update_combos()
 
     def reset(self, savdat):
     
