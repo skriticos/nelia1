@@ -54,6 +54,11 @@ class MPushButton(QPushButton):
                 # create action instance
                 action = QAction(self)
 
+                import pprint
+                pprint.pprint(versions)
+                print('len', len(versions))
+                print(n, m)
+
                 # compute minor version feature / issue count
                 fo = len(versions[n][m]['fo'])
                 fc = len(versions[n][m]['fc'])
@@ -126,7 +131,7 @@ class MPushButton(QPushButton):
                 Δnm = '{}{},{}'.format(sign, abs(Δn), abs(Δm))
 
                 # compute minor version label, set it to action and add action to major_menu
-                label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(icon,n,m,Δnm,fo,fo+fc,io,io+ic)
+                label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(icon,n,m,Δnm,fc,fo+fc,ic,io+ic)
                 if sel_x == n and sel_y == m:
                     self.setText(label)
                     self.current_text = label
@@ -149,7 +154,7 @@ class MPushButton(QPushButton):
 
             # set major version menu label and add it to the root menu
             major_menu.setTitle('{}   v{}.x   f:{}/{}   i:{}/{}'.format(
-                icon, n, mfo, mfo+mfc, mio, mio+mic))
+                icon, n, mfc, mfo+mfc, mic, mio+mic))
             self.root_menu.addMenu(major_menu)
 
     def getVersion(self):

@@ -127,10 +127,10 @@ class NxRoadmap(QObject):
         model.setHorizontalHeaderLabels(self.rundat['roadmap']['feature_headers'])
         table.setModel(model)
         
-        table.setColumnWidth(0, 200)
+        table.setColumnWidth(0, 180)
         table.setColumnWidth(1, 50)
         table.setColumnWidth(2, 50)
-        table.setColumnWidth(3, 50)
+        table.setColumnWidth(3, 70)
         table.setColumnWidth(4, 68)
         table.setColumnWidth(5, 50)
 
@@ -174,17 +174,20 @@ class NxRoadmap(QObject):
         # prepare new feature data
         milestone = self.add_feature.push_target_milestone.text()
         x, y = milestone.split(' ')[3][1:].split('.')
+        versions = self.savdat['roadmap'][pid]['versions']
         
         x = int(x)
         y = int(y)
-        if x == 0:
-            y -= 1
 
         ftype = None
         if self.add_feature.af_radio_primary.isChecked():
-            ftype = 'primary'
+            ftype = 'Primary'
         else:
-            ftype = 'secondary'
+            ftype = 'Secondary'
+
+        name = self.add_feature.af_line_name.text()
+        priority = self.add_feature.af_spin_priority.value()
+        description = self.add_feature.af_text_description.toPlainText()
 
         new_feature = {
             'name': self.add_feature.af_line_name.text(),
@@ -194,14 +197,32 @@ class NxRoadmap(QObject):
             'created': int(time.time()),
             'completed': 0
         }
+        
+        last_feature_id = self.savdat['roadmap'][pid]['last_feature_id']
+
+        # only add feature, if added to currently selected version
+        if x == self.selected_x and y == self.selected_y:
+            # add to feature table
+            model = self.rundat['roadmap']['feature_table_model']
+            model.insertRow(0, [
+                QStandardItem(name),
+                QStandardItem('{}.{}'.format(x,y)),
+                QStandardItem(str(priority)),
+                QStandardItem(ftype),
+                QStandardItem('No'),
+                QStandardItem(str(last_feature_id+1))
+            ])
 
         # save new feature data
-        last_feature_id = self.savdat['roadmap'][pid]['last_feature_id']
-        self.savdat['roadmap'][pid]['versions'][x][y]['fo'][last_feature_id+1] = new_feature
-        self.savdat['roadmap'][pid]['last_feature_id'] += 1
+        if x == 0:
+            y -= 1
 
+        if len(versions) == x+1: # new major version
+            pass
+        elif len(versions[x]) == y+1: # new minor version
+            versions.append({'m': '{}.{}'.format(x, y+2), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}),
+        
 
-        # TODO: refactor next vesion creation on feature add
         '''
             0.1 -> 0.2
             1.0 -> 2.0, 1.1
@@ -223,6 +244,18 @@ class NxRoadmap(QObject):
             self.savdat['roadmap'][pid][x+1] = { 0:
                     {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}
         '''
+
+        self.savdat['roadmap'][pid]['versions'][x][y]['fo'][last_feature_id+1] = new_feature
+        self.savdat['roadmap'][pid]['last_feature_id'] += 1
+
+        # update roadmap widget milestone selector
+        x, y = self.savdat['roadmap'][pid]['current_milestone']
+
+        self.roadmap.gridLayout_2.removeWidget(self.roadmap.rmap_push_milestone)
+        self.roadmap.rmap_push_milestone.close()
+        self.roadmap.rmap_push_milestone = MPushButton(x, y, versions, self.roadmap, self.onChangeVersionSelection, self.selected_x, self.selected_y)
+        self.roadmap.gridLayout_2.addWidget(self.roadmap.rmap_push_milestone, 0, 1, 1, 1)
+        self.roadmap.label_2.setBuddy(self.roadmap.rmap_push_milestone)
 
     def reset(self, savdat):
     
