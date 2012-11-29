@@ -2,21 +2,13 @@
 
 import sys
 from PySide.QtGui import *
-
 from mainwindow import MainWindow
-
-# SETUP DATA INDEX
-savdat = {}     # data tree that is saved
-rundat = {}     # runtime index
-
-savdat['app_name'] = 'Nelia'
-savdat['protocol'] = 1
 
 app = QApplication(sys.argv) 
 
 # SETUP GUI
-mw = MainWindow(savdat, rundat)
-mw.show()
+mw = MainWindow()
+mw.widget.show()
 
 # MAIN LOOP
 sys.exit(app.exec_())
