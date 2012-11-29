@@ -17,7 +17,6 @@ class MainWindow(QObject):
         sd = self.savdat = savdat
         rd = self.rundat = rundat
 
-        rd['modules'].append('mainwindow')
         rd['mainwindow'] = {}
         sd['mainwindow'] = {}
 

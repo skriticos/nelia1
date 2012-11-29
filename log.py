@@ -14,7 +14,6 @@ class NxLog(QObject):
         sd = self.savdat = savdat
         rd = self.rundat = rundat
         
-        rd['modules'].append('log')
         rd['log'] = {}
 
         sd['log'] = {}          # log save base

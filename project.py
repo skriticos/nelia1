@@ -14,7 +14,6 @@ class NxProject(QObject):
         sd = self.savdat = savdat
         rd = self.rundat = rundat
         
-        rd['modules'].append('project')
         rd['project'] = {}
         rd['project']['changed'] = False
         rd['project']['savepath'] = ''

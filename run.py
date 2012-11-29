@@ -6,13 +6,11 @@ from PySide.QtGui import *
 from mainwindow import MainWindow
 
 # SETUP DATA INDEX
-savdat = {}
-rundat = {}
+savdat = {}     # data tree that is saved
+rundat = {}     # runtime index
 
 savdat['app_name'] = 'Nelia'
 savdat['protocol'] = 1
-
-rundat['modules'] = []
 
 app = QApplication(sys.argv) 
 
