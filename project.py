@@ -7,7 +7,7 @@ from PySide import QtUiTools
 
 class NxProject(QObject):
     
-    def __init__(self, savdat, rundat):
+    def __init__(self, datastore):
         
         super().__init__()
 
@@ -255,85 +255,6 @@ class NxProject(QObject):
 
         run_project['changed'] = True
 
-    def onOpen(self):
-
-        sd = self.savdat
-        rd = self.rundat
-
-        if rd['project']['changed']:
-            response = QMessageBox.question(
-            rd['project']['ui'],
-            'Discard changes?',
-            'Opening a file will discard your changes. Do you want to proceed?',
-            QMessageBox.Yes|QMessageBox.No)
-
-            if response == QMessageBox.StandardButton.No:
-                return
-
-        rd['project']['savepath'] = QFileDialog.getOpenFileName(
-            rd['project']['ui'], 
-            'Open projects', 
-            os.path.expanduser('~/Documents'), 
-            'Nelia Files (*.spt)')[0]
-
-        # path dialog aborted
-        if rd['project']['savepath'] == '':
-            return
-        
-        file_buffer = ''
-        with open(rd['project']['savepath'], 'rb') as f:
-                file_buffer = f.read()
-
-        decompressed = gzip.decompress(file_buffer)
-        sd = pickle.loads(decompressed)
-
-        # update savedat
-        rd['mainwindow']['self'].savdat = sd
-        rd['project']['self'].savdat = sd
-        rd['log']['self'].savdat = sd
-        rd['roadmap']['self'].savdat = sd
-
-        # reload project list
-        self.reset()
-        rd['log'][':reset']()
-        rd['roadmap'][':reset']()
-
-    def onSave(self):
-
-        sd = self.savdat
-        rd = self.rundat
-
-        if rd['project']['savepath'] == '':
-            self.onSaveAs()
-
-        # save as dialog aborted
-        if rd['project']['savepath'] == '.spt':
-            return
-
-        pickled_data = pickle.dumps(sd, 3)
-        compressed_data = gzip.compress(pickled_data)
-
-        with open(rd['project']['savepath'], 'wb') as f:
-            f.write(compressed_data)
-        
-        rd['project']['changed'] = False
-
-    def onSaveAs(self):
-
-        rd = self.rundat
-
-        file_name = QFileDialog.getSaveFileName(
-            rd['project']['ui'], 
-            'Save projects', 
-            os.path.expanduser('~/Documents/save.spt'), 
-            'Nelia Files (*.spt)')[0]
-
-        if file_name.rfind('.spt') != len(file_name) - 4:
-            file_name += '.spt'
-
-        rd['project']['savepath'] = file_name
-
-        self.onSave()
 
     def onDeleteProject(self):
 
