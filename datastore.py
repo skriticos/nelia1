@@ -2,7 +2,7 @@
 
 from PySide.QtCore import *
 from PySide.QtGui import *
-import pickle, gzip
+import pickle, gzip, os
 
 class DataStore:
 
@@ -13,10 +13,10 @@ class DataStore:
         passed
     """
 
-    version = 1
-    app_name = 'Nelia'
-
     def __init__(self, parent):
+
+        self.version = 1
+        self.app_name = 'Nelia'
 
         self.parent = parent  # parent widget (to focus the question boxes)
         self.path = None
@@ -32,7 +32,7 @@ class DataStore:
 
         del self.run
         self.run = {
-            'changed':          True, # global, if anything changes (bool)
+            'changed':          False, # global, if anything changes (bool)
             'sel_project':      None, # selected project (i)
             'curr_milestone':   None, # last completed milestone (x,y)
             'next_milestone':   None, # next milestone     (x,y)
@@ -44,10 +44,10 @@ class DataStore:
         # compile save data
         data = {
             'meta': {
-                'version': version,
-                'app_name': app_name
+                'version': self.version,
+                'app_name': self.app_name
             },
-            'projcet': self.project,
+            'project': self.project,
             'log': self.log,
             'roadmap': self.roadmap
         }
@@ -61,7 +61,7 @@ class DataStore:
                 os.path.expanduser('~/Documents'),
                 'Nelia Files (*.nelia)')[0]
 
-            if file_name.rfind('.nelia') != len(file_name) - 4:
+            if file_name.rfind('.nelia') != len(file_name) - 6:
                 file_name += '.nelia'
 
             self.path = file_name
@@ -95,7 +95,7 @@ class DataStore:
         if not path and not self.path:
 
             self.path = QFileDialog.getOpenFileName(
-                self.run['mainwindow'].widget
+                self.parent,
                 'Open projects',
                 os.path.expanduser('~/Documents'),
                 'Nelia Files (*.nelia)')[0]
@@ -112,11 +112,11 @@ class DataStore:
         data = pickle.loads(decompressed)
 
         # populate data
-        del self.projects
+        del self.project
         del self.log
         del self.roadmap
 
-        self.projects   = data['project']
+        self.project    = data['project']
         self.log        = data['log']
         self.roadmap    = data['roadmap']
 
