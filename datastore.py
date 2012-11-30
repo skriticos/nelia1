@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+from PySide.QtCore import *
+from PySide.QtGui import *
 import pickle, gzip
 
 class DataStore:
@@ -14,8 +16,9 @@ class DataStore:
     version = 1
     app_name = 'Nelia'
 
-    def __init__(self):
+    def __init__(self, parent):
 
+        self.parent = parent  # parent widget (to focus the question boxes)
         self.path = None
         self.project = {    # Project data
             'nextid': 1
@@ -53,7 +56,7 @@ class DataStore:
         if not path and not self.path:
 
             file_name = QFileDialog.getSaveFileName(
-                self.run['mainwindow'].widget,
+                self.parent,
                 'Save projects',
                 os.path.expanduser('~/Documents'),
                 'Nelia Files (*.nelia)')[0]
@@ -80,7 +83,7 @@ class DataStore:
         # (discarding updates since last save)
         if self.run['changed']:
             response = QMessageBox.question(
-            self.run['mainwindow'].widget,
+            self.parent,
             'Discard changes?',
             'Opening a file will discard your changes. Do you want to proceed?',
             QMessageBox.Yes|QMessageBox.No)
