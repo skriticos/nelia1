@@ -21,7 +21,8 @@ class DataStore:
         self.parent = parent  # parent widget (to focus the question boxes)
         self.path = None
         self.project = {    # Project data
-            'nextid': 1
+            'nextid': 1,
+            'p': {}
         }
         self.log = {}       # Log data
         self.roadmap = {}   # Roadmap data
@@ -40,6 +41,10 @@ class DataStore:
         }
 
     def save(self, path=None):
+        
+        # not reqired if no changes are made
+        if not self.run['changed']:
+            return
 
         # compile save data
         data = {

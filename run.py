@@ -7,7 +7,7 @@ from mainwindow import MainWindow
 app = QApplication(sys.argv) 
 
 # SETUP GUI
-mw = MainWindow()
+mw = MainWindow(sys.argv)
 mw.widget.show()
 
 # MAIN LOOP

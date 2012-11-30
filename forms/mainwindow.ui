@@ -22,7 +22,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="QTabWidget" name="tabwidget_main">
+     <widget class="QTabWidget" name="tabnavi">
       <property name="tabShape">
        <enum>QTabWidget::Rounded</enum>
       </property>
@@ -206,7 +206,7 @@
   </action>
  </widget>
  <tabstops>
-  <tabstop>tabwidget_main</tabstop>
+  <tabstop>tabnavi</tabstop>
  </tabstops>
  <resources/>
  <connections>
