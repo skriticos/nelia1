@@ -12,8 +12,34 @@ class NxProject:
         self.data   = datastore
         self.widget = widget
 
-        # setup new and edit dialog
+        self.widget.push_project_new.clicked.connect(
+            lambda: (
+            parent.w_project_diag_new.line_name.clear(), 
+            parent.w_project_diag_new.combo_type.setCurrentIndex(0), 
+            parent.w_project_diag_new.combo_status.setCurrentIndex(0), 
+            parent.w_project_diag_new.combo_category.setCurrentIndex(0), 
+            parent.w_project_diag_new.spin_priority.setValue(0), 
+            parent.w_project_diag_new.spin_challenge.setValue(0), 
+            parent.w_project_diag_new.line_basepath.clear(), 
+            parent.w_project_diag_new.text_description.clear(), 
+            parent.w_project_diag_new.line_name.setFocus(), 
+            parent.w_project_diag_new.show()))
+
+        '''
+        parent.w_project_diag_new.accepted.connect(self.onSubmitNewProject)
+        parent.w_project_diag_edit.accepted.connect(self.onSubmitProjectEdit)
         
+        parent.w_project_diag_new.push_browse_path.clicked.connect(
+            lambda: parent.w_project_diag_new.line_basepath.setText(
+                QFileDialog.getExistingDirectory(
+                    parent.w_project_diag_new, 'Choose project base path', os.path.expanduser('~'))))
+
+        parent.w_project_diag_edit.push_browse_path.clicked.connect(
+            lambda: parent.w_project_diag_edit.line_basepath.setText(
+                QFileDialog.getExistingDirectory(
+                    parent.w_project_diag_edit, 'Choose project base path', os.path.expanduser('~'))))
+        '''
+
         """
         self.diag_new.accepted.connect(self.onSubmitNewProject)
         self.diag_edit.accepted.connect(self.onSubmitProjectEdit)
