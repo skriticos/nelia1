@@ -1,35 +1,20 @@
 #! /usr/bin/env python3
 
-import os, time, gzip, pickle, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 
 class NxProject:
     
-    def __init__(self, datastore):
+    def __init__(self, parent, datastore, widget):
         
-        self.data = datastore
-
-        # MAINWINDOW WIDGET SETUP
-        loader = QtUiTools.QUiLoader()
-        uifile = QFile('forms/project.ui')
-        uifile.open(QFile.ReadOnly)
-        self.widget = loader.load(uifile)
-        uifile.close()
-        
-        """
+        self.parent = parent
+        self.data   = datastore
+        self.widget = widget
 
         # setup new and edit dialog
-        for obj, fname in (('diag_new', 'forms/project_diag_new.ui'),
-                           ('diag_edit', 'forms/project_diag_edit.ui')):
-            f = QFile(fname)
-            f.open(QFile.ReadOnly)
-            self.__dict__[obj] = loader.load(f)
-            f.close()
-            self.__dict__[obj].setParent(self.widget)
-            self.__dict__[obj].setWindowFlags(Qt.Dialog)
         
+        """
         self.diag_new.accepted.connect(self.onSubmitNewProject)
         self.diag_edit.accepted.connect(self.onSubmitProjectEdit)
         self.diag_new.push_browse_path.clicked.connect(self.onBrowseNewPath)
@@ -58,7 +43,6 @@ class NxProject:
         self.widget.push_project_open.clicked.connect(self.data.load)
         self.widget.push_project_save.clicked.connect(self.data.save)
 
-        """
 
     def updateTimestamp(self, timestamp):
 
@@ -326,6 +310,7 @@ class NxProject:
         rd['project']['push_save'].setEnabled(True)
 
         rd['project']['changed'] = False
+        """
 
 # vim: set ts=4 sw=4 ai si expandtab:
 

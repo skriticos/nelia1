@@ -8,7 +8,7 @@ app = QApplication(sys.argv)
 
 # SETUP GUI
 mw = MainWindow(sys.argv)
-mw.widget.show()
+mw.w_main.show()
 
 # MAIN LOOP
 sys.exit(app.exec_())

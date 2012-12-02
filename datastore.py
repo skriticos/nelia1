@@ -61,7 +61,7 @@ class DataStore:
         if not path and not self.path:
 
             file_name = QFileDialog.getSaveFileName(
-                self.parent,
+                self.parent.w_main,
                 'Save projects',
                 os.path.expanduser('~/Documents'),
                 'Nelia Files (*.nelia)')[0]
@@ -88,7 +88,7 @@ class DataStore:
         # (discarding updates since last save)
         if self.run['changed']:
             response = QMessageBox.question(
-            self.parent,
+            self.parent.w_main,
             'Discard changes?',
             'Opening a file will discard your changes. Do you want to proceed?',
             QMessageBox.Yes|QMessageBox.No)

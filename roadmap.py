@@ -9,8 +9,13 @@ from mpushbutton import MPushButton
 
 class NxRoadmap(QObject):
     
-    def __init__(self, savdat, rundat):
+    def __init__(self, parent, datastore, widget):
+
+        self.parent = parent
+        self.data   = datastore
+        self.widget = widget
         
+        """
         super().__init__()
 
         self.rundat = rundat
@@ -263,6 +268,7 @@ class NxRoadmap(QObject):
 
         # ensure roadmap is reloaded when switched to after opening
         self.rundat['roadmap']['last_pid'] = None
+        """
 
 
 # vim: set ts=4 sw=4 ai si expandtab:

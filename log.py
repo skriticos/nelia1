@@ -7,8 +7,14 @@ from PySide import QtUiTools
 
 class NxLog(QObject):
     
-    def __init__(self, savdat, rundat):
-        
+    def __init__(self, parent, datastore, widget):
+       
+        self.parent = parent
+        self.data   = datastore
+        self.widget = widget
+
+        '''
+
         super().__init__()
 
         sd = self.savdat = savdat
@@ -250,6 +256,8 @@ class NxLog(QObject):
     
         # ensure log is reloaded when switched to after opening
         self.rundat['log']['last_log_pid'] = None
+
+        '''
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
