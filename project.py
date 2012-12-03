@@ -3,7 +3,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
-import os, datetime
+import os, datetime, time
 
 class NxProject:
     
@@ -17,7 +17,7 @@ class NxProject:
         self.widget.push_project_new.clicked.connect(
             lambda: (
             parent.w_project_diag_new.line_name.clear(), 
-            parent.w_project_diag_new.combo_type.setCurrentIndex(0), 
+            parent.w_project_diag_new.combo_ptype.setCurrentIndex(0), 
             parent.w_project_diag_new.combo_status.setCurrentIndex(0), 
             parent.w_project_diag_new.combo_category.setCurrentIndex(0), 
             parent.w_project_diag_new.spin_priority.setValue(0), 
@@ -75,111 +75,28 @@ class NxProject:
         self.table.setColumnWidth(7, 160)
         self.table.setColumnWidth(8, 80)
         
+
     def onNewProject(self):
-        print('new project submitted')
 
-    def onEditProject(self):
-        print('project edit submitted')
-
-    def onDeleteProject(self):
-        print('deleting project..')
-
-    def touchProject(self, timestamp):
-
-        """
-            On project change (e.g. edit meta, add log or change roadmap),
-            this should be called with the timestamp. It will update the
-            last changed timestamp and update the project index display
-            and mark changes as true.
-        """
-        self.data['project'][self.getSelectedProject()]['timestamp'] = timestamp
-        model.setItem(self.getActiveRow(), 7, QStandardItem(disptime))
-        self.data.run['changed'] = True
-
-        """
-    def getSelectedProject(self):
-
-        rd = self.rundat
-
-        table = rd['project']['table_project_list']
-        model = rd['project']['table_model_index']
-
-        row = table.currentIndex().row()
-        index = model.index(row, 8)
-
-        return int(model.itemFromIndex(index).text())
-
-    def getSelectedProjectName(self):
-
-        rd = self.rundat
-
-        table = rd['project']['table_project_list']
-        model = rd['project']['table_model_index']
-
-        row = table.currentIndex().row()
-        index = model.index(row, 0)
-        return model.itemFromIndex(index).text()
-
-    def getActiveRow(self):
-
-        return self.rundat['project']['table_project_list'].currentIndex().row()
-
-    ####################   METHODS   #################### 
-
-    def showNewProjectDiag(self):
-
-        project = self.rundat['project']
-
-        # reset controls
-        project['diag_new_name'].clear()
-        project['diag_new_basepath'].clear()
-        project['diag_new_type'].setCurrentIndex(0)
-        project['diag_new_status'].setCurrentIndex(0)
-        project['diag_new_category'].setCurrentIndex(0)
-        project['diag_new_priority'].setValue(0)
-        project['diag_new_challenge'].setValue(0)
-        project['diag_new_detail'].clear()
-
-        project['diag_new_name'].setFocus()
-
-        # show widget
-        project['diag_new'].show()
-
-    def onSubmitNewProject(self):
-
-        run_project = self.rundat['project']
-        sav_project = self.savdat['project']
-
-        # retrive data from dialog fields
-        name = run_project['diag_new_name'].text()
-        basepath = run_project['diag_new_basepath'].text()
-        ptype = run_project['diag_new_type'].currentText()
-        status = run_project['diag_new_status'].currentText()
-        category = run_project['diag_new_category'].currentText()
-        priority = run_project['diag_new_priority'].value()
-        challenge = run_project['diag_new_challenge'].value()
-        detail = run_project['diag_new_detail'].toPlainText()
-
+        diag_new = self.data.run['w_project_diag_new']
+        
         timestamp = int(time.time())
-
-        # store data in savdat
-        pid = sav_project['lastid']
-        sav_project['p'][pid] = {}
-        sav_project['p'][pid]['name']      = name
-        sav_project['p'][pid]['basepath']  = basepath
-        sav_project['p'][pid]['type']      = ptype
-        sav_project['p'][pid]['status']    = status
-        sav_project['p'][pid]['category']  = category
-        sav_project['p'][pid]['priority']  = priority
-        sav_project['p'][pid]['challenge'] = challenge
-        sav_project['p'][pid]['detail']    = detail
-        sav_project['p'][pid]['timestamp'] = timestamp
-        sav_project['lastid'] += 1
-      
         disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+        pid = self.data.project[0]['next_id']
+        self.data.run['sel_project'] = pid
+        project = self.data.project[pid] = {}
 
-        # instert row into table
-        run_project['table_model_index'].insertRow(0, [
+        project['category']    = category    = diag_new.combo_category.currentText()
+        project['status']      = status      = diag_new.combo_status.currentText()
+        project['ptype']       = ptype       = diag_new.combo_ptype.currentText()
+        project['basepath']    = basepath    = diag_new.line_basepath.text()
+        project['name']        = name        = diag_new.line_name.text()
+        project['challenge']   = challenge   = diag_new.spin_challenge.value()
+        project['priority']    = priority    = diag_new.spin_priority.value()
+        project['description'] = description = diag_new.text_description.toPlainText()
+        project['created']     = created     = timestamp
+
+        self.model.insertRow(0, [
             QStandardItem(name),
             QStandardItem(ptype),
             QStandardItem(status),
@@ -189,20 +106,65 @@ class NxProject:
             QStandardItem('0.0'),
             QStandardItem(disptime),
             QStandardItem(str(pid))
-            ])
+        ])
 
-        # enable controls
-        run_project['table_project_list'].selectRow(0)
-        run_project['table_project_list'].setFocus()
+        self.data.project[0]['next_id'] += 1
 
-        self.rundat['mainwindow'][':enableTabs']()
+        self.table.selectRow(0)
+        self.table.setFocus()
+        self.parent.enableTabs()
 
-        run_project['push_edit'].setEnabled(True)
-        run_project['push_delete'].setEnabled(True)
-        run_project['push_save'].setEnabled(True)
+        self.widget.push_project_edit.setEnabled(True)
+        self.widget.push_project_delete.setEnabled(True)
+        self.widget.push_project_details.setEnabled(True)
+        self.widget.push_project_save.setEnabled(True)
 
-        run_project['changed'] = True
+        self.touchProject(timestamp)
 
+
+    def onEditProject(self):
+        print('project edit submitted')
+
+
+    def onDeleteProject(self):
+        print('deleting project..')
+
+
+    def touchProject(self, timestamp):
+
+        """
+            On project change (e.g. edit meta, add log or change roadmap),
+            this should be called with the timestamp. It will update the
+            last changed timestamp and update the project index display
+            and mark changes as true.
+        """
+        self.data.project[self.getSelectedProject()]['timestamp'] = timestamp
+        self.model.setItem(self.getActiveRow(), 7, QStandardItem(disptime))
+        self.data.run['changed'] = True
+
+
+    def getSelectedProject(self):
+        return int(self.model.itemFromIndex(
+                self.model(self.table.currentIndex().row(), 8)).text())
+
+
+    def getSelectedProjectName(self):
+        return self.model.itemFromIndex(
+                self.model(self.table.currentIndex().row(), 0)).text()
+
+    def getActiveRow(self):
+        return self.table.currentIndex().row()
+        
+        """
+
+    ####################   METHODS   #################### 
+
+    def onSubmitNewProject(self):
+
+        run_project = self.rundat['project']
+        sav_project = self.savdat['project']
+
+        # retrive data from dialog fields
 
     def onDeleteProject(self):
 
