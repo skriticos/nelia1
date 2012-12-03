@@ -3,6 +3,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+import os, datetime
 
 class NxProject:
     
@@ -12,6 +13,7 @@ class NxProject:
         self.data   = datastore
         self.widget = widget
 
+        # show new project dialog
         self.widget.push_project_new.clicked.connect(
             lambda: (
             parent.w_project_diag_new.line_name.clear(), 
@@ -25,26 +27,37 @@ class NxProject:
             parent.w_project_diag_new.line_name.setFocus(), 
             parent.w_project_diag_new.show()))
 
-        '''
-        parent.w_project_diag_new.accepted.connect(self.onSubmitNewProject)
-        parent.w_project_diag_edit.accepted.connect(self.onSubmitProjectEdit)
-        
         parent.w_project_diag_new.push_browse_path.clicked.connect(
             lambda: parent.w_project_diag_new.line_basepath.setText(
                 QFileDialog.getExistingDirectory(
                     parent.w_project_diag_new, 'Choose project base path', os.path.expanduser('~'))))
 
+        # show edit project dialog
+        # FIXME: this needs to take over the current values instead of reset
+        self.widget.push_project_edit.clicked.connect(
+            lambda: (
+            parent.w_project_diag_edit.line_name.clear(), 
+            parent.w_project_diag_edit.combo_type.setCurrentIndex(0), 
+            parent.w_project_diag_edit.combo_status.setCurrentIndex(0), 
+            parent.w_project_diag_edit.combo_category.setCurrentIndex(0), 
+            parent.w_project_diag_edit.spin_priority.setValue(0), 
+            parent.w_project_diag_edit.spin_challenge.setValue(0), 
+            parent.w_project_diag_edit.line_basepath.clear(), 
+            parent.w_project_diag_edit.text_description.clear(), 
+            parent.w_project_diag_edit.line_name.setFocus(), 
+            parent.w_project_diag_edit.show()))
+        
         parent.w_project_diag_edit.push_browse_path.clicked.connect(
             lambda: parent.w_project_diag_edit.line_basepath.setText(
                 QFileDialog.getExistingDirectory(
                     parent.w_project_diag_edit, 'Choose project base path', os.path.expanduser('~'))))
-        '''
 
-        """
-        self.diag_new.accepted.connect(self.onSubmitNewProject)
-        self.diag_edit.accepted.connect(self.onSubmitProjectEdit)
-        self.diag_new.push_browse_path.clicked.connect(self.onBrowseNewPath)
-        self.diag_edit.push_browse_path.clicked.connect(self.onBrowseEditPath)
+        parent.w_project_diag_new.accepted.connect(self.onNewProject)
+        parent.w_project_diag_edit.accepted.connect(self.onEditProject)
+        self.widget.push_project_delete.clicked.connect(self.onDeleteProject)
+
+        self.widget.push_project_open.clicked.connect(self.data.load)
+        self.widget.push_project_save.clicked.connect(self.data.save)
 
         # setup table
         self.table = self.widget.table_project_list
@@ -61,32 +74,29 @@ class NxProject:
         self.table.setColumnWidth(6, 80)
         self.table.setColumnWidth(7, 160)
         self.table.setColumnWidth(8, 80)
-
-        # CONNECT SIGNALS AND SLOTS
-        self.widget.push_project_new.clicked.connect(self.showNewProjectDiag)
-        self.widget.push_project_edit.clicked.connect(self.showEditProjectDiag)
-        self.widget.push_project_delete.clicked.connect(self.onDeleteProject)
-        self.widget.push_project_open.clicked.connect(self.data.load)
-        self.widget.push_project_save.clicked.connect(self.data.save)
-
-
-    def updateTimestamp(self, timestamp):
-
-        # note: we assume that project is in active row
         
-        rd = self.rundat
-        table = rd['project']['table_project_list']
-        model = rd['project']['table_model_index']
-        s_project = self.savdat['project']['p'][self.getSelectedProject()]
-        active_row = self.getActiveRow()
-        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+    def onNewProject(self):
+        print('new project submitted')
 
-        # update timestamp in savdat
-        s_project['timestamp'] = timestamp
+    def onEditProject(self):
+        print('project edit submitted')
 
-        # update timestamp in project index
-        model.setItem(active_row, 7, QStandardItem(disptime))
+    def onDeleteProject(self):
+        print('deleting project..')
 
+    def touchProject(self, timestamp):
+
+        """
+            On project change (e.g. edit meta, add log or change roadmap),
+            this should be called with the timestamp. It will update the
+            last changed timestamp and update the project index display
+            and mark changes as true.
+        """
+        self.data['project'][self.getSelectedProject()]['timestamp'] = timestamp
+        model.setItem(self.getActiveRow(), 7, QStandardItem(disptime))
+        self.data.run['changed'] = True
+
+        """
     def getSelectedProject(self):
 
         rd = self.rundat
