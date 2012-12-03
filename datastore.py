@@ -18,15 +18,10 @@ class DataStore:
         self.version = 1
         self.app_name = 'Nelia'
 
-        self.parent = parent  # parent widget (to focus the question boxes)
+        self.parent = parent               # parent widget (to focus the question boxes)
         self.path = None
-        self.project = {    # Project data
-            'nextid': 1,
-            'p': {}
-        }
-        self.log = {}       # Log data
-        self.roadmap = {}   # Roadmap data
-        self.run = {}       # Shared runtime data, not saved
+        self.project = {0: {'next_id': 1}} # project id 0 == project meta data (i.e. no real project)
+        self.run = {}                      # Shared runtime data, not saved
         self.reset()
 
     def reset(self):
@@ -34,10 +29,10 @@ class DataStore:
         del self.run
         self.run = {
             'changed':          False, # global, if anything changes (bool)
-            'sel_project':      None, # selected project (i)
-            'curr_milestone':   None, # last completed milestone (x,y)
-            'next_milestone':   None, # next milestone     (x,y)
-            'sel_milestone':    None  # selected milestone (m,n)
+            'sel_project':      None,  # selected project (i)
+            'curr_milestone':   None,  # last completed milestone (x,y)
+            'next_milestone':   None,  # next milestone     (x,y)
+            'sel_milestone':    None   # selected milestone (m,n)
         }
 
     def save(self, path=None):
@@ -53,8 +48,6 @@ class DataStore:
                 'app_name': self.app_name
             },
             'project': self.project,
-            'log': self.log,
-            'roadmap': self.roadmap
         }
 
         # read path, if necessary
@@ -118,12 +111,7 @@ class DataStore:
 
         # populate data
         del self.project
-        del self.log
-        del self.roadmap
-
-        self.project    = data['project']
-        self.log        = data['log']
-        self.roadmap    = data['roadmap']
+        self.project = data['project']
 
         self.reset() # reset runtime data
 
