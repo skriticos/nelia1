@@ -139,13 +139,14 @@ class NxProject:
             and mark changes as true.
         """
         self.data.project[self.getSelectedProject()]['timestamp'] = timestamp
-        self.model.setItem(self.getActiveRow(), 7, QStandardItem(disptime))
+        self.model.setItem(self.getActiveRow(), 7, 
+            QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         self.data.run['changed'] = True
 
 
     def getSelectedProject(self):
         return int(self.model.itemFromIndex(
-                self.model(self.table.currentIndex().row(), 8)).text())
+                self.model.index(self.table.currentIndex().row(), 8)).text())
 
 
     def getSelectedProjectName(self):
