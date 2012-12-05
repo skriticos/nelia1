@@ -29,7 +29,6 @@ class DataStore:
         del self.run
         self.run = {
             'changed':          False, # global, if anything changes (bool)
-            'sel_project':      None,  # selected project (i)
             'curr_milestone':   None,  # last completed milestone (x,y)
             'next_milestone':   None,  # next milestone     (x,y)
             'sel_milestone':    None   # selected milestone (m,n)

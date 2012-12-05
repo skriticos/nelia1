@@ -18,8 +18,6 @@ class MainWindow(QObject):
         actions, like tab switching, exit handling, saving and loading.
     """
 
-    # TODO: Move save/load core routines to this widget (from project)
-
     def __init__(self, argv):
 
         super().__init__()

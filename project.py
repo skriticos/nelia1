@@ -33,32 +33,20 @@ class NxProject:
                     parent.w_project_diag_new, 'Choose project base path', os.path.expanduser('~'))))
 
         # show edit project dialog
-        # FIXME: this needs to take over the current values instead of reset
-        self.widget.push_project_edit.clicked.connect(
-            lambda: (
-            parent.w_project_diag_edit.line_name.clear(), 
-            parent.w_project_diag_edit.combo_type.setCurrentIndex(0), 
-            parent.w_project_diag_edit.combo_status.setCurrentIndex(0), 
-            parent.w_project_diag_edit.combo_category.setCurrentIndex(0), 
-            parent.w_project_diag_edit.spin_priority.setValue(0), 
-            parent.w_project_diag_edit.spin_challenge.setValue(0), 
-            parent.w_project_diag_edit.line_basepath.clear(), 
-            parent.w_project_diag_edit.text_description.clear(), 
-            parent.w_project_diag_edit.line_name.setFocus(), 
-            parent.w_project_diag_edit.show()))
+        self.widget.push_project_edit.clicked.connect(self.showEditProject)
         
         parent.w_project_diag_edit.push_browse_path.clicked.connect(
             lambda: parent.w_project_diag_edit.line_basepath.setText(
                 QFileDialog.getExistingDirectory(
-                    parent.w_project_diag_edit, 'Choose project base path', os.path.expanduser('~'))))
+                    self.data.run['w_project_diag_edit'], 'Choose project base path', os.path.expanduser('~'))))
 
-        parent.w_project_diag_new.accepted.connect(self.onNewProject)
-        parent.w_project_diag_edit.accepted.connect(self.onEditProject)
+        self.data.run['w_project_diag_new'].accepted.connect(self.onNewProject)
+        self.data.run['w_project_diag_edit'].accepted.connect(self.onEditProject)
         self.widget.push_project_delete.clicked.connect(self.onDeleteProject)
 
         self.widget.push_project_open.clicked.connect(self.data.load)
         self.widget.push_project_save.clicked.connect(self.data.save)
-
+        
         # setup table
         self.table = self.widget.table_project_list
         self.table_headers = [
@@ -74,16 +62,14 @@ class NxProject:
         self.table.setColumnWidth(6, 80)
         self.table.setColumnWidth(7, 160)
         self.table.setColumnWidth(8, 80)
-        
 
+        
     def onNewProject(self):
 
         diag_new = self.data.run['w_project_diag_new']
         
         timestamp = int(time.time())
-        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
         pid = self.data.project[0]['next_id']
-        self.data.run['sel_project'] = pid
         project = self.data.project[pid] = {}
 
         project['category']    = category    = diag_new.combo_category.currentText()
@@ -104,7 +90,7 @@ class NxProject:
             QStandardItem(str(priority)),
             QStandardItem(str(challenge)),
             QStandardItem('0.0'),
-            QStandardItem(disptime),
+            QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()),
             QStandardItem(str(pid))
         ])
 
@@ -120,7 +106,35 @@ class NxProject:
         self.widget.push_project_save.setEnabled(True)
 
         self.touchProject(timestamp)
+        
+    def showEditProject(self):
 
+        pid = self.getSelectedProject()
+        self.parent.w_project_diag_edit.line_name.setText(self.data.project[pid]['name'])
+        self.parent.w_project_diag_edit.show()
+
+        '''
+            lambda: (
+            parent.w_project_diag_edit.line_name.setText(self.data.project[self.data.run['sel_project']]['name']), 
+            parent.w_project_diag_edit.combo_type.setCurrentIndex(0), 
+            parent.w_project_diag_edit.combo_status.setCurrentIndex(0), 
+            parent.w_project_diag_edit.combo_category.setCurrentIndex(0), 
+            parent.w_project_diag_edit.spin_priority.setValue(0), 
+            parent.w_project_diag_edit.spin_challenge.setValue(0), 
+            parent.w_project_diag_edit.line_basepath.clear(), 
+            parent.w_project_diag_edit.text_description.clear(), 
+            parent.w_project_diag_edit.line_name.setFocus(), 
+            parent.w_project_diag_edit.show()))
+
+        rd['project']['diag_edit_name'].setText(sd['project']['p'][pid]['name'])
+        rd['project']['diag_edit_basepath'].setText(sd['project']['p'][pid]['basepath'])
+        self.setComboValue(rd['project']['diag_edit_type'], sd['project']['p'][pid]['type'])
+        self.setComboValue(rd['project']['diag_edit_status'], sd['project']['p'][pid]['status'])
+        self.setComboValue(rd['project']['diag_edit_category'], sd['project']['p'][pid]['category'])
+        rd['project']['diag_edit_priority'].setValue(sd['project']['p'][pid]['priority'])
+        rd['project']['diag_edit_challenge'].setValue(sd['project']['p'][pid]['challenge'])
+        rd['project']['diag_edit_detail'].setPlainText(sd['project']['p'][pid]['detail'])
+        '''
 
     def onEditProject(self):
         print('project edit submitted')
@@ -138,13 +152,15 @@ class NxProject:
             last changed timestamp and update the project index display
             and mark changes as true.
         """
-        self.data.project[self.getSelectedProject()]['timestamp'] = timestamp
+        self.data.project[self.getSelectedProject()]['changed'] = timestamp
         self.model.setItem(self.getActiveRow(), 7, 
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         self.data.run['changed'] = True
 
 
     def getSelectedProject(self):
+        if self.table.currentIndex().row() == -1:
+            return 0
         return int(self.model.itemFromIndex(
                 self.model.index(self.table.currentIndex().row(), 8)).text())
 
@@ -159,13 +175,6 @@ class NxProject:
         """
 
     ####################   METHODS   #################### 
-
-    def onSubmitNewProject(self):
-
-        run_project = self.rundat['project']
-        sav_project = self.savdat['project']
-
-        # retrive data from dialog fields
 
     def onDeleteProject(self):
 
