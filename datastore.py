@@ -92,14 +92,14 @@ class DataStore:
         if not path and not self.path:
 
             self.path = QFileDialog.getOpenFileName(
-                self.parent,
+                self.parent.w_main,
                 'Open projects',
                 os.path.expanduser('~/Documents'),
                 'Nelia Files (*.nelia)')[0]
 
             # path dialog aborted
             if not self.path:
-                return
+                return False
 
         # read data from file
         with open(self.path, 'rb') as f:
@@ -113,6 +113,8 @@ class DataStore:
         self.project = data['project']
 
         self.reset() # reset runtime data
+
+        return True
 
 # vim: set ts=4 sw=4 ai si expandtab:
 

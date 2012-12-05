@@ -44,7 +44,7 @@ class NxProject:
         self.data.run['w_project_diag_edit'].accepted.connect(self.onEditProject)
         self.widget.push_project_delete.clicked.connect(self.onDeleteProject)
 
-        self.widget.push_project_open.clicked.connect(self.data.load)
+        self.widget.push_project_open.clicked.connect(lambda: (self.data.load() and self.reset()))
         self.widget.push_project_save.clicked.connect(self.data.save)
         
         # setup table
@@ -222,30 +222,24 @@ class NxProject:
     def getActiveRow(self):
         return self.table.currentIndex().row()
         
-    """
     def reset(self):
 
-        sd = self.savdat
-        rd = self.rundat
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(self.table_headers)
 
-        model = rd['project']['table_model_index']
+        self.table.setColumnWidth(0, 200)
+        self.table.setColumnWidth(4, 50)
+        self.table.setColumnWidth(5, 50)
+        self.table.setColumnWidth(6, 80)
+        self.table.setColumnWidth(7, 160)
+        self.table.setColumnWidth(8, 80)
 
-        model.clear()
-        model.setHorizontalHeaderLabels(rd['project']['table_model_index_headers'])
-
-        table = rd['project']['table_project_list']
-        table.setColumnWidth(0, 200)
-        table.setColumnWidth(4, 50)
-        table.setColumnWidth(5, 50)
-        table.setColumnWidth(6, 80)
-        table.setColumnWidth(7, 160)
-        table.setColumnWidth(8, 80)
-
-        for pid,project in sd['project']['p'].items():
-            disptime = datetime.datetime.fromtimestamp(project['timestamp']).isoformat()
-            rd['project']['table_model_index'].insertRow(0, [
+        for pid,project in self.data.project.items():
+            if pid == 0: continue
+            disptime = datetime.datetime.fromtimestamp(project['changed']).isoformat()
+            self.model.insertRow(0, [
                 QStandardItem(project['name']),
-                QStandardItem(project['type']),
+                QStandardItem(project['ptype']),
                 QStandardItem(project['status']),
                 QStandardItem(project['category']),
                 QStandardItem(str(project['priority'])),
@@ -254,17 +248,17 @@ class NxProject:
                 QStandardItem(disptime),
                 QStandardItem(str(pid))
             ])
-        
-        rd['project']['table_project_list'].selectRow(0)
-        rd['project']['table_project_list'].setFocus()
-        
-        rd['mainwindow'][':enableTabs']()
-        rd['project']['push_edit'].setEnabled(True)
-        rd['project']['push_delete'].setEnabled(True)
-        rd['project']['push_save'].setEnabled(True)
 
-        rd['project']['changed'] = False
-        """
+        self.table.selectRow(0)
+        self.table.setFocus()
+        
+        self.parent.enableTabs()
+        self.widget.push_project_edit.setEnabled(True)
+        self.widget.push_project_delete.setEnabled(True)
+        self.widget.push_project_details.setEnabled(True)
+        self.widget.push_project_save.setEnabled(True)
+
+        self.data.run['changed'] = False
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
