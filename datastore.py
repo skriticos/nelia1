@@ -31,7 +31,8 @@ class DataStore:
             'changed':          False, # global, if anything changes (bool)
             'curr_milestone':   None,  # last completed milestone (x,y)
             'next_milestone':   None,  # next milestone     (x,y)
-            'sel_milestone':    None   # selected milestone (m,n)
+            'sel_milestone':    None,  # selected milestone (m,n)
+            'log_pid_last':     0      # last log tab project id
         }
 
     def save(self, path=None):

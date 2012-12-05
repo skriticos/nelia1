@@ -5,7 +5,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 
-class NxLog(QObject):
+class NxLog:
     
     def __init__(self, parent, datastore, widget):
        
@@ -13,100 +13,34 @@ class NxLog(QObject):
         self.data   = datastore
         self.widget = widget
 
+        self.table = widget.table_history
+        self.model = QStandardItemModel()
+        self.table_headers = ['Created', 'Summary', 'ID']
+        self.model.setHorizontalHeaderLabels(self.table_headers)
+        self.table.setModel(self.model)
+        self.table.setColumnWidth(0, 160)
+        self.table.setColumnWidth(1, 550)
+
+        self.widget.push_new_entry.clicked.connect(lambda: (
+            self.parent.w_log_diag_new.line_summary.clear(),
+            self.parent.w_log_diag_new.text_detail.clear(),
+            self.parent.w_log_diag_new.show()))
+
+    def onShowTab(self):
+
+        pid = self.data.run['project'].getSelectedProject()
+
+        if self.data.run['log_pid_last'] != pid:
+
+            pname = self.data.run['project'].getSelectedProjectName()
+            
+            self.widget.line_project.setText(pname)
+            self.parent.w_log_diag_new.line_project.setText(pname)
+
+            self.data.run['log_pid_last'] = pid
+
         '''
-
-        super().__init__()
-
-        sd = self.savdat = savdat
-        rd = self.rundat = rundat
-        
-        rd['log'] = {}
-
-        sd['log'] = {}          # log save base
-        sd['log']['p'] = {}     # log for projects
-        rd['log']['last_log_pid'] = None    # to check if reload log on tab change necessary
-
-        run_log = rd['log']
-        sav_log = sd['log']
-
-        # mainwindow widget setup
-        loader = QtUiTools.QUiLoader()
-        uifile = QFile('forms/log.ui')
-        uifile.open(QFile.ReadOnly)
-        ui = loader.load(uifile)
-        uifile.close()
-
-        parent_widget = rd['mainwindow']['tab_log']
-        ui.setParent(parent_widget)
-        grid = QGridLayout()
-        grid.addWidget(ui, 0, 0)
-        grid.setContentsMargins(0, 5, 0, 0)
-        parent_widget.setLayout(grid)
-        
-        # pre-populate data index
-        run_log['ui'] = ui
-        run_log['self'] = self
-
-        # new project dialog setup
-        uifile = QFile('forms/log_new_entry.ui')
-        uifile.open(QFile.ReadOnly)
-        diag_new = loader.load(uifile)
-        uifile.close()
-        
-        run_log['diag_new'] = diag_new
-
-        uifile = QFile('forms/log_detail.ui')
-        uifile.open(QFile.ReadOnly)
-        diag_detail = loader.load(uifile)
-        uifile.close()
-        
-        run_log['diag_detail'] = diag_detail
-
-        diag_new.setParent(run_log['ui'])
-        diag_new.setWindowFlags(Qt.Dialog)
-        diag_detail.setParent(run_log['ui'])
-        diag_detail.setWindowFlags(Qt.Dialog)
-
-        # setup project table
-        table = run_log['table_log_history'] = ui.table_history
-        model = run_log['table_model_history'] = QStandardItemModel()
-
-        history_headers = \
-            run_log['table_model_history_headers'] = \
-                ['Timestamp', 
-                 'Summary', 
-                 'ID']
-
-        model.setHorizontalHeaderLabels(history_headers)
-        table.setModel(model)
-        table.setColumnWidth(0, 160)
-        table.setColumnWidth(1, 550)
-        
-        # populate data index
-        run_log[':onShowTab'] = self.onShowTab
-        run_log[':onNewEntryClicked'] = self.onNewEntryClicked
-        run_log[':onNewEntrySubmit'] = self.onNewEntrySubmit
-        run_log[':onDetailClicked'] = self.onDetailClicked
-        
-        run_log[':getSelectedLog'] = self.getSelectedLog
-        run_log[':reset'] = self.reset
-
-        run_log['ui_info_project_name'] = ui.line_project
-        run_log['ui_cmd_new_entry'] = ui.push_new_entry
-        run_log['ui_cmd_detail'] = ui.push_detail
-        run_log['ui_table_history'] = ui.table_history
-
-        run_log['ui_diag_new_info_project'] = diag_new.line_project
-        run_log['ui_diag_new_input_summary'] = diag_new.line_summary
-        run_log['ui_diag_new_input_detail'] = diag_new.text_detail
-        
-        run_log['ui_diag_detail_info_project'] = diag_detail.line_project
-        run_log['ui_diag_detail_input_summary'] = diag_detail.line_summary
-        run_log['ui_diag_detail_input_detail'] = diag_detail.text_detail
-        run_log['ui_diag_detail_input_timestamp'] = diag_detail.line_timestamp
-
         # connect signals
-        run_log['ui_cmd_new_entry'].clicked.connect(run_log[':onNewEntryClicked'])
         run_log['diag_new'].accepted.connect(run_log[':onNewEntrySubmit'])
 
         run_log['ui_cmd_detail'].clicked.connect(run_log[':onDetailClicked'])
