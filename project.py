@@ -65,22 +65,21 @@ class NxProject:
 
         
     def onNewProject(self):
-
-        diag_new = self.data.run['w_project_diag_new']
         
         timestamp = int(time.time())
         pid = self.data.project[0]['next_id']
-        project = self.data.project[pid] = {}
+        p = self.data.project[pid] = {}
+        d = self.data.run['w_project_diag_new']
 
-        project['category']    = category    = diag_new.combo_category.currentText()
-        project['status']      = status      = diag_new.combo_status.currentText()
-        project['ptype']       = ptype       = diag_new.combo_ptype.currentText()
-        project['basepath']    = basepath    = diag_new.line_basepath.text()
-        project['name']        = name        = diag_new.line_name.text()
-        project['challenge']   = challenge   = diag_new.spin_challenge.value()
-        project['priority']    = priority    = diag_new.spin_priority.value()
-        project['description'] = description = diag_new.text_description.toPlainText()
-        project['created']     = created     = timestamp
+        p['name']        = name        = d.line_name.text()
+        p['category']    = category    = d.combo_category.currentText()
+        p['status']      = status      = d.combo_status.currentText()
+        p['ptype']       = ptype       = d.combo_ptype.currentText()
+        p['priority']    = priority    = d.spin_priority.value()
+        p['challenge']   = challenge   = d.spin_challenge.value()
+        p['basepath']    = basepath    = d.line_basepath.text()
+        p['description'] = description = d.text_description.toPlainText()
+        p['created']     = created     = timestamp
 
         self.model.insertRow(0, [
             QStandardItem(name),
@@ -110,39 +109,90 @@ class NxProject:
     def showEditProject(self):
 
         pid = self.getSelectedProject()
-        self.parent.w_project_diag_edit.line_name.setText(self.data.project[pid]['name'])
-        self.parent.w_project_diag_edit.show()
+        p = self.data.project[pid]
+        d = self.parent.w_project_diag_edit
 
-        '''
-            lambda: (
-            parent.w_project_diag_edit.line_name.setText(self.data.project[self.data.run['sel_project']]['name']), 
-            parent.w_project_diag_edit.combo_type.setCurrentIndex(0), 
-            parent.w_project_diag_edit.combo_status.setCurrentIndex(0), 
-            parent.w_project_diag_edit.combo_category.setCurrentIndex(0), 
-            parent.w_project_diag_edit.spin_priority.setValue(0), 
-            parent.w_project_diag_edit.spin_challenge.setValue(0), 
-            parent.w_project_diag_edit.line_basepath.clear(), 
-            parent.w_project_diag_edit.text_description.clear(), 
-            parent.w_project_diag_edit.line_name.setFocus(), 
-            parent.w_project_diag_edit.show()))
-
-        rd['project']['diag_edit_name'].setText(sd['project']['p'][pid]['name'])
-        rd['project']['diag_edit_basepath'].setText(sd['project']['p'][pid]['basepath'])
-        self.setComboValue(rd['project']['diag_edit_type'], sd['project']['p'][pid]['type'])
-        self.setComboValue(rd['project']['diag_edit_status'], sd['project']['p'][pid]['status'])
-        self.setComboValue(rd['project']['diag_edit_category'], sd['project']['p'][pid]['category'])
-        rd['project']['diag_edit_priority'].setValue(sd['project']['p'][pid]['priority'])
-        rd['project']['diag_edit_challenge'].setValue(sd['project']['p'][pid]['challenge'])
-        rd['project']['diag_edit_detail'].setPlainText(sd['project']['p'][pid]['detail'])
-        '''
-
+        d.line_name.setText(p['name'])
+        d.combo_ptype.setCurrentIndex(d.combo_ptype.findText(p['ptype']))
+        d.combo_status.setCurrentIndex(d.combo_status.findText(p['status']))
+        d.combo_category.setCurrentIndex(d.combo_category.findText(p['category']))
+        d.spin_priority.setValue(p['priority'])
+        d.spin_challenge.setValue(p['challenge'])
+        d.line_basepath.setText(p['basepath'])
+        d.text_description.setPlainText(p['description'])
+        
+        d.show()
+        d.line_name.setFocus()
+    
     def onEditProject(self):
-        print('project edit submitted')
+        
+        pid = self.getSelectedProject()
+        p = self.data.project[pid]
+        d = self.parent.w_project_diag_edit
+        timestamp = int(time.time())
+        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
+        p['name']        = name        = d.line_name.text()
+        p['category']    = category    = d.combo_category.currentText()
+        p['status']      = status      = d.combo_status.currentText()
+        p['ptype']       = ptype       = d.combo_ptype.currentText()
+        p['priority']    = priority    = d.spin_priority.value()
+        p['challenge']   = challenge   = d.spin_challenge.value()
+        p['basepath']    = basepath    = d.line_basepath.text()
+        p['description'] = description = d.text_description.toPlainText()
+        
+        for index, value in (
+                            (0, name),
+                            (1, ptype),
+                            (2, status),
+                            (3, category),
+                            (4, priority),
+                            (5, challenge),
+                            (6, '0.0'), # FIXME: fetch this from milestones
+                            (7, disptime),
+                            (8, str(pid))):
+            self.model.setData(
+                self.model.index(self.getActiveRow(), index), value)
+        
+        self.touchProject(timestamp)
+    
+    def onDeleteProject(self):
+
+        pid = self.getSelectedProject()
+        row = self.getActiveRow()
+
+        response = QMessageBox.question(
+            rd['project']['ui'],
+            'Delete project?',
+            'Delete project ' + str(pid) + '?',
+            QMessageBox.Yes|QMessageBox.No)
+
+        if response == QMessageBox.StandardButton.No:
+            return
+
+        del sd['project']['p'][pid]
+        rd['project']['table_model_index'].removeRow(row)
+        
+        rd['project']['changed'] = True
 
     def onDeleteProject(self):
-        print('deleting project..')
+        
+        pid = self.getSelectedProject()
+        
+        response = QMessageBox.question(
+            self.widget,
+            'Delete project?',
+            'Sure you want to delete project {}: {}?'.format(str(pid), self.getSelectedProjectName()),
+            QMessageBox.Yes|QMessageBox.No)
+        
+        if response == QMessageBox.StandardButton.No:
+            return
 
+        del self.data.project[pid]
+        self.model.removeRow(self.getActiveRow())
+
+        # can't touch deleted project, direct changed update
+        self.data.run['changed'] = True
 
     def touchProject(self, timestamp):
 
@@ -167,116 +217,12 @@ class NxProject:
 
     def getSelectedProjectName(self):
         return self.model.itemFromIndex(
-                self.model(self.table.currentIndex().row(), 0)).text()
+                self.model.index(self.table.currentIndex().row(), 0)).text()
 
     def getActiveRow(self):
         return self.table.currentIndex().row()
         
-        """
-
-    ####################   METHODS   #################### 
-
-    def onDeleteProject(self):
-
-        sd = self.savdat
-        rd = self.rundat
-
-        pid = self.getSelectedProject()
-        row = self.getActiveRow()
-
-        response = QMessageBox.question(
-            rd['project']['ui'],
-            'Delete project?',
-            'Delete project ' + str(pid) + '?',
-            QMessageBox.Yes|QMessageBox.No)
-
-        if response == QMessageBox.StandardButton.No:
-            return
-
-        del sd['project']['p'][pid]
-        rd['project']['table_model_index'].removeRow(row)
-        
-        rd['project']['changed'] = True
-
-    def setComboValue(self, combo, text):
-
-        combo.setCurrentIndex(combo.findText(text))
-
-    def showEditProjectDiag(self):
-
-        sd = self.savdat
-        rd = self.rundat
-
-        pid = self.getSelectedProject()
-
-        rd['project']['diag_edit_name'].setText(sd['project']['p'][pid]['name'])
-        rd['project']['diag_edit_basepath'].setText(sd['project']['p'][pid]['basepath'])
-        self.setComboValue(rd['project']['diag_edit_type'], sd['project']['p'][pid]['type'])
-        self.setComboValue(rd['project']['diag_edit_status'], sd['project']['p'][pid]['status'])
-        self.setComboValue(rd['project']['diag_edit_category'], sd['project']['p'][pid]['category'])
-        rd['project']['diag_edit_priority'].setValue(sd['project']['p'][pid]['priority'])
-        rd['project']['diag_edit_challenge'].setValue(sd['project']['p'][pid]['challenge'])
-        rd['project']['diag_edit_detail'].setPlainText(sd['project']['p'][pid]['detail'])
-
-        rd['project']['diag_edit'].show()
-
-    def onBrowseEditPath(self):
-
-        self.rundat['project']['diag_edit_basepath'].setText( 
-            QFileDialog.getExistingDirectory(
-            self.rundat['project']['diag_edit'],
-            'Choose project base path',
-            os.path.expanduser('~')))
-
-    def onBrowseNewPath(self):
-
-        self.rundat['project']['diag_new_basepath'].setText( 
-            QFileDialog.getExistingDirectory(
-            self.rundat['project']['diag_new'],
-            'Choose project base path',
-            os.path.expanduser('~')))
-
-    def onSubmitProjectEdit(self):
-        
-        sd = self.savdat
-        rd = self.rundat
-
-        pid = self.getSelectedProject()
-        timestamp = int(time.time())
-
-        sd['project']['p'][pid]['name'] = rd['project']['diag_edit_name'].text()
-        sd['project']['p'][pid]['basepath'] = rd['project']['diag_edit_basepath'].text()
-        sd['project']['p'][pid]['type'] = rd['project']['diag_edit_type'].currentText()
-        sd['project']['p'][pid]['status'] = rd['project']['diag_edit_status'].currentText()
-        sd['project']['p'][pid]['category'] = rd['project']['diag_edit_category'].currentText()
-        sd['project']['p'][pid]['priority'] = rd['project']['diag_edit_priority'].value()
-        sd['project']['p'][pid]['challenge'] = rd['project']['diag_edit_challenge'].value()
-        sd['project']['p'][pid]['detail'] = rd['project']['diag_edit_detail'].toPlainText()
-        sd['project']['p'][pid]['timestamp'] = timestamp
-        
-        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
-
-        tabdat = (
-            (0, rd['project']['diag_edit_name'].text()),
-            (1, rd['project']['diag_edit_type'].currentText()),
-            (2, rd['project']['diag_edit_status'].currentText()),
-            (3, rd['project']['diag_edit_category'].currentText()),
-            (4, rd['project']['diag_edit_priority'].value()),
-            (5, rd['project']['diag_edit_challenge'].value()),
-            (6, '0.0'), # FIXME: get this from milestones
-            (7, disptime),
-            (8, str(pid))
-        )
-
-        model = rd['project']['table_model_index']
-
-        for index, value in tabdat:
-            model.setData(
-                model.index(self.getActiveRow(), index), value)
-    
-        rd['project']['table_project_list'].setFocus()
-        rd['project']['changed'] = True
-
+    """
     def reset(self):
 
         sd = self.savdat
