@@ -68,7 +68,15 @@ class NxProject:
         
         timestamp = int(time.time())
         pid = self.data.project[0]['next_id']
-        p = self.data.project[pid] = {'log': {}, 'roadmap': {}}
+        # meta: general project data
+        # log: log data, sequential
+        # milestone: versions, features, issues
+        p = self.data.project[pid] = {  'meta': {'last_feature': 0, 'last_issue': 0, 'current_milestone': (0,0)},
+                                        'log': [], 
+                                        'milestone' : [
+                                                [{'m': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
+                                                [{'m': '1.0', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
+                                            ]}
         d = self.data.run['w_project_diag_new']
 
         p['name']        = name        = d.line_name.text()
