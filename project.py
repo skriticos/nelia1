@@ -68,7 +68,7 @@ class NxProject:
         
         timestamp = int(time.time())
         pid = self.data.project[0]['next_id']
-        p = self.data.project[pid] = {}
+        p = self.data.project[pid] = {'log': {}, 'roadmap': {}}
         d = self.data.run['w_project_diag_new']
 
         p['name']        = name        = d.line_name.text()
