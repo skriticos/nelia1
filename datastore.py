@@ -36,7 +36,7 @@ class DataStore:
         }
 
     def save(self, path=None):
-        
+
         # not reqired if no changes are made
         if not self.run['changed']:
             return

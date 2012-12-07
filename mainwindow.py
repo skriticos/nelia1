@@ -21,7 +21,7 @@ class MainWindow(QObject):
     def __init__(self, argv):
 
         super().__init__()
-        
+
         # setup datastore
         data = self.data = DataStore(self)
 
@@ -46,7 +46,7 @@ class MainWindow(QObject):
                 obj.setWindowFlags(Qt.Dialog)
             self.data.run[name] = obj
         loader.deleteLater()
-        
+
         # position module widgets
         for cname, pname in (('w_project', 'tab_project'),
                              ('w_log',     'tab_log'),
@@ -59,7 +59,7 @@ class MainWindow(QObject):
         # icon and window size
         self.w_main.setWindowIcon(QIcon('img/nelia-icon32.png'))
         self.w_main.setGeometry(100,70,1000,600)
-        
+
         # initialize modules
         self.data.run['mainwindow'] = self
         self.data.run['project']    = NxProject(self, data, self.w_project)
