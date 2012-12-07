@@ -6,9 +6,9 @@ from PySide import QtUiTools
 import os, datetime, time
 
 class NxProject:
-    
+
     def __init__(self, parent, datastore, widget):
-        
+
         self.parent = parent
         self.data   = datastore
         self.widget = widget
@@ -16,15 +16,15 @@ class NxProject:
         # show new project dialog
         self.widget.push_project_new.clicked.connect(
             lambda: (
-            parent.w_project_diag_new.line_name.clear(), 
-            parent.w_project_diag_new.combo_ptype.setCurrentIndex(0), 
-            parent.w_project_diag_new.combo_status.setCurrentIndex(0), 
-            parent.w_project_diag_new.combo_category.setCurrentIndex(0), 
-            parent.w_project_diag_new.spin_priority.setValue(0), 
-            parent.w_project_diag_new.spin_challenge.setValue(0), 
-            parent.w_project_diag_new.line_basepath.clear(), 
-            parent.w_project_diag_new.text_description.clear(), 
-            parent.w_project_diag_new.line_name.setFocus(), 
+            parent.w_project_diag_new.line_name.clear(),
+            parent.w_project_diag_new.combo_ptype.setCurrentIndex(0),
+            parent.w_project_diag_new.combo_status.setCurrentIndex(0),
+            parent.w_project_diag_new.combo_category.setCurrentIndex(0),
+            parent.w_project_diag_new.spin_priority.setValue(0),
+            parent.w_project_diag_new.spin_challenge.setValue(0),
+            parent.w_project_diag_new.line_basepath.clear(),
+            parent.w_project_diag_new.text_description.clear(),
+            parent.w_project_diag_new.line_name.setFocus(),
             parent.w_project_diag_new.show()))
 
         parent.w_project_diag_new.push_browse_path.clicked.connect(
@@ -34,7 +34,7 @@ class NxProject:
 
         # show edit project dialog
         self.widget.push_project_edit.clicked.connect(self.showEditProject)
-        
+
         parent.w_project_diag_edit.push_browse_path.clicked.connect(
             lambda: parent.w_project_diag_edit.line_basepath.setText(
                 QFileDialog.getExistingDirectory(
@@ -46,16 +46,16 @@ class NxProject:
 
         self.widget.push_project_open.clicked.connect(lambda: (self.data.load() and self.reset()))
         self.widget.push_project_save.clicked.connect(self.data.save)
-        
+
         # setup table
         self.table = self.widget.table_project_list
         self.table_headers = [
-             'Name', 'Project Type', 'Status', 'Category', 'Prio.', 'Chall.', 
+             'Name', 'Project Type', 'Status', 'Category', 'Prio.', 'Chall.',
              'Version', 'Last Changed', 'ID' ]
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(self.table_headers)
         self.table.setModel(self.model)
-        
+
         self.table.setColumnWidth(0, 200)
         self.table.setColumnWidth(4, 50)
         self.table.setColumnWidth(5, 50)
@@ -63,16 +63,16 @@ class NxProject:
         self.table.setColumnWidth(7, 160)
         self.table.setColumnWidth(8, 80)
 
-        
+
     def onNewProject(self):
-        
+
         timestamp = int(time.time())
         pid = self.data.project[0]['next_id']
         # meta: general project data
-        # log: log data, sequential
+        # log: log data
         # milestone: versions, features, issues
-        p = self.data.project[pid] = {  'meta': {'last_feature': 0, 'last_issue': 0, 'current_milestone': (0,0)},
-                                        'log': [], 
+        p = self.data.project[pid] = {  'meta': {'last_log': 0, 'last_feature': 0, 'last_issue': 0, 'current_milestone': (0,0)},
+                                        'log': {},
                                         'milestone' : [
                                                 [{'m': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
                                                 [{'m': '1.0', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
@@ -113,7 +113,7 @@ class NxProject:
         self.widget.push_project_save.setEnabled(True)
 
         self.touchProject(timestamp)
-        
+
     def showEditProject(self):
 
         pid = self.getSelectedProject()
@@ -128,12 +128,12 @@ class NxProject:
         d.spin_challenge.setValue(p['challenge'])
         d.line_basepath.setText(p['basepath'])
         d.text_description.setPlainText(p['description'])
-        
+
         d.show()
         d.line_name.setFocus()
-    
+
     def onEditProject(self):
-        
+
         pid = self.getSelectedProject()
         p = self.data.project[pid]
         d = self.parent.w_project_diag_edit
@@ -148,7 +148,7 @@ class NxProject:
         p['challenge']   = challenge   = d.spin_challenge.value()
         p['basepath']    = basepath    = d.line_basepath.text()
         p['description'] = description = d.text_description.toPlainText()
-        
+
         for index, value in (
                             (0, name),
                             (1, ptype),
@@ -161,9 +161,9 @@ class NxProject:
                             (8, str(pid))):
             self.model.setData(
                 self.model.index(self.getActiveRow(), index), value)
-        
+
         self.touchProject(timestamp)
-    
+
     def onDeleteProject(self):
 
         pid = self.getSelectedProject()
@@ -180,19 +180,19 @@ class NxProject:
 
         del sd['project']['p'][pid]
         rd['project']['table_model_index'].removeRow(row)
-        
+
         rd['project']['changed'] = True
 
     def onDeleteProject(self):
-        
+
         pid = self.getSelectedProject()
-        
+
         response = QMessageBox.question(
             self.widget,
             'Delete project?',
             'Sure you want to delete project {}: {}?'.format(str(pid), self.getSelectedProjectName()),
             QMessageBox.Yes|QMessageBox.No)
-        
+
         if response == QMessageBox.StandardButton.No:
             return
 
@@ -211,7 +211,7 @@ class NxProject:
             and mark changes as true.
         """
         self.data.project[self.getSelectedProject()]['changed'] = timestamp
-        self.model.setItem(self.getActiveRow(), 7, 
+        self.model.setItem(self.getActiveRow(), 7,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         self.data.run['changed'] = True
 
@@ -229,7 +229,7 @@ class NxProject:
 
     def getActiveRow(self):
         return self.table.currentIndex().row()
-        
+
     def reset(self):
 
         self.model.clear()
@@ -259,7 +259,7 @@ class NxProject:
 
         self.table.selectRow(0)
         self.table.setFocus()
-        
+
         self.parent.enableTabs()
         self.widget.push_project_edit.setEnabled(True)
         self.widget.push_project_delete.setEnabled(True)
