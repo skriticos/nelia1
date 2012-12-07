@@ -1,14 +1,14 @@
 #! /usr/bin/env python3
 
-import os, time, gzip, pickle, datetime
+import os, time, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 
 class NxLog:
-    
+
     def __init__(self, parent, datastore, widget):
-       
+
         self.parent = parent
         self.data   = datastore
         self.widget = widget
@@ -24,7 +24,10 @@ class NxLog:
         self.widget.push_new_entry.clicked.connect(lambda: (
             self.parent.w_log_diag_new.line_summary.clear(),
             self.parent.w_log_diag_new.text_detail.clear(),
+            self.parent.w_log_diag_new.line_summary.setFocus(),
             self.parent.w_log_diag_new.show()))
+
+        self.parent.w_log_diag_new.accepted.connect(self.onNewEntry)
 
     def onShowTab(self):
 
@@ -32,22 +35,67 @@ class NxLog:
 
         if self.data.run['log_pid_last'] != pid:
 
-            pname = self.data.run['project'].getSelectedProjectName()
-            
-            self.widget.line_project.setText(pname)
-            self.parent.w_log_diag_new.line_project.setText(pname)
-
             self.data.run['log_pid_last'] = pid
 
+            self.log = self.data.project[pid]['log']
+            pname = self.data.run['project'].getSelectedProjectName()
+
+            self.widget.line_project.setText(pname)
+            self.parent.w_log_diag_new.line_project.setText(pname)
+            self.parent.w_log_diag_detail.line_project.setText(pname)
+
+            self.model.clear()
+            self.model.setHorizontalHeaderLabels(self.table_headers)
+            self.table.setColumnWidth(0, 160)
+            self.table.setColumnWidth(1, 550)
+
+            for i in range(self.data.project[pid]['meta']['last_log']):
+                log = self.log[i+1]
+                self.model.insertRow(0, [
+                    QStandardItem(datetime.datetime.fromtimestamp(log['created']).isoformat()),
+                    QStandardItem(log['summary']),
+                    QStandardItem(i+1) ])
+
+            if self.data.project[pid]['meta']['last_log'] > 0:
+                self.table.selectRow(0)
+                self.widget.push_detail.setEnabled(True)
+                self.table.sortByColumn(0, Qt.DescendingOrder)
+            else:
+                self.widget.push_detail.setEnabled(False)
+
+            self.table.setFocus()
+
+    def onNewEntry(self):
+
+        pid = self.data.run['project'].getSelectedProject()
+        lid = self.data.project[pid]['meta']['last_log'] + 1
+        timestamp = int(time.time())
+        d = self.parent.w_log_diag_new
+        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
+
+        self.data.project[pid]['log'][lid] = {
+            'created': timestamp,
+            'summary': d.line_summary.text(),
+            'detail': d.text_detail.toPlainText()
+        }
+
+        self.model.insertRow(
+            0, [
+                QStandardItem(disptime),
+                QStandardItem(d.line_summary.text()),
+                QStandardItem(str(lid))
+            ]
+        )
+
+        self.table.selectRow(0)
+        self.table.setFocus()
+
+        self.data.run['project'].touchProject(timestamp)
+        self.data.project[pid]['meta']['last_log'] += 1
+        self.widget.push_detail.setEnabled(True)
+
         '''
-        # connect signals
-        run_log['diag_new'].accepted.connect(run_log[':onNewEntrySubmit'])
-
-        run_log['ui_cmd_detail'].clicked.connect(run_log[':onDetailClicked'])
-        run_log['table_log_history'].activated.connect(
-            run_log[':onDetailClicked'])
-
-    ####################   UTILITY METHODS   #################### 
+    ####################   UTILITY METHODS   ####################
 
     def getSelectedLog(self):
 
@@ -60,120 +108,14 @@ class NxLog:
         index = model.index(row, 2)
         return int(model.itemFromIndex(index).text())
 
-    ####################   METHODS   #################### 
+    ####################   CALLBACKS   ####################
 
-    def onShowTab(self):
-        
-        run_log = self.rundat['log']
-        sav_log = self.savdat['log']
-
-
-        pid = self.rundat['project'][':getSelectedProject']()
-        
-        # reset form if necessary (project selection changed or project opened)
-        # note: we pretty much leave the widget alone when project selection has not
-        #       changed
-        
-        if run_log['last_log_pid'] == None \
-                or run_log['last_log_pid'] != pid:
-
-            project_name = self.rundat['project'][':getSelectedProjectName']()
-            run_log['ui_info_project_name'].setText(project_name)
-            run_log['ui_diag_new_info_project'].setText(project_name)
-            run_log['ui_diag_detail_info_project'].setText(project_name)
-        
-            table = run_log['table_log_history']
-            model = run_log['table_model_history']
-
-            model.clear()
-            model.setHorizontalHeaderLabels(run_log['table_model_history_headers'])
-            table.setModel(model)
-            table.setColumnWidth(0, 160)
-            table.setColumnWidth(1, 550)
-        
-            # create project id dict if not yet existent
-            if pid not in sav_log['p']:
-                sav_log['p'][pid] = {}              # project log container
-                sav_log['p'][pid]['lastlog'] = 0    # log counter
-                sav_log['p'][pid]['l'] = {}         # log entry container
-
-            # if we have entries in log already (enable details, select first row)
-            if sav_log['p'][pid]['lastlog'] > 0:
-
-                # populate table
-                for key, value in sav_log['p'][pid]['l'].items():
-                    timestamp = value['timestamp']
-                    summary = value['summary']
-                    lid = key
-                    disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
-                    run_log['table_model_history'].insertRow(0, [
-                        QStandardItem(disptime),
-                        QStandardItem(summary),
-                        QStandardItem(str(lid))
-                        ])
-
-                # set controls
-                run_log['ui_table_history'].selectRow(0)
-                run_log['ui_cmd_detail'].setEnabled(True)
-            else:
-                run_log['ui_cmd_detail'].setEnabled(False)
-
-            run_log['last_log_pid'] = pid
-            run_log['ui_table_history'].sortByColumn(0, Qt.DescendingOrder);
-
-        run_log['ui_table_history'].setFocus()
-
-    ####################   CALLBACKS   #################### 
-
-    def onNewEntryClicked(self):
-    
-        run_log = self.rundat['log']
-        sav_log = self.savdat['log']
-
-        run_log['ui_diag_new_input_summary'].clear()
-        run_log['ui_diag_new_input_detail'].clear()
-
-        run_log['diag_new'].show()
-        run_log['ui_diag_new_input_summary'].setFocus()
-
-    def onNewEntrySubmit(self):
-
-        run_log = self.rundat['log']
-        sav_log = self.savdat['log']
-
-        pid = self.rundat['project'][':getSelectedProject']()
-        lid = sav_log['p'][pid]['lastlog']
-
-        # store changes in savdat
-        timestamp = int(time.time())
-        log_entry = sav_log['p'][pid]['l'][lid] = {}
-        log_entry['timestamp'] = timestamp
-        summary = log_entry['summary'] = run_log['ui_diag_new_input_summary'].text()
-        detail = log_entry['detail'] = run_log['ui_diag_new_input_detail'].toPlainText()
-
-        # update history table
-        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
-        run_log['table_model_history'].insertRow(0, [
-            QStandardItem(disptime),
-            QStandardItem(summary),
-            QStandardItem(str(lid))
-            ])
-        
-        sav_log['p'][pid]['lastlog'] += 1
-        
-        self.rundat['project'][':updateTimestamp'](timestamp)
-
-        run_log['ui_table_history'].selectRow(0)
-        run_log['ui_table_history'].setFocus()
-
-        run_log['ui_cmd_detail'].setEnabled(True)
-        self.rundat['project']['changed'] = True
 
     def onDetailClicked(self):
 
         run_log = self.rundat['log']
         sav_log = self.savdat['log']
-        
+
         # retrive active log entry
         lid = run_log[':getSelectedLog']()
         log_entry = sav_log['p'][run_log['last_log_pid']]['l'][lid]
@@ -185,11 +127,6 @@ class NxLog:
         run_log['ui_diag_detail_input_detail'].setPlainText(log_entry['detail'])
 
         run_log['diag_detail'].show()
-
-    def reset(self):
-    
-        # ensure log is reloaded when switched to after opening
-        self.rundat['log']['last_log_pid'] = None
 
         '''
 
