@@ -199,6 +199,11 @@ class NxProject:
         del self.data.project[pid]
         self.model.removeRow(self.getActiveRow())
 
+        if self.model.rowCount() == 0:
+            self.parent.dissableTabs()
+        else:
+            self.table.selectRow(0)
+
         # can't touch deleted project, direct changed update
         self.data.run['changed'] = True
 
