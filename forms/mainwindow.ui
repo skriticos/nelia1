@@ -46,7 +46,7 @@
       </property>
       <widget class="QWidget" name="tab_project">
        <attribute name="title">
-        <string>Project</string>
+        <string>&amp;Project</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="tab_log">
@@ -54,12 +54,12 @@
         <bool>true</bool>
        </property>
        <attribute name="title">
-        <string>Log</string>
+        <string>&amp;Log</string>
        </attribute>
       </widget>
       <widget class="QWidget" name="tab_roadmap">
        <attribute name="title">
-        <string>Roadmap</string>
+        <string>&amp;Roadmap</string>
        </attribute>
       </widget>
      </widget>
