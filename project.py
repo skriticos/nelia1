@@ -167,25 +167,6 @@ class NxProject:
     def onDeleteProject(self):
 
         pid = self.getSelectedProject()
-        row = self.getActiveRow()
-
-        response = QMessageBox.question(
-            rd['project']['ui'],
-            'Delete project?',
-            'Delete project ' + str(pid) + '?',
-            QMessageBox.Yes|QMessageBox.No)
-
-        if response == QMessageBox.StandardButton.No:
-            return
-
-        del sd['project']['p'][pid]
-        rd['project']['table_model_index'].removeRow(row)
-
-        rd['project']['changed'] = True
-
-    def onDeleteProject(self):
-
-        pid = self.getSelectedProject()
 
         response = QMessageBox.question(
             self.widget,
