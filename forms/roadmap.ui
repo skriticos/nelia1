@@ -35,12 +35,12 @@
          <string>Project:</string>
         </property>
         <property name="buddy">
-         <cstring>rmap_line_project</cstring>
+         <cstring>line_project</cstring>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="rmap_line_project">
+       <widget class="QLineEdit" name="line_project">
         <property name="styleSheet">
          <string notr="true">background-color:palette(Window);</string>
         </property>
@@ -75,21 +75,21 @@
        </spacer>
       </item>
       <item row="0" column="3">
-       <widget class="QPushButton" name="rmap_push_add_feature">
+       <widget class="QPushButton" name="push_add_feature">
         <property name="text">
          <string>Add &amp;Feature..</string>
         </property>
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QPushButton" name="rmap_push_add_issue">
+       <widget class="QPushButton" name="push_add_issue">
         <property name="text">
          <string>Add &amp;Issue..</string>
         </property>
        </widget>
       </item>
       <item row="0" column="8">
-       <widget class="QPushButton" name="rmap_push_delete">
+       <widget class="QPushButton" name="push_delete">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -131,7 +131,7 @@
        </spacer>
       </item>
       <item row="0" column="7">
-       <widget class="QPushButton" name="rmap_push_edit">
+       <widget class="QPushButton" name="push_edit">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -146,12 +146,12 @@
          <string>&amp;Milestone:</string>
         </property>
         <property name="buddy">
-         <cstring>rmap_push_milestone</cstring>
+         <cstring>push_milestone</cstring>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QPushButton" name="rmap_push_milestone">
+       <widget class="QPushButton" name="push_milestone">
         <property name="text">
          <string>Milestone Selection</string>
         </property>
@@ -184,12 +184,12 @@
             <string>I&amp;ssues:</string>
            </property>
            <property name="buddy">
-            <cstring>rmap_table_issues</cstring>
+            <cstring>table_issues</cstring>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QTableView" name="rmap_table_issues">
+          <widget class="QTableView" name="table_issues">
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
@@ -211,7 +211,7 @@
        <widget class="QWidget" name="widget" native="true">
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="1" column="0">
-          <widget class="QTableView" name="rmap_table_features">
+          <widget class="QTableView" name="table_features">
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
@@ -238,7 +238,7 @@
             <string>Fea&amp;tures:</string>
            </property>
            <property name="buddy">
-            <cstring>rmap_table_features</cstring>
+            <cstring>table_features</cstring>
            </property>
           </widget>
          </item>
@@ -251,12 +251,12 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>rmap_push_add_feature</tabstop>
-  <tabstop>rmap_push_add_issue</tabstop>
-  <tabstop>rmap_push_delete</tabstop>
-  <tabstop>rmap_table_features</tabstop>
-  <tabstop>rmap_table_issues</tabstop>
-  <tabstop>rmap_line_project</tabstop>
+  <tabstop>push_add_feature</tabstop>
+  <tabstop>push_add_issue</tabstop>
+  <tabstop>push_delete</tabstop>
+  <tabstop>table_features</tabstop>
+  <tabstop>table_issues</tabstop>
+  <tabstop>line_project</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -66,12 +66,12 @@
          <string>&amp;Description:</string>
         </property>
         <property name="buddy">
-         <cstring>af_text_description</cstring>
+         <cstring>text_description</cstring>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QPlainTextEdit" name="af_text_description">
+       <widget class="QPlainTextEdit" name="text_description">
         <property name="plainText">
          <string>feature description</string>
         </property>
@@ -90,7 +90,7 @@
        <number>10</number>
       </property>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="af_line_project">
+       <widget class="QLineEdit" name="line_project">
         <property name="styleSheet">
          <string notr="true">background-color:palette(Window);</string>
         </property>
@@ -131,7 +131,7 @@
        <number>10</number>
       </property>
       <item row="1" column="5">
-       <widget class="QSpinBox" name="af_spin_priority">
+       <widget class="QSpinBox" name="spin_priority">
         <property name="value">
          <number>50</number>
         </property>
@@ -153,7 +153,7 @@
          <string>Feature &amp;Name:</string>
         </property>
         <property name="buddy">
-         <cstring>af_line_name</cstring>
+         <cstring>line_name</cstring>
         </property>
        </widget>
       </item>
@@ -176,7 +176,7 @@
          <string>&amp;Priority:</string>
         </property>
         <property name="buddy">
-         <cstring>af_spin_priority</cstring>
+         <cstring>spin_priority</cstring>
         </property>
        </widget>
       </item>
@@ -204,7 +204,7 @@
        </widget>
       </item>
       <item row="0" column="1" colspan="8">
-       <widget class="QLineEdit" name="af_line_name">
+       <widget class="QLineEdit" name="line_name">
         <property name="minimumSize">
          <size>
           <width>400</width>
@@ -234,12 +234,12 @@
          <string>T&amp;ype:</string>
         </property>
         <property name="buddy">
-         <cstring>af_radio_secondary</cstring>
+         <cstring>radio_secondary</cstring>
         </property>
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QRadioButton" name="af_radio_primary">
+       <widget class="QRadioButton" name="radio_primary">
         <property name="text">
          <string>Primary</string>
         </property>
@@ -249,7 +249,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QRadioButton" name="af_radio_secondary">
+       <widget class="QRadioButton" name="radio_secondary">
         <property name="text">
          <string>Secondary</string>
         </property>
@@ -290,9 +290,9 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>af_line_name</tabstop>
-  <tabstop>af_text_description</tabstop>
-  <tabstop>af_line_project</tabstop>
+  <tabstop>line_name</tabstop>
+  <tabstop>text_description</tabstop>
+  <tabstop>line_project</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>
