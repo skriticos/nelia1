@@ -27,6 +27,7 @@ class NxLog:
             self.parent.w_log_diag_new.line_summary.setFocus(),
             self.parent.w_log_diag_new.show()))
 
+        self.widget.push_detail.clicked.connect(self.onDetailClicked)
         self.parent.w_log_diag_new.accepted.connect(self.onNewEntry)
 
     def onShowTab(self):
@@ -94,41 +95,18 @@ class NxLog:
         self.data.project[pid]['meta']['last_log'] += 1
         self.widget.push_detail.setEnabled(True)
 
-        '''
-    ####################   UTILITY METHODS   ####################
-
-    def getSelectedLog(self):
-
-        run_log = self.rundat['log']
-
-        table = run_log['table_log_history']
-        model = run_log['table_model_history']
-
-        row = table.currentIndex().row()
-        index = model.index(row, 2)
-        return int(model.itemFromIndex(index).text())
-
-    ####################   CALLBACKS   ####################
-
-
     def onDetailClicked(self):
 
-        run_log = self.rundat['log']
-        sav_log = self.savdat['log']
+        lid = int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(), 2)).text())
+        pid = self.data.run['project'].getSelectedProject()
+        log = self.data.project[pid]['log'][lid]
+        disptime = datetime.datetime.fromtimestamp(log['created']).isoformat()
+        d = self.parent.w_log_diag_detail
+        d.line_timestamp.setText(disptime)
+        d.line_summary.setText(log['summary'])
+        d.text_detail.setPlainText(log['detail'])
 
-        # retrive active log entry
-        lid = run_log[':getSelectedLog']()
-        log_entry = sav_log['p'][run_log['last_log_pid']]['l'][lid]
-        disptime = datetime.datetime.fromtimestamp(log_entry['timestamp']).isoformat()
-
-        # populate detail dialog
-        run_log['ui_diag_detail_input_timestamp'].setText(disptime)
-        run_log['ui_diag_detail_input_summary'].setText(log_entry['summary'])
-        run_log['ui_diag_detail_input_detail'].setPlainText(log_entry['detail'])
-
-        run_log['diag_detail'].show()
-
-        '''
+        d.show()
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
