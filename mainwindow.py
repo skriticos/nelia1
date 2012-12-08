@@ -157,9 +157,9 @@ class MainWindow(QObject):
         tab_widget = self.w_main.tabnavi
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
 
-        if cur_tab_name == 'Log':
+        if cur_tab_name == '&Log':
             self.data.run['log'].onShowTab()
-        if cur_tab_name == 'Roadmap':
+        if cur_tab_name == '&Roadmap':
             self.data.run['roadmap'].onShowTab()
 
 # vim: set ts=4 sw=4 ai si expandtab:

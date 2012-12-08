@@ -54,7 +54,7 @@ class NxLog:
                 self.model.insertRow(0, [
                     QStandardItem(datetime.datetime.fromtimestamp(log['created']).isoformat()),
                     QStandardItem(log['summary']),
-                    QStandardItem(i+1) ])
+                    QStandardItem(str(i+1)) ])
 
             if self.data.project[pid]['meta']['last_log'] > 0:
                 self.table.selectRow(0)
