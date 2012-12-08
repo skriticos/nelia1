@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Edit project porperties</string>
+   <string>Edit Project Porperties</string>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
