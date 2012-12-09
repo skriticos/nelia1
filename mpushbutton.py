@@ -4,8 +4,6 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 import sys
 
-# NOTE: THIS IS MOSTLY PART OF ROADMAP WIDGETS
-
 class MPushButton(QPushButton):
 
     """
@@ -53,11 +51,6 @@ class MPushButton(QPushButton):
 
                 # create action instance
                 action = QAction(self)
-
-                import pprint
-                pprint.pprint(versions)
-                print('len', len(versions))
-                print(n, m)
 
                 # compute minor version feature / issue count
                 fo = len(versions[n][m]['fo'])
@@ -181,29 +174,4 @@ class MPushButton(QPushButton):
         if self.change_callback:
             x, y = self.getVersion()
             self.change_callback(x, y, self.current_text)
-
-
-# test class
-if __name__ == "__main__":
-
-    import random, pprint
-    # print('### GENERATE TEST DATA ###')
-    data = []
-    for x in range(random.randint(5, 10)):
-        data.append([])
-        for y in range(random.randint(5, 10)):
-            if x == 0: y += 1
-            data[x].append({'m':'{}.{}'.format(x,y), 'fo':{}, 'fc':{}, 'io':{}, 'ic':{}})
-    # print('data: ')
-    # pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(data)
-
-    app = QApplication(sys.argv)
-
-    # note: 4.2 is the current version in the following spec. The selection will be 4.3,
-    #       the next version.
-    pushButton = MPushButton(4, 2, data)
-    pushButton.show()
-
-    sys.exit(app.exec_())
 
