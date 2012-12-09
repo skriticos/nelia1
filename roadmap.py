@@ -198,14 +198,7 @@ class NxRoadmap(QObject):
         self.roadmap.gridLayout_2.addWidget(self.roadmap.rmap_push_milestone, 0, 1, 1, 1)
         self.roadmap.label_2.setBuddy(self.roadmap.rmap_push_milestone)
 
-    def reset(self, savdat):
-
-        self.savdat = savdat
-
-        # ensure roadmap is reloaded when switched to after opening
-        self.rundat['roadmap']['last_pid'] = None
-        """
-
+    """
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
