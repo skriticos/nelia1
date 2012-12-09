@@ -97,18 +97,19 @@ class NxRoadmap(QObject):
         pid = self.data.run['project'].getSelectedProject()
         milestones = self.data.project[pid]['milestone']
         x, y = self.data.project[pid]['meta']['current_milestone']
+        d = self.parent.w_roadmap_diag_add_feature
 
-        self.parent.w_roadmap_diag_add_feature.gridLayout_2.removeWidget(self.parent.w_roadmap_diag_add_feature.push_target_milestone)
-        self.parent.w_roadmap_diag_add_feature.push_target_milestone.close()
-        self.parent.w_roadmap_diag_add_feature.push_target_milestone = MPushButton(x,y,milestones,self.parent.w_roadmap_diag_add_feature,None,self.selected_x,self.selected_y)
-        self.parent.w_roadmap_diag_add_feature.gridLayout_2.addWidget(self.parent.w_roadmap_diag_add_feature.push_target_milestone, 1, 1, 1, 1);
+        d.gridLayout_2.removeWidget(d.push_target_milestone)
+        d.push_target_milestone.close()
+        d.push_target_milestone \
+                = MPushButton(x,y,milestones,d,None,self.selected_x,self.selected_y)
+        d.gridLayout_2.addWidget(d.push_target_milestone, 1, 1, 1, 1);
 
-        self.parent.w_roadmap_diag_add_feature.line_name.clear()
-        self.parent.w_roadmap_diag_add_feature.text_description.clear()
-        self.parent.w_roadmap_diag_add_feature.show()
+        d.line_name.clear()
+        d.text_description.clear()
+        d.show()
 
         """
-        self.roadmap.rmap_push_add_feature.clicked.connect(self.showAddFeature)
         self.add_feature.accepted.connect(self.onSubmitNewFeature)
 
 
