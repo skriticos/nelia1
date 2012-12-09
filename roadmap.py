@@ -52,6 +52,9 @@ class NxRoadmap(QObject):
             self.widget.label_2.setBuddy(self.widget.push_milestone)
 
             self.reloadTables()
+
+            self.widget.push_add_feature.clicked.connect(self.showAddFeature)
+
             # TODO: POPULATE TABLES ON TAB SWITCH
 
     def onChangeVersionSelection(self, x, y, current_text):
@@ -89,24 +92,25 @@ class NxRoadmap(QObject):
 
         # TODO: reload feature / issue tables
 
+    def showAddFeature(self):
+
+        pid = self.data.run['project'].getSelectedProject()
+        milestones = self.data.project[pid]['milestone']
+        x, y = self.data.project[pid]['meta']['current_milestone']
+
+        self.parent.w_roadmap_diag_add_feature.gridLayout_2.removeWidget(self.parent.w_roadmap_diag_add_feature.push_target_milestone)
+        self.parent.w_roadmap_diag_add_feature.push_target_milestone.close()
+        self.parent.w_roadmap_diag_add_feature.push_target_milestone = MPushButton(x,y,milestones,self.parent.w_roadmap_diag_add_feature,None,self.selected_x,self.selected_y)
+        self.parent.w_roadmap_diag_add_feature.gridLayout_2.addWidget(self.parent.w_roadmap_diag_add_feature.push_target_milestone, 1, 1, 1, 1);
+
+        self.parent.w_roadmap_diag_add_feature.line_name.clear()
+        self.parent.w_roadmap_diag_add_feature.text_description.clear()
+        self.parent.w_roadmap_diag_add_feature.show()
+
         """
         self.roadmap.rmap_push_add_feature.clicked.connect(self.showAddFeature)
         self.add_feature.accepted.connect(self.onSubmitNewFeature)
 
-    def showAddFeature(self):
-
-        pid = self.rundat['project'][':getSelectedProject']()
-        x, y = self.savdat['roadmap'][pid]['current_milestone']
-        versions = self.savdat['roadmap'][pid]['versions']
-
-        self.add_feature.gridLayout_2.removeWidget(self.add_feature.push_target_milestone)
-        self.add_feature.push_target_milestone.close()
-        self.add_feature.push_target_milestone = MPushButton(x,y,versions,self.add_feature,None,self.selected_x,self.selected_y)
-        self.add_feature.gridLayout_2.addWidget(self.add_feature.push_target_milestone, 1, 1, 1, 1);
-
-        self.add_feature.af_line_name.clear()
-        self.add_feature.af_text_description.clear()
-        self.add_feature.show()
 
     def onSubmitNewFeature(self):
 
