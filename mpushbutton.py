@@ -111,6 +111,8 @@ class MPushButton(QPushButton):
                 if Δm == 1:
                     sign = '+'
                     icon = '◈'
+                    self.next_x = n
+                    self.next_y = m
                 if Δm == 0:
                     sign = ''
                     icon = '◆'

@@ -54,6 +54,11 @@ class NxRoadmap(QObject):
             self.reloadTables()
 
             self.widget.push_add_feature.clicked.connect(self.showAddFeature)
+            self.parent.w_roadmap_diag_add_feature.accepted.connect(self.onSubmitNewFeature)
+
+            # computing next_x, next_y is quite tricky, so we take it from the milestone widget (which does it anyway)
+            self.selected_x = self.widget.push_milestone.next_x
+            self.selected_y = self.widget.push_milestone.next_y
 
             # TODO: POPULATE TABLES ON TAB SWITCH
 
