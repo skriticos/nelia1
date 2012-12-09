@@ -113,102 +113,71 @@ class NxRoadmap(QObject):
         d.line_name.clear()
         d.text_description.clear()
         d.show()
-
-        """
-        self.add_feature.accepted.connect(self.onSubmitNewFeature)
-
+        d.line_name.setFocus()
 
     def onSubmitNewFeature(self):
 
-        pid = self.rundat['project'][':getSelectedProject']()
+        pid = self.data.run['project'].getSelectedProject()
+        milestones = self.data.project[pid]['milestone']
+        d = self.parent.w_roadmap_diag_add_feature
+        x, y = self.data.project[pid]['meta']['current_milestone']
+        target_label = d.push_target_milestone.text()
+        tx, ty = target_label.split(' ')[3][1:].split('.')
+        tx = int(tx)
+        ty = int(ty)
+        timestamp = int(time.time())
 
-        # prepare new feature data
-        milestone = self.add_feature.push_target_milestone.text()
-        x, y = milestone.split(' ')[3][1:].split('.')
-        versions = self.savdat['roadmap'][pid]['versions']
-
-        x = int(x)
-        y = int(y)
-
-        ftype = None
-        if self.add_feature.af_radio_primary.isChecked():
+        if d.radio_primary.isChecked():
             ftype = 'Primary'
         else:
             ftype = 'Secondary'
 
-        name = self.add_feature.af_line_name.text()
-        priority = self.add_feature.af_spin_priority.value()
-        description = self.add_feature.af_text_description.toPlainText()
+        name = d.line_name.text()
+        priority = d.spin_priority.value()
+        description = d.text_description.toPlainText()
 
         new_feature = {
-            'name': self.add_feature.af_line_name.text(),
-            'priority': self.add_feature.af_spin_priority.value(),
-            'type': ftype,
-            'description': self.add_feature.af_text_description.toPlainText(),
-            'created': int(time.time()),
-            'completed': 0
+            'name':         d.line_name.text(),
+            'priority':     d.spin_priority.value(),
+            'type':         ftype,
+            'description':  d.text_description.toPlainText(),
+            'created':      timestamp,
+            'completed':    False
         }
 
-        last_feature_id = self.savdat['roadmap'][pid]['last_feature_id']
-
         # only add feature, if added to currently selected version
-        if x == self.selected_x and y == self.selected_y:
+        if tx == self.selected_x and ty == self.selected_y:
             # add to feature table
-            model = self.rundat['roadmap']['feature_table_model']
+            model = self.model_feature
             model.insertRow(0, [
                 QStandardItem(name),
-                QStandardItem('{}.{}'.format(x,y)),
+                QStandardItem('{}.{}'.format(tx,ty)),
                 QStandardItem(str(priority)),
                 QStandardItem(ftype),
                 QStandardItem('No'),
-                QStandardItem(str(last_feature_id+1))
+                QStandardItem(str(self.data.project[pid]['meta']['last_feature']+1))
             ])
 
         # save new feature data
-        if x == 0:
-            y -= 1
+        if tx == 0:
+            ty -= 1
 
-        if len(versions) == x+1: # new major version
+        """
+        # FIXME: incomplete
+        if len(milestones) == tx+1: # new major version
             pass
-        elif len(versions[x]) == y+1: # new minor version
-            versions.append({'m': '{}.{}'.format(x, y+2), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}),
+        elif len(milestones[tx]) == ty+1: # new minor version
+            milestones.append({'m': '{}.{}'.format(tx, ty+2), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}),
+        """
 
+        self.data.project[pid]['milestone'][tx][ty]['fo'][self.data.project[pid]['meta']['last_feature']+1] = new_feature
+        self.data.project[pid]['meta']['last_feature'] += 1
 
-        '''
-            0.1 -> 0.2
-            1.0 -> 2.0, 1.1
-
-        # create new milestone, if necessary
-        if y != 0 and x+1 in self.savdat['roadmap'][pid]: # minor milestone
-
-            if y+1 not in self.savdat['roadmap'][pid][x]: # next milestone does not exist yet
-
-                self.savdat['roadmap'][pid][x][y+1] = \
-                    {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-
-        elif x+1 not in self.savdat['roadmap'][pid]: # next major milestone does not exist yet
-
-            # x.1
-            self.savdat['roadmap'][pid][x][1] = \
-                    {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-            # 1.x
-            self.savdat['roadmap'][pid][x+1] = { 0:
-                    {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}}
-        '''
-
-        self.savdat['roadmap'][pid]['versions'][x][y]['fo'][last_feature_id+1] = new_feature
-        self.savdat['roadmap'][pid]['last_feature_id'] += 1
-
-        # update roadmap widget milestone selector
-        x, y = self.savdat['roadmap'][pid]['current_milestone']
-
-        self.roadmap.gridLayout_2.removeWidget(self.roadmap.rmap_push_milestone)
-        self.roadmap.rmap_push_milestone.close()
-        self.roadmap.rmap_push_milestone = MPushButton(x, y, versions, self.roadmap, self.onChangeVersionSelection, self.selected_x, self.selected_y)
-        self.roadmap.gridLayout_2.addWidget(self.roadmap.rmap_push_milestone, 0, 1, 1, 1)
-        self.roadmap.label_2.setBuddy(self.roadmap.rmap_push_milestone)
-
-    """
+        self.widget.gridLayout_2.removeWidget(self.widget.push_milestone)
+        self.widget.push_milestone.close()
+        self.widget.push_milestone = MPushButton(x, y, milestones, self.widget, self.onChangeVersionSelection, self.selected_x, self.selected_y)
+        self.widget.gridLayout_2.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
+        self.widget.label_2.setBuddy(self.widget.push_milestone)
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
