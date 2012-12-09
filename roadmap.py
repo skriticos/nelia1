@@ -8,70 +8,95 @@ from PySide import QtUiTools
 from mpushbutton import MPushButton
 
 class NxRoadmap(QObject):
-    
+
     def __init__(self, parent, datastore, widget):
 
         self.parent = parent
         self.data   = datastore
         self.widget = widget
-        
-        """
-        super().__init__()
 
-        self.rundat = rundat
+        self.milestone_menu = QMenu(self.widget)
+        self.widget.push_milestone.setMenu(self.milestone_menu)
 
-        # roadmap main widget, prefix: rmap == ui
-        loader = QtUiTools.QUiLoader()
-        uifile = QFile('forms/roadmap.ui')
-        uifile.open(QFile.ReadOnly)
-        self.roadmap = loader.load(uifile)
-        uifile.close()
-        
-        self.milestone_menu = QMenu(self.roadmap)
-        self.roadmap.rmap_push_milestone.setMenu(self.milestone_menu)        
-        
-        parent_widget = self.rundat['mainwindow']['tab_roadmap']
-        self.roadmap.setParent(parent_widget)
-        grid = QGridLayout()
-        grid.addWidget(self.roadmap, 0, 0)
-        grid.setContentsMargins(0, 5, 0, 0)
-        parent_widget.setLayout(grid)
-
-        uifile = QFile('forms/roadmap_add_feature.ui')
-        uifile.open(QFile.ReadOnly)
-        self.add_feature = loader.load(uifile)
-        uifile.close()
-        self.add_feature.setParent(self.roadmap)
-        self.add_feature.setWindowFlags(Qt.Dialog)
-
-        if 'roadmap' not in  self.rundat:
-            self.rundat['roadmap'] = {}
-        self.rundat['roadmap'][':onShowTab'] = self.onShowTab
-
-        self.rundat['roadmap']['feature_headers'] = \
+        self.feature_headers = \
             ['Name', 'Target', 'Prio.', 'Type', 'Compl.', 'ID']
-        self.rundat['roadmap']['issue_headers'] = \
+        self.issue_headers = \
             ['Name', 'Target', 'Prio.', 'Sev.', 'Closed', 'ID']
 
-        self.roadmap.rmap_push_add_feature.clicked.connect(self.showAddFeature)
-        self.add_feature.accepted.connect(self.onSubmitNewFeature)
+        self.model_feature = QStandardItemModel()
+        self.table_feature = self.widget.table_feature
+        self.table_feature.setModel(self.model_feature)
+        self.model_issue = QStandardItemModel()
+        self.table_issue = self.widget.table_issue
+        self.table_issue.setModel(self.model_issue)
 
-        self.reset(savdat)
-        self.savdat['roadmap'] = {}
-        
-    ####################   METHODS   #################### 
+    def onShowTab(self):
+
+        pid = self.data.run['project'].getSelectedProject()
+        if self.data.run['roadmap_pid_last'] == 0 or self.data.run['roadmap_pid_last'] != pid:
+
+            pro = self.data.project[pid]
+
+            project_name = self.data.run['project'].getSelectedProjectName()
+            self.widget.line_project.setText(project_name)
+            self.parent.w_roadmap_diag_add_feature.line_project.setText(project_name)
+            self.parent.w_roadmap_diag_add_issue.line_project.setText(project_name)
+
+            x, y = pro['meta']['current_milestone']
+            milestones = pro['milestone']
+
+            self.widget.gridLayout_2.removeWidget(self.widget.push_milestone)
+            self.widget.push_milestone.close()
+            self.widget.push_milestone = MPushButton(x, y, milestones, self.widget, self.onChangeVersionSelection)
+            self.widget.gridLayout_2.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
+            self.widget.label_2.setBuddy(self.widget.push_milestone)
+
+            self.reloadTables()
+            # TODO: POPULATE TABLES ON TAB SWITCH
 
     def onChangeVersionSelection(self, x, y, current_text):
 
         self.selected_x = x
         self.selected_y = y
 
+        self.reloadTables()
+
+    def reloadTables(self):
+
+        self.selected_x, self.selected_y = self.widget.push_milestone.getVersion()
+
+        self.parent.w_roadmap_diag_add_feature.radio_secondary.setChecked(False)
+        self.parent.w_roadmap_diag_add_feature.radio_primary.setChecked(True)
+        self.parent.w_roadmap_diag_add_feature.spin_priority.setValue(50)
+
+        self.model_feature.clear()
+        self.model_feature.setHorizontalHeaderLabels(self.feature_headers)
+        self.table_feature.setColumnWidth(0, 180)
+        self.table_feature.setColumnWidth(1, 50)
+        self.table_feature.setColumnWidth(2, 50)
+        self.table_feature.setColumnWidth(3, 70)
+        self.table_feature.setColumnWidth(4, 68)
+        self.table_feature.setColumnWidth(5, 50)
+
+        self.model_issue.clear()
+        self.model_issue.setHorizontalHeaderLabels(self.issue_headers)
+        self.table_issue.setColumnWidth(0, 200)
+        self.table_issue.setColumnWidth(1, 50)
+        self.table_issue.setColumnWidth(2, 50)
+        self.table_issue.setColumnWidth(3, 50)
+        self.table_issue.setColumnWidth(4, 68)
+        self.table_issue.setColumnWidth(5, 50)
+
         # TODO: reload feature / issue tables
+
+        """
+        self.roadmap.rmap_push_add_feature.clicked.connect(self.showAddFeature)
+        self.add_feature.accepted.connect(self.onSubmitNewFeature)
 
     def onShowTab(self):
 
         pid = self.rundat['project'][':getSelectedProject']()
-        
+
         # project selection changed or new project
         if self.rundat['roadmap']['last_pid'] == None \
                 or self.rundat['roadmap']['last_pid'] != pid:
@@ -95,7 +120,7 @@ class NxRoadmap(QObject):
                     # the next one is tricky:
                     # versions are calculated from index of the below lists
                     # outer list: major version, starting with 0
-                    # inner list: minor version, starting with n.0, 
+                    # inner list: minor version, starting with n.0,
                     #             except the first, which starts with n.1
                     'versions' : [
                         [{'m': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
@@ -116,9 +141,9 @@ class NxRoadmap(QObject):
         self.roadmap.rmap_push_milestone = MPushButton(x, y, versions, self.roadmap, self.onChangeVersionSelection)
         self.roadmap.gridLayout_2.addWidget(self.roadmap.rmap_push_milestone, 0, 1, 1, 1)
         self.roadmap.label_2.setBuddy(self.roadmap.rmap_push_milestone)
-        
-        self.selected_x, self.selected_y = self.roadmap.rmap_push_milestone.getVersion() 
-        
+
+        self.selected_x, self.selected_y = self.roadmap.rmap_push_milestone.getVersion()
+
         # reset controls
         self.add_feature.af_radio_secondary.setChecked(False)
         self.add_feature.af_radio_primary.setChecked(True)
@@ -131,7 +156,7 @@ class NxRoadmap(QObject):
 
         model.setHorizontalHeaderLabels(self.rundat['roadmap']['feature_headers'])
         table.setModel(model)
-        
+
         table.setColumnWidth(0, 180)
         table.setColumnWidth(1, 50)
         table.setColumnWidth(2, 50)
@@ -144,10 +169,10 @@ class NxRoadmap(QObject):
         table = self.roadmap.rmap_table_issues
         model = self.rundat['roadmap']['issue_table_model'] = QStandardItemModel()
         model.clear()
-        
+
         model.setHorizontalHeaderLabels(self.rundat['roadmap']['issue_headers'])
         table.setModel(model)
-        
+
         table.setColumnWidth(0, 200)
         table.setColumnWidth(1, 50)
         table.setColumnWidth(2, 50)
@@ -171,16 +196,16 @@ class NxRoadmap(QObject):
         self.add_feature.af_line_name.clear()
         self.add_feature.af_text_description.clear()
         self.add_feature.show()
-    
+
     def onSubmitNewFeature(self):
 
         pid = self.rundat['project'][':getSelectedProject']()
-        
+
         # prepare new feature data
         milestone = self.add_feature.push_target_milestone.text()
         x, y = milestone.split(' ')[3][1:].split('.')
         versions = self.savdat['roadmap'][pid]['versions']
-        
+
         x = int(x)
         y = int(y)
 
@@ -202,7 +227,7 @@ class NxRoadmap(QObject):
             'created': int(time.time()),
             'completed': 0
         }
-        
+
         last_feature_id = self.savdat['roadmap'][pid]['last_feature_id']
 
         # only add feature, if added to currently selected version
@@ -226,7 +251,7 @@ class NxRoadmap(QObject):
             pass
         elif len(versions[x]) == y+1: # new minor version
             versions.append({'m': '{}.{}'.format(x, y+2), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}),
-        
+
 
         '''
             0.1 -> 0.2
@@ -236,10 +261,10 @@ class NxRoadmap(QObject):
         if y != 0 and x+1 in self.savdat['roadmap'][pid]: # minor milestone
 
             if y+1 not in self.savdat['roadmap'][pid][x]: # next milestone does not exist yet
-                
+
                 self.savdat['roadmap'][pid][x][y+1] = \
                     {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-                   
+
         elif x+1 not in self.savdat['roadmap'][pid]: # next major milestone does not exist yet
 
             # x.1
@@ -263,7 +288,7 @@ class NxRoadmap(QObject):
         self.roadmap.label_2.setBuddy(self.roadmap.rmap_push_milestone)
 
     def reset(self, savdat):
-    
+
         self.savdat = savdat
 
         # ensure roadmap is reloaded when switched to after opening
