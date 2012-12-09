@@ -172,6 +172,12 @@
       <item row="0" column="1">
        <widget class="QWidget" name="widget_2" native="true">
         <layout class="QGridLayout" name="gridLayout_7">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>10</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="label_many">
            <property name="minimumSize">
@@ -184,12 +190,12 @@
             <string>I&amp;ssues:</string>
            </property>
            <property name="buddy">
-            <cstring>table_issues</cstring>
+            <cstring>table_issue</cstring>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QTableView" name="table_issues">
+          <widget class="QTableView" name="table_issue">
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
@@ -210,8 +216,14 @@
       <item row="0" column="0">
        <widget class="QWidget" name="widget" native="true">
         <layout class="QGridLayout" name="gridLayout_6">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>10</number>
+         </property>
          <item row="1" column="0">
-          <widget class="QTableView" name="table_features">
+          <widget class="QTableView" name="table_feature">
            <property name="editTriggers">
             <set>QAbstractItemView::NoEditTriggers</set>
            </property>
@@ -238,7 +250,7 @@
             <string>Fea&amp;tures:</string>
            </property>
            <property name="buddy">
-            <cstring>table_features</cstring>
+            <cstring>table_feature</cstring>
            </property>
           </widget>
          </item>
@@ -254,8 +266,8 @@
   <tabstop>push_add_feature</tabstop>
   <tabstop>push_add_issue</tabstop>
   <tabstop>push_delete</tabstop>
-  <tabstop>table_features</tabstop>
-  <tabstop>table_issues</tabstop>
+  <tabstop>table_feature</tabstop>
+  <tabstop>table_issue</tabstop>
   <tabstop>line_project</tabstop>
  </tabstops>
  <resources/>
