@@ -107,7 +107,7 @@ class NxRoadmap(QObject):
         d.gridLayout_2.removeWidget(d.push_target_milestone)
         d.push_target_milestone.close()
         d.push_target_milestone \
-                = MPushButton(x,y,milestones,d,None,self.selected_x,self.selected_y)
+                = MPushButton(x,y,milestones,d,None,self.selected_x,self.selected_y,True)
         d.gridLayout_2.addWidget(d.push_target_milestone, 1, 1, 1, 1);
 
         d.line_name.clear()

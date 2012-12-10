@@ -12,7 +12,7 @@ class MPushButton(QPushButton):
         or for feature / issue targets).
     """
 
-    def __init__(self, x, y, versions, parent=None, change_callback=None, sel_x=None, sel_y=None):
+    def __init__(self, x, y, versions, parent=None, change_callback=None, sel_x=None, sel_y=None, open_only=False):
 
         super().__init__(parent)
 
@@ -105,12 +105,15 @@ class MPushButton(QPushButton):
                             Δm -= 1
 
                 # compute completion symbol and sign
+                oo = False
                 if Δm > 1:
                     sign = '+'
                     icon = '◇'
+                    oo = True
                 if Δm == 1:
                     sign = '+'
                     icon = '◈'
+                    oo = True
                     self.next_x = n
                     self.next_y = m
                 if Δm == 0:
@@ -119,6 +122,9 @@ class MPushButton(QPushButton):
                 if Δm < 0:
                     sign = '-'
                     icon = '◆'
+
+                if open_only and not oo:
+                    continue
 
                 # Compute major and minor version combined delta.
                 # Notice how this has nothing to do with floating point.
@@ -137,15 +143,20 @@ class MPushButton(QPushButton):
                 action.triggered.connect(self.selectionChanged)
                 major_menu.addAction(action)
 
-                # print('n:',n,'m:',m,'\tΔn:',Δn,'Δm:',Δm,'\tΔnm:', Δnm, '\ticon:',icon)
-
             # compute major version icon
+            oo = False
             if Δn > 0:
                 icon = '◇'
+                oo = True
             if Δn == 0:
                 icon = '◈'
+                oo = True
             if Δn < 0:
                 icon = '◆'
+
+            if open_only and not oo:
+                major_menu.close()
+                continue
 
             # set major version menu label and add it to the root menu
             major_menu.setTitle('{}   v{}.x   f:{}/{}   i:{}/{}'.format(
