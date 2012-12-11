@@ -19,16 +19,11 @@ class NxRoadmap(QObject):
         self.widget.push_milestone.setMenu(self.milestone_menu)
 
         self.feature_headers = \
-            ['Name', 'Target', 'Prio.', 'Type', 'Compl.', 'ID']
-        self.issue_headers = \
-            ['Name', 'Target', 'Prio.', 'Sev.', 'Closed', 'ID']
+            ['Name', 'Type', 'Target', 'Priority', 'Criticality', 'Status', 'ID']
 
-        self.model_feature = QStandardItemModel()
-        self.table_feature = self.widget.table_feature
-        self.table_feature.setModel(self.model_feature)
-        self.model_issue = QStandardItemModel()
-        self.table_issue = self.widget.table_issue
-        self.table_issue.setModel(self.model_issue)
+        self.model = QStandardItemModel()
+        self.table = self.widget.table
+        self.table.setModel(self.model)
 
     def onShowTab(self):
 
@@ -75,23 +70,15 @@ class NxRoadmap(QObject):
         self.parent.w_roadmap_diag_add_feature.radio_primary.setChecked(True)
         self.parent.w_roadmap_diag_add_feature.spin_priority.setValue(50)
 
-        self.model_feature.clear()
-        self.model_feature.setHorizontalHeaderLabels(self.feature_headers)
-        self.table_feature.setColumnWidth(0, 180)
-        self.table_feature.setColumnWidth(1, 50)
-        self.table_feature.setColumnWidth(2, 50)
-        self.table_feature.setColumnWidth(3, 70)
-        self.table_feature.setColumnWidth(4, 68)
-        self.table_feature.setColumnWidth(5, 50)
-
-        self.model_issue.clear()
-        self.model_issue.setHorizontalHeaderLabels(self.issue_headers)
-        self.table_issue.setColumnWidth(0, 200)
-        self.table_issue.setColumnWidth(1, 50)
-        self.table_issue.setColumnWidth(2, 50)
-        self.table_issue.setColumnWidth(3, 50)
-        self.table_issue.setColumnWidth(4, 68)
-        self.table_issue.setColumnWidth(5, 50)
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(self.feature_headers)
+        self.table.setColumnWidth(0, 450)
+        self.table.setColumnWidth(1, 80)
+        self.table.setColumnWidth(2, 80)
+        self.table.setColumnWidth(3, 80)
+        self.table.setColumnWidth(4, 100)
+        self.table.setColumnWidth(5, 80)
+        self.table.setColumnWidth(6, 80)
 
         pid = self.data.run['project'].getSelectedProject()
         pro = self.data.project[pid]
@@ -102,7 +89,7 @@ class NxRoadmap(QObject):
         fc = pro['milestone'][self.selected_x][y]['fc']
 
         for key, value in fc.items():
-            self.model_feature.insertRow(0, [
+            self.model.insertRow(0, [
                 QStandardItem(value['name']),
                 QStandardItem('{}.{}'.format(self.selected_x, self.selected_y)),
                 QStandardItem(str(value['priority'])),
@@ -110,9 +97,9 @@ class NxRoadmap(QObject):
                 QStandardItem('No'),
                 QStandardItem(str(key))
             ])
-            self.table_feature.selectRow(0)
+            self.table.selectRow(0)
         for key, value in fo.items():
-            self.model_feature.insertRow(0, [
+            self.model.insertRow(0, [
                 QStandardItem(value['name']),
                 QStandardItem('{}.{}'.format(self.selected_x, self.selected_y)),
                 QStandardItem(str(value['priority'])),
@@ -120,9 +107,9 @@ class NxRoadmap(QObject):
                 QStandardItem('No'),
                 QStandardItem(str(key))
             ])
-            self.table_feature.selectRow(0)
-        self.table_feature.setFocus()
-        if self.table_feature.currentIndex().row() == 0:
+            self.table.selectRow(0)
+        self.table.setFocus()
+        if self.table.currentIndex().row() == 0:
             self.widget.push_edit.setEnabled(True)
             self.widget.push_delete.setEnabled(True)
 
@@ -177,7 +164,7 @@ class NxRoadmap(QObject):
         # only add feature, if added to currently selected version
         if tx == self.selected_x and ty == self.selected_y:
             # add to feature table
-            model = self.model_feature
+            model = self.model
             model.insertRow(0, [
                 QStandardItem(name),
                 QStandardItem('{}.{}'.format(tx,ty)),
@@ -213,9 +200,9 @@ class NxRoadmap(QObject):
         self.widget.gridLayout_2.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
         self.widget.label_2.setBuddy(self.widget.push_milestone)
 
-        self.table_feature.selectRow(0)
-        self.table_feature.setFocus()
-        if self.table_feature.currentIndex().row() == 0:
+        self.table.selectRow(0)
+        self.table.setFocus()
+        if self.table.currentIndex().row() == 0:
             self.widget.push_edit.setEnabled(True)
             self.widget.push_delete.setEnabled(True)
 
