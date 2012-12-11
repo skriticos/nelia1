@@ -60,7 +60,6 @@ class NxRoadmap(QObject):
             self.selected_x = self.widget.push_milestone.next_x
             self.selected_y = self.widget.push_milestone.next_y
 
-
     def onChangeVersionSelection(self, x, y, current_text):
 
         self.selected_x = x
@@ -111,6 +110,7 @@ class NxRoadmap(QObject):
                 QStandardItem('No'),
                 QStandardItem(str(key))
             ])
+            self.table_feature.selectRow(0)
         for key, value in fo.items():
             self.model_feature.insertRow(0, [
                 QStandardItem(value['name']),
@@ -120,6 +120,11 @@ class NxRoadmap(QObject):
                 QStandardItem('No'),
                 QStandardItem(str(key))
             ])
+            self.table_feature.selectRow(0)
+        self.table_feature.setFocus()
+        if self.table_feature.currentIndex().row() == 0:
+            self.widget.push_edit.setEnabled(True)
+            self.widget.push_delete.setEnabled(True)
 
     def showAddFeature(self):
 
@@ -207,6 +212,12 @@ class NxRoadmap(QObject):
         self.widget.push_milestone = MPushButton(x, y, milestones, self.widget, self.onChangeVersionSelection, self.selected_x, self.selected_y)
         self.widget.gridLayout_2.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
         self.widget.label_2.setBuddy(self.widget.push_milestone)
+
+        self.table_feature.selectRow(0)
+        self.table_feature.setFocus()
+        if self.table_feature.currentIndex().row() == 0:
+            self.widget.push_edit.setEnabled(True)
+            self.widget.push_delete.setEnabled(True)
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
