@@ -149,6 +149,7 @@ class NxProject:
         p['basepath']    = basepath    = d.line_basepath.text()
         p['description'] = description = d.text_description.toPlainText()
 
+        x, y = p['meta']['current_milestone']
         for index, value in (
                             (0, name),
                             (1, ptype),
@@ -156,7 +157,7 @@ class NxProject:
                             (3, category),
                             (4, priority),
                             (5, challenge),
-                            (6, '0.0'), # FIXME: fetch this from milestones
+                            (6, '{}.{}'.format(x, y)),
                             (7, disptime),
                             (8, str(pid))):
             self.model.setData(
@@ -230,6 +231,7 @@ class NxProject:
 
         for pid,project in self.data.project.items():
             if pid == 0: continue
+            x, y = self.data.project[pid]['meta']['current_milestone']
             disptime = datetime.datetime.fromtimestamp(project['changed']).isoformat()
             self.model.insertRow(0, [
                 QStandardItem(project['name']),
@@ -238,7 +240,7 @@ class NxProject:
                 QStandardItem(project['category']),
                 QStandardItem(str(project['priority'])),
                 QStandardItem(str(project['challenge'])),
-                QStandardItem('0.0'), # FIXME: get this from milestones
+                QStandardItem('{}.{}'.format(x,y)),
                 QStandardItem(disptime),
                 QStandardItem(str(pid))
             ])
