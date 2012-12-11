@@ -136,7 +136,7 @@ class MPushButton(QPushButton):
                 if sel_x == n and sel_y == m and open_only and Δm > 0:
                     self.setText(label)
                     self.current_text = label
-                elif: sel_x == n and sel_y == m and not open_only:
+                elif sel_x == n and sel_y == m and not open_only:
                     self.setText(label)
                     self.current_text = label
                 elif Δm == 1:
