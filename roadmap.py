@@ -60,7 +60,6 @@ class NxRoadmap(QObject):
             self.selected_x = self.widget.push_milestone.next_x
             self.selected_y = self.widget.push_milestone.next_y
 
-            # TODO: POPULATE TABLES ON TAB SWITCH
 
     def onChangeVersionSelection(self, x, y, current_text):
 
@@ -95,7 +94,32 @@ class NxRoadmap(QObject):
         self.table_issue.setColumnWidth(4, 68)
         self.table_issue.setColumnWidth(5, 50)
 
-        # TODO: reload feature / issue tables
+        pid = self.data.run['project'].getSelectedProject()
+        pro = self.data.project[pid]
+        x, y = pro['meta']['current_milestone']
+        yy = self.selected_y
+        if self.selected_x == 0: yy == self.selected_y-1
+        fo = pro['milestone'][self.selected_x][y]['fo']
+        fc = pro['milestone'][self.selected_x][y]['fc']
+
+        for key, value in fc.items():
+            self.model_feature.insertRow(0, [
+                QStandardItem(value['name']),
+                QStandardItem('{}.{}'.format(self.selected_x, self.selected_y)),
+                QStandardItem(str(value['priority'])),
+                QStandardItem(value['type']),
+                QStandardItem('No'),
+                QStandardItem(str(key))
+            ])
+        for key, value in fo.items():
+            self.model_feature.insertRow(0, [
+                QStandardItem(value['name']),
+                QStandardItem('{}.{}'.format(self.selected_x, self.selected_y)),
+                QStandardItem(str(value['priority'])),
+                QStandardItem(value['type']),
+                QStandardItem('No'),
+                QStandardItem(str(key))
+            ])
 
     def showAddFeature(self):
 
