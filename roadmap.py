@@ -158,17 +158,22 @@ class NxRoadmap(QObject):
                 QStandardItem(str(self.data.project[pid]['meta']['last_feature']+1))
             ])
 
-        # save new feature data
+        # generate new milestones if an edge is reached
+        a = {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
+        b = {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
+        if len(milestones) > tx + 1:
+            if (tx != 0 and len(milestones[tx]) == ty + 1) or (tx == 0 and len(milestones[tx]) == ty):
+                a['m'] = '{}.{}'.format(tx, ty)
+                milestones[tx].append(a)
+        else:
+            a['m'] = '{}.{}'.format(tx, 1)
+            milestones[tx].append(a)
+            b['m'] = '{}.{}'.format(tx+1, 0)
+            milestones.append([b])
+
+        # update push button
         if tx == 0:
             ty -= 1
-
-        """
-        # FIXME: incomplete
-        if len(milestones) == tx+1: # new major version
-            pass
-        elif len(milestones[tx]) == ty+1: # new minor version
-            milestones.append({'m': '{}.{}'.format(tx, ty+2), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}),
-        """
 
         self.data.project[pid]['milestone'][tx][ty]['fo'][self.data.project[pid]['meta']['last_feature']+1] = new_feature
         self.data.project[pid]['meta']['last_feature'] += 1
