@@ -35,8 +35,7 @@ class MainWindow(QObject):
                             ('w_project_diag_edit',       'forms/project_diag_edit.ui'),
                             ('w_log_diag_detail',         'forms/log_detail.ui'),
                             ('w_log_diag_new',            'forms/log_new_entry.ui'),
-                            ('w_roadmap_diag_add_feature','forms/roadmap_add_feature.ui'),
-                            ('w_roadmap_diag_add_issue',  'forms/roadmap_add_issue.ui')):
+                            ('w_roadmap_diag_add',        'forms/roadmap_add.ui')):
             f = QFile(fname)
             f.open(QFile.ReadOnly)
             obj = self.__dict__[name] = loader.load(f)

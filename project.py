@@ -71,7 +71,7 @@ class NxProject:
         # meta: general project data
         # log: log data
         # milestone: versions, features, issues
-        p = self.data.project[pid] = {  'meta': {'last_log': 0, 'last_feature': 0, 'last_issue': 0, 'current_milestone': (0,0)},
+        p = self.data.project[pid] = {  'meta': {'last_log': 0, 'last_roadmap_item': 0, 'current_milestone': (0,0)},
                                         'log': {},
                                         'milestone' : [
                                                 [{'m': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],

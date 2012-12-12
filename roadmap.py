@@ -19,11 +19,15 @@ class NxRoadmap(QObject):
         self.widget.push_milestone.setMenu(self.milestone_menu)
 
         self.feature_headers = \
-            ['Name', 'Type', 'Target', 'Priority', 'Criticality', 'Status', 'ID']
+            ['Name', 'Type', 'Target', 'Priority', 'Status', 'ID']
 
         self.model = QStandardItemModel()
         self.table = self.widget.table
         self.table.setModel(self.model)
+
+        self.widget.push_add_feature.clicked.connect(lambda: (self.parent.w_roadmap_diag_add.radio_feature.setChecked(True), self.showAddRoadmapItem()))
+        self.widget.push_add_issue.clicked.connect(lambda: (self.parent.w_roadmap_diag_add.radio_issue.setChecked(True), self.showAddRoadmapItem()))
+        self.parent.w_roadmap_diag_add.accepted.connect(self.onSubmitNewRoadmapItem)
 
     def onShowTab(self):
 
@@ -34,8 +38,7 @@ class NxRoadmap(QObject):
 
             project_name = self.data.run['project'].getSelectedProjectName()
             self.widget.line_project.setText(project_name)
-            self.parent.w_roadmap_diag_add_feature.line_project.setText(project_name)
-            self.parent.w_roadmap_diag_add_issue.line_project.setText(project_name)
+            self.parent.w_roadmap_diag_add.line_project.setText(project_name)
 
             x, y = pro['meta']['current_milestone']
             milestones = pro['milestone']
@@ -48,12 +51,13 @@ class NxRoadmap(QObject):
 
             self.reloadTables()
 
-            self.widget.push_add_feature.clicked.connect(self.showAddFeature)
-            self.parent.w_roadmap_diag_add_feature.accepted.connect(self.onSubmitNewFeature)
-
             # computing next_x, next_y is quite tricky, so we take it from the milestone widget (which does it anyway)
             self.selected_x = self.widget.push_milestone.next_x
             self.selected_y = self.widget.push_milestone.next_y
+
+            d = self.parent.w_roadmap_diag_add
+            d.radio_medium.setChecked(True)
+            d.radio_feature.setChecked(True)
 
     def onChangeVersionSelection(self, x, y, current_text):
 
@@ -66,19 +70,14 @@ class NxRoadmap(QObject):
 
         self.selected_x, self.selected_y = self.widget.push_milestone.getVersion()
 
-        self.parent.w_roadmap_diag_add_feature.radio_secondary.setChecked(False)
-        self.parent.w_roadmap_diag_add_feature.radio_primary.setChecked(True)
-        self.parent.w_roadmap_diag_add_feature.spin_priority.setValue(50)
-
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         self.table.setColumnWidth(0, 450)
         self.table.setColumnWidth(1, 80)
         self.table.setColumnWidth(2, 80)
         self.table.setColumnWidth(3, 80)
-        self.table.setColumnWidth(4, 100)
+        self.table.setColumnWidth(4, 80)
         self.table.setColumnWidth(5, 80)
-        self.table.setColumnWidth(6, 80)
 
         pid = self.data.run['project'].getSelectedProject()
         pro = self.data.project[pid]
@@ -113,52 +112,56 @@ class NxRoadmap(QObject):
             self.widget.push_edit.setEnabled(True)
             self.widget.push_delete.setEnabled(True)
 
-    def showAddFeature(self):
+    def showAddRoadmapItem(self):
 
         pid = self.data.run['project'].getSelectedProject()
         milestones = self.data.project[pid]['milestone']
         x, y = self.data.project[pid]['meta']['current_milestone']
-        d = self.parent.w_roadmap_diag_add_feature
+        d = self.parent.w_roadmap_diag_add
 
-        d.gridLayout_2.removeWidget(d.push_target_milestone)
-        d.push_target_milestone.close()
-        d.push_target_milestone \
+        d.gridLayout_2.removeWidget(d.push_target)
+        d.push_target.close()
+        d.push_target \
                 = MPushButton(x,y,milestones,d,None,self.selected_x,self.selected_y,True)
-        d.gridLayout_2.addWidget(d.push_target_milestone, 1, 1, 1, 1);
+        d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
 
         d.line_name.clear()
         d.text_description.clear()
         d.show()
         d.line_name.setFocus()
 
-    def onSubmitNewFeature(self):
+    def onSubmitNewRoadmapItem(self):
 
         pid = self.data.run['project'].getSelectedProject()
         milestones = self.data.project[pid]['milestone']
-        d = self.parent.w_roadmap_diag_add_feature
+        d = self.parent.w_roadmap_diag_add
         x, y = self.data.project[pid]['meta']['current_milestone']
-        target_label = d.push_target_milestone.text()
+        target_label = d.push_target.text()
         tx, ty = target_label.split(' ')[3][1:].split('.')
         tx = int(tx)
         ty = int(ty)
         timestamp = int(time.time())
 
-        if d.radio_primary.isChecked():
-            ftype = 'Primary'
-        else:
-            ftype = 'Secondary'
-
         name = d.line_name.text()
-        priority = d.spin_priority.value()
         description = d.text_description.toPlainText()
+        if d.radio_feature.isChecked():
+            ri_type = 'Feature'
+        else:
+            ri_type = 'Issue'
+        if d.radio_medium.isChecked():
+            prio = 'Medium'
+        elif d.radio_high.isChecked():
+            prio = 'High'
+        else:
+            prio = 'Low'
 
-        new_feature = {
-            'name':         d.line_name.text(),
-            'priority':     d.spin_priority.value(),
-            'type':         ftype,
-            'description':  d.text_description.toPlainText(),
+        new_item = {
+            'name':         name,
+            'ri_type':      ri_type,
+            'priority':     prio,
+            'description':  description,
             'created':      timestamp,
-            'completed':    False
+            'closed':       False
         }
 
         # only add feature, if added to currently selected version
@@ -167,11 +170,11 @@ class NxRoadmap(QObject):
             model = self.model
             model.insertRow(0, [
                 QStandardItem(name),
+                QStandardItem(ri_type),
                 QStandardItem('{}.{}'.format(tx,ty)),
-                QStandardItem(str(priority)),
-                QStandardItem(ftype),
-                QStandardItem('No'),
-                QStandardItem(str(self.data.project[pid]['meta']['last_feature']+1))
+                QStandardItem(prio),
+                QStandardItem('Open'),
+                QStandardItem(str(self.data.project[pid]['meta']['last_roadmap_item']+1))
             ])
 
         # generate new milestones if an edge is reached
@@ -191,8 +194,11 @@ class NxRoadmap(QObject):
         if tx == 0:
             ty -= 1
 
-        self.data.project[pid]['milestone'][tx][ty]['fo'][self.data.project[pid]['meta']['last_feature']+1] = new_feature
-        self.data.project[pid]['meta']['last_feature'] += 1
+        if ri_type == 'Feature':
+            self.data.project[pid]['milestone'][tx][ty]['fo'][self.data.project[pid]['meta']['last_roadmap_item']+1] = new_item
+        else:
+            self.data.project[pid]['milestone'][tx][ty]['io'][self.data.project[pid]['meta']['last_roadmap_item']+1] = new_item
+        self.data.project[pid]['meta']['last_roadmap_item'] += 1
 
         self.widget.gridLayout_2.removeWidget(self.widget.push_milestone)
         self.widget.push_milestone.close()
@@ -205,6 +211,7 @@ class NxRoadmap(QObject):
         if self.table.currentIndex().row() == 0:
             self.widget.push_edit.setEnabled(True)
             self.widget.push_delete.setEnabled(True)
+            self.widget.push_close.setEnabled(True)
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
