@@ -76,7 +76,9 @@ class NxProject:
                                         'milestone' : [
                                                 [{'m': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
                                                 [{'m': '1.0', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
-                                            ]}
+                                            ],
+                                        'ri_index' : {}
+                                     }
         d = self.data.run['w_project_diag_new']
 
         p['name']        = name        = d.line_name.text()

@@ -29,6 +29,13 @@ class NxRoadmap(QObject):
         self.widget.push_add_issue.clicked.connect(lambda: (self.parent.w_roadmap_diag_add.radio_issue.setChecked(True), self.showAddRoadmapItem()))
         self.parent.w_roadmap_diag_add.accepted.connect(self.onSubmitNewRoadmapItem)
 
+        self.widget.check_feature.stateChanged.connect(self.reloadTables)
+        self.widget.check_issue.stateChanged.connect(self.reloadTables)
+        self.widget.check_open.stateChanged.connect(self.reloadTables)
+        self.widget.check_closed.stateChanged.connect(self.reloadTables)
+
+        self.widget.push_delete.clicked.connect(self.deleteRoadmapItem)
+
     def onShowTab(self):
 
         pid = self.data.run['project'].getSelectedProject()
@@ -58,11 +65,6 @@ class NxRoadmap(QObject):
             d = self.parent.w_roadmap_diag_add
             d.radio_medium.setChecked(True)
             d.radio_feature.setChecked(True)
-
-            self.widget.check_feature.stateChanged.connect(self.reloadTables)
-            self.widget.check_issue.stateChanged.connect(self.reloadTables)
-            self.widget.check_open.stateChanged.connect(self.reloadTables)
-            self.widget.check_closed.stateChanged.connect(self.reloadTables)
 
     def onChangeVersionSelection(self, x, y, current_text):
 
@@ -179,6 +181,7 @@ class NxRoadmap(QObject):
         tx = int(tx)
         ty = int(ty)
         timestamp = int(time.time())
+        p = self.data.project[pid]
 
         name = d.line_name.text()
         description = d.text_description.toPlainText()
@@ -202,6 +205,9 @@ class NxRoadmap(QObject):
             'closed':       False
         }
 
+        p['meta']['last_roadmap_item'] += 1
+        item_id = p['meta']['last_roadmap_item']
+
         # only add feature, if added to currently selected version
         if tx == self.selected_x and ty == self.selected_y:
             # add to feature table
@@ -213,7 +219,7 @@ class NxRoadmap(QObject):
                 QStandardItem(prio),
                 QStandardItem('Open'),
                 QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()),
-                QStandardItem(str(self.data.project[pid]['meta']['last_roadmap_item']+1))
+                QStandardItem(str(item_id))
             ])
 
         # generate new milestones if an edge is reached
@@ -234,10 +240,11 @@ class NxRoadmap(QObject):
             ty -= 1
 
         if ri_type == 'Feature':
-            self.data.project[pid]['milestone'][tx][ty]['fo'][self.data.project[pid]['meta']['last_roadmap_item']+1] = new_item
+            self.data.project[pid]['milestone'][tx][ty]['fo'][item_id] = new_item
+            p['ri_index'][item_id] = (tx, ty, 'fo')
         else:
-            self.data.project[pid]['milestone'][tx][ty]['io'][self.data.project[pid]['meta']['last_roadmap_item']+1] = new_item
-        self.data.project[pid]['meta']['last_roadmap_item'] += 1
+            self.data.project[pid]['milestone'][tx][ty]['io'][item_id] = new_item
+            p['ri_index'][item_id] = (tx, ty, 'io')
 
         self.widget.gridLayout_2.removeWidget(self.widget.push_milestone)
         self.widget.push_milestone.close()
@@ -253,6 +260,26 @@ class NxRoadmap(QObject):
             self.widget.push_close.setEnabled(True)
 
         self.data.run['project'].touchProject(timestamp)
+
+    def getSelectedItemId(self):
+
+        return int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),6)).text())
+
+    def deleteRoadmapItem(self):
+
+        xid = self.getSelectedItemId()
+        pid = self.data.run['project'].getSelectedProject()
+        p = self.data.project[pid]
+        tx, ty, fioc = p['ri_index'][xid]
+        del p['milestone'][tx][ty][fioc][xid]
+        del p['ri_index'][xid]
+        self.model.removeRow(self.table.currentIndex().row())
+        timestamp = int(time.time())
+        self.data.run['project'].touchProject(timestamp)
+        if self.model.rowCount() == 0:
+            self.widget.push_edit.setEnabled(False)
+            self.widget.push_delete.setEnabled(False)
+            self.widget.push_close.setEnabled(False)
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
