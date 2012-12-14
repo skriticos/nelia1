@@ -328,9 +328,71 @@ class NxRoadmap(QObject):
         d.show()
         d.line_name.setFocus()
 
-    def onSubmitEditRoadmapItem(selfl):
+    def onSubmitEditRoadmapItem(self):
 
-        pass
+
+        # TODO: on move item during edit -> move milestone
+
+        pid = self.data.run['project'].getSelectedProject()
+        xid = item_id = self.getSelectedItemId()
+        milestones = self.data.project[pid]['milestone']
+        d = self.parent.w_roadmap_diag_add
+        target_label = d.push_target.text()
+        timestamp = int(time.time())
+        p = self.data.project[pid]
+        tx, ty, fioc = p['ri_index'][xid]
+        item = p['milestone'][tx][ty][fioc][xid]
+        tx2, ty2 = target_label.split(' ')[3][1:].split('.')
+        tx2 = int(tx)
+        ty2 = int(ty)
+
+        item['name'] = d.line_name.text()
+        description = d.text_description.toPlainText()
+        if d.radio_feature.isChecked():
+            ri_type = 'Feature'
+        else:
+            ri_type = 'Issue'
+        if d.radio_medium.isChecked():
+            prio = 'Medium'
+        elif d.radio_high.isChecked():
+            prio = 'High'
+        elif d.radio_low.isChecked():
+            prio = 'Low'
+
+        item['ri_type'] = ri_type
+        item['priority'] = prio
+        item['description'] = description
+
+        if (tx, ty) != (tx2, ty2):
+
+            del p['milestone'][tx][ty][fioc]
+
+            # generate new milestones if an edge is reached
+            a = {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
+            b = {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
+            if len(milestones) > tx2 + 1:
+                if (tx2 != 0 and len(milestones[tx2]) == ty2 + 1) or (tx2 == 0 and len(milestones[tx2]) == ty2):
+                    a['m'] = '{}.{}'.format(tx2, ty2)
+                    milestones[tx2].append(a)
+            else:
+                a['m'] = '{}.{}'.format(tx2, 1)
+                milestones[tx2].append(a)
+                b['m'] = '{}.{}'.format(tx2+1, 0)
+                milestones.append([b])
+
+            # update push button
+            if tx2 == 0:
+                ty2 -= 1
+
+            if ri_ty2pe == 'Feature':
+                self.data.project[pid]['milestone'][tx2][ty2]['fo'][item_id] = new_item
+                p['ri_index'][item_id] = (tx2, ty2, 'fo')
+            else:
+                self.data.project[pid]['milestone'][tx2][ty2]['io'][item_id] = new_item
+                p['ri_index'][item_id] = (tx2, ty2, 'io')
+
+        self.reloadTables()
+        self.data.run['project'].touchProject(timestamp)
 
     def deleteRoadmapItem(self):
 
