@@ -27,7 +27,7 @@ class NxRoadmap(QObject):
 
         self.widget.push_add_feature.clicked.connect(lambda: (self.parent.w_roadmap_diag_add.radio_feature.setChecked(True), self.showAddRoadmapItem()))
         self.widget.push_add_issue.clicked.connect(lambda: (self.parent.w_roadmap_diag_add.radio_issue.setChecked(True), self.showAddRoadmapItem()))
-        self.parent.w_roadmap_diag_add.accepted.connect(self.onSubmitNewRoadmapItem)
+        self.parent.w_roadmap_diag_add.accepted.connect(self.onSubmitDialog)
 
         self.widget.check_feature.stateChanged.connect(self.reloadTables)
         self.widget.check_issue.stateChanged.connect(self.reloadTables)
@@ -35,6 +35,7 @@ class NxRoadmap(QObject):
         self.widget.check_closed.stateChanged.connect(self.reloadTables)
 
         self.widget.push_delete.clicked.connect(self.deleteRoadmapItem)
+        self.widget.push_edit.clicked.connect(self.editRoadmapItem)
 
     def onShowTab(self):
 
@@ -164,11 +165,22 @@ class NxRoadmap(QObject):
         d.push_target \
                 = MPushButton(x,y,milestones,d,None,self.selected_x,self.selected_y,True)
         d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
+        d.label_3.setBuddy(d.push_target)
+
+        self.diag_type = 'add'
 
         d.line_name.clear()
         d.text_description.clear()
+        d.setWindowTitle('Add Roadmap Item')
         d.show()
         d.line_name.setFocus()
+
+    def onSubmitDialog(self):
+
+        if self.diag_type == 'add':
+            self.onSubmitNewRoadmapItem()
+        else:
+            self.onSubmitEditRoadmapItem()
 
     def onSubmitNewRoadmapItem(self):
 
@@ -193,7 +205,7 @@ class NxRoadmap(QObject):
             prio = 'Medium'
         elif d.radio_high.isChecked():
             prio = 'High'
-        else:
+        elif d.radio_low.isChecked():
             prio = 'Low'
 
         new_item = {
@@ -264,6 +276,61 @@ class NxRoadmap(QObject):
     def getSelectedItemId(self):
 
         return int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),6)).text())
+
+    def getCellContent(self, i):
+
+        return int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),i)).text())
+
+    def editRoadmapItem(self):
+
+        xid = self.getSelectedItemId()
+        pid = self.data.run['project'].getSelectedProject()
+        milestones = self.data.project[pid]['milestone']
+        p = self.data.project[pid]
+        tx, ty, fioc = p['ri_index'][xid]
+        item = p['milestone'][tx][ty][fioc][xid]
+        d = self.parent.w_roadmap_diag_add
+        d.setWindowTitle('Edit Roadmap Item')
+        x, y = self.data.project[pid]['meta']['current_milestone']
+
+        self.diag_type = 'edit'
+
+        # can't edit what you don't see (edit is always in the current selected milestone)
+        d.gridLayout_2.removeWidget(d.push_target)
+        d.push_target.close()
+        d.push_target \
+                = MPushButton(x,y,milestones,d,None,self.selected_x,self.selected_y,True)
+        d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
+        d.label_3.setBuddy(d.push_target)
+
+        if ty == 0: ty += 1
+
+        d.line_name.setText(item['name'])
+        if item['ri_type'] == 'Feature':
+            d.radio_feature.setChecked(True)
+        else:
+            d.radio_issue.setChecked(True)
+
+        if d.radio_medium.isChecked():
+            prio = 'Medium'
+        elif d.radio_high.isChecked():
+            prio = 'High'
+        else:
+            prio = 'Low'
+
+        if item['priority'] == 'Medium':
+            d.radio_medium.setChecked(True)
+        elif item['priority'] == 'High':
+            d.radio_high.setChecked(True)
+        elif item['priority'] == 'Low':
+            d.radio_low.setChecked(True)
+
+        d.show()
+        d.line_name.setFocus()
+
+    def onSubmitEditRoadmapItem(selfl):
+
+        pass
 
     def deleteRoadmapItem(self):
 
