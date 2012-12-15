@@ -51,10 +51,10 @@ class NxRoadmap(QObject):
             x, y = pro['meta']['current_milestone']
             milestones = pro['milestone']
 
-            self.widget.gridLayout_2.removeWidget(self.widget.push_milestone)
+            self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
             self.widget.push_milestone.close()
             self.widget.push_milestone = MPushButton(x, y, milestones, self.widget, self.onChangeVersionSelection)
-            self.widget.gridLayout_2.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
+            self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
             self.widget.label_2.setBuddy(self.widget.push_milestone)
 
             self.reloadTables()
@@ -258,10 +258,10 @@ class NxRoadmap(QObject):
             self.data.project[pid]['milestone'][tx][ty]['io'][item_id] = new_item
             p['ri_index'][item_id] = (tx, ty, 'io')
 
-        self.widget.gridLayout_2.removeWidget(self.widget.push_milestone)
+        self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
         self.widget.push_milestone.close()
         self.widget.push_milestone = MPushButton(x, y, milestones, self.widget, self.onChangeVersionSelection, self.selected_x, self.selected_y)
-        self.widget.gridLayout_2.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
+        self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
         self.widget.label_2.setBuddy(self.widget.push_milestone)
 
         self.table.selectRow(0)
