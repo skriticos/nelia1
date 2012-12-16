@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Nelia DEV
+Comment=Nelia development version
+Exec=/usr/bin/python3 /home/seth/nelia/run.py
+Path=/home/seth/nelia
+Icon=/home/seth/nelia/img/nelia-icon128-dev.png
+Terminal=false
+Type=Application
+StartupNotify=true
