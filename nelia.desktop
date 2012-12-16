@@ -1,9 +1,26 @@
 [Desktop Entry]
 Name=Nelia DEV
-Comment=Nelia development version
 Exec=/usr/bin/python3 /home/seth/nelia/run.py
 Path=/home/seth/nelia
-Icon=/home/seth/nelia/img/nelia-icon128-dev.png
 Terminal=false
+Icon=/home/seth/nelia/img/nelia-icon128-dev.png
 Type=Application
-StartupNotify=true
+Categories=Development;
+
+X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Folder
+
+[Gitk Shortcut Group]
+Name=gitk
+Exec=/bin/bash -c "cd /home/seth/nelia; /usr/bin/gitk"
+TargetEnvironment=Unity
+
+[GitGui Shortcut Group]
+Name=git gui
+Exec=/bin/bash -c "cd /home/seth/nelia; /usr/bin/git gui"
+TargetEnvironment=Unity
+
+[Folder Shortcut Group]
+Name=Folder
+Exec=/usr/bin/nautilus /home/seth/nelia
+TargetEnvironment=Unity
+
