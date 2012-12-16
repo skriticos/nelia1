@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>545</width>
-    <height>530</height>
+    <width>706</width>
+    <height>582</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Add Milestone Item</string>
+   <string>Add/Edit Milestone Item</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
@@ -29,36 +29,6 @@
       <property name="spacing">
        <number>10</number>
       </property>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Type:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>&amp;Name:</string>
-        </property>
-        <property name="buddy">
-         <cstring>line_name</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>255</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="0" column="1" colspan="2">
        <widget class="QLineEdit" name="line_name">
         <property name="minimumSize">
@@ -72,10 +42,13 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="push_target">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Target Milestone</string>
+         <string>&amp;Target Milestone:</string>
+        </property>
+        <property name="buddy">
+         <cstring>push_target</cstring>
         </property>
        </widget>
       </item>
@@ -85,11 +58,14 @@
          <string notr="true"/>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
-         <property name="margin">
+         <property name="horizontalSpacing">
           <number>0</number>
          </property>
-         <property name="spacing">
+         <property name="verticalSpacing">
           <number>10</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
          </property>
          <item row="0" column="3">
           <spacer name="horizontalSpacer_2">
@@ -131,14 +107,40 @@
         </layout>
        </widget>
       </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>&amp;Name:</string>
+        </property>
+        <property name="buddy">
+         <cstring>line_name</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>255</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item row="2" column="1" colspan="2">
        <widget class="QWidget" name="widget_5" native="true">
         <layout class="QGridLayout" name="gridLayout_6">
-         <property name="margin">
+         <property name="horizontalSpacing">
           <number>0</number>
          </property>
-         <property name="spacing">
+         <property name="verticalSpacing">
           <number>10</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
          </property>
          <item row="0" column="0">
           <widget class="QRadioButton" name="radio_feature">
@@ -173,13 +175,10 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>&amp;Target Milestone:</string>
-        </property>
-        <property name="buddy">
-         <cstring>push_target</cstring>
+         <string>Type:</string>
         </property>
        </widget>
       </item>
@@ -188,6 +187,93 @@
         <property name="text">
          <string>Priority:</string>
         </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="push_target">
+        <property name="text">
+         <string>Target Milestone</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Category:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QWidget" name="widget_3" native="true">
+        <layout class="QGridLayout" name="gridLayout_7">
+         <property name="horizontalSpacing">
+          <number>0</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>10</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item row="0" column="6">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>14</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="radio_auxiliary">
+           <property name="text">
+            <string>Au&amp;xiliary</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QRadioButton" name="radio_corrective">
+           <property name="text">
+            <string>Correcti&amp;ve</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QRadioButton" name="radio_architecture">
+           <property name="text">
+            <string>Architect&amp;ure</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QRadioButton" name="radio_security">
+           <property name="text">
+            <string>&amp;Security</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="radio_core">
+           <property name="text">
+            <string>Cor&amp;e</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QRadioButton" name="radio_refactor">
+           <property name="text">
+            <string>&amp;Refactor</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
