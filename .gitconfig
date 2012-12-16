@@ -4,14 +4,9 @@
 	bare = false
 	logallrefupdates = true
 [remote "origin"]
-	fetch = +refs/heads/*:refs/remotes/origin/*
 	url = file:///home/seth/Ubuntu One/nelia.git/
-[remote "progenit"]
 	url = ssh://progenit@progenitor-softworks.com/~/sw-repo/nelia.git
 	mirror = true
-[branch "master"]
-	remote = origin
-	merge = refs/heads/master
 [gui]
 	wmstate = normal
-	geometry = 1614x927+65+24 430 285
+	geometry = 1614x881+65+24 430 285

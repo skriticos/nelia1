@@ -7,7 +7,7 @@ Icon=/home/seth/nelia/img/nelia-icon128-dev.png
 Type=Application
 Categories=Development;
 
-X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Folder;Terminal
+X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Folder;Terminal;Push
 
 [Gitk Shortcut Group]
 Name=gitk
@@ -28,3 +28,9 @@ TargetEnvironment=Unity
 Name=Termanl
 Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/nelia --maximize
 TargetEnvironment=Unity
+
+[Push Shortcut Group]
+Name=Push
+Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/nelia -e "bash -c \"git push; read line;\""
+TargetEnvironment=Unity
+
