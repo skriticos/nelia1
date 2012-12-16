@@ -8,7 +8,7 @@ from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
 
-from datastore import DataStore
+from datastore import NxDataStore
 
 class MainWindow(QObject):
 
@@ -23,7 +23,7 @@ class MainWindow(QObject):
         super().__init__()
 
         # setup datastore
-        data = self.data = DataStore(self)
+        data = self.data = NxDataStore(self)
 
         # Load UI
         loader = QtUiTools.QUiLoader()

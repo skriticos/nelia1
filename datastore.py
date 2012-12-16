@@ -4,7 +4,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 import pickle, gzip, os
 
-class DataStore:
+class NxDataStore:
 
     """
         This class will contain all data that will be stored.
