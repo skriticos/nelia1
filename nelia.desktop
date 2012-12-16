@@ -7,7 +7,7 @@ Icon=/home/seth/nelia/img/nelia-icon128-dev.png
 Type=Application
 Categories=Development;
 
-X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Folder
+X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Folder;Terminal
 
 [Gitk Shortcut Group]
 Name=gitk
@@ -24,3 +24,7 @@ Name=Folder
 Exec=/usr/bin/nautilus /home/seth/nelia
 TargetEnvironment=Unity
 
+[Terminal Shortcut Group]
+Name=Termanl
+Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/nelia --maximize
+TargetEnvironment=Unity
