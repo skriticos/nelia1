@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>333</height>
+    <width>692</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,16 +26,6 @@
    <property name="spacing">
     <number>10</number>
    </property>
-   <item row="6" column="1">
-    <widget class="QLineEdit" name="line_basepath">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>4</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
@@ -46,11 +36,11 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="2">
-    <widget class="QLineEdit" name="line_name">
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="line_basepath">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>1</horstretch>
+       <horstretch>4</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
@@ -117,13 +107,87 @@
      </item>
     </widget>
    </item>
-   <item row="1" column="3" rowspan="6">
-    <widget class="QPlainTextEdit" name="text_description">
+   <item row="0" column="1" colspan="2">
+    <widget class="QLineEdit" name="line_name">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>10</horstretch>
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>1</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="2">
+    <widget class="QComboBox" name="combo_category">
+     <item>
+      <property name="text">
+       <string>Development</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Internet</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Accessory</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Media</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Game</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Office</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Education</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Science</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Grapics</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>System</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Costomization</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Other</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>&amp;Priority:</string>
+     </property>
+     <property name="buddy">
+      <cstring>spin_priority</cstring>
      </property>
     </widget>
    </item>
@@ -206,80 +270,6 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1" colspan="2">
-    <widget class="QComboBox" name="combo_category">
-     <item>
-      <property name="text">
-       <string>Development</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Internet</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Accessory</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Media</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Game</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Office</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Education</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Science</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Grapics</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>System</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Costomization</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Other</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>&amp;Priority:</string>
-     </property>
-     <property name="buddy">
-      <cstring>spin_priority</cstring>
-     </property>
-    </widget>
-   </item>
    <item row="5" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
@@ -313,7 +303,7 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0" colspan="4">
+   <item row="8" column="0" colspan="4">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="locale">
       <locale language="English" country="UnitedStates"/>
@@ -331,6 +321,29 @@
    </item>
    <item row="4" column="1" colspan="2">
     <widget class="QSpinBox" name="spin_priority"/>
+   </item>
+   <item row="7" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="1" column="3" rowspan="7">
+    <widget class="QPlainTextEdit" name="text_description">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>10</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
