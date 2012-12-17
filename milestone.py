@@ -1,6 +1,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 import time
+from pprint import pprint
 
 """
     Naming Conventions
@@ -17,7 +18,7 @@ import time
 
     TODO
 
-        Integrate roadmap management (e.g. at adding, moving and deleting roadmap items)
+        Integrate roadmap management (moving and deleting roadmap items)
 """
 
 class NxMilestone:
@@ -53,11 +54,66 @@ class NxMilestone:
                 {'m': '{}.{}'.format(major, minor), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
             )
 
+    def removeMilestone(self, pid, major, minor):
+
+        x, y = self.versionToIndex(major, minor)
+
+        # n.0 deletes major milestone
+        if y == 0:
+            del self.data.project[pid]['milestone'][x]
+        # otherwise we are only deleting minor milestone
+        else:
+            del self.data.project[pid]['milestone'][x][y]
+
+    def updateMilestoneTree(self, pid):
+
+        '''
+            If an item is created/moved to/from the milestone graph edge,
+            edge graph has to be updated.
+        '''
+
+        p = self.data.project[pid]
+        for x in range(len(p['milestone'])):
+
+            # check for new edge item
+            last_index = len(p['milestone'][x]) - 1
+            major, minor = self.indexToVersion(x, last_index)
+            item_count = (
+                    len(self.data.project[pid] ['milestone'] [x] [last_index] ['fo']) +
+                    len(self.data.project[pid] ['milestone'] [x] [last_index] ['fc']) +
+                    len(self.data.project[pid] ['milestone'] [x] [last_index] ['io']) +
+                    len(self.data.project[pid] ['milestone'] [x] [last_index] ['ic'])
+            )
+            if item_count > 0:
+                if minor == 0:
+                    self.addMilestone(pid, major, 1)
+                    self.addMilestone(pid, major + 1, 0)
+                else:
+                    self.addMilestone(pid, major, minor + 1)
+
+            # check for removed edge item
+            if len(p['milestone'][x]) > 1:
+                index = len(p['milestone'][x]) - 2
+                major, minor = self.indexToVersion(x, index)
+                item_count = (
+                        len(self.data.project[pid] ['milestone'] [x] [index] ['fo']) +
+                        len(self.data.project[pid] ['milestone'] [x] [index] ['fc']) +
+                        len(self.data.project[pid] ['milestone'] [x] [index] ['io']) +
+                        len(self.data.project[pid] ['milestone'] [x] [index] ['ic'])
+                )
+                if item_count == 0:
+                    if minor == 0:
+                        self.removeMilestone(pid, major, 1)
+                        self.removeMilestone(pid, major + 1, 0)
+                    else:
+                        self.removeMilestone(pid, major, minor + 1)
+
     def getItemData(self, pid, item_id):
 
         p = self.data.project[pid]
         ma, mi, fioc = p['ri_index'] [item_id]
         x, y = self.versionToIndex(ma, mi)
+
         item = p['milestone'] [x] [y] [fioc] [item_id]
 
         if fioc[0] == 'f':
@@ -121,21 +177,7 @@ class NxMilestone:
         self.data.project[pid] ['meta'] ['last_roadmap_item'] += 1
         self.touchItem(pid, item_id)
 
-        # if we add feature to an empty milestone
-        item_count = (
-                len(self.data.project[pid] ['milestone'] [x] [y] ['fo']) +
-                len(self.data.project[pid] ['milestone'] [x] [y] ['fc']) +
-                len(self.data.project[pid] ['milestone'] [x] [y] ['io']) +
-                len(self.data.project[pid] ['milestone'] [x] [y] ['ic'])
-        )
-
-        if item_count == 1:
-            # add milestones as required
-            if minor == 0:
-                self.addMilestone(pid, major, 1)
-                self.addMilestone(pid, major+1, 0)
-            else:
-                self.addMilestone(pid, major, minor+1)
+        self.updateMilestoneTree(pid)
 
     def editItem(self, pid, major, minor, item_id, itype, icat, name, priority, description):
 
@@ -148,7 +190,7 @@ class NxMilestone:
         ):
             self.setAttibute(pid, item_id, k, v)
 
-        if itype != idat['status'] or major != idat['major'] or minor != idat['minor']:
+        if itype != idat['itype'] or major != idat['major'] or minor != idat['minor']:
             self.moveItem(pid, item_id, major, minor, itype, idat['status'])
 
         self.touchItem(pid, item_id)
@@ -176,11 +218,12 @@ class NxMilestone:
                 elif status == 'Closed':
                     nfioc = 'ic'
 
-        item = self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] [idat['fioc']]
+        item = self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] [idat['fioc']] [item_id]
         self.data.project[pid] ['milestone'] [nx] [ny] [nfioc] [item_id] = item
-        del self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] [idat['fioc']]
-        self.data.project[pid] ['ri_index'] [item_id] = (nx, ny, nfioc)
+        del self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] [idat['fioc']] [item_id]
+        self.data.project[pid] ['ri_index'] [item_id] = (new_major, new_minor, nfioc)
         self.touchItem(pid, item_id)
+        self.updateMilestoneTree(pid)
 
     def closeItem(self, pid, item_id):
 
@@ -225,7 +268,12 @@ if __name__ == '__main__':
     name = 'Test Item 1'
     priority = 'Medium'
     description = 'Description Text 1'
+    print ('adding item', major, minor, itype)
     control.addItem(pid, major, minor, itype, icat, name, priority, description, status='Open')
+    print ('adding item', major, minor, itype)
+    control.addItem(pid, major, minor, itype, icat, name, priority, description, status='Open')
+    minor = 2
+    print ('adding item', major, minor, itype)
     control.addItem(pid, major, minor, itype, icat, name, priority, description, status='Open')
     pid = 1
     major = 1
@@ -235,8 +283,47 @@ if __name__ == '__main__':
     name = 'Test Item 1'
     priority = 'Medium'
     description = 'Description Text 1'
+    print ('adding item', major, minor, itype)
     control.addItem(pid, major, minor, itype, icat, name, priority, description, status='Open')
 
-    pprint (data.project)
-
+    print ('--------------------------')
+    print ('changing item attributes (0.1) (1)')
+    control.editItem(pid=1, major=0, minor=1, item_id=1, itype='Feature', icat='Auxiliary', name='Test Item 1 Mod',
+                     priority='High', description='DT1')
+    pprint(data.project[1])
+    print ('--------------------------')
+    print ('moving item 0.1.Feature.Open (2) -> 0.1.Issue.Open')
+    control.editItem(pid=1, major=0, minor=1, item_id=2, itype='Issue', icat=icat, name=name,
+                     priority=priority, description=description)
+    pprint(data.project[1])
+    print ('--------------------------')
+    print ('moving item 0.1.Feature.Open (2) -> 0.2.Issue.Open')
+    control.editItem(pid=1, major=0, minor=2, item_id=2, itype='Issue', icat=icat, name=name,
+                     priority=priority, description=description)
+    pprint(data.project[1])
+    print ('--------------------------')
+    print ('moving item 0.2.Feature.Open (2) -> 0.3.Issue.Open, new milestone create (0.4)')
+    control.editItem(pid=1, major=0, minor=3, item_id=2, itype='Issue', icat=icat, name=name,
+                     priority=priority, description=description)
+    pprint(data.project[1])
+    print ('--------------------------')
+    print ('moving item 0.3.Feature.Open (2) -> 0.2.Issue.Open, delete milestone (0.4)')
+    control.editItem(pid=1, major=0, minor=2, item_id=2, itype='Issue', icat=icat, name=name,
+                     priority=priority, description=description)
+    pprint(data.project[1])
+    '''
+    # move item
+    control.editItem(pid=1, major=0, minor=2, item_id=2, itype='Issue', icat='Auxiliary', name='Test Item 1 Mod',
+                     priority='High', description='DT1')
+    # move to last (i.e. create new)
+    control.editItem(pid=1, major=0, minor=3, item_id=2, itype='Issue', icat='Auxiliary', name='Test Item 1 Mod',
+                     priority='High', description='DT1')
+    # move last item from last (i.e. delete last?)
+    control.editItem(pid=1, major=0, minor=2, item_id=2, itype='Issue', icat='Auxiliary', name='Test Item 1 Mod',
+                     priority='High', description='DT1')
+    '''
+    # edit
+    # move
+    # close
+    # delete
 
