@@ -75,6 +75,10 @@ class NxMilestone:
         p = self.data.project[pid]
         for x in range(len(p['milestone'])):
 
+            # if we have removed the last major branch before, we want to get out
+            if x == len(p['milestone']):
+                break
+
             # check for new edge item
             last_index = len(p['milestone'][x]) - 1
             major, minor = self.indexToVersion(x, last_index)
@@ -236,6 +240,7 @@ class NxMilestone:
         idat = self.getItemData(pid, item_id)
         del self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] [idat['fioc']] [item_id]
         del self.data.project[pid] ['ri_index'] [item_id]
+        self.updateMilestoneTree(pid)
 
 if __name__ == '__main__':
 
@@ -311,19 +316,22 @@ if __name__ == '__main__':
     control.editItem(pid=1, major=0, minor=2, item_id=2, itype='Issue', icat=icat, name=name,
                      priority=priority, description=description)
     pprint(data.project[1])
-    '''
-    # move item
-    control.editItem(pid=1, major=0, minor=2, item_id=2, itype='Issue', icat='Auxiliary', name='Test Item 1 Mod',
-                     priority='High', description='DT1')
-    # move to last (i.e. create new)
-    control.editItem(pid=1, major=0, minor=3, item_id=2, itype='Issue', icat='Auxiliary', name='Test Item 1 Mod',
-                     priority='High', description='DT1')
-    # move last item from last (i.e. delete last?)
-    control.editItem(pid=1, major=0, minor=2, item_id=2, itype='Issue', icat='Auxiliary', name='Test Item 1 Mod',
-                     priority='High', description='DT1')
-    '''
-    # edit
-    # move
-    # close
-    # delete
+    print ('--------------------------')
+    print ('moving item 0.2.Feature.Open (2) -> 2.0.Issue.Open, create 2.1, 3.0')
+    control.editItem(pid=1, major=2, minor=0, item_id=2, itype='Issue', icat=icat, name=name,
+                     priority=priority, description=description)
+    pprint(data.project[1])
+    print ('--------------------------')
+    print ('moving item 2.0.Feature.Open (2) -> 1.1.Issue.Open, delete 2.1, 3.0, create 1.2')
+    control.editItem(pid=1, major=1, minor=1, item_id=2, itype='Issue', icat=icat, name=name,
+                     priority=priority, description=description)
+    pprint(data.project[1])
+    print ('--------------------------')
+    print ('closing (2)')
+    control.closeItem(pid, 2)
+    pprint(data.project[1])
+    print ('--------------------------')
+    print ('deleting (2)')
+    control.deleteItem(pid, 2)
+    pprint(data.project[1])
 
