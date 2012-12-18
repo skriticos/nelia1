@@ -22,23 +22,12 @@ class NxProject:
             parent.w_project_diag_new.combo_category.setCurrentIndex(0),
             parent.w_project_diag_new.spin_priority.setValue(0),
             parent.w_project_diag_new.spin_challenge.setValue(0),
-            parent.w_project_diag_new.line_basepath.clear(),
             parent.w_project_diag_new.text_description.clear(),
             parent.w_project_diag_new.line_name.setFocus(),
             parent.w_project_diag_new.show()))
 
-        parent.w_project_diag_new.push_browse_path.clicked.connect(
-            lambda: parent.w_project_diag_new.line_basepath.setText(
-                QFileDialog.getExistingDirectory(
-                    parent.w_project_diag_new, 'Choose project base path', os.path.expanduser('~'))))
-
         # show edit project dialog
         self.widget.push_edit.clicked.connect(self.showEditProject)
-
-        parent.w_project_diag_edit.push_browse_path.clicked.connect(
-            lambda: parent.w_project_diag_edit.line_basepath.setText(
-                QFileDialog.getExistingDirectory(
-                    self.data.run['w_project_diag_edit'], 'Choose project base path', os.path.expanduser('~'))))
 
         self.data.run['w_project_diag_new'].accepted.connect(self.onNewProject)
         self.data.run['w_project_diag_edit'].accepted.connect(self.onEditProject)
@@ -87,7 +76,6 @@ class NxProject:
         p['ptype']       = ptype       = d.combo_ptype.currentText()
         p['priority']    = priority    = d.spin_priority.value()
         p['challenge']   = challenge   = d.spin_challenge.value()
-        p['basepath']    = basepath    = d.line_basepath.text()
         p['description'] = description = d.text_description.toPlainText()
         p['created']     = created     = timestamp
 
@@ -127,7 +115,6 @@ class NxProject:
         d.combo_category.setCurrentIndex(d.combo_category.findText(p['category']))
         d.spin_priority.setValue(p['priority'])
         d.spin_challenge.setValue(p['challenge'])
-        d.line_basepath.setText(p['basepath'])
         d.text_description.setPlainText(p['description'])
 
         d.show()
@@ -147,7 +134,6 @@ class NxProject:
         p['ptype']       = ptype       = d.combo_ptype.currentText()
         p['priority']    = priority    = d.spin_priority.value()
         p['challenge']   = challenge   = d.spin_challenge.value()
-        p['basepath']    = basepath    = d.line_basepath.text()
         p['description'] = description = d.text_description.toPlainText()
 
         x, y = p['meta']['current_milestone']
