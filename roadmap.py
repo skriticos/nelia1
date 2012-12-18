@@ -73,7 +73,7 @@ class NxRoadmap:
             self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
             self.widget.label_2.setBuddy(self.widget.push_milestone)
 
-            self.reloadTables()
+            self.reloadTable()
 
             # computing next_x, next_y is quite tricky, so we take it from the milestone widget (which does it anyway)
             self.selected_x = self.widget.push_milestone.next_x
@@ -83,26 +83,23 @@ class NxRoadmap:
             d.radio_medium.setChecked(True)
             d.radio_feature.setChecked(True)
 
+    def closeRoadmapItem(self):
+
+        pass
+
     def onChangeVersionSelection(self, x, y, current_text):
 
         self.selected_x = x
         self.selected_y = y
 
-        self.reloadTables()
+        self.reloadTable()
 
-    def reloadTables(self):
+    def reloadTable(self):
 
         self.selected_x, self.selected_y = self.widget.push_milestone.getVersion()
 
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
-        self.table.setColumnWidth(0, 450)
-        self.table.setColumnWidth(1, 80)
-        self.table.setColumnWidth(2, 80)
-        self.table.setColumnWidth(3, 80)
-        self.table.setColumnWidth(4, 80)
-        self.table.setColumnWidth(5, 160)
-        self.table.setColumnWidth(6, 80)
 
         pid = self.data.run['project'].getSelectedProject()
         pro = self.data.project[pid]
@@ -113,6 +110,8 @@ class NxRoadmap:
         fc = pro['milestone'][self.selected_x][yy]['fc']
         io = pro['milestone'][self.selected_x][yy]['io']
         ic = pro['milestone'][self.selected_x][yy]['ic']
+
+        self.widget.push_close.setEnabled(True)
 
         if self.widget.check_feature.isChecked():
             if self.widget.check_closed.isChecked():
@@ -164,30 +163,38 @@ class NxRoadmap:
                         QStandardItem(str(key))
                     ])
                     self.table.selectRow(0)
-        self.table.setFocus()
+
         if self.table.currentIndex().row() == 0:
             self.widget.push_edit.setEnabled(True)
             self.widget.push_delete.setEnabled(True)
 
+        self.table.setFocus()
+
     def showAddRoadmapItem(self):
 
+        # initialize variables
         pid = self.data.run['project'].getSelectedProject()
         milestones = self.data.project[pid]['milestone']
-        x, y = self.data.project[pid]['meta']['current_milestone']
+        cx, cy = self.data.project[pid]['meta']['current_milestone']
         d = self.parent.w_roadmap_diag_add
 
+        # reload milestone push button on dialog
         d.gridLayout_2.removeWidget(d.push_target)
         d.push_target.close()
         d.push_target \
-                = MPushButton(x,y,milestones,d,None,self.selected_x,self.selected_y,True)
+                = MPushButton(cx,cy,milestones,d,None,self.selected_x,self.selected_y,True)
         d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
         d.label_3.setBuddy(d.push_target)
 
+        # set dialog type flag
         self.diag_type = 'add'
 
+        # reset dialog controls and title
         d.line_name.clear()
         d.text_description.clear()
         d.setWindowTitle('Add Roadmap Item')
+
+        # show dialog
         d.show()
         d.line_name.setFocus()
 
@@ -407,7 +414,7 @@ class NxRoadmap:
                 self.data.project[pid]['milestone'][tx2][ty2]['io'][item_id] = new_item
                 p['ri_index'][item_id] = (tx2, ty2, 'io')
 
-        self.reloadTables()
+        self.reloadTable()
         self.data.run['project'].touchProject(timestamp)
 
     def deleteRoadmapItem(self):
