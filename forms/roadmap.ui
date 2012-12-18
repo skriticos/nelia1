@@ -471,7 +471,7 @@
               </widget>
              </item>
              <item row="5" column="0">
-              <widget class="QCheckBox" name="check_invest">
+              <widget class="QCheckBox" name="check_architecture">
                <property name="text">
                 <string>Architecture</string>
                </property>
@@ -661,7 +661,7 @@
   <tabstop>check_auxiliary</tabstop>
   <tabstop>check_security</tabstop>
   <tabstop>check_corrective</tabstop>
-  <tabstop>check_invest</tabstop>
+  <tabstop>check_architecture</tabstop>
   <tabstop>check_refactor</tabstop>
   <tabstop>line_project</tabstop>
  </tabstops>
