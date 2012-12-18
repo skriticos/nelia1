@@ -52,7 +52,7 @@ class MainWindow(QObject):
                              ('w_roadmap', 'tab_roadmap')):
             grid = QGridLayout()
             grid.addWidget(self.__dict__[cname], 0, 0)
-            grid.setContentsMargins(10, 10, 10, 10)
+            grid.setContentsMargins(0, 0, 0, 0)
             self.w_main.__dict__[pname].setLayout(grid)
 
         # icon and window size

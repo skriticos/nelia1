@@ -14,7 +14,7 @@ class NxProject:
         self.widget = widget
 
         # show new project dialog
-        self.widget.push_project_new.clicked.connect(
+        self.widget.push_new.clicked.connect(
             lambda: (
             parent.w_project_diag_new.line_name.clear(),
             parent.w_project_diag_new.combo_ptype.setCurrentIndex(0),
@@ -33,7 +33,7 @@ class NxProject:
                     parent.w_project_diag_new, 'Choose project base path', os.path.expanduser('~'))))
 
         # show edit project dialog
-        self.widget.push_project_edit.clicked.connect(self.showEditProject)
+        self.widget.push_edit.clicked.connect(self.showEditProject)
 
         parent.w_project_diag_edit.push_browse_path.clicked.connect(
             lambda: parent.w_project_diag_edit.line_basepath.setText(
@@ -42,10 +42,10 @@ class NxProject:
 
         self.data.run['w_project_diag_new'].accepted.connect(self.onNewProject)
         self.data.run['w_project_diag_edit'].accepted.connect(self.onEditProject)
-        self.widget.push_project_delete.clicked.connect(self.onDeleteProject)
+        self.widget.push_delete.clicked.connect(self.onDeleteProject)
 
-        self.widget.push_project_open.clicked.connect(lambda: (self.data.load() and self.reset()))
-        self.widget.push_project_save.clicked.connect(self.data.save)
+        self.widget.push_open.clicked.connect(lambda: (self.data.load() and self.reset()))
+        self.widget.push_save.clicked.connect(self.data.save)
 
         # setup table
         self.table = self.widget.table_project_list
@@ -109,10 +109,9 @@ class NxProject:
         self.table.setFocus()
         self.parent.enableTabs()
 
-        self.widget.push_project_edit.setEnabled(True)
-        self.widget.push_project_delete.setEnabled(True)
-        self.widget.push_project_details.setEnabled(True)
-        self.widget.push_project_save.setEnabled(True)
+        self.widget.push_edit.setEnabled(True)
+        self.widget.push_delete.setEnabled(True)
+        self.widget.push_save.setEnabled(True)
 
         self.touchProject(timestamp)
 
@@ -251,10 +250,9 @@ class NxProject:
         self.table.setFocus()
 
         self.parent.enableTabs()
-        self.widget.push_project_edit.setEnabled(True)
-        self.widget.push_project_delete.setEnabled(True)
-        self.widget.push_project_details.setEnabled(True)
-        self.widget.push_project_save.setEnabled(True)
+        self.widget.push_edit.setEnabled(True)
+        self.widget.push_delete.setEnabled(True)
+        self.widget.push_save.setEnabled(True)
 
         self.data.run['changed'] = False
 
