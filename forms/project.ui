@@ -23,25 +23,21 @@
    <property name="spacing">
     <number>10</number>
    </property>
-   <item row="0" column="4">
-    <widget class="QPushButton" name="push_open">
-     <property name="text">
-      <string>&amp;Open..</string>
+   <item row="1" column="0" colspan="10">
+    <widget class="QTableView" name="table_project_list">
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <property name="sortingEnabled">
+      <bool>true</bool>
      </property>
     </widget>
-   </item>
-   <item row="0" column="7">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>46</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
    <item row="0" column="3">
     <spacer name="horizontalSpacer_3">
@@ -59,21 +55,25 @@
      </property>
     </spacer>
    </item>
-   <item row="1" column="0" colspan="8">
-    <widget class="QTableView" name="table_project_list">
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
+   <item row="0" column="4">
+    <widget class="QPushButton" name="push_open">
+     <property name="text">
+      <string>&amp;Open..</string>
      </property>
     </widget>
+   </item>
+   <item row="0" column="9">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>46</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="0" column="6">
     <widget class="QPushButton" name="push_save">
@@ -137,6 +137,29 @@
      </property>
      <property name="flat">
       <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="7">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="8">
+    <widget class="QPushButton" name="push_help">
+     <property name="text">
+      <string>&amp;Help</string>
      </property>
     </widget>
    </item>

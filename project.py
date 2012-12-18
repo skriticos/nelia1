@@ -36,6 +36,8 @@ class NxProject:
         self.widget.push_open.clicked.connect(lambda: (self.data.load() and self.reset()))
         self.widget.push_save.clicked.connect(self.data.save)
 
+        self.widget.push_help.clicked.connect(self.parent.w_project_diag_help.show)
+
         # setup table
         self.table = self.widget.table_project_list
         self.table_headers = [

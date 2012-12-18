@@ -29,6 +29,7 @@ class MainWindow(QObject):
         loader = QtUiTools.QUiLoader()
         for name, fname in (('w_main',                    'forms/mainwindow.ui'),
                             ('w_project',                 'forms/project.ui'),
+                            ('w_project_diag_help',       'forms/project_help.ui'),
                             ('w_log',                     'forms/log.ui'),
                             ('w_roadmap',                 'forms/roadmap.ui'),
                             ('w_project_diag_new',        'forms/project_diag_new.ui'),
