@@ -6,36 +6,52 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 from mpushbutton import MPushButton
+from milestone import NxMilestone
 
-class NxRoadmap(QObject):
+class NxRoadmap:
 
-    def __init__(self, parent, datastore, widget):
+    def __init__(self, parent, data, widget):
 
+        # setup backbone
         self.parent = parent
-        self.data   = datastore
+        self.data   = data
         self.widget = widget
+        self.mc     = NxMilestone(self.data)
 
-        self.milestone_menu = QMenu(self.widget)
-        self.widget.push_milestone.setMenu(self.milestone_menu)
-
+        # setup table
         self.feature_headers = \
-            ['Name', 'Type', 'Target', 'Priority', 'Status', 'Created', 'ID']
+            ['ID', 'Name', 'Type', 'Status', 'Category', 'Priority', 'Created', 'Modified']
 
         self.model = QStandardItemModel()
         self.table = self.widget.table
         self.table.setModel(self.model)
 
-        self.widget.push_add_feature.clicked.connect(lambda: (self.parent.w_roadmap_diag_add.radio_feature.setChecked(True), self.showAddRoadmapItem()))
-        self.widget.push_add_issue.clicked.connect(lambda: (self.parent.w_roadmap_diag_add.radio_issue.setChecked(True), self.showAddRoadmapItem()))
+        # connect feature / issue add push buttons
+        self.widget.push_add_feature.clicked.connect(lambda: (
+            self.parent.w_roadmap_diag_add.radio_feature.setChecked(True), self.showAddRoadmapItem()))
+        self.widget.push_add_issue.clicked.connect(lambda: (
+            self.parent.w_roadmap_diag_add.radio_issue.setChecked(True), self.showAddRoadmapItem()))
         self.parent.w_roadmap_diag_add.accepted.connect(self.onSubmitDialog)
 
-        self.widget.check_feature.stateChanged.connect(self.reloadTables)
-        self.widget.check_issue.stateChanged.connect(self.reloadTables)
-        self.widget.check_open.stateChanged.connect(self.reloadTables)
-        self.widget.check_closed.stateChanged.connect(self.reloadTables)
+        # connect all the filter checkboxes to update the milestone item table
+        self.widget.check_feature.stateChanged.connect(self.reloadTable)
+        self.widget.check_issue.stateChanged.connect(self.reloadTable)
+        self.widget.check_open.stateChanged.connect(self.reloadTable)
+        self.widget.check_closed.stateChanged.connect(self.reloadTable)
+        self.widget.check_low.stateChanged.connect(self.reloadTable)
+        self.widget.check_medium.stateChanged.connect(self.reloadTable)
+        self.widget.check_high.stateChanged.connect(self.reloadTable)
+        self.widget.check_core.stateChanged.connect(self.reloadTable)
+        self.widget.check_auxiliary.stateChanged.connect(self.reloadTable)
+        self.widget.check_security.stateChanged.connect(self.reloadTable)
+        self.widget.check_corrective.stateChanged.connect(self.reloadTable)
+        self.widget.check_architecture.stateChanged.connect(self.reloadTable)
+        self.widget.check_refactor.stateChanged.connect(self.reloadTable)
 
+        # connect push milestone item action push buttons
         self.widget.push_delete.clicked.connect(self.deleteRoadmapItem)
         self.widget.push_edit.clicked.connect(self.editRoadmapItem)
+        self.widget.push_close.clicked.connect(self.closeRoadmapItem)
 
     def onShowTab(self):
 
