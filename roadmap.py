@@ -178,7 +178,7 @@ class NxRoadmap:
         cx, cy = self.data.project[pid]['meta']['current_milestone']
         d = self.parent.w_roadmap_diag_add
 
-        # reload milestone push button on dialog
+        # reload milestone push button on dialog (to match parent selection)
         d.gridLayout_2.removeWidget(d.push_target)
         d.push_target.close()
         d.push_target \
