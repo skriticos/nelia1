@@ -25,6 +25,7 @@ class NxRoadmap:
         self.model = QStandardItemModel()
         self.table = self.widget.table
         self.table.setModel(self.model)
+        self.selection_model = self.table.selectionModel()
 
         # connect feature / issue add push buttons
         self.widget.push_add_feature.clicked.connect(lambda: (
@@ -52,6 +53,11 @@ class NxRoadmap:
         self.widget.push_delete.clicked.connect(self.deleteRoadmapItem)
         self.widget.push_edit.clicked.connect(self.editRoadmapItem)
         self.widget.push_close.clicked.connect(self.closeRoadmapItem)
+
+        # connect selection changed (for close item)
+        self.selection_model.selectionChanged.connect(
+            self.onItemSelectionChanged
+        )
 
     def getCellContent(self, i):
 
@@ -82,6 +88,15 @@ class NxRoadmap:
 
         tmajor, tminor = target_label.split(' ')[3][1:].split('.')
         return int(tmajor), int(tminor)
+
+    def onItemSelectionChanged(self):
+
+        if self.table.currentIndex().row() == -1: return
+        status = self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),3)).text()
+        if status == 'Open':
+            self.widget.push_close.setEnabled(True)
+        if status == 'Closed':
+            self.widget.push_close.setEnabled(False)
 
     def onShowTab(self):
 
