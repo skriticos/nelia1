@@ -57,6 +57,9 @@ class NxDataStore:
                 os.path.expanduser('~/Documents'),
                 'Nelia Files (*.nelia)')[0]
 
+            if file_name == '':
+                return
+
             if file_name.rfind('.nelia') != len(file_name) - 6:
                 file_name += '.nelia'
 
