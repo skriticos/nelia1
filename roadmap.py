@@ -52,7 +52,7 @@ class NxRoadmap:
 
         # connect push milestone item action push buttons
         self.widget.push_delete.clicked.connect(self.deleteRoadmapItem)
-        self.widget.push_edit.clicked.connect(self.editRoadmapItem)
+        self.widget.push_edit.clicked.connect(lambda:(self.showAddEditRI('edit')))
         self.widget.push_close.clicked.connect(self.closeRoadmapItem)
 
         # connect selection changed (for close item)
@@ -266,13 +266,31 @@ class NxRoadmap:
         if diag_type == 'add':
             self.diag_type = 'add'
             self.diag_new_edit.setWindowTitle('Add Roadmap Item')
+            self.diag_new_edit.line_name.clear()
+            self.diag_new_edit.text_description.clear()
         else:
             self.diag_type = 'edit'
             self.diag_new_edit.setWindowTitle('Edit Roadmap Item')
 
-        # reset dialog controls and title
-        self.diag_new_edit.line_name.clear()
-        self.diag_new_edit.text_description.clear()
+            item_id = self.getSelectedItemId()
+            tmajor, tminor, fioc = self.data.project[self.pid]['ri_index'][item_id]
+            tx, ty = self.mc.versionToIndex(tmajor, tminor)
+            item = self.data.project[self.pid]['milestone'][tx][ty][fioc][item_id]
+
+            if fioc[0] == 'f': itype = 'Feature'
+            if fioc[0] == 'i': itype = 'Isssue'
+
+            if itype == 'Feature': self.diag_new_edit.radio_feature.setChecked(True)
+            if itype == 'Issue': self.diag_new_edit.radio_issue.setChecked(True)
+            if item['priority'] == 'Low': self.diag_new_edit.radio_low.setChecked(True)
+            if item['priority'] == 'Medium': self.diag_new_edit.radio_medium.setChecked(True)
+            if item['priority'] == 'High': self.diag_new_edit.radio_high.setChecked(True)
+            if item['icat'] == 'Core': self.diag_new_edit.radio_core.setChecked(True)
+            if item['icat'] == 'Auxiliary': self.diag_new_edit.radio_auxiliary.setChecked(True)
+            if item['icat'] == 'Security': self.diag_new_edit.radio_security.setChecked(True)
+            if item['icat'] == 'Correction': self.diag_new_edit.radio_corrective.setChecked(True)
+            if item['icat'] == 'Architecture': self.diag_new_edit.radio_architecture.setChecked(True)
+            if item['icat'] == 'Refactor': self.diag_new_edit.radio_refactor.setChecked(True)
 
         # show dialog
         self.diag_new_edit.show()
@@ -282,162 +300,56 @@ class NxRoadmap:
 
         # simple switch between add and edit mode for the dialog
         if self.diag_type == 'add':
-            self.onSubmitNewRoadmapItem()
+            self.onSubmitNewEditRI('add')
         if self.diag_type == 'edit':
-            self.onSubmitEditRoadmapItem()
+            self.onSubmitNewEditRI('edit')
 
-    def onSubmitNewRoadmapItem(self):
+    def onSubmitNewEditRI(self, mode):
 
         pid = self.data.run['project'].getSelectedProject()
-        d = self.parent.w_roadmap_diag_add
         tmajor, tminor = self.extractSelection('add_edit_dialog')
 
-        name = d.line_name.text()
-        description = d.text_description.toPlainText()
+        name = self.diag_new_edit.line_name.text()
+        description = self.diag_new_edit.text_description.toPlainText()
 
-        if d.radio_feature.isChecked():
+        if self.diag_new_edit.radio_feature.isChecked():
             ri_type = 'Feature'
         else:
             ri_type = 'Issue'
 
-        if d.radio_medium.isChecked():
+        if self.diag_new_edit.radio_medium.isChecked():
             priority = 'Medium'
-        elif d.radio_high.isChecked():
+        elif self.diag_new_edit.radio_high.isChecked():
             priority = 'High'
-        elif d.radio_low.isChecked():
+        elif self.diag_new_edit.radio_low.isChecked():
             priority = 'Low'
 
-        if d.radio_core.isChecked():
+        if self.diag_new_edit.radio_core.isChecked():
             category = 'Core'
-        elif d.radio_auxiliary.isChecked():
+        elif self.diag_new_edit.radio_auxiliary.isChecked():
             category = 'Auxiliary'
-        elif d.radio_security.isChecked():
+        elif self.diag_new_edit.radio_security.isChecked():
             category = 'Security'
-        elif d.radio_corrective.isChecked():
+        elif self.diag_new_edit.radio_corrective.isChecked():
             category = 'Corrective'
-        elif d.radio_architecture.isChecked():
+        elif self.diag_new_edit.radio_architecture.isChecked():
             category = 'Architecture'
-        elif d.radio_refactor.isChecked():
+        elif self.diag_new_edit.radio_refactor.isChecked():
             category = 'Refactor'
 
-        self.mc.addItem(
-            pid, tmajor, tminor, ri_type, category, name, priority, description
-        )
+        if mode == 'add':
+            self.mc.addItem(
+                pid, tmajor, tminor, ri_type, category, name, priority, description
+            )
+        if mode == 'edit':
+            self.mc.editItem(
+                pid, tmajor, tminor, self.getSelectedItemId(), ri_type, category, name, priority, description
+            )
 
         self.reloadMilestoneButton()
         self.reloadTable()
 
         self.data.run['project'].touchProject(int(time.time()))
-
-    def editRoadmapItem(self):
-
-        xid = self.getSelectedItemId()
-        pid = self.data.run['project'].getSelectedProject()
-        milestones = self.data.project[pid]['milestone']
-        p = self.data.project[pid]
-        tx, ty, fioc = p['ri_index'][xid]
-        item = p['milestone'][tx][ty][fioc][xid]
-        d = self.parent.w_roadmap_diag_add
-        d.setWindowTitle('Edit Roadmap Item')
-        x, y = self.data.project[pid]['meta']['current_milestone']
-
-        self.diag_type = 'edit'
-
-        # can't edit what you don't see (edit is always in the current selected milestone)
-        d.gridLayout_2.removeWidget(d.push_target)
-        d.push_target.close()
-        d.push_target \
-                = MPushButton(x,y,milestones,d,None,self.selected_major,self.selected_minor,True)
-        d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
-        d.label_3.setBuddy(d.push_target)
-
-        if ty == 0: ty += 1
-
-        d.line_name.setText(item['name'])
-        if item['ri_type'] == 'Feature':
-            d.radio_feature.setChecked(True)
-        else:
-            d.radio_issue.setChecked(True)
-
-        if d.radio_medium.isChecked():
-            prio = 'Medium'
-        elif d.radio_high.isChecked():
-            prio = 'High'
-        else:
-            prio = 'Low'
-
-        if item['priority'] == 'Medium':
-            d.radio_medium.setChecked(True)
-        elif item['priority'] == 'High':
-            d.radio_high.setChecked(True)
-        elif item['priority'] == 'Low':
-            d.radio_low.setChecked(True)
-
-        d.show()
-        d.line_name.setFocus()
-
-    def onSubmitEditRoadmapItem(self):
-
-        pid = self.data.run['project'].getSelectedProject()
-        xid = item_id = self.getSelectedItemId()
-        milestones = self.data.project[pid]['milestone']
-        d = self.parent.w_roadmap_diag_add
-        target_label = d.push_target.text()
-        timestamp = int(time.time())
-        p = self.data.project[pid]
-        tx, ty, fioc = p['ri_index'][xid]
-        item = p['milestone'][tx][ty][fioc][xid]
-        tx2, ty2 = target_label.split(' ')[3][1:].split('.')
-        tx2 = int(tx)
-        ty2 = int(ty)
-
-        item['name'] = d.line_name.text()
-        description = d.text_description.toPlainText()
-        if d.radio_feature.isChecked():
-            ri_type = 'Feature'
-        else:
-            ri_type = 'Issue'
-        if d.radio_medium.isChecked():
-            prio = 'Medium'
-        elif d.radio_high.isChecked():
-            prio = 'High'
-        elif d.radio_low.isChecked():
-            prio = 'Low'
-
-        item['ri_type'] = ri_type
-        item['priority'] = prio
-        item['description'] = description
-
-        if (tx, ty) != (tx2, ty2):
-
-            del p['milestone'][tx][ty][fioc]
-
-            # generate new milestones if an edge is reached
-            a = {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-            b = {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-            if len(milestones) > tx2 + 1:
-                if (tx2 != 0 and len(milestones[tx2]) == ty2 + 1) or (tx2 == 0 and len(milestones[tx2]) == ty2):
-                    a['m'] = '{}.{}'.format(tx2, ty2)
-                    milestones[tx2].append(a)
-            else:
-                a['m'] = '{}.{}'.format(tx2, 1)
-                milestones[tx2].append(a)
-                b['m'] = '{}.{}'.format(tx2+1, 0)
-                milestones.append([b])
-
-            # update push button
-            if tx2 == 0:
-                ty2 -= 1
-
-            if ri_ty2pe == 'Feature':
-                self.data.project[pid]['milestone'][tx2][ty2]['fo'][item_id] = new_item
-                p['ri_index'][item_id] = (tx2, ty2, 'fo')
-            else:
-                self.data.project[pid]['milestone'][tx2][ty2]['io'][item_id] = new_item
-                p['ri_index'][item_id] = (tx2, ty2, 'io')
-
-        self.reloadTable()
-        self.data.run['project'].touchProject(timestamp)
 
     def deleteRoadmapItem(self):
 
@@ -454,6 +366,4 @@ class NxRoadmap:
             self.widget.push_edit.setEnabled(False)
             self.widget.push_delete.setEnabled(False)
             self.widget.push_close.setEnabled(False)
-
-# vim: set ts=4 sw=4 ai si expandtab:
 
