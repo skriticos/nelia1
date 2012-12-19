@@ -143,8 +143,6 @@ class NxRoadmap:
         io = pro['milestone'][self.selected_x][yy]['io']
         ic = pro['milestone'][self.selected_x][yy]['ic']
 
-        self.widget.push_close.setEnabled(True)
-
         if self.widget.check_feature.isChecked():
             if self.widget.check_closed.isChecked():
                 for key, value in fc.items():
@@ -199,6 +197,7 @@ class NxRoadmap:
         if self.table.currentIndex().row() == 0:
             self.widget.push_edit.setEnabled(True)
             self.widget.push_delete.setEnabled(True)
+            self.widget.push_close.setEnabled(True)
 
         self.table.setFocus()
 
