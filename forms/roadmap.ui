@@ -157,7 +157,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>&amp;Close</string>
+         <string>&amp;Close Item</string>
         </property>
        </widget>
       </item>
