@@ -64,6 +64,11 @@ class NxRoadmap:
             self.onMilestoneDescriptionChanged
         )
 
+        # selection activate callback
+        self.table.activated.connect(
+            self.onRoadmapItemActivated
+        )
+
     def getCellContent(self, i):
 
         return int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),i)).text())
@@ -117,6 +122,13 @@ class NxRoadmap:
 
         sx, sy = self.mc.versionToIndex(self.selected_major, self.selected_minor)
         self.data.project[self.pid]['milestone'][sx][sy]['description'] = self.widget.text_description.toPlainText()
+
+    def onRoadmapItemActivated(self):
+
+        cmajor, cminor = self.data.project[self.pid]['meta']['current_milestone']
+        if self.model.rowCount() > 0:
+            if self.selected_major > cmajor or (self.selected_major == cmajor and self.selected_minor > cminor):
+                self.showAddEditRI('edit')
 
     def onShowTab(self):
 
@@ -306,7 +318,6 @@ class NxRoadmap:
 
     def onSubmitNewEditRI(self, mode):
 
-        pid = self.data.run['project'].getSelectedProject()
         tmajor, tminor = self.extractSelection('add_edit_dialog')
 
         name = self.diag_new_edit.line_name.text()
@@ -339,7 +350,7 @@ class NxRoadmap:
 
         if mode == 'add':
             self.mc.addItem(
-                pid, tmajor, tminor, ri_type, category, name, priority, description
+                self.pid, tmajor, tminor, ri_type, category, name, priority, description
             )
         if mode == 'edit':
             self.mc.editItem(
@@ -353,17 +364,8 @@ class NxRoadmap:
 
     def deleteRoadmapItem(self):
 
-        xid = self.getSelectedItemId()
-        pid = self.data.run['project'].getSelectedProject()
-        p = self.data.project[pid]
-        tx, ty, fioc = p['ri_index'][xid]
-        del p['milestone'][tx][ty][fioc][xid]
-        del p['ri_index'][xid]
-        self.model.removeRow(self.table.currentIndex().row())
-        timestamp = int(time.time())
-        self.data.run['project'].touchProject(timestamp)
-        if self.model.rowCount() == 0:
-            self.widget.push_edit.setEnabled(False)
-            self.widget.push_delete.setEnabled(False)
-            self.widget.push_close.setEnabled(False)
+        self.mc.deleteItem(self.pid, self.getSelectedItemId())
+        self.reloadMilestoneButton()
+        self.reloadTable()
+        self.data.run['project'].touchProject(int(time.time()))
 
