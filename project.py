@@ -59,6 +59,8 @@ class NxProject:
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
         self.widget.text_description.textChanged.connect(self.onDescriptionChange)
 
+        self.table.activated.connect(self.showEditProject)
+
     def touchProject(self, timestamp):
 
         """
