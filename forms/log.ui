@@ -94,12 +94,12 @@
           <string>Log Entr&amp;y:</string>
          </property>
          <property name="buddy">
-          <cstring>plainTextEdit</cstring>
+          <cstring>text_detail</cstring>
          </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QPlainTextEdit" name="plainTextEdit">
+        <widget class="QPlainTextEdit" name="text_detail">
          <property name="enabled">
           <bool>false</bool>
          </property>
