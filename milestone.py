@@ -235,6 +235,12 @@ class NxMilestone:
         self.moveItem(pid, item_id, idat['major'], idat['minor'], idat['itype'], 'Closed')
         self.touchItem(pid, item_id)
 
+    def reopenItem(self, pid, item_id):
+
+        idat = self.getItemData(pid, item_id)
+        self.moveItem(pid, item_id, idat['major'], idat['minor'], idat['itype'], 'Open')
+        self.touchItem(pid, item_id)
+
     def deleteItem(self, pid, item_id):
 
         idat = self.getItemData(pid, item_id)

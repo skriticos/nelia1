@@ -378,7 +378,7 @@
              <item row="4" column="0">
               <widget class="QCheckBox" name="check_closed">
                <property name="text">
-                <string>&amp;Closed</string>
+                <string>Closed</string>
                </property>
               </widget>
              </item>
