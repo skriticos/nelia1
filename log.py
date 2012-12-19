@@ -22,7 +22,6 @@ class NxLog:
 
         self.widget.push_new_entry.clicked.connect(lambda: (
             self.parent.w_log_diag_new.line_summary.clear(),
-            self.parent.w_log_diag_new.text_detail.clear(),
             self.parent.w_log_diag_new.line_summary.setFocus(),
             self.parent.w_log_diag_new.show()))
 
@@ -87,7 +86,6 @@ class NxLog:
 
         self.data.run['project'].touchProject(timestamp)
         self.data.project[pid]['meta']['last_log'] += 1
-        self.widget.push_detail.setEnabled(True)
 
 # vim: set ts=4 sw=4 ai si expandtab:
 
