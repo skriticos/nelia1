@@ -15,11 +15,10 @@ class NxLog:
 
         self.table = widget.table_history
         self.model = QStandardItemModel()
-        self.table_headers = ['Created', 'Summary', 'ID']
+        self.table_headers = \
+                ['ID', 'Created', 'Summary']
         self.model.setHorizontalHeaderLabels(self.table_headers)
         self.table.setModel(self.model)
-        self.table.setColumnWidth(0, 160)
-        self.table.setColumnWidth(1, 550)
 
         self.widget.push_new_entry.clicked.connect(lambda: (
             self.parent.w_log_diag_new.line_summary.clear(),
@@ -27,7 +26,6 @@ class NxLog:
             self.parent.w_log_diag_new.line_summary.setFocus(),
             self.parent.w_log_diag_new.show()))
 
-        self.widget.push_detail.clicked.connect(self.onDetailClicked)
         self.parent.w_log_diag_new.accepted.connect(self.onNewEntry)
 
     def onShowTab(self):
@@ -43,12 +41,11 @@ class NxLog:
 
             self.widget.line_project.setText(pname)
             self.parent.w_log_diag_new.line_project.setText(pname)
-            self.parent.w_log_diag_detail.line_project.setText(pname)
 
             self.model.clear()
             self.model.setHorizontalHeaderLabels(self.table_headers)
-            self.table.setColumnWidth(0, 160)
-            self.table.setColumnWidth(1, 550)
+            self.table.setColumnWidth(1, 160)
+            self.table.setColumnWidth(2, 550)
 
             for i in range(self.data.project[pid]['meta']['last_log']):
                 log = self.log[i+1]
@@ -59,10 +56,7 @@ class NxLog:
 
             if self.data.project[pid]['meta']['last_log'] > 0:
                 self.table.selectRow(0)
-                self.widget.push_detail.setEnabled(True)
                 self.table.sortByColumn(0, Qt.DescendingOrder)
-            else:
-                self.widget.push_detail.setEnabled(False)
 
             self.table.setFocus()
 
@@ -94,19 +88,6 @@ class NxLog:
         self.data.run['project'].touchProject(timestamp)
         self.data.project[pid]['meta']['last_log'] += 1
         self.widget.push_detail.setEnabled(True)
-
-    def onDetailClicked(self):
-
-        lid = int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(), 2)).text())
-        pid = self.data.run['project'].getSelectedProject()
-        log = self.data.project[pid]['log'][lid]
-        disptime = datetime.datetime.fromtimestamp(log['created']).isoformat()
-        d = self.parent.w_log_diag_detail
-        d.line_timestamp.setText(disptime)
-        d.line_summary.setText(log['summary'])
-        d.text_detail.setPlainText(log['detail'])
-
-        d.show()
 
 # vim: set ts=4 sw=4 ai si expandtab:
 

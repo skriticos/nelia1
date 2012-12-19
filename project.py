@@ -41,19 +41,12 @@ class NxProject:
         # setup table
         self.table = self.widget.table_project_list
         self.table_headers = [
-             'Name', 'Project Type', 'Status', 'Category', 'Prio.', 'Chall.',
-             'Version', 'Last Changed', 'ID' ]
+                'ID', 'Name', 'Status', 'Type', 'Verson', 'Category', 'Priority', 'Challenge',
+                'Modified', 'Created'
+                ]
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(self.table_headers)
         self.table.setModel(self.model)
-
-        self.table.setColumnWidth(0, 200)
-        self.table.setColumnWidth(4, 50)
-        self.table.setColumnWidth(5, 50)
-        self.table.setColumnWidth(6, 80)
-        self.table.setColumnWidth(7, 160)
-        self.table.setColumnWidth(8, 80)
-
 
     def onNewProject(self):
 
