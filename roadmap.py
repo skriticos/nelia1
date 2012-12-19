@@ -117,7 +117,9 @@ class NxRoadmap:
 
     def closeRoadmapItem(self):
 
-        pass
+        self.mc.closeItem(self.pid, self.getSelectedItemId())
+        self.data.run['project'].touchProject(time.time())
+        self.reloadTable()
 
     def onChangeVersionSelection(self, x, y, current_text):
 
@@ -126,75 +128,79 @@ class NxRoadmap:
 
         self.reloadTable()
 
+    def prependTable(self, key, itype, status, priority, icat, v):
+
+        if itype == 'Feature' and not self.widget.check_feature.isChecked(): return
+        if itype == 'Issue' and not self.widget.check_issue.isChecked(): return
+        if status == 'Open' and not self.widget.check_open.isChecked(): return
+        if status == 'Closed' and not self.widget.check_closed.isChecked(): return
+        if priority == 'Low' and not self.widget.check_low.isChecked(): return
+        if priority == 'Medium' and not self.widget.check_medium.isChecked(): return
+        if priority == 'High' and not self.widget.check_high.isChecked(): return
+        if icat == 'Core' and not self.widget.check_core.isChecked(): return
+        if icat == 'Auxiliary' and not self.widget.check_auxiliary.isChecked(): return
+        if icat == 'Security' and not self.widget.check_security.isChecked(): return
+        if icat == 'Correction' and not self.widget.check_corrective.isChecked(): return
+        if icat == 'Architecture' and not self.widget.check_architecture.isChecked(): return
+        if icat == 'Refactor' and not self.widget.check_refactor.isChecked(): return
+
+        self.model.insertRow(0, [
+            QStandardItem(str(key)),
+            QStandardItem(v['name']),
+            QStandardItem(itype),
+            QStandardItem(status),
+            QStandardItem(icat),
+            QStandardItem(str(v['priority'])),
+            QStandardItem(datetime.datetime.fromtimestamp(v['created']).isoformat()),
+            QStandardItem(datetime.datetime.fromtimestamp(v['modified']).isoformat())
+        ])
+
     def reloadTable(self):
 
         self.selected_x, self.selected_y = self.widget.push_milestone.getVersion()
 
+        self.init = True
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
 
         pid = self.data.run['project'].getSelectedProject()
-        pro = self.data.project[pid]
-        x, y = pro['meta']['current_milestone']
+        cmajor, cminor = self.data.project[pid]['meta']['current_milestone']
         yy = self.selected_y
         if self.selected_x == 0: yy = self.selected_y-1
-        fo = pro['milestone'][self.selected_x][yy]['fo']
-        fc = pro['milestone'][self.selected_x][yy]['fc']
-        io = pro['milestone'][self.selected_x][yy]['io']
-        ic = pro['milestone'][self.selected_x][yy]['ic']
+        fo = self.data.project[pid]['milestone'][self.selected_x][yy]['fo']
+        fc = self.data.project[pid]['milestone'][self.selected_x][yy]['fc']
+        io = self.data.project[pid]['milestone'][self.selected_x][yy]['io']
+        ic = self.data.project[pid]['milestone'][self.selected_x][yy]['ic']
 
-        if self.widget.check_feature.isChecked():
-            if self.widget.check_closed.isChecked():
-                for key, value in fc.items():
-                    self.model.insertRow(0, [
-                        QStandardItem(value['name']),
-                        QStandardItem(value['ri_type']),
-                        QStandardItem('{}.{}'.format(self.selected_x, self.selected_y)),
-                        QStandardItem(value['priority']),
-                        QStandardItem('Closed'),
-                        QStandardItem(datetime.datetime.fromtimestamp(value['created']).isoformat()),
-                        QStandardItem(str(key))
-                    ])
-                    self.table.selectRow(0)
-            if self.widget.check_open.isChecked():
-                for key, value in fo.items():
-                    self.model.insertRow(0, [
-                        QStandardItem(value['name']),
-                        QStandardItem(value['ri_type']),
-                        QStandardItem('{}.{}'.format(self.selected_x, self.selected_y)),
-                        QStandardItem(value['priority']),
-                        QStandardItem('Open'),
-                        QStandardItem(datetime.datetime.fromtimestamp(value['created']).isoformat()),
-                        QStandardItem(str(key))
-                    ])
-                    self.table.selectRow(0)
-        if self.widget.check_issue.isChecked():
-            if self.widget.check_closed.isChecked():
-                for key, value in ic.items():
-                    self.model.insertRow(0, [
-                        QStandardItem(value['name']),
-                        QStandardItem(value['ri_type']),
-                        QStandardItem('{}.{}'.format(self.selected_x, self.selected_y)),
-                        QStandardItem(value['priority']),
-                        QStandardItem('Closed'),
-                        QStandardItem(datetime.datetime.fromtimestamp(value['created']).isoformat()),
-                        QStandardItem(str(key))
-                    ])
-                    self.table.selectRow(0)
-            if self.widget.check_open.isChecked():
-                for key, value in io.items():
-                    self.model.insertRow(0, [
-                        QStandardItem(value['name']),
-                        QStandardItem(value['ri_type']),
-                        QStandardItem('{}.{}'.format(self.selected_x, self.selected_y)),
-                        QStandardItem(value['priority']),
-                        QStandardItem('Open'),
-                        QStandardItem(datetime.datetime.fromtimestamp(value['created']).isoformat()),
-                        QStandardItem(str(key))
-                    ])
-                    self.table.selectRow(0)
+        for key, value in ic.items():
+            itype = 'Issue'
+            status = 'Closed'
+            icat = value['icat']
+            priority = value['priority']
+            self.prependTable(key, itype, status, priority, icat, value)
+        for key, value in fc.items():
+            itype = 'Feature'
+            status = 'Closed'
+            icat = value['icat']
+            priority = value['priority']
+            self.prependTable(key, itype, status, priority, icat, value)
+        for key, value in io.items():
+            itype = 'Issue'
+            status = 'Open'
+            icat = value['icat']
+            priority = value['priority']
+            self.prependTable(key, itype, status, priority, icat, value)
+        for key, value in fo.items():
+            itype = 'Feature'
+            status = 'Open'
+            icat = value['icat']
+            priority = value['priority']
+            self.prependTable(key, itype, status, priority, icat, value)
 
-        if self.table.currentIndex().row() == 0:
+        self.init = False
+
+        if self.model.rowCount() > 0:
+            self.table.selectRow(0)
             self.widget.push_edit.setEnabled(True)
             self.widget.push_delete.setEnabled(True)
             self.widget.push_close.setEnabled(True)
@@ -262,17 +268,17 @@ class NxRoadmap:
             priority = 'Low'
 
         if d.radio_core.isChecked():
-            category = 'core'
+            category = 'Core'
         elif d.radio_auxiliary.isChecked():
-            category = 'auxiliary'
+            category = 'Auxiliary'
         elif d.radio_security.isChecked():
-            category = 'security'
+            category = 'Security'
         elif d.radio_corrective.isChecked():
-            category = 'corrective'
+            category = 'Corrective'
         elif d.radio_architecture.isChecked():
-            category = 'architecture'
+            category = 'Architecture'
         elif d.radio_refactor.isChecked():
-            category = 'refactor'
+            category = 'Refactor'
 
         self.mc.addItem(
             pid, tmajor, tminor, ri_type, category, name, priority, description
