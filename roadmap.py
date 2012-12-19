@@ -77,24 +77,6 @@ class NxRoadmap:
 
         return self.getCellContent(0)
 
-    def reloadMilestoneButton(self, targetw='root'):
-
-        cmajor, cminor = self.data.project[self.pid]['meta']['current_milestone']
-        milestones = self.data.project[self.pid]['milestone']
-        if targetw == 'root':
-            self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
-            self.widget.push_milestone.close()
-            self.widget.push_milestone = MPushButton(cmajor, cminor, milestones, self.widget, self.onChangeVersionSelection, self.selected_major, self.selected_minor)
-            self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
-            self.widget.label_2.setBuddy(self.widget.push_milestone)
-        elif targetw == 'diag_new_edit':
-            self.diag_new_edit.gridLayout_2.removeWidget(self.diag_new_edit.push_target)
-            self.diag_new_edit.push_target.close()
-            self.diag_new_edit.push_target \
-                    = MPushButton(cmajor,cminor,milestones,self.diag_new_edit,None,self.selected_major,self.selected_minor,True)
-            self.diag_new_edit.gridLayout_2.addWidget(self.diag_new_edit.push_target, 1, 1, 1, 1);
-            self.diag_new_edit.label_3.setBuddy(self.diag_new_edit.push_target)
-
     def extractSelection(self, targetw='root'):
 
         if targetw == 'root':
@@ -155,8 +137,10 @@ class NxRoadmap:
             self.reloadTable()
 
             # computing next_x, next_y is quite tricky, so we take it from the milestone widget (which does it anyway)
-            self.selected_major = self.widget.push_milestone.next_x
-            self.selected_minor = self.widget.push_milestone.next_y
+            major = self.selected_major = self.widget.push_milestone.next_x
+            minor = self.selected_minor = self.widget.push_milestone.next_y
+
+            self.onChangeVersionSelection(major, minor)
 
             d = self.parent.w_roadmap_diag_add
             d.radio_medium.setChecked(True)
@@ -171,9 +155,27 @@ class NxRoadmap:
         if status == 'Closed':
             self.mc.reopenItem(self.pid, self.getSelectedItemId())
         self.data.run['project'].touchProject(time.time())
-        self.reloadTable()
+        self.onChangeVersionSelection(self.selected_major, self.selected_minor)
 
-    def onChangeVersionSelection(self, major, minor, current_text):
+    def reloadMilestoneButton(self, targetw='root'):
+
+        cmajor, cminor = self.data.project[self.pid]['meta']['current_milestone']
+        milestones = self.data.project[self.pid]['milestone']
+        if targetw == 'root':
+            self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
+            self.widget.push_milestone.close()
+            self.widget.push_milestone = MPushButton(cmajor, cminor, milestones, self.widget, self.onChangeVersionSelection, self.selected_major, self.selected_minor)
+            self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
+            self.widget.label_2.setBuddy(self.widget.push_milestone)
+        elif targetw == 'diag_new_edit':
+            self.diag_new_edit.gridLayout_2.removeWidget(self.diag_new_edit.push_target)
+            self.diag_new_edit.push_target.close()
+            self.diag_new_edit.push_target \
+                    = MPushButton(cmajor,cminor,milestones,self.diag_new_edit,None,self.selected_major,self.selected_minor,True)
+            self.diag_new_edit.gridLayout_2.addWidget(self.diag_new_edit.push_target, 1, 1, 1, 1);
+            self.diag_new_edit.label_3.setBuddy(self.diag_new_edit.push_target)
+
+    def onChangeVersionSelection(self, major, minor):
 
         self.selected_major = major
         self.selected_minor = minor
@@ -181,7 +183,7 @@ class NxRoadmap:
         self.widget.text_description.setPlainText(
             self.data.project[self.pid]['milestone'][sx][sy]['description']
         )
-
+        self.reloadMilestoneButton('root')
         self.reloadTable()
 
     def prependTable(self, key, itype, status, priority, icat, v):
