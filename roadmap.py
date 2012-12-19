@@ -163,6 +163,7 @@ class NxRoadmap:
         milestones = self.data.project[self.pid]['milestone']
         if targetw == 'root':
             self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
+            self.widget.push_milestone.hide()
             self.widget.push_milestone.close()
             self.widget.push_milestone = MPushButton(cmajor, cminor, milestones, self.widget, self.onChangeVersionSelection, self.selected_major, self.selected_minor)
             self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
