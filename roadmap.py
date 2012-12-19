@@ -59,6 +59,10 @@ class NxRoadmap:
         self.selection_model.selectionChanged.connect(
             self.onItemSelectionChanged
         )
+        # connect milestone description changed
+        self.widget.text_description.textChanged.connect(
+            self.onMilestoneDescriptionChanged
+        )
 
     def getCellContent(self, i):
 
@@ -107,6 +111,13 @@ class NxRoadmap:
         if status == 'Closed':
             self.widget.push_close.setText('Reopen Ite&m')
 
+    def onMilestoneDescriptionChanged(self):
+
+        if self.init: return
+
+        sx, sy = self.mc.versionToIndex(self.selected_major, self.selected_minor)
+        self.data.project[self.pid]['milestone'][sx][sy]['description'] = self.widget.text_description.toPlainText()
+
     def onShowTab(self):
 
         pid = self.data.run['project'].getSelectedProject()
@@ -150,10 +161,14 @@ class NxRoadmap:
         self.data.run['project'].touchProject(time.time())
         self.reloadTable()
 
-    def onChangeVersionSelection(self, x, y, current_text):
+    def onChangeVersionSelection(self, major, minor, current_text):
 
-        self.selected_major = x
-        self.selected_minor = y
+        self.selected_major = major
+        self.selected_minor = minor
+        sx, sy = self.mc.versionToIndex(major, minor)
+        self.widget.text_description.setPlainText(
+            self.data.project[self.pid]['milestone'][sx][sy]['description']
+        )
 
         self.reloadTable()
 

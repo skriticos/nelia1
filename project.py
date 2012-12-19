@@ -163,8 +163,8 @@ class NxProject:
         p = self.data.project[pid] = {  'meta': {'last_log': 0, 'last_roadmap_item': 0, 'current_milestone': (0,0)},
                                         'log': {},
                                         'milestone' : [
-                                                [{'m': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
-                                                [{'m': '1.0', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
+                                            [{'description': '', 'm': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
+                                            [{'description': '', 'm': '1.0', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
                                             ],
                                         'ri_index' : {}
                                      }

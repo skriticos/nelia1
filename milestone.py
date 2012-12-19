@@ -47,11 +47,11 @@ class NxMilestone:
 
         if y == 0:
             self.data.project[pid] ['milestone'].append(
-                [{'m': '{}.{}'.format(major, minor), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
+                [{'description': '', 'm': '{}.{}'.format(major, minor), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
             )
         else:
             self.data.project[pid] ['milestone'] [x].append(
-                {'m': '{}.{}'.format(major, minor), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
+                {'description': '', 'm': '{}.{}'.format(major, minor), 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
             )
 
     def removeMilestone(self, pid, major, minor):
