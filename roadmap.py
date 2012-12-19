@@ -304,6 +304,9 @@ class NxRoadmap:
             if item['icat'] == 'Architecture': self.diag_new_edit.radio_architecture.setChecked(True)
             if item['icat'] == 'Refactor': self.diag_new_edit.radio_refactor.setChecked(True)
 
+            self.diag_new_edit.line_name.setText(item['name'])
+            self.diag_new_edit.text_description.setPlainText(item['description'])
+
         # show dialog
         self.diag_new_edit.show()
         self.diag_new_edit.line_name.setFocus()
@@ -354,7 +357,7 @@ class NxRoadmap:
             )
         if mode == 'edit':
             self.mc.editItem(
-                pid, tmajor, tminor, self.getSelectedItemId(), ri_type, category, name, priority, description
+                self.pid, tmajor, tminor, self.getSelectedItemId(), ri_type, category, name, priority, description
             )
 
         self.reloadMilestoneButton()
