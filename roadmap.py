@@ -28,9 +28,9 @@ class NxRoadmap:
 
         # connect feature / issue add push buttons
         self.widget.push_add_feature.clicked.connect(lambda: (
-            self.parent.w_roadmap_diag_add.radio_feature.setChecked(True), self.showAddRoadmapItem()))
+            self.parent.w_roadmap_diag_add.radio_feature.setChecked(True), self.showAddEditRI('add')))
         self.widget.push_add_issue.clicked.connect(lambda: (
-            self.parent.w_roadmap_diag_add.radio_issue.setChecked(True), self.showAddRoadmapItem()))
+            self.parent.w_roadmap_diag_add.radio_issue.setChecked(True), self.showAddEditRI('add')))
         self.parent.w_roadmap_diag_add.accepted.connect(self.onSubmitDialog)
 
         # connect all the filter checkboxes to update the milestone item table
@@ -53,10 +53,42 @@ class NxRoadmap:
         self.widget.push_edit.clicked.connect(self.editRoadmapItem)
         self.widget.push_close.clicked.connect(self.closeRoadmapItem)
 
+    def getCellContent(self, i):
+
+        return int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),i)).text())
+
+    def getSelectedItemId(self):
+
+        return self.getCellContent(0)
+
+    def reloadMilestoneButton(self, targetw='root', tmajor=None, tminor=None):
+
+        x, y = self.data.project[self.pid]['meta']['current_milestone']
+        milestones = self.data.project[self.pid]['milestone']
+        self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
+        self.widget.push_milestone.close()
+        self.widget.push_milestone = MPushButton(x, y, milestones, self.widget, self.onChangeVersionSelection, self.selected_x, self.selected_y)
+        self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
+        self.widget.label_2.setBuddy(self.widget.push_milestone)
+
+    def extractSelection(self, targetw='root'):
+
+        if targetw == 'root':
+            w = self.widget
+            target_label = w.push_target.text()
+        elif targetw == 'add_edit_dialog':
+            d = self.parent.w_roadmap_diag_add
+            target_label = d.push_target.text()
+
+        tmajor, tminor = target_label.split(' ')[3][1:].split('.')
+        return int(tmajor), int(tminor)
+
     def onShowTab(self):
 
         pid = self.data.run['project'].getSelectedProject()
         if self.data.run['roadmap_pid_last'] == 0 or self.data.run['roadmap_pid_last'] != pid:
+
+            self.pid = pid
 
             pro = self.data.project[pid]
 
@@ -170,7 +202,7 @@ class NxRoadmap:
 
         self.table.setFocus()
 
-    def showAddRoadmapItem(self):
+    def showAddEditRI(self, diag_type=None):
 
         # initialize variables
         pid = self.data.run['project'].getSelectedProject()
@@ -187,7 +219,10 @@ class NxRoadmap:
         d.label_3.setBuddy(d.push_target)
 
         # set dialog type flag
-        self.diag_type = 'add'
+        if diag_type == 'add':
+            self.diag_type = 'add'
+        else:
+            self.diag_type = 'edit'
 
         # reset dialog controls and title
         d.line_name.clear()
@@ -200,109 +235,54 @@ class NxRoadmap:
 
     def onSubmitDialog(self):
 
+        # simple switch between add and edit mode for the dialog
         if self.diag_type == 'add':
             self.onSubmitNewRoadmapItem()
-        else:
+        if self.diag_type == 'edit':
             self.onSubmitEditRoadmapItem()
 
     def onSubmitNewRoadmapItem(self):
 
         pid = self.data.run['project'].getSelectedProject()
-        milestones = self.data.project[pid]['milestone']
         d = self.parent.w_roadmap_diag_add
-        x, y = self.data.project[pid]['meta']['current_milestone']
-        target_label = d.push_target.text()
-        tx, ty = target_label.split(' ')[3][1:].split('.')
-        tx = int(tx)
-        ty = int(ty)
-        timestamp = int(time.time())
-        p = self.data.project[pid]
+        tmajor, tminor = self.extractSelection('add_edit_dialog')
 
         name = d.line_name.text()
         description = d.text_description.toPlainText()
+
         if d.radio_feature.isChecked():
             ri_type = 'Feature'
         else:
             ri_type = 'Issue'
+
         if d.radio_medium.isChecked():
-            prio = 'Medium'
+            priority = 'Medium'
         elif d.radio_high.isChecked():
-            prio = 'High'
+            priority = 'High'
         elif d.radio_low.isChecked():
-            prio = 'Low'
+            priority = 'Low'
 
-        new_item = {
-            'name':         name,
-            'ri_type':      ri_type,
-            'priority':     prio,
-            'description':  description,
-            'created':      timestamp,
-            'closed':       False
-        }
+        if d.radio_core.isChecked():
+            category = 'core'
+        elif d.radio_auxiliary.isChecked():
+            category = 'auxiliary'
+        elif d.radio_security.isChecked():
+            category = 'security'
+        elif d.radio_corrective.isChecked():
+            category = 'corrective'
+        elif d.radio_architecture.isChecked():
+            category = 'architecture'
+        elif d.radio_refactor.isChecked():
+            category = 'refactor'
 
-        p['meta']['last_roadmap_item'] += 1
-        item_id = p['meta']['last_roadmap_item']
+        self.mc.addItem(
+            pid, tmajor, tminor, ri_type, category, name, priority, description
+        )
 
-        # only add feature, if added to currently selected version
-        if tx == self.selected_x and ty == self.selected_y:
-            # add to feature table
-            model = self.model
-            model.insertRow(0, [
-                QStandardItem(name),
-                QStandardItem(ri_type),
-                QStandardItem('{}.{}'.format(tx,ty)),
-                QStandardItem(prio),
-                QStandardItem('Open'),
-                QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()),
-                QStandardItem(str(item_id))
-            ])
+        self.reloadMilestoneButton()
+        self.reloadTable()
 
-        # generate new milestones if an edge is reached
-        a = {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-        b = {'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-        if len(milestones) > tx + 1:
-            if (tx != 0 and len(milestones[tx]) == ty + 1) or (tx == 0 and len(milestones[tx]) == ty):
-                a['m'] = '{}.{}'.format(tx, ty)
-                milestones[tx].append(a)
-        else:
-            a['m'] = '{}.{}'.format(tx, 1)
-            milestones[tx].append(a)
-            b['m'] = '{}.{}'.format(tx+1, 0)
-            milestones.append([b])
-
-        # update push button
-        if tx == 0:
-            ty -= 1
-
-        if ri_type == 'Feature':
-            self.data.project[pid]['milestone'][tx][ty]['fo'][item_id] = new_item
-            p['ri_index'][item_id] = (tx, ty, 'fo')
-        else:
-            self.data.project[pid]['milestone'][tx][ty]['io'][item_id] = new_item
-            p['ri_index'][item_id] = (tx, ty, 'io')
-
-        self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
-        self.widget.push_milestone.close()
-        self.widget.push_milestone = MPushButton(x, y, milestones, self.widget, self.onChangeVersionSelection, self.selected_x, self.selected_y)
-        self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
-        self.widget.label_2.setBuddy(self.widget.push_milestone)
-
-        self.table.selectRow(0)
-        self.table.setFocus()
-        if self.table.currentIndex().row() == 0:
-            self.widget.push_edit.setEnabled(True)
-            self.widget.push_delete.setEnabled(True)
-            self.widget.push_close.setEnabled(True)
-
-        self.data.run['project'].touchProject(timestamp)
-
-    def getSelectedItemId(self):
-
-        return int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),6)).text())
-
-    def getCellContent(self, i):
-
-        return int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),i)).text())
+        self.data.run['project'].touchProject(int(time.time()))
 
     def editRoadmapItem(self):
 
