@@ -3,6 +3,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+import PySide
 import signal
 
 from datastore import NxDataStore
@@ -90,12 +91,140 @@ class MainWindow(QObject):
         QObject.installEventFilter(self.w_main, self)
         signal.signal(signal.SIGTERM, self.onExit)
 
+        self.applyConfig()
+        self.data.run['project'].reset()
+
     def updateConfig(self):
 
         """
             Update configuration details. This is mostly the column widths.
         """
-        # TODO
+        self.data.run['project'].saveLayout()
+        self.data.run['log'].saveLayout()
+        self.data.run['roadmap'].saveLayout()
+        self.data.run['config'].config_data['project']['header_width'] = \
+                self.data.run['project'].header_width
+        self.data.run['config'].config_data['project']['sort_column'] = \
+                self.data.run['project'].sort_column
+        self.data.run['config'].config_data['project']['sort_order'] = \
+                self.data.run['project'].sort_order.__repr__()
+        self.data.run['config'].config_data['log']['header_width'] = \
+                self.data.run['log'].header_width
+        self.data.run['config'].config_data['log']['sort_column'] = \
+                self.data.run['log'].sort_column
+        self.data.run['config'].config_data['log']['sort_order'] = \
+                self.data.run['log'].sort_order.__repr__()
+        self.data.run['config'].config_data['roadmap']['header_width'] = \
+                self.data.run['roadmap'].header_width
+        self.data.run['config'].config_data['roadmap']['sort_column'] = \
+                self.data.run['roadmap'].sort_column
+        self.data.run['config'].config_data['roadmap']['sort_order'] = \
+                self.data.run['roadmap'].sort_order.__repr__()
+
+        x = self.data.run['config'].config_data['roadmap']
+        x['show_feature'] = self.w_roadmap.check_feature.isChecked()
+        x['show_issue'] = self.w_roadmap.check_issue.isChecked()
+        x['show_open'] = self.w_roadmap.check_open.isChecked()
+        x['show_closed'] = self.w_roadmap.check_closed.isChecked()
+        x['show_low'] = self.w_roadmap.check_low.isChecked()
+        x['show_medium'] = self.w_roadmap.check_medium.isChecked()
+        x['show_high'] = self.w_roadmap.check_high.isChecked()
+        x['show_core'] = self.w_roadmap.check_core.isChecked()
+        x['show_auxiliary'] = self.w_roadmap.check_auxiliary.isChecked()
+        x['show_security'] = self.w_roadmap.check_security.isChecked()
+        x['show_corrective'] = self.w_roadmap.check_corrective.isChecked()
+        x['show_architecture'] = self.w_roadmap.check_architecture.isChecked()
+        x['show_refactor'] = self.w_roadmap.check_refactor.isChecked()
+
+    def applyConfig(self):
+
+        if self.data.run['config'].no_config == True:
+            return
+
+        self.data.run['project'].header_width = \
+            self.data.run['config'].config_data['project']['header_width']
+        self.data.run['project'].sort_column = \
+            self.data.run['config'].config_data['project']['sort_column']
+        if self.data.run['config'].config_data['project']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
+                self.data.run['project'].sort_order = PySide.QtCore.Qt.SortOrder.DescendingOrder
+        elif self.data.run['config'].config_data['project']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
+                self.data.run['project'].sort_order = PySide.QtCore.Qt.SortOrder.AscendingOrder
+        self.data.run['log'].header_width = \
+            self.data.run['config'].config_data['log']['header_width']
+        self.data.run['log'].sort_column = \
+            self.data.run['config'].config_data['log']['sort_column']
+        if self.data.run['config'].config_data['log']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
+                self.data.run['log'].sort_order = PySide.QtCore.Qt.SortOrder.DescendingOrder
+        elif self.data.run['config'].config_data['log']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
+                self.data.run['log'].sort_order = PySide.QtCore.Qt.SortOrder.AscendingOrder
+        self.data.run['roadmap'].header_width = \
+            self.data.run['config'].config_data['roadmap']['header_width']
+        self.data.run['roadmap'].sort_column = \
+            self.data.run['config'].config_data['roadmap']['sort_column']
+        if self.data.run['config'].config_data['roadmap']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
+                self.data.run['roadmap'].sort_order = PySide.QtCore.Qt.SortOrder.DescendingOrder
+        elif self.data.run['config'].config_data['roadmap']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
+                self.data.run['roadmap'].sort_order = PySide.QtCore.Qt.SortOrder.AscendingOrder
+        self.data.run['project'].loadLayout()
+        self.data.run['log'].loadLayout()
+        self.data.run['roadmap'].loadLayout()
+
+        x = self.data.run['config'].config_data['roadmap']
+
+        if x['show_feature']:
+            self.w_roadmap.check_feature.setChecked(True)
+        else:
+            self.w_roadmap.check_feature.setChecked(False)
+        if x['show_issue']:
+            self.w_roadmap.check_issue.setChecked(True)
+        else:
+            self.w_roadmap.check_issue.setChecked(False)
+        if x['show_open']:
+            self.w_roadmap.check_open.setChecked(True)
+        else:
+            self.w_roadmap.check_open.setChecked(False)
+        if x['show_closed']:
+            self.w_roadmap.check_closed.setChecked(True)
+        else:
+            self.w_roadmap.check_closed.setChecked(False)
+
+        if x['show_low']:
+            self.w_roadmap.check_low.setChecked(True)
+        else:
+            self.w_roadmap.check_low.setChecked(False)
+        if x['show_medium']:
+            self.w_roadmap.check_medium.setChecked(True)
+        else:
+            self.w_roadmap.check_medium.setChecked(False)
+        if x['show_high']:
+            self.w_roadmap.check_high.setChecked(True)
+        else:
+            self.w_roadmap.check_high.setChecked(False)
+
+        if x['show_core']:
+            self.w_roadmap.check_core.setChecked(True)
+        else:
+            self.w_roadmap.check_core.setChecked(False)
+        if x['show_auxiliary']:
+            self.w_roadmap.check_auxiliary.setChecked(True)
+        else:
+            self.w_roadmap.check_auxiliary.setChecked(False)
+        if x['show_security']:
+            self.w_roadmap.check_security.setChecked(True)
+        else:
+            self.w_roadmap.check_security.setChecked(False)
+        if x['show_corrective']:
+            self.w_roadmap.check_corrective.setChecked(True)
+        else:
+            self.w_roadmap.check_corrective.setChecked(False)
+        if x['show_architecture']:
+            self.w_roadmap.check_architecture.setChecked(True)
+        else:
+            self.w_roadmap.check_architecture.setChecked(False)
+        if x['show_refactor']:
+            self.w_roadmap.check_refactor.setChecked(True)
+        else:
+            self.w_roadmap.check_refactor.setChecked(False)
 
     def onExit(self, num, frame):
 

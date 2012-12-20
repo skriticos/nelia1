@@ -118,6 +118,7 @@ class NxProject:
             self.sort_order = self.horizontal_header.sortIndicatorOrder()
         else:
             self.sort_column = -1
+            self.sort_order = None
 
     def loadLayout(self):
 
@@ -154,7 +155,7 @@ class NxProject:
                 QStandardItem(disptime2),
             ])
 
-        self.table.sortByColumn(0, Qt.DescendingOrder)
+        self.table.sortByColumn(8, Qt.DescendingOrder)
 
         if preserveLayout:
             self.loadLayout()

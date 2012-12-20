@@ -34,12 +34,15 @@ class NxConfig:
 
     def readConfig(self):
 
-        if not os.path.exists(self.fullpath): return False
+        if not os.path.exists(self.fullpath):
+            self.no_config = True
+            return
 
         with open(self.fullpath, 'rb') as f:
                 file_buffer = f.read()
 
         decompressed = gzip.decompress(file_buffer)
         self.config_data = pickle.loads(decompressed)
-        return True
+        self.no_config = False
+        return
 

@@ -24,6 +24,7 @@ class NxRoadmap:
             ['ID', 'Name', 'Type', 'Status', 'Category', 'Priority', 'Created', 'Modified']
 
         self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(self.feature_headers)
         self.table = self.widget.table
         self.table.setModel(self.model)
         self.selection_model = self.table.selectionModel()
@@ -137,7 +138,7 @@ class NxRoadmap:
             self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
             self.widget.label_2.setBuddy(self.widget.push_milestone)
 
-            self.reloadTable(preserveLayout=False)
+            self.reloadTable()
 
             # computing next_x, next_y is quite tricky, so we take it from the milestone widget (which does it anyway)
             major = self.selected_major = self.widget.push_milestone.next_x
@@ -227,6 +228,7 @@ class NxRoadmap:
             self.sort_order = self.horizontal_header.sortIndicatorOrder()
         else:
             self.sort_column = -1
+            self.sort_order = None
 
     def loadLayout(self):
 
@@ -237,7 +239,8 @@ class NxRoadmap:
 
     def reloadTable(self, state=None, preserveLayout=True):
 
-        self.selected_major, self.selected_minor = self.widget.push_milestone.getVersion()
+        if not isinstance(self.widget.push_milestone, MPushButton):
+            return
 
         self.init = True
 
@@ -248,6 +251,7 @@ class NxRoadmap:
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         self.widget.push_close.setText('&Close Item')
 
+        self.selected_major, self.selected_minor = self.widget.push_milestone.getVersion()
         pid = self.data.run['project'].getSelectedProject()
         cmajor, cminor = self.data.project[pid]['meta']['current_milestone']
         yy = self.selected_minor
