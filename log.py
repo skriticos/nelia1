@@ -24,6 +24,8 @@ class NxLog:
         self.model.setHorizontalHeaderLabels(self.table_headers)
         self.table.setModel(self.model)
         self.selection_model = self.table.selectionModel()
+        self.horizontal_header = self.table.horizontalHeader()
+        self.table.setAlternatingRowColors(True)
 
         # connect add roadmap callbacks
         self.widget.push_new_entry.clicked.connect(lambda: (
@@ -49,6 +51,59 @@ class NxLog:
                 self.data.project[self.pid] ['log'] [self.getSelectedLogId()] ['detail']
             )
 
+    def saveLayout(self):
+
+        self.header_width = []
+        for i in range(3):
+            self.header_width.append(self.table.columnWidth(i))
+        if self.horizontal_header.sortIndicatorSection() < 3:
+            self.sort_column = self.horizontal_header.sortIndicatorSection()
+            self.sort_order = self.horizontal_header.sortIndicatorOrder()
+        else:
+            self.sort_column = -1
+
+    def loadLayout(self):
+
+        for i,v in enumerate(self.header_width):
+            self.table.setColumnWidth(i, v)
+        if self.sort_column != -1:
+            self.horizontal_header.setSortIndicator(self.sort_column, self.sort_order)
+
+    def reloadTable(self, state=None, preserveLayout=True):
+
+        if preserveLayout:
+            self.saveLayout()
+
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(self.table_headers)
+        self.table.setColumnWidth(1, 160)
+        self.table.setColumnWidth(2, 550)
+
+        # populate table
+        for i in range(self.data.project[self.pid]['meta']['last_log']):
+            log = self.data.project[self.pid]['log'][i+1]
+            self.model.insertRow(0, [
+                QStandardItem(str(i+1)),
+                QStandardItem(datetime.datetime.fromtimestamp(log['created']).isoformat()),
+                QStandardItem(log['summary'])
+            ])
+
+        # setup state
+        self.table.sortByColumn(0, Qt.DescendingOrder)
+
+        self.init = False # re-enable selection change callback
+        if self.data.project[self.pid]['meta']['last_log'] > 0:
+            self.table.selectRow(0)
+            self.table.setFocus()
+        else:
+            self.widget.text_detail.setPlainText('No log selected')
+            self.widget.text_detail.setEnabled(False)
+            self.widget.push_new_entry.setFocus()
+
+        if preserveLayout:
+            load.saveLayout()
+
+
     def onShowTab(self):
 
         # retrive pid
@@ -67,31 +122,8 @@ class NxLog:
             self.widget.line_project.setText(pname)
             self.parent.w_log_diag_new.line_project.setText(pname)
 
-            self.model.clear()
-            self.model.setHorizontalHeaderLabels(self.table_headers)
-            self.table.setColumnWidth(1, 160)
-            self.table.setColumnWidth(2, 550)
+            self.reloadTable(preserveLayout=False)
 
-            # populate table
-            for i in range(self.data.project[pid]['meta']['last_log']):
-                log = self.data.project[pid]['log'][i+1]
-                self.model.insertRow(0, [
-                    QStandardItem(str(i+1)),
-                    QStandardItem(datetime.datetime.fromtimestamp(log['created']).isoformat()),
-                    QStandardItem(log['summary'])
-                ])
-
-            # setup state
-            self.table.sortByColumn(0, Qt.DescendingOrder)
-
-            self.init = False # re-enable selection change callback
-            if self.data.project[pid]['meta']['last_log'] > 0:
-                self.table.selectRow(0)
-                self.table.setFocus()
-            else:
-                self.widget.text_detail.setPlainText('No log selected')
-                self.widget.text_detail.setEnabled(False)
-                self.widget.push_new_entry.setFocus()
 
     def onNewEntry(self):
 

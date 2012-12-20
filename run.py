@@ -4,7 +4,7 @@ import sys
 from PySide.QtGui import *
 from mainwindow import MainWindow
 
-app = QApplication(sys.argv) 
+app = QApplication(sys.argv)
 
 # SETUP GUI
 mw = MainWindow(sys.argv)

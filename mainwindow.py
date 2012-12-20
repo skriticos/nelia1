@@ -3,13 +3,13 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+import signal
 
+from datastore import NxDataStore
+from config  import NxConfig
 from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
-from config  import NxConfig
-
-from datastore import NxDataStore
 
 class MainWindow(QObject):
 
@@ -87,7 +87,25 @@ class MainWindow(QObject):
 
         # Intercept close event (see self.eventFilter).
         QObject.installEventFilter(self.w_main, self)
+        signal.signal(signal.SIGTERM, self.onExit)
 
+    def updateConfig(self):
+
+        """
+            Update configuration details. This is mostly the column widths.
+        """
+        # TODO
+
+    def onExit(self, num, frame):
+
+        """
+            We want to shut down normally on SIGTERM too. This can happen when the
+            computer is turned off, without closing the application first. This
+            will issue the main window to close, which will trigger the event filter
+            and shout down properly.
+        """
+
+        self.w_main.close()
 
     def eventFilter(self, obj, event):
 
@@ -98,10 +116,10 @@ class MainWindow(QObject):
             window to close).
         """
 
-        if obj == self.w_main:
-            if isinstance(event, QCloseEvent):
-                self.data.run['config'].writeConfig()
-                self.data.save()
+        if obj == self.w_main and isinstance(event, QCloseEvent):
+            self.updateConfig()
+            self.data.run['config'].writeConfig()
+            self.data.save()
         res = False
         try:
             res = QObject.eventFilter(self.w_main, obj, event)

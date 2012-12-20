@@ -27,6 +27,8 @@ class NxRoadmap:
         self.table = self.widget.table
         self.table.setModel(self.model)
         self.selection_model = self.table.selectionModel()
+        self.horizontal_header = self.table.horizontalHeader()
+        self.table.setAlternatingRowColors(True)
 
         # connect feature / issue add push buttons
         self.widget.push_add_feature.clicked.connect(lambda: (
@@ -118,6 +120,7 @@ class NxRoadmap:
         if self.data.run['roadmap_pid_last'] == 0 or self.data.run['roadmap_pid_last'] != pid:
 
             self.pid = pid
+            self.data.run['roadmap_pid_last'] = pid
 
             pro = self.data.project[pid]
 
@@ -134,7 +137,7 @@ class NxRoadmap:
             self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
             self.widget.label_2.setBuddy(self.widget.push_milestone)
 
-            self.reloadTable()
+            self.reloadTable(preserveLayout=False)
 
             # computing next_x, next_y is quite tricky, so we take it from the milestone widget (which does it anyway)
             major = self.selected_major = self.widget.push_milestone.next_x
@@ -204,7 +207,7 @@ class NxRoadmap:
         if icat == 'Refactor' and not self.widget.check_refactor.isChecked(): return
 
         self.model.insertRow(0, [
-            QStandardItem(str(key)),
+            QStandardItem(str(key).zfill(4)),
             QStandardItem(v['name']),
             QStandardItem(itype),
             QStandardItem(status),
@@ -214,11 +217,33 @@ class NxRoadmap:
             QStandardItem(datetime.datetime.fromtimestamp(v['modified']).isoformat())
         ])
 
-    def reloadTable(self):
+    def saveLayout(self):
+
+        self.header_width = []
+        for i in range(8):
+            self.header_width.append(self.table.columnWidth(i))
+        if self.horizontal_header.sortIndicatorSection() < 8:
+            self.sort_column = self.horizontal_header.sortIndicatorSection()
+            self.sort_order = self.horizontal_header.sortIndicatorOrder()
+        else:
+            self.sort_column = -1
+
+    def loadLayout(self):
+
+        for i,v in enumerate(self.header_width):
+            self.table.setColumnWidth(i, v)
+        if self.sort_column != -1:
+            self.horizontal_header.setSortIndicator(self.sort_column, self.sort_order)
+
+    def reloadTable(self, state=None, preserveLayout=True):
 
         self.selected_major, self.selected_minor = self.widget.push_milestone.getVersion()
 
         self.init = True
+
+        if preserveLayout:
+            self.saveLayout()
+
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         self.widget.push_close.setText('&Close Item')
@@ -270,6 +295,9 @@ class NxRoadmap:
                 self.widget.push_delete.setEnabled(False)
                 self.widget.push_close.setEnabled(False)
             self.table.selectRow(0)
+
+        if preserveLayout:
+            self.loadLayout()
 
         self.table.setFocus()
 

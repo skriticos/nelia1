@@ -54,6 +54,8 @@ class NxProject:
         self.model.setHorizontalHeaderLabels(self.table_headers)
         self.table.setModel(self.model)
         self.selection_model = self.table.selectionModel()
+        self.horizontal_header = self.table.horizontalHeader()
+        self.table.setAlternatingRowColors(True)
 
         self.diag_new = self.parent.w_project_diag_new
         self.diag_edit = self.parent.w_project_diag_edit
@@ -106,9 +108,31 @@ class NxProject:
         self.data.project[self.getSelectedProject()]['description'] = \
                 self.widget.text_description.toPlainText()
 
-    def reloadTable(self):
+    def saveLayout(self):
+
+        self.header_width = []
+        for i in range(10):
+            self.header_width.append(self.table.columnWidth(i))
+        if self.horizontal_header.sortIndicatorSection() < 10:
+            self.sort_column = self.horizontal_header.sortIndicatorSection()
+            self.sort_order = self.horizontal_header.sortIndicatorOrder()
+        else:
+            self.sort_column = -1
+
+    def loadLayout(self):
+
+        for i,v in enumerate(self.header_width):
+            self.table.setColumnWidth(i, v)
+        if self.sort_column != -1:
+            self.horizontal_header.setSortIndicator(self.sort_column, self.sort_order)
+
+    def reloadTable(self, state=None, preserveLayout=True):
 
         self.init = True
+
+        if preserveLayout:
+            self.saveLayout()
+
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.table_headers)
 
@@ -118,7 +142,7 @@ class NxProject:
             disptime1 = datetime.datetime.fromtimestamp(project['modified']).isoformat()
             disptime2 = datetime.datetime.fromtimestamp(project['created']).isoformat()
             self.model.insertRow(0, [
-                QStandardItem(str(pid)),
+                QStandardItem(str(pid).zfill(4)),
                 QStandardItem(project['name']),
                 QStandardItem(project['status']),
                 QStandardItem(project['ptype']),
@@ -131,6 +155,9 @@ class NxProject:
             ])
 
         self.table.sortByColumn(0, Qt.DescendingOrder)
+
+        if preserveLayout:
+            self.loadLayout()
 
         self.init = False
 
