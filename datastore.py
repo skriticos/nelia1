@@ -93,7 +93,7 @@ class NxDataStore:
                 return
 
         # read path, if necessary
-        if not path and not self.path:
+        if not path:
 
             self.path = QFileDialog.getOpenFileName(
                 self.parent.w_main,
@@ -104,6 +104,8 @@ class NxDataStore:
             # path dialog aborted
             if not self.path:
                 return False
+        else:
+            self.path = path
 
         # read data from file
         with open(self.path, 'rb') as f:

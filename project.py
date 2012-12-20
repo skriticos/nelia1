@@ -186,8 +186,8 @@ class NxProject:
     def onOpenLast(self):
 
         if 'lastpath' in self.data.run['config'].config_data['datastore']:
-            self.data.path = self.data.run['config'].config_data['datastore']['lastpath']
-            self.data.load()
+            path = self.data.run['config'].config_data['datastore']['lastpath']
+            self.data.load(path)
             self.reset()
             self.widget.push_open_last.setEnabled(False)
 
