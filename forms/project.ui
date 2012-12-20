@@ -96,6 +96,9 @@
    </item>
    <item row="0" column="5">
     <widget class="QPushButton" name="push_open_last">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>O&amp;pen Last</string>
      </property>

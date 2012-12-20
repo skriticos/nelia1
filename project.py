@@ -38,8 +38,10 @@ class NxProject:
             self.data.load(),
             self.reset()
         ))
+        if 'lastpath' in self.data.run['config'].config_data['datastore']:
+            self.widget.push_open_last.setEnabled(True)
+        self.widget.push_open_last.clicked.connect(self.onOpenLast)
         self.widget.push_save.clicked.connect(self.data.save)
-
         self.widget.push_help.clicked.connect(self.parent.w_project_diag_help.show)
 
         # setup table
@@ -152,6 +154,14 @@ class NxProject:
             self.widget.push_delete.setEnabled(False)
             self.widget.push_save.setEnabled(False)
             self.widget.push_new.setFocus()
+
+    def onOpenLast(self):
+
+        if 'lastpath' in self.data.run['config'].config_data['datastore']:
+            self.data.path = self.data.run['config'].config_data['datastore']['lastpath']
+            self.data.load()
+            self.reset()
+            self.widget.push_open_last.setEnabled(False)
 
     def onNewProject(self):
 

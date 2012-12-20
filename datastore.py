@@ -69,6 +69,8 @@ class NxDataStore:
         pickled_data = pickle.dumps(data, 3)
         compressed_data = gzip.compress(pickled_data)
 
+        self.run['config'].config_data['datastore'] ['lastpath'] = self.path
+
         with open(self.path, 'wb') as f:
             f.write(compressed_data)
 
@@ -109,6 +111,8 @@ class NxDataStore:
 
         decompressed = gzip.decompress(file_buffer)
         data = pickle.loads(decompressed)
+
+        self.run['config'].config_data['datastore'] ['lastpath'] = self.path
 
         # populate data
         del self.project

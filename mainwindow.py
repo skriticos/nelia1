@@ -7,6 +7,7 @@ from PySide import QtUiTools
 from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
+from config  import NxConfig
 
 from datastore import NxDataStore
 
@@ -61,6 +62,7 @@ class MainWindow(QObject):
 
         # initialize modules
         self.data.run['mainwindow'] = self
+        self.data.run['config']     = NxConfig (data)
         self.data.run['project']    = NxProject(self, data, self.w_project)
         self.data.run['log']        = NxLog    (self, data, self.w_log)
         self.data.run['roadmap']    = NxRoadmap(self, data, self.w_roadmap)
@@ -98,8 +100,8 @@ class MainWindow(QObject):
 
         if obj == self.w_main:
             if isinstance(event, QCloseEvent):
-                # TODO: handle close window (e.g. show warning, offer to save)
-                pass
+                self.data.run['config'].writeConfig()
+                self.data.save()
         res = False
         try:
             res = QObject.eventFilter(self.w_main, obj, event)
