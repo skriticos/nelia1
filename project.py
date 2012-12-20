@@ -41,7 +41,10 @@ class NxProject:
         if 'lastpath' in self.data.run['config'].config_data['datastore']:
             self.widget.push_open_last.setEnabled(True)
         self.widget.push_open_last.clicked.connect(self.onOpenLast)
-        self.widget.push_save.clicked.connect(self.data.save)
+        self.widget.push_save.clicked.connect(lambda: (
+            self.data.save,
+            self.table.setFocus()
+        ))
         self.widget.push_help.clicked.connect(self.parent.w_project_diag_help.show)
 
         # setup table

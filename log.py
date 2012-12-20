@@ -146,7 +146,7 @@ class NxLog:
         # populate data
         self.model.insertRow(
             0, [
-                QStandardItem(str(lid)),
+                QStandardItem(str(lid).zfill(4)),
                 QStandardItem(disptime),
                 QStandardItem(self.diag_new.line_summary.text())
             ]
