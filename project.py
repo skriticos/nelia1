@@ -173,6 +173,7 @@ class NxProject:
             self.widget.push_edit.setEnabled(True)
             self.widget.push_delete.setEnabled(True)
             self.widget.push_save.setEnabled(True)
+            self.widget.push_new.setDefault(False)
 
             self.table.setFocus()
 
