@@ -58,6 +58,10 @@ class NxRoadmap:
         self.widget.push_edit.clicked.connect(lambda:(self.showAddEditRI('edit')))
         self.widget.push_close.clicked.connect(self.closeRoadmapItem)
 
+        # connect finalize widget button callbacks
+        self.parent.w_roadmap_diag_finalize.push_finalize_major.clicked.connect(self.onCloseMajorMilestone)
+        self.parent.w_roadmap_diag_finalize.push_finalize_minor.clicked.connect(self.onCloseMinorMilestone)
+
         # connect selection changed (for close item)
         self.selection_model.selectionChanged.connect(
             self.onItemSelectionChanged
@@ -152,14 +156,39 @@ class NxRoadmap:
 
     def closeRoadmapItem(self):
 
-        if self.table.currentIndex().row() == -1: return
         status = self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),3)).text()
         if status == 'Open':
-            self.mc.closeItem(self.pid, self.getSelectedItemId())
+            # check if this is the last item in the milestone
+            x, y = self.mc.versionToIndex(self.selected_major, self.selected_minor)
+            fo_sum = len(self.data.project[self.pid] ['milestone'] [x] [y] ['fo'])
+            io_sum = len(self.data.project[self.pid] ['milestone'] [x] [y] ['io'])
+            if fo_sum + io_sum == 1:
+                self.closeMilestone(x, y)
+            else:
+                self.mc.closeItem(self.pid, self.getSelectedItemId())
         if status == 'Closed':
             self.mc.reopenItem(self.pid, self.getSelectedItemId())
         self.data.run['project'].touchProject(time.time())
         self.onChangeVersionSelection(self.selected_major, self.selected_minor)
+
+    def closeMilestone(self, x, y):
+
+        fo_sum1 = len(self.data.project[self.pid] ['milestone'] [x] [y+1] ['fo'])
+        io_sum1 = len(self.data.project[self.pid] ['milestone'] [x] [y+1] ['io'])
+        if fo_sum1 + io_sum1 == 0:
+            self.parent.w_roadmap_diag_finalize.push_finalize_major.setEnabled(True)
+        else:
+            self.parent.w_roadmap_diag_finalize.push_finalize_major.setEnabled(False)
+
+        self.parent.w_roadmap_diag_finalize.show()
+
+    def onCloseMinorMilestone(self):
+
+        self.mc.closeItem(self.pid, self.getSelectedItemId())
+
+    def onCloseMajorMilestone(self):
+
+        self.mc.closeItem(self.pid, self.getSelectedItemId())
 
     def reloadMilestoneButton(self, targetw='root'):
 
