@@ -180,7 +180,7 @@ class NxRoadmap:
             self.diag_new_edit.gridLayout_2.addWidget(self.diag_new_edit.push_target, 1, 1, 1, 1);
             self.diag_new_edit.label_3.setBuddy(self.diag_new_edit.push_target)
 
-    def onChangeVersionSelection(self, major, minor):
+    def onChangeVersionSelection(self, major, minor, text=None):
 
         self.selected_major = major
         self.selected_minor = minor
