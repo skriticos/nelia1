@@ -1,0 +1,28 @@
+close roadmap item
+check if it was the last roadmap item
+no:
+    close roadmap item
+    update table view
+    end
+yes:
+    check wether the next+1 minor milestone has any items associated
+    yes:
+        dissable move to next major milestone
+    no:
+        enable move to next major milestone
+    show finalize dialog
+abort dialog:
+    hide dialog
+    end
+submit minor milestone:
+    close roadmap item
+    change current milestone
+    update selectede milestone (and table view)
+    end
+submit major milestone:
+    close roadmap item
+    change current milestone
+    delete empty minor milestone
+    re-compute milestone list
+    update selectede milestone (and table view)
+    end
