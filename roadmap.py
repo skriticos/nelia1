@@ -232,7 +232,7 @@ class NxRoadmap:
         if icat == 'Core' and not self.widget.check_core.isChecked(): return
         if icat == 'Auxiliary' and not self.widget.check_auxiliary.isChecked(): return
         if icat == 'Security' and not self.widget.check_security.isChecked(): return
-        if icat == 'Correction' and not self.widget.check_corrective.isChecked(): return
+        if icat == 'Corrective' and not self.widget.check_corrective.isChecked(): return
         if icat == 'Architecture' and not self.widget.check_architecture.isChecked(): return
         if icat == 'Refactor' and not self.widget.check_refactor.isChecked(): return
 
@@ -364,7 +364,7 @@ class NxRoadmap:
             if item['icat'] == 'Core': self.diag_new_edit.radio_core.setChecked(True)
             if item['icat'] == 'Auxiliary': self.diag_new_edit.radio_auxiliary.setChecked(True)
             if item['icat'] == 'Security': self.diag_new_edit.radio_security.setChecked(True)
-            if item['icat'] == 'Correction': self.diag_new_edit.radio_corrective.setChecked(True)
+            if item['icat'] == 'Corrective': self.diag_new_edit.radio_corrective.setChecked(True)
             if item['icat'] == 'Architecture': self.diag_new_edit.radio_architecture.setChecked(True)
             if item['icat'] == 'Refactor': self.diag_new_edit.radio_refactor.setChecked(True)
 
