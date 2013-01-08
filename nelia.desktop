@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Nelia DEV
-Exec=/home/seth/nelia/run.py
+Exec=/home/seth/nelia/nelia1
 Path=/home/seth/nelia
 Terminal=false
 Icon=/home/seth/nelia/img/nelia-icon128-dev.png
