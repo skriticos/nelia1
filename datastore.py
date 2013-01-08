@@ -124,5 +124,3 @@ class NxDataStore:
 
         return True
 
-# vim: set ts=4 sw=4 ai si expandtab:
-
