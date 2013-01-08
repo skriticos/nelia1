@@ -1,0 +1,106 @@
+run.py
+
+mainwindow.py
+    def updateConfig(self):
+    def applyConfig(self):
+    def onExit(self, num, frame):
+    def eventFilter(self, obj, event):
+    def onTabForward(self):
+    def onTabBackward(self):
+    def enableTabs(self):
+    def dissableTabs(self):
+    def tabChanged(self):
+
+datastore.py
+    def reset(self):
+    def save(self, path=None):
+    def load(self, path=None):
+
+config.py
+    def writeConfig(self):
+    def readConfig(self):
+
+project.py
+    def touchProject(self, timestamp):
+    def getSelectedProject(self):
+    def getSelectedProjectName(self):
+    def getActiveRow(self):
+    def onSelectionChanged(self):
+    def onDescriptionChange(self):
+    def saveLayout(self):
+    def loadLayout(self):
+    def reloadTable(self, state=None, preserveLayout=True):
+    def onOpenLast(self):
+    def onNewProject(self):
+    def showEditProject(self):
+    def onEditProject(self):
+    def onDeleteProject(self):
+    def reset(self):
+
+log.py
+    def getSelectedLogId(self):
+    def onSelectionChange(self):
+    def saveLayout(self):
+    def loadLayout(self):
+    def reloadTable(self, state=None, preserveLayout=True):
+    def onShowTab(self):
+    def onNewEntry(self):
+    
+roadmap.py
+    def getCellContent(self, i):
+    def getSelectedItemId(self):
+    def extractSelection(self, targetw='root'):
+    def onItemSelectionChanged(self):
+    def onMilestoneDescriptionChanged(self):
+    def onRoadmapItemActivated(self):
+    def onShowTab(self):
+    def closeRoadmapItem(self):
+    def closeMilestone(self, x, y):
+    def onCloseMinorMilestone(self):
+    def onCloseMajorMilestone(self):
+    def reloadMilestoneButton(self, targetw='root'):
+    def onChangeVersionSelection(self, major, minor, text=None):
+    def prependTable(self, key, itype, status, priority, icat, v):
+    def saveLayout(self):
+    def loadLayout(self):
+    def reloadTable(self, state=None, preserveLayout=True):
+    def showAddEditRI(self, diag_type=None):
+    def onSubmitDialog(self):
+    def onSubmitNewEditRI(self, mode):
+    def deleteRoadmapItem(self):
+    
+mpushbutton.py
+    def __init__(self, x, y, versions, parent=None, change_callback=None, sel_x=None, sel_y=None, open_only=False):
+    def getVersion(self):
+    def selectionChanged(self):
+    
+milestone.py
+    def versionToIndex(self, major, minor):
+    def indexToVersion(self, x, y):
+    def addMilestone(self, pid, major, minor):
+    def removeMilestone(self, pid, major, minor):
+    def updateMilestoneTree(self, pid):
+    def getItemData(self, pid, item_id):
+    def getAttribute(self, pid, item_id, attr_name):
+    def setAttibute(self, pid, item_id, attr_name, value):
+    def touchItem(self, pid, item_id):
+    def addItem(self, pid, major, minor, itype, icat, name, priority, description, status='Open'):
+    def editItem(self, pid, major, minor, item_id, itype, icat, name, priority, description):
+    def moveItem(self, pid, item_id, new_major, new_minor, itype=None, status=None):
+    def closeItem(self, pid, item_id):
+    def reopenItem(self, pid, item_id):
+    def deleteItem(self, pid, item_id):
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
