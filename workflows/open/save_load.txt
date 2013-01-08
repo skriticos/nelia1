@@ -1,0 +1,23 @@
+SAVE & LOAD
+-----------
+
+1. New project
+a, Edit (enable save)
+b, Save (dissable save when no change)
+c, Edit
+d, Close (save)
+
+2. New Project
+a, Edit (enable save)
+b, Close (ask to save) I. Confirm, II. Cancel
+
+3. Close (no save)
+
+4. Open
+a, Close (no save)
+
+5. New project 2x + save
+a, open first
+b, close without save
+c, open last
+
