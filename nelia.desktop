@@ -1,22 +1,22 @@
 [Desktop Entry]
 Name=Nelia DEV
-Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/nelia -e "bash -c \"/usr/bin/python3 /home/seth/nelia/run.py; read line;\""
+Exec=/home/seth/nelia/run.py
 Path=/home/seth/nelia
 Terminal=false
 Icon=/home/seth/nelia/img/nelia-icon128-dev.png
 Type=Application
 Categories=Development;
 
-X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Push;Folder;Terminal;RunNoTerminal
+X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Push;Folder;Terminal;RunTerminal
 
 [Gitk Shortcut Group]
 Name=gitk
-Exec=/bin/bash -c "cd /home/seth/nelia; /usr/bin/gitk"
+Exec=/home/seth/nelia/tools/gitk.run
 TargetEnvironment=Unity
 
 [GitGui Shortcut Group]
 Name=git gui
-Exec=/bin/bash -c "cd /home/seth/nelia; /usr/bin/git gui"
+Exec=/home/seth/nelia/tools/git-gui.run
 TargetEnvironment=Unity
 
 [Push Shortcut Group]
@@ -34,7 +34,8 @@ Name=Termanl
 Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/nelia --maximize
 TargetEnvironment=Unity
 
-[RunNoTerminal Shortcut Group]
-Name=Run no Termanl
-Exec=bash -c "cd /home/seth/nelia; /usr/bin/python3 /home/seth/nelia/run.py;"
+[RunTerminal Shortcut Group]
+Name=Run in terminal
+Exec=/home/seth/nelia/tools/nelia-terminal.run
 TargetEnvironment=Unity
+
