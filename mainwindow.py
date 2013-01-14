@@ -5,6 +5,7 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 import PySide
 import signal
+import os, pprint
 
 from datastore import NxDataStore
 from config  import NxConfig
@@ -86,6 +87,8 @@ class MainWindow(QObject):
         switch_backward.activated.connect(self.onTabBackward)
         save = QShortcut(QKeySequence('Ctrl+s'), self.w_main)
         save.activated.connect(self.data.save)
+        debug = QShortcut(QKeySequence('Ctrl+d'), self.w_main)
+        debug.activated.connect(self.debug)
 
         # Intercept close event (see self.eventFilter).
         QObject.installEventFilter(self.w_main, self)
@@ -93,6 +96,12 @@ class MainWindow(QObject):
 
         self.applyConfig()
         self.data.run['project'].reset()
+
+    def debug(self):
+
+        home = os.path.expanduser('~')
+        with open(os.path.join(home, '.cache', 'nelia.debug.py'), 'w') as f:
+            f.write(pprint.pformat(self.data.__dict__))
 
     def updateConfig(self):
 
