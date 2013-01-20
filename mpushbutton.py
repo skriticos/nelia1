@@ -1,18 +1,22 @@
-#! /usr/bin/env python3
-
+# ------------------------------------------------------------------------------
+# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
+# All rights reserved
+# ------------------------------------------------------------------------------
 from PySide.QtCore import *
 from PySide.QtGui import *
 import sys
 
+# ------------------------------------------------------------------------------
 class MPushButton(QPushButton):
-
     """
-        This class contains a push button with menu that is displaying the milestone
-        version and enables to select milestone versions (e.g. for current selection
-        or for feature / issue targets).
+    This class contains a push button with menu that is displaying the
+    milestone version and enables to select milestone versions (e.g. for
+    current selection or for feature / issue targets).
     """
 
-    def __init__(self, x, y, versions, parent=None, change_callback=None, sel_x=None, sel_y=None, open_only=False):
+# ------------------------------------------------------------------------------
+    def __init__(self, x, y, versions, parent=None, change_callback=None,
+                 sel_x=None, sel_y=None, open_only=False):
 
         super().__init__(parent)
 
@@ -25,16 +29,18 @@ class MPushButton(QPushButton):
         self.setMenu(self.root_menu)
         self.change_callback = change_callback
 
+        """
         ### DELTA CALCULATION ###
-        # The following nested loop is somewhat hard to digest.
-        # (At least, it was quite hard to create). It calculates
-        # the major and minor deltas of each milestone version compared to the
-        # current version. Δn is the difference of major versions, quite simple.
-        # Δm is the challangeing part: it is the total difference of minor
-        # milestone versions compared to the current one. E.g. If you are at
-        # version 3.4, version 1 and two have 5 milestones each, then the minor
-        # delta for 1.2 will be 2 + 5 + 4 = (-)11. Major will be -2 -> -2,11
-        # See nelia/calculations/version-delta.py for detailed discussion.
+        The following nested loop is somewhat hard to digest.  (At least, it
+        was quite hard to create). It calculates the major and minor deltas
+        of each milestone version compared to the current version. Δn
+        is the difference of major versions, quite simple.  Δm is the
+        challangeing part: it is the total difference of minor milestone
+        versions compared to the current one. E.g. If you are at version
+        3.4, version 1 and two have 5 milestones each, then the minor delta
+        for 1.2 will be 2 + 5 + 4 = (-)11. Major will be -2 -> -2,11 See
+        nelia/calculations/version-delta.py for detailed discussion.
+        """
 
         # loop through major versions
         Δn = 0
@@ -77,7 +83,8 @@ class MPushButton(QPushButton):
                 # current version = 0.y, y>0
                 if x == 0 and y > 0:
                     if n > 0:
-                        Δm = sum(len(versions[s]) for s in range(1,n)) + m + len(versions[0]) - y + 1
+                        Δm = sum(len(versions[s]) for s in range(1,n)) \
+                                + m + len(versions[0]) - y + 1
                     else:
                         Δm = m - y
                 # current version = 1.y, y>=0
@@ -85,7 +92,8 @@ class MPushButton(QPushButton):
                     if n == x:
                         Δm = m - y
                     if n > x:
-                        Δm = sum(len(versions[s]) for s in range(x+1,n)) + m + len(versions[x]) - y
+                        Δm = sum(len(versions[s]) for s in range(x+1,n)) \
+                                + m + len(versions[x]) - y
                     if n < x:
                         Δm = -1 * (y + (len(versions[0])-m))
                         if n == 0:
@@ -95,7 +103,8 @@ class MPushButton(QPushButton):
                     if n == x:
                         Δm = m - y
                     if n > x:
-                        Δm = sum(len(versions[s]) for s in range(x+1,n)) + m + len(versions[x]) - y
+                        Δm = sum(len(versions[s]) for s in range(x+1,n)) \
+                                + m + len(versions[x]) - y
                     if n < x:
                         Δm = -1 * (
                             (  len(versions[n]) - m)
@@ -131,8 +140,10 @@ class MPushButton(QPushButton):
                 # Instead it's two deltas, major, and combined minor.
                 Δnm = '{}{},{}'.format(sign, abs(Δn), abs(Δm))
 
-                # compute minor version label, set it to action and add action to major_menu
-                label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(icon,n,m,Δnm,fc,fo+fc,ic,io+ic)
+                # compute minor version label,
+                # set it to action and add action to major_menu
+                label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(
+                    icon,n,m,Δnm,fc,fo+fc,ic,io+ic)
                 if sel_x == n and sel_y == m and open_only and Δm > 0:
                     self.setText(label)
                     self.current_text = label
@@ -166,6 +177,7 @@ class MPushButton(QPushButton):
                 icon, n, mfc, mfo+mfc, mic, mio+mic))
             self.root_menu.addMenu(major_menu)
 
+# ------------------------------------------------------------------------------
     def getVersion(self):
             """
                 Retrive currently seelected version.
@@ -174,6 +186,7 @@ class MPushButton(QPushButton):
             x, y = self.current_text.split(' ')[3][1:].split('.')
             return int(x), int(y)
 
+# ------------------------------------------------------------------------------
     def selectionChanged(self):
         """
             This callback is invoked when a milestone is selected.
@@ -190,4 +203,6 @@ class MPushButton(QPushButton):
         if self.change_callback:
             x, y = self.getVersion()
             self.change_callback(x, y, self.current_text)
+
+# ------------------------------------------------------------------------------
 

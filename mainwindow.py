@@ -1,5 +1,7 @@
-#! /usr/bin/env python3
-
+# ------------------------------------------------------------------------------
+# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
+# All rights reserved
+# ------------------------------------------------------------------------------
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
@@ -13,14 +15,15 @@ from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
 
+# ------------------------------------------------------------------------------
 class MainWindow(QObject):
-
     """
-        The main window control class contains the application main
-        container window and container tab widget. It commands global
-        actions, like tab switching, exit handling, saving and loading.
+    The main window control class contains the application main container
+    window and container tab widget. It commands global actions, like tab
+    switching, exit handling, saving and loading.
     """
 
+# ------------------------------------------------------------------------------
     def __init__(self, argv):
 
         super().__init__()
@@ -30,16 +33,18 @@ class MainWindow(QObject):
 
         # Load UI
         loader = QtUiTools.QUiLoader()
-        for name, fname in (('w_main',                    'forms/mainwindow.ui'),
-                            ('w_project',                 'forms/project.ui'),
-                            ('w_project_diag_help',       'forms/project_help.ui'),
-                            ('w_log',                     'forms/log.ui'),
-                            ('w_roadmap',                 'forms/roadmap.ui'),
-                            ('w_project_diag_new',        'forms/project_diag_new.ui'),
-                            ('w_project_diag_edit',       'forms/project_diag_edit.ui'),
-                            ('w_log_diag_new',            'forms/log_new_entry.ui'),
-                            ('w_roadmap_diag_add',        'forms/roadmap_add.ui'),
-                            ('w_roadmap_diag_finalize',   'forms/roadmap_finalize_milestone.ui')):
+        for name, fname in (
+            ('w_main',                  'forms/mainwindow.ui'),
+            ('w_project',               'forms/project.ui'),
+            ('w_project_diag_help',     'forms/project_help.ui'),
+            ('w_log',                   'forms/log.ui'),
+            ('w_roadmap',               'forms/roadmap.ui'),
+            ('w_project_diag_new',      'forms/project_diag_new.ui'),
+            ('w_project_diag_edit',     'forms/project_diag_edit.ui'),
+            ('w_log_diag_new',          'forms/log_new_entry.ui'),
+            ('w_roadmap_diag_add',      'forms/roadmap_add.ui'),
+            ('w_roadmap_diag_finalize', 'forms/roadmap_finalize_milestone.ui')):
+
             f = QFile(fname)
             f.open(QFile.ReadOnly)
             obj = self.__dict__[name] = loader.load(f)
@@ -97,6 +102,7 @@ class MainWindow(QObject):
         self.applyConfig()
         self.data.run['project'].reset()
 
+# ------------------------------------------------------------------------------
     def debug(self):
 
         home = os.path.expanduser('~')
@@ -145,6 +151,7 @@ class MainWindow(QObject):
         x['show_architecture'] = self.w_roadmap.check_architecture.isChecked()
         x['show_refactor'] = self.w_roadmap.check_refactor.isChecked()
 
+# ------------------------------------------------------------------------------
     def applyConfig(self):
 
         if self.data.run['config'].no_config == True:
@@ -154,26 +161,38 @@ class MainWindow(QObject):
             self.data.run['config'].config_data['project']['header_width']
         self.data.run['project'].sort_column = \
             self.data.run['config'].config_data['project']['sort_column']
-        if self.data.run['config'].config_data['project']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
-                self.data.run['project'].sort_order = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif self.data.run['config'].config_data['project']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
-                self.data.run['project'].sort_order = PySide.QtCore.Qt.SortOrder.AscendingOrder
+        if self.data.run['config'].config_data['project']['sort_order'] \
+           == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
+                self.data.run['project'].sort_order \
+                        = PySide.QtCore.Qt.SortOrder.DescendingOrder
+        elif self.data.run['config'].config_data['project']['sort_order'] \
+                == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
+                self.data.run['project'].sort_order \
+                        = PySide.QtCore.Qt.SortOrder.AscendingOrder
         self.data.run['log'].header_width = \
             self.data.run['config'].config_data['log']['header_width']
         self.data.run['log'].sort_column = \
             self.data.run['config'].config_data['log']['sort_column']
-        if self.data.run['config'].config_data['log']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
-                self.data.run['log'].sort_order = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif self.data.run['config'].config_data['log']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
-                self.data.run['log'].sort_order = PySide.QtCore.Qt.SortOrder.AscendingOrder
+        if self.data.run['config'].config_data['log']['sort_order'] \
+           == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
+                self.data.run['log'].sort_order \
+                        = PySide.QtCore.Qt.SortOrder.DescendingOrder
+        elif self.data.run['config'].config_data['log']['sort_order'] \
+                == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
+                self.data.run['log'].sort_order \
+                        = PySide.QtCore.Qt.SortOrder.AscendingOrder
         self.data.run['roadmap'].header_width = \
             self.data.run['config'].config_data['roadmap']['header_width']
         self.data.run['roadmap'].sort_column = \
             self.data.run['config'].config_data['roadmap']['sort_column']
-        if self.data.run['config'].config_data['roadmap']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
-                self.data.run['roadmap'].sort_order = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif self.data.run['config'].config_data['roadmap']['sort_order'] == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
-                self.data.run['roadmap'].sort_order = PySide.QtCore.Qt.SortOrder.AscendingOrder
+        if self.data.run['config'].config_data['roadmap']['sort_order'] \
+           == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
+                self.data.run['roadmap'].sort_order \
+                        = PySide.QtCore.Qt.SortOrder.DescendingOrder
+        elif self.data.run['config'].config_data['roadmap']['sort_order'] \
+                == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
+                self.data.run['roadmap'].sort_order \
+                        = PySide.QtCore.Qt.SortOrder.AscendingOrder
         self.data.run['project'].loadLayout()
         self.data.run['log'].loadLayout()
         self.data.run['roadmap'].loadLayout()
@@ -235,24 +254,23 @@ class MainWindow(QObject):
         else:
             self.w_roadmap.check_refactor.setChecked(False)
 
+# ------------------------------------------------------------------------------
     def onExit(self, num, frame):
-
         """
-            We want to shut down normally on SIGTERM too. This can happen when the
-            computer is turned off, without closing the application first. This
-            will issue the main window to close, which will trigger the event filter
-            and shout down properly.
+        We want to shut down normally on SIGTERM too. This can happen when the
+        computer is turned off, without closing the application first. This
+        will issue the main window to close, which will trigger the event
+        filter and shout down properly.
         """
 
         self.w_main.close()
 
+# ------------------------------------------------------------------------------
     def eventFilter(self, obj, event):
-
         """
-            Capture main window close event.
-            This might be caused by the user clicking the (x) window button or by
-            exiting via the Ctrl-w shortcut (or any other way that tells the main
-            window to close).
+        Capture main window close event.  This might be caused by the user
+        clicking the (x) window button or by exiting via the Ctrl-w shortcut
+        (or any other way that tells the main window to close).
         """
 
         if obj == self.w_main and isinstance(event, QCloseEvent):
@@ -266,7 +284,7 @@ class MainWindow(QObject):
             pass
         return res
 
-
+# ------------------------------------------------------------------------------
     def onTabForward(self):
 
         # get current tab index
@@ -281,7 +299,7 @@ class MainWindow(QObject):
         elif self.w_main.tabnavi.isTabEnabled(tab_index+1):
             self.w_main.tabnavi.setCurrentIndex(tab_index+1)
 
-
+# ------------------------------------------------------------------------------
     def onTabBackward(self):
 
         # get current tab index
@@ -296,19 +314,19 @@ class MainWindow(QObject):
         else:
             self.w_main.tabnavi.setCurrentIndex(tab_index-1)
 
-
+# ------------------------------------------------------------------------------
     def enableTabs(self):
 
         for i in range(1,3):
             self.w_main.tabnavi.setTabEnabled(i, True)
 
-
+# ------------------------------------------------------------------------------
     def dissableTabs(self):
 
         for i in range(1,3):
             self.w_main.tabnavi.setTabEnabled(i, False)
 
-
+# ------------------------------------------------------------------------------
     def tabChanged(self):
 
         # PREPARE DATA
@@ -320,5 +338,5 @@ class MainWindow(QObject):
         if cur_tab_name == '&Roadmap':
             self.data.run['roadmap'].onShowTab()
 
-# vim: set ts=4 sw=4 ai si expandtab:
+# ------------------------------------------------------------------------------
 

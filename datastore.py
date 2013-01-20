@@ -1,29 +1,35 @@
-#! /usr/bin/env python3
-
+# ------------------------------------------------------------------------------
+# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
+# All rights reserved
+# ------------------------------------------------------------------------------
 from PySide.QtCore import *
 from PySide.QtGui import *
 import pickle, gzip, os
 
+# ------------------------------------------------------------------------------
 class NxDataStore:
 
     """
-        This class will contain all data that will be stored.
-        It takes care of saving and loading. If no path is specified
-        yet, it will prompt for one, if not already present and not
-        passed
+    This class will contain all data that will be stored.  It takes care
+    of saving and loading. If no path is specified yet, it will prompt
+    for one, if not already present and not passed
     """
 
+# ------------------------------------------------------------------------------
     def __init__(self, parent):
 
         self.version = 1
         self.app_name = 'Nelia'
 
-        self.parent = parent               # parent widget (to focus the question boxes)
+        # parent widget (to focus the question boxes)
+        self.parent = parent
         self.path = None
-        self.project = {0: {'next_id': 1}} # project id 0 == project meta data (i.e. no real project)
-        self.run = {}                      # Shared runtime data, not saved
+        # project id 0 == project meta data (i.e. no real project)
+        self.project = {0: {'next_id': 1}}
+        self.run = {}
         self.reset()
 
+# ------------------------------------------------------------------------------
     def reset(self):
 
         self.run['changed']          = False
@@ -33,7 +39,13 @@ class NxDataStore:
         self.run['log_pid_last']     = 0
         self.run['roadmap_pid_last'] = 0
 
+# ------------------------------------------------------------------------------
     def save(self, path=None):
+
+        """
+        If we already know the file path, compile and write the data. Otherwise
+        prompt the user for save path.
+        """
 
         # not reqired if no changes are made
         if not self.run['changed']:
@@ -78,7 +90,13 @@ class NxDataStore:
         self.run['changed'] = False
 
 
+# ------------------------------------------------------------------------------
     def load(self, path=None):
+
+        """
+        Ask the user for a file path and then load the data and reset state
+        data.
+        """
 
         # if status changed, question if user wishes to proceed
         # (discarding updates since last save)
@@ -123,4 +141,6 @@ class NxDataStore:
         self.reset() # reset runtime data
 
         return True
+
+# ------------------------------------------------------------------------------
 

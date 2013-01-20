@@ -1,5 +1,7 @@
-#! /usr/bin/env python3
-
+# ------------------------------------------------------------------------------
+# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
+# All rights reserved
+# ------------------------------------------------------------------------------
 import os, time, gzip, pickle, datetime
 from pprint import pprint
 from PySide.QtCore import *
@@ -8,8 +10,10 @@ from PySide import QtUiTools
 from mpushbutton import MPushButton
 from milestone import NxMilestone
 
+# ------------------------------------------------------------------------------
 class NxRoadmap:
 
+# ------------------------------------------------------------------------------
     def __init__(self, parent, data, widget):
 
         # setup backbone
@@ -21,7 +25,8 @@ class NxRoadmap:
 
         # setup table
         self.feature_headers = \
-            ['ID', 'Name', 'Type', 'Status', 'Category', 'Priority', 'Created', 'Modified']
+            ['ID', 'Name', 'Type', 'Status', 'Category', 'Priority',
+             'Created', 'Modified']
 
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
@@ -33,9 +38,11 @@ class NxRoadmap:
 
         # connect feature / issue add push buttons
         self.widget.push_add_feature.clicked.connect(lambda: (
-            self.parent.w_roadmap_diag_add.radio_feature.setChecked(True), self.showAddEditRI('add')))
+            self.parent.w_roadmap_diag_add.radio_feature.setChecked(True),
+            self.showAddEditRI('add')))
         self.widget.push_add_issue.clicked.connect(lambda: (
-            self.parent.w_roadmap_diag_add.radio_issue.setChecked(True), self.showAddEditRI('add')))
+            self.parent.w_roadmap_diag_add.radio_issue.setChecked(True),
+            self.showAddEditRI('add')))
         self.parent.w_roadmap_diag_add.accepted.connect(self.onSubmitDialog)
 
         # connect all the filter checkboxes to update the milestone item table
@@ -55,12 +62,15 @@ class NxRoadmap:
 
         # connect push milestone item action push buttons
         self.widget.push_delete.clicked.connect(self.deleteRoadmapItem)
-        self.widget.push_edit.clicked.connect(lambda:(self.showAddEditRI('edit')))
+        self.widget.push_edit.clicked.connect(lambda:(
+            self.showAddEditRI('edit')))
         self.widget.push_close.clicked.connect(self.closeRoadmapItem)
 
         # connect finalize widget button callbacks
-        self.parent.w_roadmap_diag_finalize.push_finalize_major.clicked.connect(self.onCloseMajorMilestone)
-        self.parent.w_roadmap_diag_finalize.push_finalize_minor.clicked.connect(self.onCloseMinorMilestone)
+        self.parent.w_roadmap_diag_finalize.push_finalize_major.clicked.connect(
+            self.onCloseMajorMilestone)
+        self.parent.w_roadmap_diag_finalize.push_finalize_minor.clicked.connect(
+            self.onCloseMinorMilestone)
 
         # connect selection changed (for close item)
         self.selection_model.selectionChanged.connect(
@@ -76,14 +86,20 @@ class NxRoadmap:
             self.onRoadmapItemActivated
         )
 
+# ------------------------------------------------------------------------------
     def getCellContent(self, i):
 
-        return int(self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),i)).text())
+        return int(self.model.itemFromIndex(
+            self.model.index(
+                self.table.currentIndex().row(),i)
+        ).text())
 
+# ------------------------------------------------------------------------------
     def getSelectedItemId(self):
 
         return self.getCellContent(0)
 
+# ------------------------------------------------------------------------------
     def extractSelection(self, targetw='root'):
 
         if targetw == 'root':
@@ -96,33 +112,44 @@ class NxRoadmap:
         tmajor, tminor = target_label.split(' ')[3][1:].split('.')
         return int(tmajor), int(tminor)
 
+# ------------------------------------------------------------------------------
     def onItemSelectionChanged(self):
 
         if self.table.currentIndex().row() == -1: return
-        status = self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),3)).text()
+        status = self.model.itemFromIndex(self.model.index(
+            self.table.currentIndex().row(),3)).text()
         if status == 'Open':
             self.widget.push_close.setText('&Close Item')
         if status == 'Closed':
             self.widget.push_close.setText('Reopen Ite&m')
 
+# ------------------------------------------------------------------------------
     def onMilestoneDescriptionChanged(self):
 
         if self.init: return
 
-        sx, sy = self.mc.versionToIndex(self.selected_major, self.selected_minor)
-        self.data.project[self.pid]['milestone'][sx][sy]['description'] = self.widget.text_description.toPlainText()
+        sx, sy = self.mc.versionToIndex(
+            self.selected_major, self.selected_minor)
+        self.data.project[self.pid]['milestone'][sx][sy]['description'] \
+                = self.widget.text_description.toPlainText()
 
+# ------------------------------------------------------------------------------
     def onRoadmapItemActivated(self):
 
-        cmajor, cminor = self.data.project[self.pid]['meta']['current_milestone']
+        cmajor, cminor \
+                = self.data.project[self.pid]['meta']['current_milestone']
         if self.model.rowCount() > 0:
-            if self.selected_major > cmajor or (self.selected_major == cmajor and self.selected_minor > cminor):
+            if self.selected_major > cmajor \
+               or (self.selected_major == cmajor \
+                   and self.selected_minor > cminor):
                 self.showAddEditRI('edit')
 
+# ------------------------------------------------------------------------------
     def onShowTab(self):
 
         pid = self.data.run['project'].getSelectedProject()
-        if self.data.run['roadmap_pid_last'] == 0 or self.data.run['roadmap_pid_last'] != pid:
+        if self.data.run['roadmap_pid_last'] == 0 \
+           or self.data.run['roadmap_pid_last'] != pid:
 
             self.pid = pid
             self.data.run['roadmap_pid_last'] = pid
@@ -138,13 +165,16 @@ class NxRoadmap:
 
             self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
             self.widget.push_milestone.close()
-            self.widget.push_milestone = MPushButton(x, y, milestones, self.widget, self.onChangeVersionSelection)
-            self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
+            self.widget.push_milestone = MPushButton(
+                x, y, milestones, self.widget, self.onChangeVersionSelection)
+            self.widget.gridLayout_3.addWidget(
+                self.widget.push_milestone, 0, 1, 1, 1)
             self.widget.label_2.setBuddy(self.widget.push_milestone)
 
             self.reloadTable()
 
-            # computing next_x, next_y is quite tricky, so we take it from the milestone widget (which does it anyway)
+            # computing next_x, next_y is quite tricky, so we take it
+            # from the milestone widget (which does it anyway)
             major = self.selected_major = self.widget.push_milestone.next_x
             minor = self.selected_minor = self.widget.push_milestone.next_y
 
@@ -154,14 +184,19 @@ class NxRoadmap:
             d.radio_medium.setChecked(True)
             d.radio_feature.setChecked(True)
 
+# ------------------------------------------------------------------------------
     def closeRoadmapItem(self):
 
-        status = self.model.itemFromIndex(self.model.index(self.table.currentIndex().row(),3)).text()
+        status = self.model.itemFromIndex(self.model.index(
+            self.table.currentIndex().row(),3)).text()
         if status == 'Open':
             # check if this is the last item in the milestone
-            x, y = self.mc.versionToIndex(self.selected_major, self.selected_minor)
-            fo_sum = len(self.data.project[self.pid] ['milestone'] [x] [y] ['fo'])
-            io_sum = len(self.data.project[self.pid] ['milestone'] [x] [y] ['io'])
+            x, y = self.mc.versionToIndex(
+                self.selected_major, self.selected_minor)
+            fo_sum = len(self.data.project[self.pid]
+                         ['milestone'] [x] [y] ['fo'])
+            io_sum = len(self.data.project[self.pid]
+                         ['milestone'] [x] [y] ['io'])
             if fo_sum + io_sum == 1:
                 self.closeMilestone(x, y)
             else:
@@ -171,44 +206,62 @@ class NxRoadmap:
         self.data.run['project'].touchProject(time.time())
         self.onChangeVersionSelection(self.selected_major, self.selected_minor)
 
+# ------------------------------------------------------------------------------
     def closeMilestone(self, x, y):
 
-        fo_sum1 = len(self.data.project[self.pid] ['milestone'] [x] [y+1] ['fo'])
-        io_sum1 = len(self.data.project[self.pid] ['milestone'] [x] [y+1] ['io'])
+        fo_sum1 = len(self.data.project[self.pid]
+                      ['milestone'] [x] [y+1] ['fo'])
+        io_sum1 = len(self.data.project[self.pid]
+                      ['milestone'] [x] [y+1] ['io'])
         if fo_sum1 + io_sum1 == 0:
-            self.parent.w_roadmap_diag_finalize.push_finalize_major.setEnabled(True)
+            self.parent.w_roadmap_diag_finalize.push_finalize_major.setEnabled(
+                True)
         else:
-            self.parent.w_roadmap_diag_finalize.push_finalize_major.setEnabled(False)
+            self.parent.w_roadmap_diag_finalize.push_finalize_major.setEnabled(
+                False)
 
         self.parent.w_roadmap_diag_finalize.show()
 
+# ------------------------------------------------------------------------------
     def onCloseMinorMilestone(self):
 
         self.mc.closeItem(self.pid, self.getSelectedItemId())
 
+# ------------------------------------------------------------------------------
     def onCloseMajorMilestone(self):
 
         self.mc.closeItem(self.pid, self.getSelectedItemId())
 
+# ------------------------------------------------------------------------------
     def reloadMilestoneButton(self, targetw='root'):
 
-        cmajor, cminor = self.data.project[self.pid]['meta']['current_milestone']
+        cmajor, cminor \
+                = self.data.project[self.pid]['meta']['current_milestone']
         milestones = self.data.project[self.pid]['milestone']
         if targetw == 'root':
             self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
             self.widget.push_milestone.hide()
             self.widget.push_milestone.close()
-            self.widget.push_milestone = MPushButton(cmajor, cminor, milestones, self.widget, self.onChangeVersionSelection, self.selected_major, self.selected_minor)
-            self.widget.gridLayout_3.addWidget(self.widget.push_milestone, 0, 1, 1, 1)
+            self.widget.push_milestone = MPushButton(
+                cmajor, cminor, milestones, self.widget,
+                self.onChangeVersionSelection,
+                self.selected_major, self.selected_minor)
+            self.widget.gridLayout_3.addWidget(
+                self.widget.push_milestone, 0, 1, 1, 1)
             self.widget.label_2.setBuddy(self.widget.push_milestone)
         elif targetw == 'diag_new_edit':
-            self.diag_new_edit.gridLayout_2.removeWidget(self.diag_new_edit.push_target)
+            self.diag_new_edit.gridLayout_2.removeWidget(
+                self.diag_new_edit.push_target)
             self.diag_new_edit.push_target.close()
             self.diag_new_edit.push_target \
-                    = MPushButton(cmajor,cminor,milestones,self.diag_new_edit,None,self.selected_major,self.selected_minor,True)
-            self.diag_new_edit.gridLayout_2.addWidget(self.diag_new_edit.push_target, 1, 1, 1, 1);
+                    = MPushButton(cmajor,cminor,milestones,
+                                  self.diag_new_edit,None,self.selected_major,
+                                  self.selected_minor,True)
+            self.diag_new_edit.gridLayout_2.addWidget(
+                self.diag_new_edit.push_target, 1, 1, 1, 1);
             self.diag_new_edit.label_3.setBuddy(self.diag_new_edit.push_target)
 
+# ------------------------------------------------------------------------------
     def onChangeVersionSelection(self, major, minor, text=None):
 
         self.selected_major = major
@@ -220,21 +273,35 @@ class NxRoadmap:
         self.reloadMilestoneButton('root')
         self.reloadTable()
 
+# ------------------------------------------------------------------------------
     def prependTable(self, key, itype, status, priority, icat, v):
 
-        if itype == 'Feature' and not self.widget.check_feature.isChecked(): return
-        if itype == 'Issue' and not self.widget.check_issue.isChecked(): return
-        if status == 'Open' and not self.widget.check_open.isChecked(): return
-        if status == 'Closed' and not self.widget.check_closed.isChecked(): return
-        if priority == 'Low' and not self.widget.check_low.isChecked(): return
-        if priority == 'Medium' and not self.widget.check_medium.isChecked(): return
-        if priority == 'High' and not self.widget.check_high.isChecked(): return
-        if icat == 'Core' and not self.widget.check_core.isChecked(): return
-        if icat == 'Auxiliary' and not self.widget.check_auxiliary.isChecked(): return
-        if icat == 'Security' and not self.widget.check_security.isChecked(): return
-        if icat == 'Corrective' and not self.widget.check_corrective.isChecked(): return
-        if icat == 'Architecture' and not self.widget.check_architecture.isChecked(): return
-        if icat == 'Refactor' and not self.widget.check_refactor.isChecked(): return
+        if itype == 'Feature' \
+           and not self.widget.check_feature.isChecked(): return
+        if itype == 'Issue' \
+           and not self.widget.check_issue.isChecked(): return
+        if status == 'Open' \
+           and not self.widget.check_open.isChecked(): return
+        if status == 'Closed' \
+           and not self.widget.check_closed.isChecked(): return
+        if priority == 'Low' \
+           and not self.widget.check_low.isChecked(): return
+        if priority == 'Medium' \
+           and not self.widget.check_medium.isChecked(): return
+        if priority == 'High' \
+           and not self.widget.check_high.isChecked(): return
+        if icat == 'Core' \
+           and not self.widget.check_core.isChecked(): return
+        if icat == 'Auxiliary' \
+           and not self.widget.check_auxiliary.isChecked(): return
+        if icat == 'Security' \
+           and not self.widget.check_security.isChecked(): return
+        if icat == 'Corrective' \
+           and not self.widget.check_corrective.isChecked(): return
+        if icat == 'Architecture' \
+           and not self.widget.check_architecture.isChecked(): return
+        if icat == 'Refactor' \
+           and not self.widget.check_refactor.isChecked(): return
 
         self.model.insertRow(0, [
             QStandardItem(str(key).zfill(4)),
@@ -243,10 +310,13 @@ class NxRoadmap:
             QStandardItem(status),
             QStandardItem(icat),
             QStandardItem(str(v['priority'])),
-            QStandardItem(datetime.datetime.fromtimestamp(v['created']).isoformat()),
-            QStandardItem(datetime.datetime.fromtimestamp(v['modified']).isoformat())
+            QStandardItem(datetime.datetime.fromtimestamp(
+                v['created']).isoformat()),
+            QStandardItem(datetime.datetime.fromtimestamp(
+                v['modified']).isoformat())
         ])
 
+# ------------------------------------------------------------------------------
     def saveLayout(self):
 
         self.header_width = []
@@ -259,13 +329,16 @@ class NxRoadmap:
             self.sort_column = -1
             self.sort_order = None
 
+# ------------------------------------------------------------------------------
     def loadLayout(self):
 
         for i,v in enumerate(self.header_width):
             self.table.setColumnWidth(i, v)
         if self.sort_column != -1:
-            self.horizontal_header.setSortIndicator(self.sort_column, self.sort_order)
+            self.horizontal_header.setSortIndicator(
+                self.sort_column, self.sort_order)
 
+# ------------------------------------------------------------------------------
     def reloadTable(self, state=None, preserveLayout=True):
 
         if not isinstance(self.widget.push_milestone, MPushButton):
@@ -280,7 +353,8 @@ class NxRoadmap:
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         self.widget.push_close.setText('&Close Item')
 
-        self.selected_major, self.selected_minor = self.widget.push_milestone.getVersion()
+        self.selected_major, self.selected_minor \
+                = self.widget.push_milestone.getVersion()
         pid = self.data.run['project'].getSelectedProject()
         cmajor, cminor = self.data.project[pid]['meta']['current_milestone']
         yy = self.selected_minor
@@ -319,7 +393,9 @@ class NxRoadmap:
 
         # only enable controls for future milestones
         if self.model.rowCount() > 0:
-            if self.selected_major > cmajor or (self.selected_major == cmajor and self.selected_minor > cminor):
+            if self.selected_major > cmajor \
+               or (self.selected_major == cmajor \
+                   and self.selected_minor > cminor):
                 self.widget.push_edit.setEnabled(True)
                 self.widget.push_delete.setEnabled(True)
                 self.widget.push_close.setEnabled(True)
@@ -334,6 +410,7 @@ class NxRoadmap:
 
         self.table.setFocus()
 
+# ------------------------------------------------------------------------------
     def showAddEditRI(self, diag_type=None):
 
         self.reloadMilestoneButton('diag_new_edit')
@@ -349,32 +426,47 @@ class NxRoadmap:
             self.diag_new_edit.setWindowTitle('Edit Roadmap Item')
 
             item_id = self.getSelectedItemId()
-            tmajor, tminor, fioc = self.data.project[self.pid]['ri_index'][item_id]
+            tmajor, tminor, fioc \
+                    = self.data.project[self.pid]['ri_index'][item_id]
             tx, ty = self.mc.versionToIndex(tmajor, tminor)
-            item = self.data.project[self.pid]['milestone'][tx][ty][fioc][item_id]
+            item = self.data.project[self.pid]\
+                    ['milestone'][tx][ty][fioc][item_id]
 
             if fioc[0] == 'f': itype = 'Feature'
             if fioc[0] == 'i': itype = 'Isssue'
 
-            if itype == 'Feature': self.diag_new_edit.radio_feature.setChecked(True)
-            if itype == 'Issue': self.diag_new_edit.radio_issue.setChecked(True)
-            if item['priority'] == 'Low': self.diag_new_edit.radio_low.setChecked(True)
-            if item['priority'] == 'Medium': self.diag_new_edit.radio_medium.setChecked(True)
-            if item['priority'] == 'High': self.diag_new_edit.radio_high.setChecked(True)
-            if item['icat'] == 'Core': self.diag_new_edit.radio_core.setChecked(True)
-            if item['icat'] == 'Auxiliary': self.diag_new_edit.radio_auxiliary.setChecked(True)
-            if item['icat'] == 'Security': self.diag_new_edit.radio_security.setChecked(True)
-            if item['icat'] == 'Corrective': self.diag_new_edit.radio_corrective.setChecked(True)
-            if item['icat'] == 'Architecture': self.diag_new_edit.radio_architecture.setChecked(True)
-            if item['icat'] == 'Refactor': self.diag_new_edit.radio_refactor.setChecked(True)
+            if itype == 'Feature':
+                self.diag_new_edit.radio_feature.setChecked(True)
+            if itype == 'Issue':
+                self.diag_new_edit.radio_issue.setChecked(True)
+            if item['priority'] == 'Low':
+                self.diag_new_edit.radio_low.setChecked(True)
+            if item['priority'] == 'Medium':
+                self.diag_new_edit.radio_medium.setChecked(True)
+            if item['priority'] == 'High':
+                self.diag_new_edit.radio_high.setChecked(True)
+            if item['icat'] == 'Core':
+                self.diag_new_edit.radio_core.setChecked(True)
+            if item['icat'] == 'Auxiliary':
+                self.diag_new_edit.radio_auxiliary.setChecked(True)
+            if item['icat'] == 'Security':
+                self.diag_new_edit.radio_security.setChecked(True)
+            if item['icat'] == 'Corrective':
+                self.diag_new_edit.radio_corrective.setChecked(True)
+            if item['icat'] == 'Architecture':
+                self.diag_new_edit.radio_architecture.setChecked(True)
+            if item['icat'] == 'Refactor':
+                self.diag_new_edit.radio_refactor.setChecked(True)
 
             self.diag_new_edit.line_name.setText(item['name'])
-            self.diag_new_edit.text_description.setPlainText(item['description'])
+            self.diag_new_edit.text_description.setPlainText(
+                item['description'])
 
         # show dialog
         self.diag_new_edit.show()
         self.diag_new_edit.line_name.setFocus()
 
+# ------------------------------------------------------------------------------
     def onSubmitDialog(self):
 
         # simple switch between add and edit mode for the dialog
@@ -383,6 +475,7 @@ class NxRoadmap:
         if self.diag_type == 'edit':
             self.onSubmitNewEditRI('edit')
 
+# ------------------------------------------------------------------------------
     def onSubmitNewEditRI(self, mode):
 
         tmajor, tminor = self.extractSelection('add_edit_dialog')
@@ -417,22 +510,28 @@ class NxRoadmap:
 
         if mode == 'add':
             self.mc.addItem(
-                self.pid, tmajor, tminor, ri_type, category, name, priority, description
+                self.pid, tmajor, tminor, ri_type, category,
+                name, priority, description
             )
         if mode == 'edit':
             self.mc.editItem(
-                self.pid, tmajor, tminor, self.getSelectedItemId(), ri_type, category, name, priority, description
+                self.pid, tmajor, tminor, self.getSelectedItemId(),
+                ri_type, category, name, priority, description
             )
 
         self.reloadMilestoneButton()
         self.reloadTable()
 
         self.data.run['project'].touchProject(int(time.time()))
+        print('touching project')
 
+# ------------------------------------------------------------------------------
     def deleteRoadmapItem(self):
 
         self.mc.deleteItem(self.pid, self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
         self.data.run['project'].touchProject(int(time.time()))
+
+# ------------------------------------------------------------------------------
 

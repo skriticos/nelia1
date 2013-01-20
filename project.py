@@ -1,12 +1,16 @@
-#! /usr/bin/env python3
-
+# ------------------------------------------------------------------------------
+# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
+# All rights reserved
+# ------------------------------------------------------------------------------
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 import os, datetime, time
 
+# ------------------------------------------------------------------------------
 class NxProject:
 
+# ------------------------------------------------------------------------------
     def __init__(self, parent, datastore, widget):
 
         # setup backbone
@@ -31,28 +35,31 @@ class NxProject:
         self.widget.push_edit.clicked.connect(self.showEditProject)
 
         self.data.run['w_project_diag_new'].accepted.connect(self.onNewProject)
-        self.data.run['w_project_diag_edit'].accepted.connect(self.onEditProject)
+        self.data.run['w_project_diag_edit'].accepted.connect(
+            self.onEditProject)
         self.widget.push_delete.clicked.connect(self.onDeleteProject)
 
         self.widget.push_open.clicked.connect(lambda: (
             self.data.load(),
-            self.reset()
+            self.reset(),
+            self.widget.push_save.setEnabled(False)
         ))
         if 'lastpath' in self.data.run['config'].config_data['datastore']:
             self.widget.push_open_last.setEnabled(True)
         self.widget.push_open_last.clicked.connect(self.onOpenLast)
         self.widget.push_save.clicked.connect(lambda: (
             self.data.save,
+            self.widget.push_save.setEnabled(False),
             self.table.setFocus()
         ))
-        self.widget.push_help.clicked.connect(self.parent.w_project_diag_help.show)
+        self.widget.push_help.clicked.connect(
+            self.parent.w_project_diag_help.show)
 
         # setup table
         self.table = self.widget.table_project_list
         self.table_headers = [
-                'ID', 'Name', 'Status', 'Type', 'Verson', 'Category', 'Priority', 'Challenge',
-                'Modified', 'Created'
-                ]
+                'ID', 'Name', 'Status', 'Type', 'Verson', 'Category',
+                'Priority', 'Challenge', 'Modified', 'Created' ]
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(self.table_headers)
         self.table.setModel(self.model)
@@ -64,24 +71,28 @@ class NxProject:
         self.diag_edit = self.parent.w_project_diag_edit
 
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
-        self.widget.text_description.textChanged.connect(self.onDescriptionChange)
+        self.widget.text_description.textChanged.connect(
+            self.onDescriptionChange)
 
         self.table.activated.connect(self.showEditProject)
 
+# ------------------------------------------------------------------------------
     def touchProject(self, timestamp):
-
         """
-            On project change (e.g. edit meta, add log or change roadmap),
-            this should be called with the timestamp. It will update the
-            last changed timestamp and update the project index display
-            and mark changes as true.
+        On project change (e.g. edit meta, add log or change roadmap),
+        this should be called with the timestamp. It will update the last
+        changed timestamp and update the project index display and mark
+        changes as true.
         """
         self.data.project[self.getSelectedProject()]['modified'] = timestamp
         self.model.setItem(self.getActiveRow(), 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         self.data.run['changed'] = True
+        self.widget.push_save.setEnabled(True)
 
+# ------------------------------------------------------------------------------
     def getSelectedProject(self):
+
         if not self.init:
             if self.table.currentIndex().row() == -1:
                 return 0
@@ -89,13 +100,18 @@ class NxProject:
                     self.model.index(self.table.currentIndex().row(), 0)).text())
 
 
+# ------------------------------------------------------------------------------
     def getSelectedProjectName(self):
+
         return self.model.itemFromIndex(
                 self.model.index(self.table.currentIndex().row(), 1)).text()
 
+# ------------------------------------------------------------------------------
     def getActiveRow(self):
+
         return self.table.currentIndex().row()
 
+# ------------------------------------------------------------------------------
     def onSelectionChanged(self):
 
         if not self.init:
@@ -106,11 +122,13 @@ class NxProject:
                     self.data.project[pid]['description']
                 )
 
+# ------------------------------------------------------------------------------
     def onDescriptionChange(self):
 
         self.data.project[self.getSelectedProject()]['description'] = \
                 self.widget.text_description.toPlainText()
 
+# ------------------------------------------------------------------------------
     def saveLayout(self):
 
         self.header_width = []
@@ -123,6 +141,7 @@ class NxProject:
             self.sort_column = -1
             self.sort_order = None
 
+# ------------------------------------------------------------------------------
     def loadLayout(self):
 
         for i,v in enumerate(self.header_width):
@@ -130,6 +149,7 @@ class NxProject:
         if self.sort_column != -1:
             self.horizontal_header.setSortIndicator(self.sort_column, self.sort_order)
 
+# ------------------------------------------------------------------------------
     def reloadTable(self, state=None, preserveLayout=True):
 
         self.init = True
@@ -187,6 +207,7 @@ class NxProject:
             self.widget.push_save.setEnabled(False)
             self.widget.push_new.setFocus()
 
+# ------------------------------------------------------------------------------
     def onOpenLast(self):
 
         if 'lastpath' in self.data.run['config'].config_data['datastore']:
@@ -194,7 +215,9 @@ class NxProject:
             self.data.load(path)
             self.reset()
             self.widget.push_open_last.setEnabled(False)
+            self.widget.push_save.setEnabled(False)
 
+# ------------------------------------------------------------------------------
     def onNewProject(self):
 
         timestamp = int(time.time())
@@ -204,22 +227,30 @@ class NxProject:
         # meta: general project data
         # log: log data
         # milestone: versions, features, issues
-        p = self.data.project[pid] = {  'meta': {'last_log': 0, 'last_roadmap_item': 0, 'current_milestone': (0,0)},
-                                        'log': {},
-                                        'milestone' : [
-                                            [{'description': '', 'm': '0.1', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
-                                            [{'description': '', 'm': '1.0', 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
-                                            ],
-                                        'ri_index' : {}
-                                     }
+        p = self.data.project[pid] = {
+            'meta': {'last_log': 0, 'last_roadmap_item': 0,
+                     'current_milestone': (0,0)},
+            'log': {},
+            'milestone' : [
+                [{'description': '', 'm': '0.1',
+                  'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
+                [{'description': '', 'm': '1.0',
+                  'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
+                ],
+            'ri_index' : {}
+         }
 
         p['name']        = name        = self.diag_new.line_name.text()
-        p['category']    = category    = self.diag_new.combo_category.currentText()
-        p['status']      = status      = self.diag_new.combo_status.currentText()
-        p['ptype']       = ptype       = self.diag_new.combo_ptype.currentText()
+        p['category']    = category    \
+                = self.diag_new.combo_category.currentText()
+        p['status']      = status      \
+                = self.diag_new.combo_status.currentText()
+        p['ptype']       = ptype       \
+                = self.diag_new.combo_ptype.currentText()
         p['priority']    = priority    = self.diag_new.spin_priority.value()
         p['challenge']   = challenge   = self.diag_new.spin_challenge.value()
-        p['description'] = description = self.diag_new.text_description.toPlainText()
+        p['description'] = description \
+                = self.diag_new.text_description.toPlainText()
         p['created']     = created     = timestamp
         p['modified']    = timestamp
 
@@ -228,14 +259,18 @@ class NxProject:
         self.reloadTable()
         self.touchProject(timestamp)
 
+# ------------------------------------------------------------------------------
     def showEditProject(self):
 
         p = self.data.project[self.getSelectedProject()]
 
         self.diag_edit.line_name.setText(p['name'])
-        self.diag_edit.combo_ptype.setCurrentIndex(self.diag_edit.combo_ptype.findText(p['ptype']))
-        self.diag_edit.combo_status.setCurrentIndex(self.diag_edit.combo_status.findText(p['status']))
-        self.diag_edit.combo_category.setCurrentIndex(self.diag_edit.combo_category.findText(p['category']))
+        self.diag_edit.combo_ptype.setCurrentIndex(
+            self.diag_edit.combo_ptype.findText(p['ptype']))
+        self.diag_edit.combo_status.setCurrentIndex(
+            self.diag_edit.combo_status.findText(p['status']))
+        self.diag_edit.combo_category.setCurrentIndex(
+            self.diag_edit.combo_category.findText(p['category']))
         self.diag_edit.spin_priority.setValue(p['priority'])
         self.diag_edit.spin_challenge.setValue(p['challenge'])
         self.diag_edit.text_description.setPlainText(p['description'])
@@ -243,6 +278,7 @@ class NxProject:
         self.diag_edit.show()
         self.diag_edit.line_name.setFocus()
 
+# ------------------------------------------------------------------------------
     def onEditProject(self):
 
         pid = self.getSelectedProject()
@@ -261,6 +297,7 @@ class NxProject:
         self.reloadTable()
         self.touchProject(timestamp)
 
+# ------------------------------------------------------------------------------
     def onDeleteProject(self):
 
         pid = self.getSelectedProject()
@@ -268,7 +305,8 @@ class NxProject:
         response = QMessageBox.question(
             self.widget,
             'Delete project?',
-            'Sure you want to delete project {}: {}?'.format(str(pid), self.getSelectedProjectName()),
+            'Sure you want to delete project {}: {}?'.format(
+                str(pid), self.getSelectedProjectName()),
             QMessageBox.Yes|QMessageBox.No)
 
         if response == QMessageBox.StandardButton.No:
@@ -280,10 +318,11 @@ class NxProject:
         # can't touch deleted project, direct changed update
         self.data.run['changed'] = True
 
+# ------------------------------------------------------------------------------
     def reset(self):
 
         self.reloadTable()
         self.data.run['changed'] = False
 
-# vim: set ts=4 sw=4 ai si expandtab:
+# ------------------------------------------------------------------------------
 

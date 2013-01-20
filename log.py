@@ -1,13 +1,23 @@
-#! /usr/bin/env python3
-
+# ------------------------------------------------------------------------------
+# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
+# All rights reserved
+# ------------------------------------------------------------------------------
 import os, time, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 
+# ------------------------------------------------------------------------------
 class NxLog:
+    """
+    Handles the log widget tab.
+    """
 
+# ------------------------------------------------------------------------------
     def __init__(self, parent, datastore, widget):
+        """
+        Setup data, UI and connect callbacks.
+        """
 
         # setup backbone
         self.parent = parent
@@ -40,20 +50,28 @@ class NxLog:
         # update text_detail on selection change
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
 
+# ------------------------------------------------------------------------------
     def getSelectedLogId(self):
 
+        # form UI table element, currently selected entry
         return int(self.model.itemFromIndex(
                 self.model.index(self.table.currentIndex().row(), 0)).text())
 
+# ------------------------------------------------------------------------------
     def onSelectionChange(self):
 
         if self.model.rowCount() > 0 and not self.init:
             self.widget.text_detail.setEnabled(True)
             self.widget.text_detail.setPlainText(
-                self.data.project[self.pid] ['log'] [self.getSelectedLogId()] ['detail']
+                self.data.project [self.pid] ['log'] [self.getSelectedLogId()] \
+                ['detail']
             )
 
+# ------------------------------------------------------------------------------
     def saveLayout(self):
+        """
+        Internally save the layout before table reload.
+        """
 
         self.header_width = []
         for i in range(3):
@@ -65,14 +83,25 @@ class NxLog:
             self.sort_column = -1
             self.sort_order = None
 
+# ------------------------------------------------------------------------------
     def loadLayout(self):
+        """
+        Restore layout when table is reloaded.
+        """
 
         for i,v in enumerate(self.header_width):
             self.table.setColumnWidth(i, v)
         if self.sort_column != -1:
-            self.horizontal_header.setSortIndicator(self.sort_column, self.sort_order)
+            self.horizontal_header.setSortIndicator(self.sort_column,
+                                                    self.sort_order)
 
+# ------------------------------------------------------------------------------
     def reloadTable(self, state=None, preserveLayout=True):
+        """
+        Uses the NxDataCore data to reload the table. Used when it has to be
+        updated, like load time, different project selected or adding log
+        entries.
+        """
 
         if preserveLayout:
             self.saveLayout()
@@ -85,7 +114,8 @@ class NxLog:
             log = self.data.project[self.pid]['log'][i+1]
             self.model.insertRow(0, [
                 QStandardItem(str(i+1).zfill(4)),
-                QStandardItem(datetime.datetime.fromtimestamp(log['created']).isoformat()),
+                QStandardItem(datetime.datetime.fromtimestamp(
+                    log['created']).isoformat()),
                 QStandardItem(log['summary'])
             ])
 
@@ -105,7 +135,12 @@ class NxLog:
             self.loadLayout()
 
 
+# ------------------------------------------------------------------------------
     def onShowTab(self):
+        """
+        When navigating to the log tab. Check if pid has been changed and reload
+        data if necessary.
+        """
 
         # retrive pid
         pid = self.data.run['project'].getSelectedProject()
@@ -126,7 +161,11 @@ class NxLog:
             self.reloadTable()
 
 
+# ------------------------------------------------------------------------------
     def onNewEntry(self):
+        """
+        User submits a new log entry. Add it to NxDataStrore and update view.
+        """
 
         lid = self.data.project[self.pid]['meta']['last_log'] + 1
         timestamp = int(time.time())
@@ -155,4 +194,6 @@ class NxLog:
         # update state
         self.table.selectRow(0)
         self.table.setFocus()
+
+# ------------------------------------------------------------------------------
 
