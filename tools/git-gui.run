@@ -1,4 +1,4 @@
 #! /bin/bash
-cd /home/seth/nelia
+cd /home/seth/.devel/app/nelia1
 /usr/bin/git gui
 

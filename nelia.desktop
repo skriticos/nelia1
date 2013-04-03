@@ -1,41 +1,41 @@
 [Desktop Entry]
 Name=Nelia DEV
-Exec=/home/seth/nelia/nelia1
-Path=/home/seth/nelia
+Exec=/home/seth/.devel/app/nelia1/nelia1
+Path=/home/seth/.devel/app/nelia1
 Terminal=false
-Icon=/home/seth/nelia/img/nelia-icon128-dev.png
+Icon=/home/seth/.devel/app/nelia1/img/nelia-250.png
 Type=Application
-Categories=Development;
+Categories=.devel;
 
 X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Push;Folder;Terminal;RunTerminal
 
 [Gitk Shortcut Group]
 Name=gitk
-Exec=/home/seth/nelia/tools/gitk.run
+Exec=/home/seth/.devel/app/nelia1/tools/gitk.run
 TargetEnvironment=Unity
 
 [GitGui Shortcut Group]
 Name=git gui
-Exec=/home/seth/nelia/tools/git-gui.run
+Exec=/home/seth/.devel/app/nelia1/tools/git-gui.run
 TargetEnvironment=Unity
 
 [Push Shortcut Group]
-Name=git push (u1, progenit)
-Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/nelia -e "bash -c \"git push; read line;\""
+Name=git push (pgsw)
+Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/.devel/app/nelia1 -e "bash -c \"git push; read line;\""
 TargetEnvironment=Unity
 
 [Folder Shortcut Group]
 Name=Folder
-Exec=/usr/bin/nautilus /home/seth/nelia
+Exec=/usr/bin/nautilus /home/seth/.devel/app/nelia1
 TargetEnvironment=Unity
 
 [Terminal Shortcut Group]
 Name=Termanl
-Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/nelia --maximize
+Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/.devel/app/nelia1 --maximize
 TargetEnvironment=Unity
 
 [RunTerminal Shortcut Group]
 Name=Run in terminal
-Exec=/home/seth/nelia/tools/nelia-terminal.run
+Exec=/home/seth/.devel/app/nelia1/tools/nelia-terminal.run
 TargetEnvironment=Unity
 

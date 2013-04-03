@@ -1,5 +1,5 @@
 #! /bin/bash
 /usr/bin/gnome-terminal \
-    --working-directory=/home/seth/nelia \
-    -e "bash -c \"/usr/bin/python3 /home/seth/nelia/nelia1; read line;\""
+    --working-directory=/home/seth/.devel/app/nelia1 \
+    -e "bash -c \"/home/seth/.devel/app/nelia1/nelia1; read line;\""
 
