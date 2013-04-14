@@ -66,8 +66,7 @@ class NxDataStore:
 
             file_name = QFileDialog.getSaveFileName(
                 self.parent.w_main,
-                'Save projects',
-                self.default_path,
+                'Save nelia1 document', self.default_path,
                 'Nelia Files (*{})'.format(self.extension))[0]
 
             if file_name == '':
@@ -117,8 +116,7 @@ class NxDataStore:
 
             self.path = QFileDialog.getOpenFileName(
                 self.parent.w_main,
-                'Open projects',
-                self.default_path,
+                'Open nelia1 document', self.default_path,
                 'Nelia Files (*{})'.format(self.extension))[0]
 
             # path dialog aborted
