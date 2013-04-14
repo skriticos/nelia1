@@ -38,19 +38,11 @@ class NxProject:
             self.onEditProject)
         self.widget.push_delete.clicked.connect(self.onDeleteProject)
 
-        self.widget.push_open.clicked.connect(lambda: (
-            self.data.open_document(),
-            self.reset(),
-            self.widget.push_save.setEnabled(False)
-        ))
+        self.widget.push_open.clicked.connect(self.onOpenClicked)
         if 'lastpath' in self.data.run['config'].config_data['datastore']:
             self.widget.push_open_last.setEnabled(True)
         self.widget.push_open_last.clicked.connect(self.onOpenLast)
-        self.widget.push_save.clicked.connect(lambda: (
-            self.data.save_document(),
-            self.widget.push_save.setEnabled(False),
-            self.table.setFocus()
-        ))
+        self.widget.push_save.clicked.connect(self.onSaveClicked)
         self.widget.push_help.clicked.connect(
             self.parent.w_project_diag_help.show)
 
@@ -75,6 +67,65 @@ class NxProject:
 
         self.table.activated.connect(self.showEditProject)
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onOpenClicked(self):
+        # throw away changes?
+        if self.data.run['changed']:
+            response = QMessageBox.question(
+                self.parent.w_main, 'Discard changes?',
+                'Opening a file will discard your changes. ' + \
+                'Do you want to proceed?',
+                QMessageBox.Yes|QMessageBox.No)
+            if response == QMessageBox.StandardButton.No: return
+        # read path
+        path = QFileDialog.getOpenFileName(
+            self.parent.w_main, 'Open nelia1 document', self.data.default_path,
+            'Nelia Files (*{})'.format(self.data.extension))[0]
+        # path dialog aborted
+        if not path:
+            return False
+        # set path and save document
+        result = self.data.open_document(path)
+        if isinstance(result, Exception):
+            title, message = 'open failed', 'open failed! ' + str(result)
+            QMessageBox.critical(self.parent.w_main, title, message)
+            self.data.run['path'] = None
+            return
+        self.reset()
+        self.widget.push_save.setEnabled(False)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onOpenLast(self):
+        path = self.data.run['config'].config_data['datastore']['lastpath']
+        result = self.data.open_document(path)
+        if isinstance(result, Exception):
+            title, message = 'Open failed', 'Open failed! ' + str(result)
+            QMessageBox.critical(self.parent.w_main, title, message)
+            return
+        self.reset()
+        self.widget.push_open_last.setEnabled(False)
+        self.widget.push_save.setEnabled(False)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onSaveClicked(self):
+        if not self.data.run['path']:
+            path = QFileDialog.getSaveFileName(
+                self.parent.w_main,
+                'Save nelia1 document', self.data.default_path,
+                'Nelia Files (*{})'.format(self.data.extension))[0]
+            # dialog aborted?
+            if path == '':
+                return
+            # extension check and optional appending
+            extension_start = len(path) - len(self.data.extension)
+            if path.rfind(self.data.extension) != extension_start:
+                path += self.data.extension
+        else: path = self.data.run['path']
+        result = self.data.save_document(path)
+        if isinstance(result, Exception):
+            title, message = 'Save failed', 'Save failed! ' + str(result)
+            QMessageBox.critical(self.parent.w_main, title, message)
+            return
+        self.widget.push_save.setEnabled(False)
+        self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def touchProject(self, timestamp):
         """
@@ -205,16 +256,6 @@ class NxProject:
             self.widget.push_delete.setEnabled(False)
             self.widget.push_save.setEnabled(False)
             self.widget.push_new.setFocus()
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onOpenLast(self):
-
-        if 'lastpath' in self.data.run['config'].config_data['datastore']:
-            path = self.data.run['config'].config_data['datastore']['lastpath']
-            self.data.open_document(path)
-            self.reset()
-            self.widget.push_open_last.setEnabled(False)
-            self.widget.push_save.setEnabled(False)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewProject(self):

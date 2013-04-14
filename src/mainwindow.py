@@ -7,6 +7,7 @@ from PySide import QtUiTools
 import PySide
 import signal
 import os, pprint
+import time
 
 from datastore import NxDataStore
 from config  import NxConfig
@@ -28,7 +29,7 @@ class MainWindow(QObject):
         super().__init__()
 
         # setup datastore
-        data = self.data = NxDataStore(self)
+        data = self.data = NxDataStore()
 
         # Load UI
         loader = QtUiTools.QUiLoader()
@@ -90,7 +91,7 @@ class MainWindow(QObject):
         switch_backward = QShortcut(QKeySequence('Ctrl+PgDown'), self.w_main)
         switch_backward.activated.connect(self.onTabBackward)
         save = QShortcut(QKeySequence('Ctrl+s'), self.w_main)
-        save.activated.connect(self.data.save_document)
+        save.activated.connect(self.onSaveShortcutActivated)
         debug = QShortcut(QKeySequence('Ctrl+d'), self.w_main)
         debug.activated.connect(self.debug)
 
@@ -103,6 +104,10 @@ class MainWindow(QObject):
 
         self.w_main.show()
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onSaveShortcutActivated(self):
+        if self.data.run['changed']:
+            self.data.run['project'].onSaveClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def debug(self):
 
@@ -277,7 +282,15 @@ class MainWindow(QObject):
         if obj == self.w_main and isinstance(event, QCloseEvent):
             self.updateConfig()
             self.data.run['config'].writeConfig()
-            self.data.save_document()
+            # note: this does not actually work -> has to be debugged
+            if self.data.run['changed']:
+                if self.data.run['path']:
+                    self.data.save_document(self.data.run['path'])
+                else:
+                    base = self.data.default_path
+                    path = os.path.join(
+                        base,'.'+str(int(time.time()))+'.tmp.nelia1')
+                    self.data.save_document(path)
         res = False
         try:
             res = QObject.eventFilter(self.w_main, obj, event)
