@@ -47,7 +47,7 @@ class NxProject:
             self.widget.push_open_last.setEnabled(True)
         self.widget.push_open_last.clicked.connect(self.onOpenLast)
         self.widget.push_save.clicked.connect(lambda: (
-            self.data.save,
+            self.data.save(),
             self.widget.push_save.setEnabled(False),
             self.table.setFocus()
         ))
