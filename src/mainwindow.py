@@ -102,6 +102,8 @@ class MainWindow(QObject):
         self.applyConfig()
         self.data.run['project'].reset()
 
+        self.w_main.show()
+
 # ------------------------------------------------------------------------------
     def debug(self):
 
