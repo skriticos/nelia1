@@ -79,16 +79,24 @@ class NxDataStore:
             self.path = file_name
 
         # compress and save data
-        pickled_data = pickle.dumps(data, 3)
-        compressed_data = gzip.compress(pickled_data)
+        try:
+            pickled_data = pickle.dumps(data, 3)
+            compressed_data = gzip.compress(pickled_data)
 
-        self.run['config'].config_data['datastore'] ['lastpath'] = self.path
+            self.run['config'].config_data['datastore'] ['lastpath'] = self.path
 
-        with open(self.path, 'wb') as f:
-            f.write(compressed_data)
+            with open(self.path, 'wb') as f:
+                f.write(compressed_data)
+        except Exception as e:
+            title = 'Save failed'
+            message = 'Save failed! ' + str(e)
+            QMessageBox.critical(self.parent.w_main, title, message)
+            self.path = None
+            return False
 
         # update application data state
         self.run['changed'] = False
+        return True
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,11 +134,16 @@ class NxDataStore:
             self.path = path
 
         # read data from file
-        with open(self.path, 'rb') as f:
-                file_buffer = f.read()
-
-        decompressed = gzip.decompress(file_buffer)
-        data = pickle.loads(decompressed)
+        try:
+            with open(self.path, 'rb') as f:
+                decompressed = gzip.decompress(f.read())
+            data = pickle.loads(decompressed)
+        except Exception as e:
+            title = 'Open failed'
+            message = 'Open failed! ' + str(e)
+            QMessageBox.critical(self.parent.w_main, title, message)
+            self.path = None
+            return False
 
         self.run['config'].config_data['datastore'] ['lastpath'] = self.path
 
