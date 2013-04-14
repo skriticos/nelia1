@@ -39,7 +39,7 @@ class NxProject:
         self.widget.push_delete.clicked.connect(self.onDeleteProject)
 
         self.widget.push_open.clicked.connect(lambda: (
-            self.data.load(),
+            self.data.open_document(),
             self.reset(),
             self.widget.push_save.setEnabled(False)
         ))
@@ -47,7 +47,7 @@ class NxProject:
             self.widget.push_open_last.setEnabled(True)
         self.widget.push_open_last.clicked.connect(self.onOpenLast)
         self.widget.push_save.clicked.connect(lambda: (
-            self.data.save(),
+            self.data.save_document(),
             self.widget.push_save.setEnabled(False),
             self.table.setFocus()
         ))
@@ -211,7 +211,7 @@ class NxProject:
 
         if 'lastpath' in self.data.run['config'].config_data['datastore']:
             path = self.data.run['config'].config_data['datastore']['lastpath']
-            self.data.load(path)
+            self.data.open_document(path)
             self.reset()
             self.widget.push_open_last.setEnabled(False)
             self.widget.push_save.setEnabled(False)

@@ -90,7 +90,7 @@ class MainWindow(QObject):
         switch_backward = QShortcut(QKeySequence('Ctrl+PgDown'), self.w_main)
         switch_backward.activated.connect(self.onTabBackward)
         save = QShortcut(QKeySequence('Ctrl+s'), self.w_main)
-        save.activated.connect(self.data.save)
+        save.activated.connect(self.data.save_document)
         debug = QShortcut(QKeySequence('Ctrl+d'), self.w_main)
         debug.activated.connect(self.debug)
 

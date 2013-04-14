@@ -41,7 +41,7 @@ class NxDataStore:
         self.run['roadmap_pid_last'] = 0
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def save(self, path=None):
+    def save_document(self, path=None):
 
         """
         If we already know the file path, compile and write the data. Otherwise
@@ -100,7 +100,7 @@ class NxDataStore:
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def load(self, path=None):
+    def open_document(self, path=None):
 
         """
         Ask the user for a file path and then load the data and reset state
