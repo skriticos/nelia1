@@ -1,21 +1,20 @@
-# ------------------------------------------------------------------------------
-# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
-# All rights reserved
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from PySide.QtCore import *
 from PySide.QtGui import *
 import time
 from pprint import pprint
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxMilestone:
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, data):
 
         self.data = data
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def versionToIndex(self, major, minor):
 
         if major > 0:
@@ -23,7 +22,7 @@ class NxMilestone:
         else:
             return major, minor - 1
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def indexToVersion(self, x, y):
 
         if x > 0:
@@ -31,7 +30,7 @@ class NxMilestone:
         else:
             return x, y + 1
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def addMilestone(self, pid, major, minor):
 
         x, y = self.versionToIndex(major, minor)
@@ -47,7 +46,7 @@ class NxMilestone:
                  'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
             )
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def removeMilestone(self, pid, major, minor):
 
         x, y = self.versionToIndex(major, minor)
@@ -59,7 +58,7 @@ class NxMilestone:
         else:
             del self.data.project[pid]['milestone'][x][y]
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def updateMilestoneTree(self, pid):
 
         '''
@@ -111,7 +110,7 @@ class NxMilestone:
                     else:
                         self.removeMilestone(pid, major, minor + 1)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getItemData(self, pid, item_id):
 
         p = self.data.project[pid]
@@ -143,25 +142,25 @@ class NxMilestone:
             'fioc': fioc
         }
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getAttribute(self, pid, item_id, attr_name):
 
         idat = self.getItemData(pid, itme_id)
         return idat[attr_name]
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def setAttibute(self, pid, item_id, attr_name, value):
 
         idat = self.getItemData(pid, item_id)
         self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
                 [idat['fioc']] [item_id] [attr_name] = value
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def touchItem(self, pid, item_id):
 
         self.setAttibute(pid, item_id, 'modified', int(time.time()))
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def addItem(self, pid, major, minor, itype, icat, name, priority,
                 description, status='Open'):
 
@@ -189,7 +188,7 @@ class NxMilestone:
 
         self.updateMilestoneTree(pid)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def editItem(self, pid, major, minor, item_id, itype, icat, name, priority,
                  description):
 
@@ -208,7 +207,7 @@ class NxMilestone:
 
         self.touchItem(pid, item_id)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def moveItem(self, pid, item_id, new_major, new_minor, itype=None,
                  status=None):
 
@@ -243,7 +242,7 @@ class NxMilestone:
         self.touchItem(pid, item_id)
         self.updateMilestoneTree(pid)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeItem(self, pid, item_id):
 
         idat = self.getItemData(pid, item_id)
@@ -251,7 +250,7 @@ class NxMilestone:
                       'Closed')
         self.touchItem(pid, item_id)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reopenItem(self, pid, item_id):
 
         idat = self.getItemData(pid, item_id)
@@ -259,7 +258,7 @@ class NxMilestone:
                       'Open')
         self.touchItem(pid, item_id)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def deleteItem(self, pid, item_id):
 
         idat = self.getItemData(pid, item_id)
@@ -268,5 +267,5 @@ class NxMilestone:
         del self.data.project[pid] ['ri_index'] [item_id]
         self.updateMilestoneTree(pid)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

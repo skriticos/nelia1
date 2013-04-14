@@ -1,7 +1,6 @@
-# ------------------------------------------------------------------------------
-# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
-# All rights reserved
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os, time, gzip, pickle, datetime
 from pprint import pprint
 from PySide.QtCore import *
@@ -10,10 +9,10 @@ from PySide import QtUiTools
 from mpushbutton import MPushButton
 from milestone import NxMilestone
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, parent, data, widget):
 
         # setup backbone
@@ -86,7 +85,7 @@ class NxRoadmap:
             self.onRoadmapItemActivated
         )
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getCellContent(self, i):
 
         return int(self.model.itemFromIndex(
@@ -94,12 +93,12 @@ class NxRoadmap:
                 self.table.currentIndex().row(),i)
         ).text())
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedItemId(self):
 
         return self.getCellContent(0)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def extractSelection(self, targetw='root'):
 
         if targetw == 'root':
@@ -112,7 +111,7 @@ class NxRoadmap:
         tmajor, tminor = target_label.split(' ')[3][1:].split('.')
         return int(tmajor), int(tminor)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onItemSelectionChanged(self):
 
         if self.table.currentIndex().row() == -1: return
@@ -123,7 +122,7 @@ class NxRoadmap:
         if status == 'Closed':
             self.widget.push_close.setText('Reopen Ite&m')
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneDescriptionChanged(self):
 
         if self.init: return
@@ -133,7 +132,7 @@ class NxRoadmap:
         self.data.project[self.pid]['milestone'][sx][sy]['description'] \
                 = self.widget.text_description.toPlainText()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onRoadmapItemActivated(self):
 
         cmajor, cminor \
@@ -144,7 +143,7 @@ class NxRoadmap:
                    and self.selected_minor > cminor):
                 self.showAddEditRI('edit')
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
 
         pid = self.data.run['project'].getSelectedProject()
@@ -184,7 +183,7 @@ class NxRoadmap:
             d.radio_medium.setChecked(True)
             d.radio_feature.setChecked(True)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeRoadmapItem(self):
 
         status = self.model.itemFromIndex(self.model.index(
@@ -206,7 +205,7 @@ class NxRoadmap:
         self.data.run['project'].touchProject(time.time())
         self.onChangeVersionSelection(self.selected_major, self.selected_minor)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestone(self, x, y):
 
         fo_sum1 = len(self.data.project[self.pid]
@@ -222,17 +221,17 @@ class NxRoadmap:
 
         self.parent.w_roadmap_diag_finalize.show()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMilestone(self):
 
         self.mc.closeItem(self.pid, self.getSelectedItemId())
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMajorMilestone(self):
 
         self.mc.closeItem(self.pid, self.getSelectedItemId())
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
 
         cmajor, cminor \
@@ -261,7 +260,7 @@ class NxRoadmap:
                 self.diag_new_edit.push_target, 1, 1, 1, 1);
             self.diag_new_edit.label_3.setBuddy(self.diag_new_edit.push_target)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onChangeVersionSelection(self, major, minor, text=None):
 
         self.selected_major = major
@@ -273,7 +272,7 @@ class NxRoadmap:
         self.reloadMilestoneButton('root')
         self.reloadTable()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def prependTable(self, key, itype, status, priority, icat, v):
 
         if itype == 'Feature' \
@@ -316,7 +315,7 @@ class NxRoadmap:
                 v['modified']).isoformat())
         ])
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
 
         self.header_width = []
@@ -329,7 +328,7 @@ class NxRoadmap:
             self.sort_column = -1
             self.sort_order = None
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
 
         for i,v in enumerate(self.header_width):
@@ -338,7 +337,7 @@ class NxRoadmap:
             self.horizontal_header.setSortIndicator(
                 self.sort_column, self.sort_order)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
 
         if not isinstance(self.widget.push_milestone, MPushButton):
@@ -410,7 +409,7 @@ class NxRoadmap:
 
         self.table.setFocus()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showAddEditRI(self, diag_type=None):
 
         self.reloadMilestoneButton('diag_new_edit')
@@ -466,7 +465,7 @@ class NxRoadmap:
         self.diag_new_edit.show()
         self.diag_new_edit.line_name.setFocus()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitDialog(self):
 
         # simple switch between add and edit mode for the dialog
@@ -475,7 +474,7 @@ class NxRoadmap:
         if self.diag_type == 'edit':
             self.onSubmitNewEditRI('edit')
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitNewEditRI(self, mode):
 
         tmajor, tminor = self.extractSelection('add_edit_dialog')
@@ -525,7 +524,7 @@ class NxRoadmap:
         self.data.run['project'].touchProject(int(time.time()))
         print('touching project')
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def deleteRoadmapItem(self):
 
         self.mc.deleteItem(self.pid, self.getSelectedItemId())
@@ -533,5 +532,5 @@ class NxRoadmap:
         self.reloadTable()
         self.data.run['project'].touchProject(int(time.time()))
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

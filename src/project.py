@@ -1,16 +1,15 @@
-# ------------------------------------------------------------------------------
-# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
-# All rights reserved
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 import os, datetime, time
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, parent, datastore, widget):
 
         # setup backbone
@@ -76,7 +75,7 @@ class NxProject:
 
         self.table.activated.connect(self.showEditProject)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def touchProject(self, timestamp):
         """
         On project change (e.g. edit meta, add log or change roadmap),
@@ -90,7 +89,7 @@ class NxProject:
         self.data.run['changed'] = True
         self.widget.push_save.setEnabled(True)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedProject(self):
 
         if not self.init:
@@ -100,18 +99,18 @@ class NxProject:
                     self.model.index(self.table.currentIndex().row(), 0)).text())
 
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedProjectName(self):
 
         return self.model.itemFromIndex(
                 self.model.index(self.table.currentIndex().row(), 1)).text()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getActiveRow(self):
 
         return self.table.currentIndex().row()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChanged(self):
 
         if not self.init:
@@ -122,13 +121,13 @@ class NxProject:
                     self.data.project[pid]['description']
                 )
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChange(self):
 
         self.data.project[self.getSelectedProject()]['description'] = \
                 self.widget.text_description.toPlainText()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
 
         self.header_width = []
@@ -141,7 +140,7 @@ class NxProject:
             self.sort_column = -1
             self.sort_order = None
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
 
         for i,v in enumerate(self.header_width):
@@ -149,7 +148,7 @@ class NxProject:
         if self.sort_column != -1:
             self.horizontal_header.setSortIndicator(self.sort_column, self.sort_order)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
 
         self.init = True
@@ -207,7 +206,7 @@ class NxProject:
             self.widget.push_save.setEnabled(False)
             self.widget.push_new.setFocus()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
 
         if 'lastpath' in self.data.run['config'].config_data['datastore']:
@@ -217,7 +216,7 @@ class NxProject:
             self.widget.push_open_last.setEnabled(False)
             self.widget.push_save.setEnabled(False)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewProject(self):
 
         timestamp = int(time.time())
@@ -259,7 +258,7 @@ class NxProject:
         self.reloadTable()
         self.touchProject(timestamp)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showEditProject(self):
 
         p = self.data.project[self.getSelectedProject()]
@@ -278,7 +277,7 @@ class NxProject:
         self.diag_edit.show()
         self.diag_edit.line_name.setFocus()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditProject(self):
 
         pid = self.getSelectedProject()
@@ -297,7 +296,7 @@ class NxProject:
         self.reloadTable()
         self.touchProject(timestamp)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDeleteProject(self):
 
         pid = self.getSelectedProject()
@@ -318,11 +317,11 @@ class NxProject:
         # can't touch deleted project, direct changed update
         self.data.run['changed'] = True
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reset(self):
 
         self.reloadTable()
         self.data.run['changed'] = False
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

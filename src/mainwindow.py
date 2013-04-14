@@ -1,7 +1,6 @@
-# ------------------------------------------------------------------------------
-# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
-# All rights reserved
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
@@ -15,7 +14,7 @@ from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MainWindow(QObject):
     """
     The main window control class contains the application main container
@@ -23,7 +22,7 @@ class MainWindow(QObject):
     switching, exit handling, saving and loading.
     """
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, argv):
 
         super().__init__()
@@ -104,7 +103,7 @@ class MainWindow(QObject):
 
         self.w_main.show()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def debug(self):
 
         home = os.path.expanduser('~')
@@ -153,7 +152,7 @@ class MainWindow(QObject):
         x['show_architecture'] = self.w_roadmap.check_architecture.isChecked()
         x['show_refactor'] = self.w_roadmap.check_refactor.isChecked()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def applyConfig(self):
 
         if self.data.run['config'].no_config == True:
@@ -256,7 +255,7 @@ class MainWindow(QObject):
         else:
             self.w_roadmap.check_refactor.setChecked(False)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onExit(self, num, frame):
         """
         We want to shut down normally on SIGTERM too. This can happen when the
@@ -267,7 +266,7 @@ class MainWindow(QObject):
 
         self.w_main.close()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def eventFilter(self, obj, event):
         """
         Capture main window close event.  This might be caused by the user
@@ -286,7 +285,7 @@ class MainWindow(QObject):
             pass
         return res
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabForward(self):
 
         # get current tab index
@@ -301,7 +300,7 @@ class MainWindow(QObject):
         elif self.w_main.tabnavi.isTabEnabled(tab_index+1):
             self.w_main.tabnavi.setCurrentIndex(tab_index+1)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabBackward(self):
 
         # get current tab index
@@ -316,19 +315,19 @@ class MainWindow(QObject):
         else:
             self.w_main.tabnavi.setCurrentIndex(tab_index-1)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def enableTabs(self):
 
         for i in range(1,3):
             self.w_main.tabnavi.setTabEnabled(i, True)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def dissableTabs(self):
 
         for i in range(1,3):
             self.w_main.tabnavi.setTabEnabled(i, False)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def tabChanged(self):
 
         # PREPARE DATA
@@ -340,5 +339,5 @@ class MainWindow(QObject):
         if cur_tab_name == '&Roadmap':
             self.data.run['roadmap'].onShowTab()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

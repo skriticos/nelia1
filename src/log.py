@@ -1,19 +1,18 @@
-# ------------------------------------------------------------------------------
-# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
-# All rights reserved
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os, time, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
     """
     Handles the log widget tab.
     """
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, parent, datastore, widget):
         """
         Setup data, UI and connect callbacks.
@@ -50,14 +49,14 @@ class NxLog:
         # update text_detail on selection change
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedLogId(self):
 
         # form UI table element, currently selected entry
         return int(self.model.itemFromIndex(
                 self.model.index(self.table.currentIndex().row(), 0)).text())
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChange(self):
 
         if self.model.rowCount() > 0 and not self.init:
@@ -67,7 +66,7 @@ class NxLog:
                 ['detail']
             )
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         """
         Internally save the layout before table reload.
@@ -83,7 +82,7 @@ class NxLog:
             self.sort_column = -1
             self.sort_order = None
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
         """
         Restore layout when table is reloaded.
@@ -95,7 +94,7 @@ class NxLog:
             self.horizontal_header.setSortIndicator(self.sort_column,
                                                     self.sort_order)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
         """
         Uses the NxDataCore data to reload the table. Used when it has to be
@@ -135,7 +134,7 @@ class NxLog:
             self.loadLayout()
 
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         """
         When navigating to the log tab. Check if pid has been changed and reload
@@ -161,7 +160,7 @@ class NxLog:
             self.reloadTable()
 
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewEntry(self):
         """
         User submits a new log entry. Add it to NxDataStrore and update view.
@@ -195,5 +194,5 @@ class NxLog:
         self.table.selectRow(0)
         self.table.setFocus()
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -1,12 +1,11 @@
-# ------------------------------------------------------------------------------
-# (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
-# All rights reserved
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from PySide.QtCore import *
 from PySide.QtGui import *
 import sys
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MPushButton(QPushButton):
     """
     This class contains a push button with menu that is displaying the
@@ -14,7 +13,7 @@ class MPushButton(QPushButton):
     current selection or for feature / issue targets).
     """
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, x, y, versions, parent=None, change_callback=None,
                  sel_x=None, sel_y=None, open_only=False):
 
@@ -177,7 +176,7 @@ class MPushButton(QPushButton):
                 icon, n, mfc, mfo+mfc, mic, mio+mic))
             self.root_menu.addMenu(major_menu)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getVersion(self):
             """
                 Retrive currently seelected version.
@@ -186,7 +185,7 @@ class MPushButton(QPushButton):
             x, y = self.current_text.split(' ')[3][1:].split('.')
             return int(x), int(y)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def selectionChanged(self):
         """
             This callback is invoked when a milestone is selected.
@@ -204,5 +203,5 @@ class MPushButton(QPushButton):
             x, y = self.getVersion()
             self.change_callback(x, y, self.current_text)
 
-# ------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
