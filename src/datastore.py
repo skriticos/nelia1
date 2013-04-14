@@ -17,8 +17,10 @@ class NxDataStore:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, parent):
 
-        self.version = 1
-        self.app_name = 'Nelia'
+        self.version   = 1
+        self.app_name  = 'nelia1'
+        self.extension = '.nelia1'
+        self.default_path   = os.path.expanduser('~/Documents')
 
         # parent widget (to focus the question boxes)
         self.parent = parent
@@ -65,14 +67,15 @@ class NxDataStore:
             file_name = QFileDialog.getSaveFileName(
                 self.parent.w_main,
                 'Save projects',
-                os.path.expanduser('~/Documents'),
-                'Nelia Files (*.nelia)')[0]
+                self.default_path,
+                'Nelia Files (*{})'.format(self.extension))[0]
 
             if file_name == '':
                 return
 
-            if file_name.rfind('.nelia') != len(file_name) - 6:
-                file_name += '.nelia'
+            extension_start = len(file_name) - len(self.extension)
+            if file_name.rfind(self.extension) != extension_start:
+                file_name += self.extension
 
             self.path = file_name
 
@@ -115,8 +118,8 @@ class NxDataStore:
             self.path = QFileDialog.getOpenFileName(
                 self.parent.w_main,
                 'Open projects',
-                os.path.expanduser('~/Documents'),
-                'Nelia Files (*.nelia)')[0]
+                self.default_path,
+                'Nelia Files (*{})'.format(self.extension))[0]
 
             # path dialog aborted
             if not self.path:
