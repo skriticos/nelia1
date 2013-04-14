@@ -277,7 +277,7 @@ class MainWindow(QObject):
         if obj == self.w_main and isinstance(event, QCloseEvent):
             self.updateConfig()
             self.data.run['config'].writeConfig()
-            self.data.save()
+            self.data.save_document()
         res = False
         try:
             res = QObject.eventFilter(self.w_main, obj, event)
