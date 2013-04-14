@@ -8,18 +8,18 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 from mpushbutton import MPushButton
 from milestone import NxMilestone
+from datastore import data
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def __init__(self, parent, data, widget):
+    def __init__(self, parent, widget):
 
         # setup backbone
         self.parent = parent
-        self.data   = data
         self.widget = widget
-        self.mc     = NxMilestone(self.data)
+        self.mc     = NxMilestone()
         self.diag_new_edit = self.parent.w_roadmap_diag_add
 
         # setup table
@@ -129,14 +129,14 @@ class NxRoadmap:
 
         sx, sy = self.mc.versionToIndex(
             self.selected_major, self.selected_minor)
-        self.data.project[self.pid]['milestone'][sx][sy]['description'] \
+        data.project[self.pid]['milestone'][sx][sy]['description'] \
                 = self.widget.text_description.toPlainText()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onRoadmapItemActivated(self):
 
         cmajor, cminor \
-                = self.data.project[self.pid]['meta']['current_milestone']
+                = data.project[self.pid]['meta']['current_milestone']
         if self.model.rowCount() > 0:
             if self.selected_major > cmajor \
                or (self.selected_major == cmajor \
@@ -146,16 +146,16 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
 
-        pid = self.data.run['project'].getSelectedProject()
-        if self.data.run['roadmap_pid_last'] == 0 \
-           or self.data.run['roadmap_pid_last'] != pid:
+        pid = data.run['project'].getSelectedProject()
+        if data.run['roadmap_pid_last'] == 0 \
+           or data.run['roadmap_pid_last'] != pid:
 
             self.pid = pid
-            self.data.run['roadmap_pid_last'] = pid
+            data.run['roadmap_pid_last'] = pid
 
-            pro = self.data.project[pid]
+            pro = data.project[pid]
 
-            project_name = self.data.run['project'].getSelectedProjectName()
+            project_name = data.run['project'].getSelectedProjectName()
             self.widget.line_project.setText(project_name)
             self.parent.w_roadmap_diag_add.line_project.setText(project_name)
 
@@ -192,9 +192,9 @@ class NxRoadmap:
             # check if this is the last item in the milestone
             x, y = self.mc.versionToIndex(
                 self.selected_major, self.selected_minor)
-            fo_sum = len(self.data.project[self.pid]
+            fo_sum = len(data.project[self.pid]
                          ['milestone'] [x] [y] ['fo'])
-            io_sum = len(self.data.project[self.pid]
+            io_sum = len(data.project[self.pid]
                          ['milestone'] [x] [y] ['io'])
             if fo_sum + io_sum == 1:
                 self.closeMilestone(x, y)
@@ -202,15 +202,15 @@ class NxRoadmap:
                 self.mc.closeItem(self.pid, self.getSelectedItemId())
         if status == 'Closed':
             self.mc.reopenItem(self.pid, self.getSelectedItemId())
-        self.data.run['project'].touchProject(time.time())
+        data.run['project'].touchProject(time.time())
         self.onChangeVersionSelection(self.selected_major, self.selected_minor)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestone(self, x, y):
 
-        fo_sum1 = len(self.data.project[self.pid]
+        fo_sum1 = len(data.project[self.pid]
                       ['milestone'] [x] [y+1] ['fo'])
-        io_sum1 = len(self.data.project[self.pid]
+        io_sum1 = len(data.project[self.pid]
                       ['milestone'] [x] [y+1] ['io'])
         if fo_sum1 + io_sum1 == 0:
             self.parent.w_roadmap_diag_finalize.push_finalize_major.setEnabled(
@@ -235,8 +235,8 @@ class NxRoadmap:
     def reloadMilestoneButton(self, targetw='root'):
 
         cmajor, cminor \
-                = self.data.project[self.pid]['meta']['current_milestone']
-        milestones = self.data.project[self.pid]['milestone']
+                = data.project[self.pid]['meta']['current_milestone']
+        milestones = data.project[self.pid]['milestone']
         if targetw == 'root':
             self.widget.gridLayout_3.removeWidget(self.widget.push_milestone)
             self.widget.push_milestone.hide()
@@ -267,7 +267,7 @@ class NxRoadmap:
         self.selected_minor = minor
         sx, sy = self.mc.versionToIndex(major, minor)
         self.widget.text_description.setPlainText(
-            self.data.project[self.pid]['milestone'][sx][sy]['description']
+            data.project[self.pid]['milestone'][sx][sy]['description']
         )
         self.reloadMilestoneButton('root')
         self.reloadTable()
@@ -354,14 +354,14 @@ class NxRoadmap:
 
         self.selected_major, self.selected_minor \
                 = self.widget.push_milestone.getVersion()
-        pid = self.data.run['project'].getSelectedProject()
-        cmajor, cminor = self.data.project[pid]['meta']['current_milestone']
+        pid = data.run['project'].getSelectedProject()
+        cmajor, cminor = data.project[pid]['meta']['current_milestone']
         yy = self.selected_minor
         if self.selected_major == 0: yy = self.selected_minor-1
-        fo = self.data.project[pid]['milestone'][self.selected_major][yy]['fo']
-        fc = self.data.project[pid]['milestone'][self.selected_major][yy]['fc']
-        io = self.data.project[pid]['milestone'][self.selected_major][yy]['io']
-        ic = self.data.project[pid]['milestone'][self.selected_major][yy]['ic']
+        fo = data.project[pid]['milestone'][self.selected_major][yy]['fo']
+        fc = data.project[pid]['milestone'][self.selected_major][yy]['fc']
+        io = data.project[pid]['milestone'][self.selected_major][yy]['io']
+        ic = data.project[pid]['milestone'][self.selected_major][yy]['ic']
 
         for key, value in ic.items():
             itype = 'Issue'
@@ -426,9 +426,9 @@ class NxRoadmap:
 
             item_id = self.getSelectedItemId()
             tmajor, tminor, fioc \
-                    = self.data.project[self.pid]['ri_index'][item_id]
+                    = data.project[self.pid]['ri_index'][item_id]
             tx, ty = self.mc.versionToIndex(tmajor, tminor)
-            item = self.data.project[self.pid]\
+            item = data.project[self.pid]\
                     ['milestone'][tx][ty][fioc][item_id]
 
             if fioc[0] == 'f': itype = 'Feature'
@@ -521,7 +521,7 @@ class NxRoadmap:
         self.reloadMilestoneButton()
         self.reloadTable()
 
-        self.data.run['project'].touchProject(int(time.time()))
+        data.run['project'].touchProject(int(time.time()))
         print('touching project')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -530,7 +530,7 @@ class NxRoadmap:
         self.mc.deleteItem(self.pid, self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
-        self.data.run['project'].touchProject(int(time.time()))
+        data.run['project'].touchProject(int(time.time()))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

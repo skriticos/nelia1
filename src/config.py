@@ -3,6 +3,7 @@
 # All rights reserved
 # ------------------------------------------------------------------------------
 import sys, os, pickle, gzip
+from datastore import data
 
 # ------------------------------------------------------------------------------
 class NxConfig:
@@ -13,7 +14,7 @@ class NxConfig:
     """
 
 # ------------------------------------------------------------------------------
-    def __init__(self, data):
+    def __init__(self):
 
         # configuration is stored in $HOME/.config/nelia1/nelia1.config
         self.home = os.path.expanduser('~')
@@ -23,10 +24,9 @@ class NxConfig:
         os.makedirs(self.basepath, exist_ok=True)
 
         # general pointers to the data and widgets we need
-        self.data    = data
-        self.project = self.data.run['w_project']
-        self.log     = self.data.run['w_log']
-        self.roadmap = self.data.run['w_roadmap']
+        self.project = data.run['w_project']
+        self.log     = data.run['w_log']
+        self.roadmap = data.run['w_roadmap']
 
         # internal config data structure
         self.config_data = {

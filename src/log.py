@@ -5,6 +5,7 @@ import os, time, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+from datastore import data
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
@@ -13,14 +14,13 @@ class NxLog:
     """
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def __init__(self, parent, datastore, widget):
+    def __init__(self, parent, widget):
         """
         Setup data, UI and connect callbacks.
         """
 
         # setup backbone
         self.parent = parent
-        self.data   = datastore
         self.widget = widget
 
         self.diag_new = self.parent.w_log_diag_new
@@ -62,7 +62,7 @@ class NxLog:
         if self.model.rowCount() > 0 and not self.init:
             self.widget.text_detail.setEnabled(True)
             self.widget.text_detail.setPlainText(
-                self.data.project [self.pid] ['log'] [self.getSelectedLogId()] \
+                data.project [self.pid] ['log'] [self.getSelectedLogId()] \
                 ['detail']
             )
 
@@ -109,8 +109,8 @@ class NxLog:
         self.model.setHorizontalHeaderLabels(self.table_headers)
 
         # populate table
-        for i in range(self.data.project[self.pid]['meta']['last_log']):
-            log = self.data.project[self.pid]['log'][i+1]
+        for i in range(data.project[self.pid]['meta']['last_log']):
+            log = data.project[self.pid]['log'][i+1]
             self.model.insertRow(0, [
                 QStandardItem(str(i+1).zfill(4)),
                 QStandardItem(datetime.datetime.fromtimestamp(
@@ -122,7 +122,7 @@ class NxLog:
         self.table.sortByColumn(0, Qt.DescendingOrder)
 
         self.init = False # re-enable selection change callback
-        if self.data.project[self.pid]['meta']['last_log'] > 0:
+        if data.project[self.pid]['meta']['last_log'] > 0:
             self.table.selectRow(0)
             self.table.setFocus()
         else:
@@ -142,18 +142,18 @@ class NxLog:
         """
 
         # retrive pid
-        pid = self.data.run['project'].getSelectedProject()
+        pid = data.run['project'].getSelectedProject()
 
         # check if project selection changed
-        if self.data.run['log_pid_last'] != pid:
+        if data.run['log_pid_last'] != pid:
 
             # set data
             self.pid = pid
-            self.data.run['log_pid_last'] = pid
+            data.run['log_pid_last'] = pid
             self.init = True # skip selection change callback
 
             # setup widget
-            pname = self.data.run['project'].getSelectedProjectName()
+            pname = data.run['project'].getSelectedProjectName()
             self.widget.line_project.setText(pname)
             self.parent.w_log_diag_new.line_project.setText(pname)
 
@@ -166,20 +166,20 @@ class NxLog:
         User submits a new log entry. Add it to NxDataStrore and update view.
         """
 
-        lid = self.data.project[self.pid]['meta']['last_log'] + 1
+        lid = data.project[self.pid]['meta']['last_log'] + 1
         timestamp = int(time.time())
         disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
         # populate data
-        self.data.project[self.pid]['log'][lid] = {
+        data.project[self.pid]['log'][lid] = {
             'created': timestamp,
             'summary': self.diag_new.line_summary.text(),
             'detail':  self.diag_new.text_detail.toPlainText()
         }
 
         # update
-        self.data.run['project'].touchProject(timestamp)
-        self.data.project[self.pid]['meta']['last_log'] += 1
+        data.run['project'].touchProject(timestamp)
+        data.project[self.pid]['meta']['last_log'] += 1
 
         # populate data
         self.model.insertRow(

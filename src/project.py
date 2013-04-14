@@ -5,16 +5,16 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 import os, datetime, time
+from datastore import data
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def __init__(self, parent, datastore, widget):
+    def __init__(self, parent, widget):
 
         # setup backbone
         self.parent = parent
-        self.data   = datastore
         self.widget = widget
 
         # show new project dialog
@@ -33,13 +33,13 @@ class NxProject:
         # show edit project dialog
         self.widget.push_edit.clicked.connect(self.showEditProject)
 
-        self.data.run['w_project_diag_new'].accepted.connect(self.onNewProject)
-        self.data.run['w_project_diag_edit'].accepted.connect(
+        data.run['w_project_diag_new'].accepted.connect(self.onNewProject)
+        data.run['w_project_diag_edit'].accepted.connect(
             self.onEditProject)
         self.widget.push_delete.clicked.connect(self.onDeleteProject)
 
         self.widget.push_open.clicked.connect(self.onOpenClicked)
-        if 'lastpath' in self.data.run['config'].config_data['datastore']:
+        if 'lastpath' in data.run['config'].config_data['datastore']:
             self.widget.push_open_last.setEnabled(True)
         self.widget.push_open_last.clicked.connect(self.onOpenLast)
         self.widget.push_save.clicked.connect(self.onSaveClicked)
@@ -70,7 +70,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenClicked(self):
         # throw away changes?
-        if self.data.run['changed']:
+        if data.run['changed']:
             response = QMessageBox.question(
                 self.parent.w_main, 'Discard changes?',
                 'Opening a file will discard your changes. ' + \
@@ -79,24 +79,24 @@ class NxProject:
             if response == QMessageBox.StandardButton.No: return
         # read path
         path = QFileDialog.getOpenFileName(
-            self.parent.w_main, 'Open nelia1 document', self.data.default_path,
-            'Nelia Files (*{})'.format(self.data.extension))[0]
+            self.parent.w_main, 'Open nelia1 document', data.default_path,
+            'Nelia Files (*{})'.format(data.extension))[0]
         # path dialog aborted
         if not path:
             return False
         # set path and save document
-        result = self.data.open_document(path)
+        result = data.open_document(path)
         if isinstance(result, Exception):
             title, message = 'open failed', 'open failed! ' + str(result)
             QMessageBox.critical(self.parent.w_main, title, message)
-            self.data.run['path'] = None
+            data.run['path'] = None
             return
         self.reset()
         self.widget.push_save.setEnabled(False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
-        path = self.data.run['config'].config_data['datastore']['lastpath']
-        result = self.data.open_document(path)
+        path = data.run['config'].config_data['datastore']['lastpath']
+        result = data.open_document(path)
         if isinstance(result, Exception):
             title, message = 'Open failed', 'Open failed! ' + str(result)
             QMessageBox.critical(self.parent.w_main, title, message)
@@ -106,20 +106,20 @@ class NxProject:
         self.widget.push_save.setEnabled(False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveClicked(self):
-        if not self.data.run['path']:
+        if not data.run['path']:
             path = QFileDialog.getSaveFileName(
                 self.parent.w_main,
-                'Save nelia1 document', self.data.default_path,
-                'Nelia Files (*{})'.format(self.data.extension))[0]
+                'Save nelia1 document', data.default_path,
+                'Nelia Files (*{})'.format(data.extension))[0]
             # dialog aborted?
             if path == '':
                 return
             # extension check and optional appending
-            extension_start = len(path) - len(self.data.extension)
-            if path.rfind(self.data.extension) != extension_start:
-                path += self.data.extension
-        else: path = self.data.run['path']
-        result = self.data.save_document(path)
+            extension_start = len(path) - len(data.extension)
+            if path.rfind(data.extension) != extension_start:
+                path += data.extension
+        else: path = data.run['path']
+        result = data.save_document(path)
         if isinstance(result, Exception):
             title, message = 'Save failed', 'Save failed! ' + str(result)
             QMessageBox.critical(self.parent.w_main, title, message)
@@ -134,10 +134,10 @@ class NxProject:
         changed timestamp and update the project index display and mark
         changes as true.
         """
-        self.data.project[self.getSelectedProject()]['modified'] = timestamp
+        data.project[self.getSelectedProject()]['modified'] = timestamp
         self.model.setItem(self.getActiveRow(), 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
-        self.data.run['changed'] = True
+        data.run['changed'] = True
         self.widget.push_save.setEnabled(True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -166,16 +166,16 @@ class NxProject:
 
         if not self.init:
             pid = self.getSelectedProject()
-            if self.data.project[0]['next_id'] > 1 and pid != 0:
+            if data.project[0]['next_id'] > 1 and pid != 0:
                 self.widget.text_description.setEnabled(True)
                 self.widget.text_description.setPlainText(
-                    self.data.project[pid]['description']
+                    data.project[pid]['description']
                 )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChange(self):
 
-        self.data.project[self.getSelectedProject()]['description'] = \
+        data.project[self.getSelectedProject()]['description'] = \
                 self.widget.text_description.toPlainText()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -210,9 +210,9 @@ class NxProject:
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.table_headers)
 
-        for pid, project in self.data.project.items():
+        for pid, project in data.project.items():
             if pid == 0: continue
-            major, minor = self.data.project[pid]['meta']['current_milestone']
+            major, minor = data.project[pid]['meta']['current_milestone']
             disptime1 = datetime.datetime.fromtimestamp(project['modified']).isoformat()
             disptime2 = datetime.datetime.fromtimestamp(project['created']).isoformat()
             self.model.insertRow(0, [
@@ -235,7 +235,7 @@ class NxProject:
 
         self.init = False
 
-        if len(self.data.project) > 1:
+        if len(data.project) > 1:
 
             self.table.selectRow(0)
 
@@ -261,13 +261,13 @@ class NxProject:
     def onNewProject(self):
 
         timestamp = int(time.time())
-        pid = self.data.project[0]['next_id']
+        pid = data.project[0]['next_id']
 
         # create new project entry
         # meta: general project data
         # log: log data
         # milestone: versions, features, issues
-        p = self.data.project[pid] = {
+        p = data.project[pid] = {
             'meta': {'last_log': 0, 'last_roadmap_item': 0,
                      'current_milestone': (0,0)},
             'log': {},
@@ -294,7 +294,7 @@ class NxProject:
         p['created']     = created     = timestamp
         p['modified']    = timestamp
 
-        self.data.project[0]['next_id'] += 1
+        data.project[0]['next_id'] += 1
 
         self.reloadTable()
         self.touchProject(timestamp)
@@ -302,7 +302,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showEditProject(self):
 
-        p = self.data.project[self.getSelectedProject()]
+        p = data.project[self.getSelectedProject()]
 
         self.diag_edit.line_name.setText(p['name'])
         self.diag_edit.combo_ptype.setCurrentIndex(
@@ -322,7 +322,7 @@ class NxProject:
     def onEditProject(self):
 
         pid = self.getSelectedProject()
-        p = self.data.project[pid]
+        p = data.project[pid]
         timestamp = int(time.time())
         disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
@@ -352,17 +352,17 @@ class NxProject:
         if response == QMessageBox.StandardButton.No:
             return
 
-        del self.data.project[pid]
+        del data.project[pid]
         self.reloadTable()
 
         # can't touch deleted project, direct changed update
-        self.data.run['changed'] = True
+        data.run['changed'] = True
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reset(self):
 
         self.reloadTable()
-        self.data.run['changed'] = False
+        data.run['changed'] = False
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

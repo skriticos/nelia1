@@ -5,14 +5,10 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 import time
 from pprint import pprint
+from datastore import data
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxMilestone:
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def __init__(self, data):
-
-        self.data = data
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def versionToIndex(self, major, minor):
@@ -36,12 +32,12 @@ class NxMilestone:
         x, y = self.versionToIndex(major, minor)
 
         if y == 0:
-            self.data.project[pid] ['milestone'].append(
+            data.project[pid] ['milestone'].append(
                 [{'description': '', 'm': '{}.{}'.format(major, minor),
                   'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
             )
         else:
-            self.data.project[pid] ['milestone'] [x].append(
+            data.project[pid] ['milestone'] [x].append(
                 {'description': '', 'm': '{}.{}'.format(major, minor),
                  'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
             )
@@ -53,10 +49,10 @@ class NxMilestone:
 
         # n.0 deletes major milestone
         if y == 0:
-            del self.data.project[pid]['milestone'][x]
+            del data.project[pid]['milestone'][x]
         # otherwise we are only deleting minor milestone
         else:
-            del self.data.project[pid]['milestone'][x][y]
+            del data.project[pid]['milestone'][x][y]
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def updateMilestoneTree(self, pid):
@@ -66,8 +62,8 @@ class NxMilestone:
             edge graph has to be updated.
         '''
 
-        p = self.data.project[pid]
-        cmajor, cminor = self.data.project[pid]['meta']['current_milestone']
+        p = data.project[pid]
+        cmajor, cminor = data.project[pid]['meta']['current_milestone']
         cx, cy = self.versionToIndex(cmajor, cminor)
 
         for x in range(len(p['milestone'])):
@@ -113,7 +109,7 @@ class NxMilestone:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getItemData(self, pid, item_id):
 
-        p = self.data.project[pid]
+        p = data.project[pid]
         ma, mi, fioc = p['ri_index'] [item_id]
         x, y = self.versionToIndex(ma, mi)
 
@@ -152,7 +148,7 @@ class NxMilestone:
     def setAttibute(self, pid, item_id, attr_name, value):
 
         idat = self.getItemData(pid, item_id)
-        self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
+        data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
                 [idat['fioc']] [item_id] [attr_name] = value
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -164,7 +160,7 @@ class NxMilestone:
     def addItem(self, pid, major, minor, itype, icat, name, priority,
                 description, status='Open'):
 
-        item_id = self.data.project[pid] ['meta'] ['last_roadmap_item'] + 1
+        item_id = data.project[pid] ['meta'] ['last_roadmap_item'] + 1
 
         new_item = {
             'name': name,
@@ -180,10 +176,10 @@ class NxMilestone:
         elif itype == 'Issue':
             fioc = 'io'
 
-        self.data.project[pid] ['milestone'] [x] [y] [fioc] [item_id] = new_item
-        self.data.project[pid] ['ri_index'] [item_id] = (major, minor, fioc)
+        data.project[pid] ['milestone'] [x] [y] [fioc] [item_id] = new_item
+        data.project[pid] ['ri_index'] [item_id] = (major, minor, fioc)
 
-        self.data.project[pid] ['meta'] ['last_roadmap_item'] += 1
+        data.project[pid] ['meta'] ['last_roadmap_item'] += 1
         self.touchItem(pid, item_id)
 
         self.updateMilestoneTree(pid)
@@ -232,12 +228,12 @@ class NxMilestone:
                 elif status == 'Closed':
                     nfioc = 'ic'
 
-        item = self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
+        item = data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
                 [idat['fioc']] [item_id]
-        self.data.project[pid] ['milestone'] [nx] [ny] [nfioc] [item_id] = item
-        del self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
+        data.project[pid] ['milestone'] [nx] [ny] [nfioc] [item_id] = item
+        del data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
                 [idat['fioc']] [item_id]
-        self.data.project[pid] ['ri_index'] [item_id] = (new_major, new_minor,
+        data.project[pid] ['ri_index'] [item_id] = (new_major, new_minor,
                                                          nfioc)
         self.touchItem(pid, item_id)
         self.updateMilestoneTree(pid)
@@ -262,9 +258,9 @@ class NxMilestone:
     def deleteItem(self, pid, item_id):
 
         idat = self.getItemData(pid, item_id)
-        del self.data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
+        del data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
                 [idat['fioc']] [item_id]
-        del self.data.project[pid] ['ri_index'] [item_id]
+        del data.project[pid] ['ri_index'] [item_id]
         self.updateMilestoneTree(pid)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

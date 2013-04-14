@@ -9,7 +9,7 @@ import signal
 import os, pprint
 import time
 
-from datastore import NxDataStore
+from datastore import data
 from config  import NxConfig
 from project import NxProject
 from log     import NxLog
@@ -27,9 +27,6 @@ class MainWindow(QObject):
     def __init__(self, argv):
 
         super().__init__()
-
-        # setup datastore
-        data = self.data = NxDataStore()
 
         # Load UI
         loader = QtUiTools.QUiLoader()
@@ -52,7 +49,7 @@ class MainWindow(QObject):
             if name.find('diag') > 0:
                 obj.setParent(self.w_main)
                 obj.setWindowFlags(Qt.Dialog)
-            self.data.run[name] = obj
+            data.run[name] = obj
         loader.deleteLater()
 
         # position module widgets
@@ -69,11 +66,11 @@ class MainWindow(QObject):
         self.w_main.setGeometry(100,70,1000,600)
 
         # initialize modules
-        self.data.run['mainwindow'] = self
-        self.data.run['config']     = NxConfig (data)
-        self.data.run['project']    = NxProject(self, data, self.w_project)
-        self.data.run['log']        = NxLog    (self, data, self.w_log)
-        self.data.run['roadmap']    = NxRoadmap(self, data, self.w_roadmap)
+        data.run['mainwindow'] = self
+        data.run['config']     = NxConfig ()
+        data.run['project']    = NxProject(self, self.w_project)
+        data.run['log']        = NxLog    (self, self.w_log)
+        data.run['roadmap']    = NxRoadmap(self, self.w_roadmap)
 
         # Dissable all tabs except the project tab.
         # They show the data from the selected project, and are in undefined
@@ -100,49 +97,49 @@ class MainWindow(QObject):
         signal.signal(signal.SIGTERM, self.onExit)
 
         self.applyConfig()
-        self.data.run['project'].reset()
+        data.run['project'].reset()
 
         self.w_main.show()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
-        if self.data.run['changed']:
-            self.data.run['project'].onSaveClicked()
+        if data.run['changed']:
+            data.run['project'].onSaveClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def debug(self):
 
         home = os.path.expanduser('~')
         with open(os.path.join(home, '.cache', 'nelia.debug.py'), 'w') as f:
-            f.write(pprint.pformat(self.data.__dict__))
+            f.write(pprint.pformat(data.__dict__))
 
     def updateConfig(self):
 
         """
             Update configuration details. This is mostly the column widths.
         """
-        self.data.run['project'].saveLayout()
-        self.data.run['log'].saveLayout()
-        self.data.run['roadmap'].saveLayout()
-        self.data.run['config'].config_data['project']['header_width'] = \
-                self.data.run['project'].header_width
-        self.data.run['config'].config_data['project']['sort_column'] = \
-                self.data.run['project'].sort_column
-        self.data.run['config'].config_data['project']['sort_order'] = \
-                self.data.run['project'].sort_order.__repr__()
-        self.data.run['config'].config_data['log']['header_width'] = \
-                self.data.run['log'].header_width
-        self.data.run['config'].config_data['log']['sort_column'] = \
-                self.data.run['log'].sort_column
-        self.data.run['config'].config_data['log']['sort_order'] = \
-                self.data.run['log'].sort_order.__repr__()
-        self.data.run['config'].config_data['roadmap']['header_width'] = \
-                self.data.run['roadmap'].header_width
-        self.data.run['config'].config_data['roadmap']['sort_column'] = \
-                self.data.run['roadmap'].sort_column
-        self.data.run['config'].config_data['roadmap']['sort_order'] = \
-                self.data.run['roadmap'].sort_order.__repr__()
+        data.run['project'].saveLayout()
+        data.run['log'].saveLayout()
+        data.run['roadmap'].saveLayout()
+        data.run['config'].config_data['project']['header_width'] = \
+                data.run['project'].header_width
+        data.run['config'].config_data['project']['sort_column'] = \
+                data.run['project'].sort_column
+        data.run['config'].config_data['project']['sort_order'] = \
+                data.run['project'].sort_order.__repr__()
+        data.run['config'].config_data['log']['header_width'] = \
+                data.run['log'].header_width
+        data.run['config'].config_data['log']['sort_column'] = \
+                data.run['log'].sort_column
+        data.run['config'].config_data['log']['sort_order'] = \
+                data.run['log'].sort_order.__repr__()
+        data.run['config'].config_data['roadmap']['header_width'] = \
+                data.run['roadmap'].header_width
+        data.run['config'].config_data['roadmap']['sort_column'] = \
+                data.run['roadmap'].sort_column
+        data.run['config'].config_data['roadmap']['sort_order'] = \
+                data.run['roadmap'].sort_order.__repr__()
 
-        x = self.data.run['config'].config_data['roadmap']
+        x = data.run['config'].config_data['roadmap']
         x['show_feature'] = self.w_roadmap.check_feature.isChecked()
         x['show_issue'] = self.w_roadmap.check_issue.isChecked()
         x['show_open'] = self.w_roadmap.check_open.isChecked()
@@ -160,50 +157,50 @@ class MainWindow(QObject):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def applyConfig(self):
 
-        if self.data.run['config'].no_config == True:
+        if data.run['config'].no_config == True:
             return
 
-        self.data.run['project'].header_width = \
-            self.data.run['config'].config_data['project']['header_width']
-        self.data.run['project'].sort_column = \
-            self.data.run['config'].config_data['project']['sort_column']
-        if self.data.run['config'].config_data['project']['sort_order'] \
+        data.run['project'].header_width = \
+            data.run['config'].config_data['project']['header_width']
+        data.run['project'].sort_column = \
+            data.run['config'].config_data['project']['sort_column']
+        if data.run['config'].config_data['project']['sort_order'] \
            == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
-                self.data.run['project'].sort_order \
+                data.run['project'].sort_order \
                         = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif self.data.run['config'].config_data['project']['sort_order'] \
+        elif data.run['config'].config_data['project']['sort_order'] \
                 == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
-                self.data.run['project'].sort_order \
+                data.run['project'].sort_order \
                         = PySide.QtCore.Qt.SortOrder.AscendingOrder
-        self.data.run['log'].header_width = \
-            self.data.run['config'].config_data['log']['header_width']
-        self.data.run['log'].sort_column = \
-            self.data.run['config'].config_data['log']['sort_column']
-        if self.data.run['config'].config_data['log']['sort_order'] \
+        data.run['log'].header_width = \
+            data.run['config'].config_data['log']['header_width']
+        data.run['log'].sort_column = \
+            data.run['config'].config_data['log']['sort_column']
+        if data.run['config'].config_data['log']['sort_order'] \
            == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
-                self.data.run['log'].sort_order \
+                data.run['log'].sort_order \
                         = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif self.data.run['config'].config_data['log']['sort_order'] \
+        elif data.run['config'].config_data['log']['sort_order'] \
                 == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
-                self.data.run['log'].sort_order \
+                data.run['log'].sort_order \
                         = PySide.QtCore.Qt.SortOrder.AscendingOrder
-        self.data.run['roadmap'].header_width = \
-            self.data.run['config'].config_data['roadmap']['header_width']
-        self.data.run['roadmap'].sort_column = \
-            self.data.run['config'].config_data['roadmap']['sort_column']
-        if self.data.run['config'].config_data['roadmap']['sort_order'] \
+        data.run['roadmap'].header_width = \
+            data.run['config'].config_data['roadmap']['header_width']
+        data.run['roadmap'].sort_column = \
+            data.run['config'].config_data['roadmap']['sort_column']
+        if data.run['config'].config_data['roadmap']['sort_order'] \
            == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
-                self.data.run['roadmap'].sort_order \
+                data.run['roadmap'].sort_order \
                         = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif self.data.run['config'].config_data['roadmap']['sort_order'] \
+        elif data.run['config'].config_data['roadmap']['sort_order'] \
                 == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
-                self.data.run['roadmap'].sort_order \
+                data.run['roadmap'].sort_order \
                         = PySide.QtCore.Qt.SortOrder.AscendingOrder
-        self.data.run['project'].loadLayout()
-        self.data.run['log'].loadLayout()
-        self.data.run['roadmap'].loadLayout()
+        data.run['project'].loadLayout()
+        data.run['log'].loadLayout()
+        data.run['roadmap'].loadLayout()
 
-        x = self.data.run['config'].config_data['roadmap']
+        x = data.run['config'].config_data['roadmap']
 
         if x['show_feature']:
             self.w_roadmap.check_feature.setChecked(True)
@@ -281,16 +278,16 @@ class MainWindow(QObject):
 
         if obj == self.w_main and isinstance(event, QCloseEvent):
             self.updateConfig()
-            self.data.run['config'].writeConfig()
+            data.run['config'].writeConfig()
             # note: this does not actually work -> has to be debugged
-            if self.data.run['changed']:
-                if self.data.run['path']:
-                    self.data.save_document(self.data.run['path'])
+            if data.run['changed']:
+                if data.run['path']:
+                    data.save_document(data.run['path'])
                 else:
-                    base = self.data.default_path
+                    base = data.default_path
                     path = os.path.join(
                         base,'.'+str(int(time.time()))+'.tmp.nelia1')
-                    self.data.save_document(path)
+                    data.save_document(path)
         res = False
         try:
             res = QObject.eventFilter(self.w_main, obj, event)
@@ -348,9 +345,9 @@ class MainWindow(QObject):
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
 
         if cur_tab_name == '&Log':
-            self.data.run['log'].onShowTab()
+            data.run['log'].onShowTab()
         if cur_tab_name == '&Roadmap':
-            self.data.run['roadmap'].onShowTab()
+            data.run['roadmap'].onShowTab()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
