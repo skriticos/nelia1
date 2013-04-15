@@ -25,10 +25,8 @@ class MainWindow(QObject):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, argv):
-
         super().__init__()
-
-        # Load UI
+        # load ui to data.w_*
         loader = QtUiTools.QUiLoader()
         for name, fname in (
             ('w_main',                  'forms/mainwindow.ui'),
@@ -41,36 +39,32 @@ class MainWindow(QObject):
             ('w_log_diag_new',          'forms/log_new_entry.ui'),
             ('w_roadmap_diag_add',      'forms/roadmap_add.ui'),
             ('w_roadmap_diag_finalize', 'forms/roadmap_finalize_milestone.ui')):
-
             f = QFile(fname)
             f.open(QFile.ReadOnly)
-            obj = self.__dict__[name] = loader.load(f)
+            obj = data.__dict__[name] = loader.load(f)
             f.close()
             if name.find('diag') > 0:
-                obj.setParent(self.w_main)
+                obj.setParent(data.w_main)
                 obj.setWindowFlags(Qt.Dialog)
-            data.run[name] = obj
         loader.deleteLater()
-
         # position module widgets
         for cname, pname in (('w_project', 'tab_project'),
                              ('w_log',     'tab_log'),
                              ('w_roadmap', 'tab_roadmap')):
             grid = QGridLayout()
-            grid.addWidget(self.__dict__[cname], 0, 0)
+            grid.addWidget(data.__dict__[cname], 0, 0)
             grid.setContentsMargins(0, 0, 0, 0)
-            self.w_main.__dict__[pname].setLayout(grid)
-
+            data.w_main.__dict__[pname].setLayout(grid)
         # icon and window size
-        self.w_main.setWindowIcon(QIcon('img/nelia-icon32.png'))
-        self.w_main.setGeometry(100,70,1000,600)
+        data.w_main.setWindowIcon(QIcon('img/nelia-icon32.png'))
+        data.w_main.setGeometry(100,70,1000,600)
 
         # initialize modules
         data.run['mainwindow'] = self
-        data.run['config']     = NxConfig ()
-        data.run['project']    = NxProject(self, self.w_project)
-        data.run['log']        = NxLog    (self, self.w_log)
-        data.run['roadmap']    = NxRoadmap(self, self.w_roadmap)
+        data.run['config']     = NxConfig()
+        data.run['project']    = NxProject()
+        data.run['log']        = NxLog()
+        data.run['roadmap']    = NxRoadmap()
 
         # Dissable all tabs except the project tab.
         # They show the data from the selected project, and are in undefined
@@ -78,28 +72,28 @@ class MainWindow(QObject):
         self.dissableTabs()
 
         # Connect signals and slots.
-        self.w_main.tabnavi.currentChanged.connect(self.tabChanged)
+        data.w_main.tabnavi.currentChanged.connect(self.tabChanged)
 
         # Global shortcuts.
-        close_shortcut = QShortcut(QKeySequence('Ctrl+w'), self.w_main)
-        close_shortcut.activated.connect(self.w_main.close)
-        switch_forward = QShortcut(QKeySequence('Ctrl+PgUp'), self.w_main)
+        close_shortcut = QShortcut(QKeySequence('Ctrl+w'), data.w_main)
+        close_shortcut.activated.connect(data.w_main.close)
+        switch_forward = QShortcut(QKeySequence('Ctrl+PgUp'), data.w_main)
         switch_forward.activated.connect(self.onTabForward)
-        switch_backward = QShortcut(QKeySequence('Ctrl+PgDown'), self.w_main)
+        switch_backward = QShortcut(QKeySequence('Ctrl+PgDown'), data.w_main)
         switch_backward.activated.connect(self.onTabBackward)
-        save = QShortcut(QKeySequence('Ctrl+s'), self.w_main)
+        save = QShortcut(QKeySequence('Ctrl+s'), data.w_main)
         save.activated.connect(self.onSaveShortcutActivated)
-        debug = QShortcut(QKeySequence('Ctrl+d'), self.w_main)
+        debug = QShortcut(QKeySequence('Ctrl+d'), data.w_main)
         debug.activated.connect(self.debug)
 
         # Intercept close event (see self.eventFilter).
-        QObject.installEventFilter(self.w_main, self)
+        QObject.installEventFilter(data.w_main, self)
         signal.signal(signal.SIGTERM, self.onExit)
 
         self.applyConfig()
         data.run['project'].reset()
 
-        self.w_main.show()
+        data.w_main.show()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
@@ -140,19 +134,19 @@ class MainWindow(QObject):
                 data.run['roadmap'].sort_order.__repr__()
 
         x = data.run['config'].config_data['roadmap']
-        x['show_feature'] = self.w_roadmap.check_feature.isChecked()
-        x['show_issue'] = self.w_roadmap.check_issue.isChecked()
-        x['show_open'] = self.w_roadmap.check_open.isChecked()
-        x['show_closed'] = self.w_roadmap.check_closed.isChecked()
-        x['show_low'] = self.w_roadmap.check_low.isChecked()
-        x['show_medium'] = self.w_roadmap.check_medium.isChecked()
-        x['show_high'] = self.w_roadmap.check_high.isChecked()
-        x['show_core'] = self.w_roadmap.check_core.isChecked()
-        x['show_auxiliary'] = self.w_roadmap.check_auxiliary.isChecked()
-        x['show_security'] = self.w_roadmap.check_security.isChecked()
-        x['show_corrective'] = self.w_roadmap.check_corrective.isChecked()
-        x['show_architecture'] = self.w_roadmap.check_architecture.isChecked()
-        x['show_refactor'] = self.w_roadmap.check_refactor.isChecked()
+        x['show_feature'] = data.w_roadmap.check_feature.isChecked()
+        x['show_issue'] = data.w_roadmap.check_issue.isChecked()
+        x['show_open'] = data.w_roadmap.check_open.isChecked()
+        x['show_closed'] = data.w_roadmap.check_closed.isChecked()
+        x['show_low'] = data.w_roadmap.check_low.isChecked()
+        x['show_medium'] = data.w_roadmap.check_medium.isChecked()
+        x['show_high'] = data.w_roadmap.check_high.isChecked()
+        x['show_core'] = data.w_roadmap.check_core.isChecked()
+        x['show_auxiliary'] = data.w_roadmap.check_auxiliary.isChecked()
+        x['show_security'] = data.w_roadmap.check_security.isChecked()
+        x['show_corrective'] = data.w_roadmap.check_corrective.isChecked()
+        x['show_architecture'] = data.w_roadmap.check_architecture.isChecked()
+        x['show_refactor'] = data.w_roadmap.check_refactor.isChecked()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def applyConfig(self):
@@ -203,59 +197,59 @@ class MainWindow(QObject):
         x = data.run['config'].config_data['roadmap']
 
         if x['show_feature']:
-            self.w_roadmap.check_feature.setChecked(True)
+            data.w_roadmap.check_feature.setChecked(True)
         else:
-            self.w_roadmap.check_feature.setChecked(False)
+            data.w_roadmap.check_feature.setChecked(False)
         if x['show_issue']:
-            self.w_roadmap.check_issue.setChecked(True)
+            data.w_roadmap.check_issue.setChecked(True)
         else:
-            self.w_roadmap.check_issue.setChecked(False)
+            data.w_roadmap.check_issue.setChecked(False)
         if x['show_open']:
-            self.w_roadmap.check_open.setChecked(True)
+            data.w_roadmap.check_open.setChecked(True)
         else:
-            self.w_roadmap.check_open.setChecked(False)
+            data.w_roadmap.check_open.setChecked(False)
         if x['show_closed']:
-            self.w_roadmap.check_closed.setChecked(True)
+            data.w_roadmap.check_closed.setChecked(True)
         else:
-            self.w_roadmap.check_closed.setChecked(False)
+            data.w_roadmap.check_closed.setChecked(False)
 
         if x['show_low']:
-            self.w_roadmap.check_low.setChecked(True)
+            data.w_roadmap.check_low.setChecked(True)
         else:
-            self.w_roadmap.check_low.setChecked(False)
+            data.w_roadmap.check_low.setChecked(False)
         if x['show_medium']:
-            self.w_roadmap.check_medium.setChecked(True)
+            data.w_roadmap.check_medium.setChecked(True)
         else:
-            self.w_roadmap.check_medium.setChecked(False)
+            data.w_roadmap.check_medium.setChecked(False)
         if x['show_high']:
-            self.w_roadmap.check_high.setChecked(True)
+            data.w_roadmap.check_high.setChecked(True)
         else:
-            self.w_roadmap.check_high.setChecked(False)
+            data.w_roadmap.check_high.setChecked(False)
 
         if x['show_core']:
-            self.w_roadmap.check_core.setChecked(True)
+            data.w_roadmap.check_core.setChecked(True)
         else:
-            self.w_roadmap.check_core.setChecked(False)
+            data.w_roadmap.check_core.setChecked(False)
         if x['show_auxiliary']:
-            self.w_roadmap.check_auxiliary.setChecked(True)
+            data.w_roadmap.check_auxiliary.setChecked(True)
         else:
-            self.w_roadmap.check_auxiliary.setChecked(False)
+            data.w_roadmap.check_auxiliary.setChecked(False)
         if x['show_security']:
-            self.w_roadmap.check_security.setChecked(True)
+            data.w_roadmap.check_security.setChecked(True)
         else:
-            self.w_roadmap.check_security.setChecked(False)
+            data.w_roadmap.check_security.setChecked(False)
         if x['show_corrective']:
-            self.w_roadmap.check_corrective.setChecked(True)
+            data.w_roadmap.check_corrective.setChecked(True)
         else:
-            self.w_roadmap.check_corrective.setChecked(False)
+            data.w_roadmap.check_corrective.setChecked(False)
         if x['show_architecture']:
-            self.w_roadmap.check_architecture.setChecked(True)
+            data.w_roadmap.check_architecture.setChecked(True)
         else:
-            self.w_roadmap.check_architecture.setChecked(False)
+            data.w_roadmap.check_architecture.setChecked(False)
         if x['show_refactor']:
-            self.w_roadmap.check_refactor.setChecked(True)
+            data.w_roadmap.check_refactor.setChecked(True)
         else:
-            self.w_roadmap.check_refactor.setChecked(False)
+            data.w_roadmap.check_refactor.setChecked(False)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onExit(self, num, frame):
@@ -266,7 +260,7 @@ class MainWindow(QObject):
         filter and shout down properly.
         """
 
-        self.w_main.close()
+        data.w_main.close()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def eventFilter(self, obj, event):
@@ -276,7 +270,7 @@ class MainWindow(QObject):
         (or any other way that tells the main window to close).
         """
 
-        if obj == self.w_main and isinstance(event, QCloseEvent):
+        if obj == data.w_main and isinstance(event, QCloseEvent):
             self.updateConfig()
             data.run['config'].writeConfig()
             # note: this does not actually work -> has to be debugged
@@ -290,7 +284,7 @@ class MainWindow(QObject):
                     data.save_document(path)
         res = False
         try:
-            res = QObject.eventFilter(self.w_main, obj, event)
+            res = QObject.eventFilter(data.w_main, obj, event)
         except:
             pass
         return res
@@ -299,49 +293,49 @@ class MainWindow(QObject):
     def onTabForward(self):
 
         # get current tab index
-        tab_index = self.w_main.tabnavi.currentIndex()
+        tab_index = data.w_main.tabnavi.currentIndex()
 
         # get max index
-        tab_count = self.w_main.tabnavi.count()
+        tab_count = data.w_main.tabnavi.count()
 
         # next tab
         if tab_index+1 == tab_count:
-            self.w_main.tabnavi.setCurrentIndex(0)
-        elif self.w_main.tabnavi.isTabEnabled(tab_index+1):
-            self.w_main.tabnavi.setCurrentIndex(tab_index+1)
+            data.w_main.tabnavi.setCurrentIndex(0)
+        elif data.w_main.tabnavi.isTabEnabled(tab_index+1):
+            data.w_main.tabnavi.setCurrentIndex(tab_index+1)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabBackward(self):
 
         # get current tab index
-        tab_index = self.w_main.tabnavi.currentIndex()
+        tab_index = data.w_main.tabnavi.currentIndex()
 
         # get max index
-        tab_count = self.w_main.tabnavi.count()
+        tab_count = data.w_main.tabnavi.count()
 
         if tab_index == 0:
-            if self.w_main.tabnavi.isTabEnabled(tab_count-1):
-                self.w_main.tabnavi.setCurrentIndex(tab_count-1)
+            if data.w_main.tabnavi.isTabEnabled(tab_count-1):
+                data.w_main.tabnavi.setCurrentIndex(tab_count-1)
         else:
-            self.w_main.tabnavi.setCurrentIndex(tab_index-1)
+            data.w_main.tabnavi.setCurrentIndex(tab_index-1)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def enableTabs(self):
 
         for i in range(1,3):
-            self.w_main.tabnavi.setTabEnabled(i, True)
+            data.w_main.tabnavi.setTabEnabled(i, True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def dissableTabs(self):
 
         for i in range(1,3):
-            self.w_main.tabnavi.setTabEnabled(i, False)
+            data.w_main.tabnavi.setTabEnabled(i, False)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def tabChanged(self):
 
         # PREPARE DATA
-        tab_widget = self.w_main.tabnavi
+        tab_widget = data.w_main.tabnavi
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
 
         if cur_tab_name == '&Log':

@@ -23,11 +23,6 @@ class NxConfig:
 
         os.makedirs(self.basepath, exist_ok=True)
 
-        # general pointers to the data and widgets we need
-        self.project = data.run['w_project']
-        self.log     = data.run['w_log']
-        self.roadmap = data.run['w_roadmap']
-
         # internal config data structure
         self.config_data = {
             'datastore': {},

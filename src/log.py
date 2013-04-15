@@ -14,19 +14,13 @@ class NxLog:
     """
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def __init__(self, parent, widget):
+    def __init__(self):
         """
         Setup data, UI and connect callbacks.
         """
 
-        # setup backbone
-        self.parent = parent
-        self.widget = widget
-
-        self.diag_new = self.parent.w_log_diag_new
-
         # setup table
-        self.table = widget.table_history
+        self.table = data.w_log.table_history
         self.model = QStandardItemModel()
         self.table_headers = \
                 ['ID', 'Created', 'Summary']
@@ -39,12 +33,12 @@ class NxLog:
         self.table.setColumnWidth(2, 550)
 
         # connect add roadmap callbacks
-        self.widget.push_new_entry.clicked.connect(lambda: (
-            self.parent.w_log_diag_new.text_detail.clear(),
-            self.parent.w_log_diag_new.line_summary.clear(),
-            self.parent.w_log_diag_new.line_summary.setFocus(),
-            self.parent.w_log_diag_new.show()))
-        self.parent.w_log_diag_new.accepted.connect(self.onNewEntry)
+        data.w_log.push_new_entry.clicked.connect(lambda: (
+            data.w_log_diag_new.text_detail.clear(),
+            data.w_log_diag_new.line_summary.clear(),
+            data.w_log_diag_new.line_summary.setFocus(),
+            data.w_log_diag_new.show()))
+        data.w_log_diag_new.accepted.connect(self.onNewEntry)
 
         # update text_detail on selection change
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
@@ -60,8 +54,8 @@ class NxLog:
     def onSelectionChange(self):
 
         if self.model.rowCount() > 0 and not self.init:
-            self.widget.text_detail.setEnabled(True)
-            self.widget.text_detail.setPlainText(
+            data.w_log.text_detail.setEnabled(True)
+            data.w_log.text_detail.setPlainText(
                 data.project [self.pid] ['log'] [self.getSelectedLogId()] \
                 ['detail']
             )
@@ -126,9 +120,9 @@ class NxLog:
             self.table.selectRow(0)
             self.table.setFocus()
         else:
-            self.widget.text_detail.setPlainText('No log selected')
-            self.widget.text_detail.setEnabled(False)
-            self.widget.push_new_entry.setFocus()
+            data.w_log.text_detail.setPlainText('No log selected')
+            data.w_log.text_detail.setEnabled(False)
+            data.w_log.push_new_entry.setFocus()
 
         if preserveLayout:
             self.loadLayout()
@@ -154,8 +148,8 @@ class NxLog:
 
             # setup widget
             pname = data.run['project'].getSelectedProjectName()
-            self.widget.line_project.setText(pname)
-            self.parent.w_log_diag_new.line_project.setText(pname)
+            data.w_log.line_project.setText(pname)
+            data.w_log_diag_new.line_project.setText(pname)
 
             self.reloadTable()
 
@@ -173,8 +167,8 @@ class NxLog:
         # populate data
         data.project[self.pid]['log'][lid] = {
             'created': timestamp,
-            'summary': self.diag_new.line_summary.text(),
-            'detail':  self.diag_new.text_detail.toPlainText()
+            'summary': data.w_log_diag_new.line_summary.text(),
+            'detail':  data.w_log_diag_new.text_detail.toPlainText()
         }
 
         # update
@@ -186,7 +180,7 @@ class NxLog:
             0, [
                 QStandardItem(str(lid).zfill(4)),
                 QStandardItem(disptime),
-                QStandardItem(self.diag_new.line_summary.text())
+                QStandardItem(data.w_log_diag_new.line_summary.text())
             ]
         )
 

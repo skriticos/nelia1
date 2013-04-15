@@ -11,43 +11,39 @@ from datastore import data
 class NxProject:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def __init__(self, parent, widget):
-
-        # setup backbone
-        self.parent = parent
-        self.widget = widget
+    def __init__(self):
 
         # show new project dialog
-        self.widget.push_new.clicked.connect(
+        data.w_project.push_new.clicked.connect(
             lambda: (
-            parent.w_project_diag_new.line_name.clear(),
-            parent.w_project_diag_new.combo_ptype.setCurrentIndex(0),
-            parent.w_project_diag_new.combo_status.setCurrentIndex(0),
-            parent.w_project_diag_new.combo_category.setCurrentIndex(0),
-            parent.w_project_diag_new.spin_priority.setValue(0),
-            parent.w_project_diag_new.spin_challenge.setValue(0),
-            parent.w_project_diag_new.text_description.clear(),
-            parent.w_project_diag_new.line_name.setFocus(),
-            parent.w_project_diag_new.show()))
+            data.w_project_diag_new.line_name.clear(),
+            data.w_project_diag_new.combo_ptype.setCurrentIndex(0),
+            data.w_project_diag_new.combo_status.setCurrentIndex(0),
+            data.w_project_diag_new.combo_category.setCurrentIndex(0),
+            data.w_project_diag_new.spin_priority.setValue(0),
+            data.w_project_diag_new.spin_challenge.setValue(0),
+            data.w_project_diag_new.text_description.clear(),
+            data.w_project_diag_new.line_name.setFocus(),
+            data.w_project_diag_new.show()))
 
         # show edit project dialog
-        self.widget.push_edit.clicked.connect(self.showEditProject)
+        data.w_project.push_edit.clicked.connect(self.showEditProject)
 
-        data.run['w_project_diag_new'].accepted.connect(self.onNewProject)
-        data.run['w_project_diag_edit'].accepted.connect(
+        data.w_project_diag_new.accepted.connect(self.onNewProject)
+        data.w_project_diag_edit.accepted.connect(
             self.onEditProject)
-        self.widget.push_delete.clicked.connect(self.onDeleteProject)
+        data.w_project.push_delete.clicked.connect(self.onDeleteProject)
 
-        self.widget.push_open.clicked.connect(self.onOpenClicked)
+        data.w_project.push_open.clicked.connect(self.onOpenClicked)
         if 'lastpath' in data.run['config'].config_data['datastore']:
-            self.widget.push_open_last.setEnabled(True)
-        self.widget.push_open_last.clicked.connect(self.onOpenLast)
-        self.widget.push_save.clicked.connect(self.onSaveClicked)
-        self.widget.push_help.clicked.connect(
-            self.parent.w_project_diag_help.show)
+            data.w_project.push_open_last.setEnabled(True)
+        data.w_project.push_open_last.clicked.connect(self.onOpenLast)
+        data.w_project.push_save.clicked.connect(self.onSaveClicked)
+        data.w_project.push_help.clicked.connect(
+            data.w_project_diag_help.show)
 
         # setup table
-        self.table = self.widget.table_project_list
+        self.table = data.w_project.table_project_list
         self.table_headers = [
                 'ID', 'Name', 'Status', 'Type', 'Verson', 'Category',
                 'Priority', 'Challenge', 'Modified', 'Created' ]
@@ -58,11 +54,11 @@ class NxProject:
         self.horizontal_header = self.table.horizontalHeader()
         self.table.setAlternatingRowColors(True)
 
-        self.diag_new = self.parent.w_project_diag_new
-        self.diag_edit = self.parent.w_project_diag_edit
+        self.diag_new = data.w_project_diag_new
+        self.diag_edit = data.w_project_diag_edit
 
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
-        self.widget.text_description.textChanged.connect(
+        data.w_project.text_description.textChanged.connect(
             self.onDescriptionChange)
 
         self.table.activated.connect(self.showEditProject)
@@ -72,14 +68,14 @@ class NxProject:
         # throw away changes?
         if data.run['changed']:
             response = QMessageBox.question(
-                self.parent.w_main, 'Discard changes?',
+                data.w_main, 'Discard changes?',
                 'Opening a file will discard your changes. ' + \
                 'Do you want to proceed?',
                 QMessageBox.Yes|QMessageBox.No)
             if response == QMessageBox.StandardButton.No: return
         # read path
         path = QFileDialog.getOpenFileName(
-            self.parent.w_main, 'Open nelia1 document', data.default_path,
+            data.w_main, 'Open nelia1 document', data.default_path,
             'Nelia Files (*{})'.format(data.extension))[0]
         # path dialog aborted
         if not path:
@@ -88,27 +84,27 @@ class NxProject:
         result = data.open_document(path)
         if isinstance(result, Exception):
             title, message = 'open failed', 'open failed! ' + str(result)
-            QMessageBox.critical(self.parent.w_main, title, message)
+            QMessageBox.critical(data.w_main, title, message)
             data.run['path'] = None
             return
         self.reset()
-        self.widget.push_save.setEnabled(False)
+        data.w_project.push_save.setEnabled(False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
         path = data.run['config'].config_data['datastore']['lastpath']
         result = data.open_document(path)
         if isinstance(result, Exception):
             title, message = 'Open failed', 'Open failed! ' + str(result)
-            QMessageBox.critical(self.parent.w_main, title, message)
+            QMessageBox.critical(data.w_main, title, message)
             return
         self.reset()
-        self.widget.push_open_last.setEnabled(False)
-        self.widget.push_save.setEnabled(False)
+        data.w_project.push_open_last.setEnabled(False)
+        data.w_project.push_save.setEnabled(False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveClicked(self):
         if not data.run['path']:
             path = QFileDialog.getSaveFileName(
-                self.parent.w_main,
+                data.w_main,
                 'Save nelia1 document', data.default_path,
                 'Nelia Files (*{})'.format(data.extension))[0]
             # dialog aborted?
@@ -122,9 +118,9 @@ class NxProject:
         result = data.save_document(path)
         if isinstance(result, Exception):
             title, message = 'Save failed', 'Save failed! ' + str(result)
-            QMessageBox.critical(self.parent.w_main, title, message)
+            QMessageBox.critical(data.w_main, title, message)
             return
-        self.widget.push_save.setEnabled(False)
+        data.w_project.push_save.setEnabled(False)
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def touchProject(self, timestamp):
@@ -138,7 +134,7 @@ class NxProject:
         self.model.setItem(self.getActiveRow(), 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         data.run['changed'] = True
-        self.widget.push_save.setEnabled(True)
+        data.w_project.push_save.setEnabled(True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedProject(self):
@@ -167,8 +163,8 @@ class NxProject:
         if not self.init:
             pid = self.getSelectedProject()
             if data.project[0]['next_id'] > 1 and pid != 0:
-                self.widget.text_description.setEnabled(True)
-                self.widget.text_description.setPlainText(
+                data.w_project.text_description.setEnabled(True)
+                data.w_project.text_description.setPlainText(
                     data.project[pid]['description']
                 )
 
@@ -176,7 +172,7 @@ class NxProject:
     def onDescriptionChange(self):
 
         data.project[self.getSelectedProject()]['description'] = \
-                self.widget.text_description.toPlainText()
+                data.w_project.text_description.toPlainText()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
@@ -239,23 +235,23 @@ class NxProject:
 
             self.table.selectRow(0)
 
-            self.parent.enableTabs()
-            self.widget.push_edit.setEnabled(True)
-            self.widget.push_delete.setEnabled(True)
-            self.widget.push_save.setEnabled(True)
-            self.widget.push_new.setDefault(False)
+            data.run['mainwindow'].enableTabs()
+            data.w_project.push_edit.setEnabled(True)
+            data.w_project.push_delete.setEnabled(True)
+            data.w_project.push_save.setEnabled(True)
+            data.w_project.push_new.setDefault(False)
 
             self.table.setFocus()
 
         else:
 
-            self.widget.text_description.clear()
-            self.widget.text_description.setEnabled(False)
-            self.parent.dissableTabs()
-            self.widget.push_edit.setEnabled(False)
-            self.widget.push_delete.setEnabled(False)
-            self.widget.push_save.setEnabled(False)
-            self.widget.push_new.setFocus()
+            data.w_project.text_description.clear()
+            data.w_project.text_description.setEnabled(False)
+            data.run['mainwindow'].dissableTabs()
+            data.w_project.push_edit.setEnabled(False)
+            data.w_project.push_delete.setEnabled(False)
+            data.w_project.push_save.setEnabled(False)
+            data.w_project.push_new.setFocus()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewProject(self):
@@ -343,7 +339,7 @@ class NxProject:
         pid = self.getSelectedProject()
 
         response = QMessageBox.question(
-            self.widget,
+            data.w_project,
             'Delete project?',
             'Sure you want to delete project {}: {}?'.format(
                 str(pid), self.getSelectedProjectName()),
