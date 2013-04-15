@@ -143,7 +143,7 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
 
-        pid = data.run['project'].getSelectedProject()
+        pid = data.c_project.getSelectedProject()
         if data.run['roadmap_pid_last'] == 0 \
            or data.run['roadmap_pid_last'] != pid:
 
@@ -152,7 +152,7 @@ class NxRoadmap:
 
             pro = data.project[pid]
 
-            project_name = data.run['project'].getSelectedProjectName()
+            project_name = data.c_project.getSelectedProjectName()
             data.w_roadmap.line_project.setText(project_name)
             data.w_roadmap_diag_add.line_project.setText(project_name)
 
@@ -199,7 +199,7 @@ class NxRoadmap:
                 self.mc.closeItem(self.pid, self.getSelectedItemId())
         if status == 'Closed':
             self.mc.reopenItem(self.pid, self.getSelectedItemId())
-        data.run['project'].touchProject(time.time())
+        data.c_project.touchProject(time.time())
         self.onChangeVersionSelection(self.selected_major, self.selected_minor)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -351,7 +351,7 @@ class NxRoadmap:
 
         self.selected_major, self.selected_minor \
                 = data.w_roadmap.push_milestone.getVersion()
-        pid = data.run['project'].getSelectedProject()
+        pid = data.c_project.getSelectedProject()
         cmajor, cminor = data.project[pid]['meta']['current_milestone']
         yy = self.selected_minor
         if self.selected_major == 0: yy = self.selected_minor-1
@@ -518,7 +518,7 @@ class NxRoadmap:
         self.reloadMilestoneButton()
         self.reloadTable()
 
-        data.run['project'].touchProject(int(time.time()))
+        data.c_project.touchProject(int(time.time()))
         print('touching project')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -527,7 +527,7 @@ class NxRoadmap:
         self.mc.deleteItem(self.pid, self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
-        data.run['project'].touchProject(int(time.time()))
+        data.c_project.touchProject(int(time.time()))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

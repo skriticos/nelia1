@@ -136,7 +136,7 @@ class NxLog:
         """
 
         # retrive pid
-        pid = data.run['project'].getSelectedProject()
+        pid = data.c_project.getSelectedProject()
 
         # check if project selection changed
         if data.run['log_pid_last'] != pid:
@@ -147,7 +147,7 @@ class NxLog:
             self.init = True # skip selection change callback
 
             # setup widget
-            pname = data.run['project'].getSelectedProjectName()
+            pname = data.c_project.getSelectedProjectName()
             data.w_log.line_project.setText(pname)
             data.w_log_diag_new.line_project.setText(pname)
 
@@ -172,7 +172,7 @@ class NxLog:
         }
 
         # update
-        data.run['project'].touchProject(timestamp)
+        data.c_project.touchProject(timestamp)
         data.project[self.pid]['meta']['last_log'] += 1
 
         # populate data

@@ -35,7 +35,7 @@ class NxProject:
         data.w_project.push_delete.clicked.connect(self.onDeleteProject)
 
         data.w_project.push_open.clicked.connect(self.onOpenClicked)
-        if 'lastpath' in data.run['config'].config_data['datastore']:
+        if 'lastpath' in data.c_config.config_data['datastore']:
             data.w_project.push_open_last.setEnabled(True)
         data.w_project.push_open_last.clicked.connect(self.onOpenLast)
         data.w_project.push_save.clicked.connect(self.onSaveClicked)
@@ -91,7 +91,7 @@ class NxProject:
         data.w_project.push_save.setEnabled(False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
-        path = data.run['config'].config_data['datastore']['lastpath']
+        path = data.c_config.config_data['datastore']['lastpath']
         result = data.open_document(path)
         if isinstance(result, Exception):
             title, message = 'Open failed', 'Open failed! ' + str(result)
@@ -235,7 +235,7 @@ class NxProject:
 
             self.table.selectRow(0)
 
-            data.run['mainwindow'].enableTabs()
+            data.c_main.enableTabs()
             data.w_project.push_edit.setEnabled(True)
             data.w_project.push_delete.setEnabled(True)
             data.w_project.push_save.setEnabled(True)
@@ -247,7 +247,7 @@ class NxProject:
 
             data.w_project.text_description.clear()
             data.w_project.text_description.setEnabled(False)
-            data.run['mainwindow'].dissableTabs()
+            data.c_main.dissableTabs()
             data.w_project.push_edit.setEnabled(False)
             data.w_project.push_delete.setEnabled(False)
             data.w_project.push_save.setEnabled(False)

@@ -39,7 +39,7 @@ class NxDataStore:
         try:
             pickled_data = pickle.dumps(data, 3)
             compressed_data = gzip.compress(pickled_data)
-            config = self.run['config']
+            config = self.c_config
             config.config_data['datastore'] ['lastpath'] = path
             with open(path, 'wb') as f:
                 f.write(compressed_data)
@@ -62,7 +62,7 @@ class NxDataStore:
             self.run['path'] = None
             return e
         # save path in configuration (for NxProject.onOpenLast)
-        config = self.run['config']
+        config = self.c_config
         config.config_data['datastore']['lastpath'] = path
         # replace document data
         del self.project
