@@ -56,7 +56,7 @@ class NxLog:
         if self.model.rowCount() > 0 and not self.init:
             data.w_log.text_detail.setEnabled(True)
             data.w_log.text_detail.setPlainText(
-                data.project [self.pid] ['log'] [self.getSelectedLogId()] \
+                data.project [data.getPid()] ['log'] [self.getSelectedLogId()] \
                 ['detail']
             )
 
@@ -103,8 +103,8 @@ class NxLog:
         self.model.setHorizontalHeaderLabels(self.table_headers)
 
         # populate table
-        for i in range(data.project[self.pid]['meta']['last_log']):
-            log = data.project[self.pid]['log'][i+1]
+        for i in range(data.project[data.getPid()]['meta']['last_log']):
+            log = data.project[data.getPid()]['log'][i+1]
             self.model.insertRow(0, [
                 QStandardItem(str(i+1).zfill(4)),
                 QStandardItem(datetime.datetime.fromtimestamp(
@@ -116,7 +116,7 @@ class NxLog:
         self.table.sortByColumn(0, Qt.DescendingOrder)
 
         self.init = False # re-enable selection change callback
-        if data.project[self.pid]['meta']['last_log'] > 0:
+        if data.project[data.getPid()]['meta']['last_log'] > 0:
             self.table.selectRow(0)
             self.table.setFocus()
         else:
@@ -135,15 +135,11 @@ class NxLog:
         data if necessary.
         """
 
-        # retrive pid
-        pid = data.c_project.getSelectedProject()
-
         # check if project selection changed
-        if data.run['log_pid_last'] != pid:
+        if data.run['log_pid_last'] != data.getPid():
 
             # set data
-            self.pid = pid
-            data.run['log_pid_last'] = pid
+            data.run['log_pid_last'] = data.getPid()
             self.init = True # skip selection change callback
 
             # setup widget
@@ -160,20 +156,20 @@ class NxLog:
         User submits a new log entry. Add it to NxDataStrore and update view.
         """
 
-        lid = data.project[self.pid]['meta']['last_log'] + 1
+        lid = data.project[data.getPid()]['meta']['last_log'] + 1
         timestamp = int(time.time())
         disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
         # populate data
-        data.project[self.pid]['log'][lid] = {
+        data.project[data.getPid()]['log'][lid] = {
             'created': timestamp,
             'summary': data.w_log_diag_new.line_summary.text(),
             'detail':  data.w_log_diag_new.text_detail.toPlainText()
         }
 
         # update
-        data.c_project.touchProject(timestamp)
-        data.project[self.pid]['meta']['last_log'] += 1
+        data.touchProject()
+        data.project[data.getPid()]['meta']['last_log'] += 1
 
         # populate data
         self.model.insertRow(

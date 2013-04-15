@@ -63,6 +63,11 @@ class NxProject:
 
         self.table.activated.connect(self.showEditProject)
 
+        # global handles for getting currently selected pid and updating
+        # timestamp for currently selected project
+        data.getPid = self.getPid
+        data.touchProject = self.touchProject
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenClicked(self):
         # throw away changes?
@@ -130,14 +135,14 @@ class NxProject:
         changed timestamp and update the project index display and mark
         changes as true.
         """
-        data.project[self.getSelectedProject()]['modified'] = timestamp
+        data.project[self.getPid()]['modified'] = timestamp
         self.model.setItem(self.getActiveRow(), 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         data.run['changed'] = True
         data.w_project.push_save.setEnabled(True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getSelectedProject(self):
+    def getPid(self):
 
         if not self.init:
             if self.table.currentIndex().row() == -1:
@@ -161,7 +166,7 @@ class NxProject:
     def onSelectionChanged(self):
 
         if not self.init:
-            pid = self.getSelectedProject()
+            pid = self.getPid()
             if data.project[0]['next_id'] > 1 and pid != 0:
                 data.w_project.text_description.setEnabled(True)
                 data.w_project.text_description.setPlainText(
@@ -171,7 +176,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChange(self):
 
-        data.project[self.getSelectedProject()]['description'] = \
+        data.project[self.getPid()]['description'] = \
                 data.w_project.text_description.toPlainText()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -298,7 +303,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showEditProject(self):
 
-        p = data.project[self.getSelectedProject()]
+        p = data.project[self.getPid()]
 
         self.diag_edit.line_name.setText(p['name'])
         self.diag_edit.combo_ptype.setCurrentIndex(
