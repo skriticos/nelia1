@@ -4,6 +4,24 @@
 from PySide.QtGui import *
 import pickle, gzip, os
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# data.w_*  -- widgets
+# data.c_{main,project,log,roadmap,config}  -- modules
+# data.getPid(), data.touchProject()  -- shorthands for the eqv. project meth.
+# data.getProject()  -- get selected project instance
+# data.getMilestoneItem(), data.getMilestone()  -- shorthands for roadmap
+# data.run{}  -- general runtime data
+# data.project{}  -- document data / storage
+# data.project[0][next_id]
+# data.project[pid]['log']['lid'][{created, summary, detail}]
+# data.project[pid][{name, category, status, ptype, priority, challange,
+#                     description, created, modified}]
+# data.project[pid]['meta'][{next_log, next_roadmap_item, curr_milestone}]
+# data.project[pid]['mi_index'][miid]
+# data.project[pid]['milestone'][{description, m}]
+# data.project[pid]['milestone'][major][minor][{fo, fc,io, ic}]
+# data.project[pid]['milestone'][major][minor][fioc][miid][{
+#      name,icat,priority,description,created}]
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxDataStore:
     def __init__(self):
         # static variables
