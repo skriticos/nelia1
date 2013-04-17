@@ -128,13 +128,14 @@ class NxProject:
         data.w_project.push_save.setEnabled(False)
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def touchProject(self, timestamp):
+    def touchProject(self):
         """
         On project change (e.g. edit meta, add log or change roadmap),
         this should be called with the timestamp. It will update the last
         changed timestamp and update the project index display and mark
         changes as true.
         """
+        timestamp = int(time.time())
         data.project[self.getPid()]['modified'] = timestamp
         self.model.setItem(self.getActiveRow(), 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
@@ -167,7 +168,7 @@ class NxProject:
 
         if not self.init:
             pid = self.getPid()
-            if data.project[0]['next_id'] > 1 and pid != 0:
+            if data.project[0]['next_pid'] > 1 and pid != 0:
                 data.w_project.text_description.setEnabled(True)
                 data.w_project.text_description.setPlainText(
                     data.project[pid]['description']
@@ -262,14 +263,14 @@ class NxProject:
     def onNewProject(self):
 
         timestamp = int(time.time())
-        pid = data.project[0]['next_id']
+        pid = data.project[0]['next_pid']
 
         # create new project entry
         # meta: general project data
         # log: log data
         # milestone: versions, features, issues
         p = data.project[pid] = {
-            'meta': {'last_log': 0, 'last_roadmap_item': 0,
+            'meta': {'next_lid': 1, 'next_miid': 1,
                      'current_milestone': (0,0)},
             'log': {},
             'milestone' : [
@@ -278,7 +279,7 @@ class NxProject:
                 [{'description': '', 'm': '1.0',
                   'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
                 ],
-            'ri_index' : {}
+            'mi_index' : {}
          }
 
         p['name']        = name        = self.diag_new.line_name.text()
@@ -295,10 +296,10 @@ class NxProject:
         p['created']     = created     = timestamp
         p['modified']    = timestamp
 
-        data.project[0]['next_id'] += 1
+        data.project[0]['next_pid'] += 1
 
         self.reloadTable()
-        self.touchProject(timestamp)
+        self.touchProject()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showEditProject(self):
@@ -322,10 +323,8 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditProject(self):
 
-        pid = self.getSelectedProject()
+        pid = self.getPid()
         p = data.project[pid]
-        timestamp = int(time.time())
-        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
         p['name']        = self.diag_edit.line_name.text()
         p['category']    = self.diag_edit.combo_category.currentText()
@@ -336,12 +335,12 @@ class NxProject:
         p['description'] = self.diag_edit.text_description.toPlainText()
 
         self.reloadTable()
-        self.touchProject(timestamp)
+        self.touchProject()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDeleteProject(self):
 
-        pid = self.getSelectedProject()
+        pid = self.getPid()
 
         response = QMessageBox.question(
             data.w_project,

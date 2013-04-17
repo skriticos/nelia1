@@ -35,10 +35,10 @@ class NxRoadmap:
         # connect feature / issue add push buttons
         data.w_roadmap.push_add_feature.clicked.connect(lambda: (
             data.w_roadmap_diag_add.radio_feature.setChecked(True),
-            self.showAddEditRI('add')))
+            self.showAddEditMI('add')))
         data.w_roadmap.push_add_issue.clicked.connect(lambda: (
             data.w_roadmap_diag_add.radio_issue.setChecked(True),
-            self.showAddEditRI('add')))
+            self.showAddEditMI('add')))
         data.w_roadmap_diag_add.accepted.connect(self.onSubmitDialog)
 
         # connect all the filter checkboxes to update the milestone item table
@@ -57,10 +57,10 @@ class NxRoadmap:
         data.w_roadmap.check_refactor.stateChanged.connect(self.reloadTable)
 
         # connect push milestone item action push buttons
-        data.w_roadmap.push_delete.clicked.connect(self.deleteRoadmapItem)
+        data.w_roadmap.push_delete.clicked.connect(self.deleteMilestoneItem)
         data.w_roadmap.push_edit.clicked.connect(lambda:(
-            self.showAddEditRI('edit')))
-        data.w_roadmap.push_close.clicked.connect(self.closeRoadmapItem)
+            self.showAddEditMI('edit')))
+        data.w_roadmap.push_close.clicked.connect(self.closeMilestoneItem)
 
         # connect finalize widget button callbacks
         data.w_roadmap_diag_finalize.push_finalize_major.clicked.connect(
@@ -79,7 +79,7 @@ class NxRoadmap:
 
         # selection activate callback
         self.table.activated.connect(
-            self.onRoadmapItemActivated
+            self.onMilestoneItemActivated
         )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -130,7 +130,7 @@ class NxRoadmap:
                 = data.w_roadmap.text_description.toPlainText()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onRoadmapItemActivated(self):
+    def onMilestoneItemActivated(self):
 
         cmajor, cminor \
                 = data.project[data.getPid()]['meta']['current_milestone']
@@ -138,7 +138,7 @@ class NxRoadmap:
             if self.selected_major > cmajor \
                or (self.selected_major == cmajor \
                    and self.selected_minor > cminor):
-                self.showAddEditRI('edit')
+                self.showAddEditMI('edit')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
@@ -179,7 +179,7 @@ class NxRoadmap:
             d.radio_feature.setChecked(True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def closeRoadmapItem(self):
+    def closeMilestoneItem(self):
 
         status = self.model.itemFromIndex(self.model.index(
             self.table.currentIndex().row(),3)).text()
@@ -197,7 +197,7 @@ class NxRoadmap:
                 self.mc.closeItem(data.getPid(), self.getSelectedItemId())
         if status == 'Closed':
             self.mc.reopenItem(data.getPid(), self.getSelectedItemId())
-        data.c_project.touchProject(time.time())
+        data.touchProject()
         self.onChangeVersionSelection(self.selected_major, self.selected_minor)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -404,7 +404,7 @@ class NxRoadmap:
         self.table.setFocus()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def showAddEditRI(self, diag_type=None):
+    def showAddEditMI(self, diag_type=None):
 
         self.reloadMilestoneButton('diag_new_edit')
 
@@ -420,7 +420,7 @@ class NxRoadmap:
 
             item_id = self.getSelectedItemId()
             tmajor, tminor, fioc \
-                    = data.project[data.getPid()]['ri_index'][item_id]
+                    = data.project[data.getPid()]['mi_index'][item_id]
             tx, ty = self.mc.versionToIndex(tmajor, tminor)
             item = data.project[data.getPid()]\
                     ['milestone'][tx][ty][fioc][item_id]
@@ -464,12 +464,12 @@ class NxRoadmap:
 
         # simple switch between add and edit mode for the dialog
         if self.diag_type == 'add':
-            self.onSubmitNewEditRI('add')
+            self.onSubmitNewEditMI('add')
         if self.diag_type == 'edit':
-            self.onSubmitNewEditRI('edit')
+            self.onSubmitNewEditMI('edit')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onSubmitNewEditRI(self, mode):
+    def onSubmitNewEditMI(self, mode):
 
         tmajor, tminor = self.extractSelection('add_edit_dialog')
 
@@ -515,16 +515,16 @@ class NxRoadmap:
         self.reloadMilestoneButton()
         self.reloadTable()
 
-        data.c_project.touchProject(int(time.time()))
+        data.touchProject()
         print('touching project')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def deleteRoadmapItem(self):
+    def deleteMilestoneItem(self):
 
         self.mc.deleteItem(data.getPid(), self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
-        data.c_project.touchProject(int(time.time()))
+        data.touchProject()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

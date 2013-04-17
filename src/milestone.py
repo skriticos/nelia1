@@ -110,7 +110,7 @@ class NxMilestone:
     def getItemData(self, pid, item_id):
 
         p = data.project[pid]
-        ma, mi, fioc = p['ri_index'] [item_id]
+        ma, mi, fioc = p['mi_index'] [item_id]
         x, y = self.versionToIndex(ma, mi)
 
         item = p['milestone'] [x] [y] [fioc] [item_id]
@@ -160,7 +160,7 @@ class NxMilestone:
     def addItem(self, pid, major, minor, itype, icat, name, priority,
                 description, status='Open'):
 
-        item_id = data.project[pid] ['meta'] ['last_roadmap_item'] + 1
+        item_id = data.project[pid] ['meta'] ['next_miid']
 
         new_item = {
             'name': name,
@@ -177,9 +177,9 @@ class NxMilestone:
             fioc = 'io'
 
         data.project[pid] ['milestone'] [x] [y] [fioc] [item_id] = new_item
-        data.project[pid] ['ri_index'] [item_id] = (major, minor, fioc)
+        data.project[pid] ['mi_index'] [item_id] = (major, minor, fioc)
 
-        data.project[pid] ['meta'] ['last_roadmap_item'] += 1
+        data.project[pid] ['meta'] ['next_miid'] += 1
         self.touchItem(pid, item_id)
 
         self.updateMilestoneTree(pid)
@@ -233,7 +233,7 @@ class NxMilestone:
         data.project[pid] ['milestone'] [nx] [ny] [nfioc] [item_id] = item
         del data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
                 [idat['fioc']] [item_id]
-        data.project[pid] ['ri_index'] [item_id] = (new_major, new_minor,
+        data.project[pid] ['mi_index'] [item_id] = (new_major, new_minor,
                                                          nfioc)
         self.touchItem(pid, item_id)
         self.updateMilestoneTree(pid)
@@ -260,7 +260,7 @@ class NxMilestone:
         idat = self.getItemData(pid, item_id)
         del data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
                 [idat['fioc']] [item_id]
-        del data.project[pid] ['ri_index'] [item_id]
+        del data.project[pid] ['mi_index'] [item_id]
         self.updateMilestoneTree(pid)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

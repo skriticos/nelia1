@@ -37,7 +37,7 @@ class NxDataStore:
         self.reset()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def initData(self):
-        self.project = {0: {'next_id': 1}}
+        self.project = {0: {'next_pid': 1}}
         self.run = {}
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reset(self):
