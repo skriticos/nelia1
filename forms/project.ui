@@ -51,7 +51,7 @@
    <item row="0" column="1">
     <widget class="QPushButton" name="push_edit">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="locale">
       <locale language="English" country="UnitedStates"/>
@@ -64,7 +64,7 @@
    <item row="0" column="2">
     <widget class="QPushButton" name="push_delete">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="text">
       <string>&amp;Delete</string>
@@ -97,7 +97,7 @@
    <item row="0" column="5">
     <widget class="QPushButton" name="push_open_last">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="text">
       <string>O&amp;pen Last</string>
@@ -107,7 +107,7 @@
    <item row="0" column="6">
     <widget class="QPushButton" name="push_save">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="text">
       <string>&amp;Save</string>

@@ -125,7 +125,7 @@
        </spacer>
       </item>
       <item row="0" column="6">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="label_selected">
         <property name="text">
          <string>Selected Item:    </string>
         </property>
@@ -134,7 +134,7 @@
       <item row="0" column="7">
        <widget class="QPushButton" name="push_edit">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>&amp;Edit..</string>
@@ -144,7 +144,7 @@
       <item row="0" column="8">
        <widget class="QPushButton" name="push_delete">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>&amp;Delete</string>
@@ -154,7 +154,7 @@
       <item row="0" column="9">
        <widget class="QPushButton" name="push_close">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>&amp;Close Item</string>

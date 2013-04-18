@@ -35,8 +35,9 @@ class NxProject:
         data.w_project.push_delete.clicked.connect(self.onDeleteProject)
 
         data.w_project.push_open.clicked.connect(self.onOpenClicked)
-        if 'lastpath' in data.c_config.config_data['datastore']:
-            data.w_project.push_open_last.setEnabled(True)
+        if 'lastpath' not in data.c_config.config_data['datastore']:
+            data.w_project.push_open_last.hide()
+
         data.w_project.push_open_last.clicked.connect(self.onOpenLast)
         data.w_project.push_save.clicked.connect(self.onSaveClicked)
         data.w_project.push_help.clicked.connect(
@@ -68,6 +69,7 @@ class NxProject:
         data.getPid = self.getPid
         data.touchProject = self.touchProject
 
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenClicked(self):
         # throw away changes?
@@ -93,7 +95,7 @@ class NxProject:
             data.run['path'] = None
             return
         self.reset()
-        data.w_project.push_save.setEnabled(False)
+        data.w_project.push_save.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
         path = data.c_config.config_data['datastore']['lastpath']
@@ -103,8 +105,8 @@ class NxProject:
             QMessageBox.critical(data.w_main, title, message)
             return
         self.reset()
-        data.w_project.push_open_last.setEnabled(False)
-        data.w_project.push_save.setEnabled(False)
+        data.w_project.push_open_last.hide()
+        data.w_project.push_save.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveClicked(self):
         if not data.run['path']:
@@ -125,7 +127,7 @@ class NxProject:
             title, message = 'Save failed', 'Save failed! ' + str(result)
             QMessageBox.critical(data.w_main, title, message)
             return
-        data.w_project.push_save.setEnabled(False)
+        data.w_project.push_save.hide()
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def touchProject(self):
@@ -140,7 +142,7 @@ class NxProject:
         self.model.setItem(self.getActiveRow(), 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         data.run['changed'] = True
-        data.w_project.push_save.setEnabled(True)
+        data.w_project.push_save.show()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getPid(self):
@@ -212,6 +214,9 @@ class NxProject:
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.table_headers)
 
+        if len(data.project) > 1:
+            data.w_project.push_open_last.hide()
+
         for pid, project in data.project.items():
             if pid == 0: continue
             major, minor = data.project[pid]['meta']['current_milestone']
@@ -242,9 +247,9 @@ class NxProject:
             self.table.selectRow(0)
 
             data.c_main.enableTabs()
-            data.w_project.push_edit.setEnabled(True)
-            data.w_project.push_delete.setEnabled(True)
-            data.w_project.push_save.setEnabled(True)
+            data.w_project.push_edit.show()
+            data.w_project.push_delete.show()
+            data.w_project.push_save.show()
             data.w_project.push_new.setDefault(False)
 
             self.table.setFocus()
@@ -254,9 +259,9 @@ class NxProject:
             data.w_project.text_description.clear()
             data.w_project.text_description.setEnabled(False)
             data.c_main.dissableTabs()
-            data.w_project.push_edit.setEnabled(False)
-            data.w_project.push_delete.setEnabled(False)
-            data.w_project.push_save.setEnabled(False)
+            data.w_project.push_edit.hide()
+            data.w_project.push_delete.hide()
+            data.w_project.push_save.hide()
             data.w_project.push_new.setFocus()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

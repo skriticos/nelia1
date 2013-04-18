@@ -82,6 +82,11 @@ class NxRoadmap:
             self.onMilestoneItemActivated
         )
 
+        data.w_roadmap.label_selected.hide()
+        data.w_roadmap.push_edit.hide()
+        data.w_roadmap.push_delete.hide()
+        data.w_roadmap.push_close.hide()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getCellContent(self, i):
 
@@ -389,13 +394,15 @@ class NxRoadmap:
             if self.selected_major > cmajor \
                or (self.selected_major == cmajor \
                    and self.selected_minor > cminor):
-                data.w_roadmap.push_edit.setEnabled(True)
-                data.w_roadmap.push_delete.setEnabled(True)
-                data.w_roadmap.push_close.setEnabled(True)
+                data.w_roadmap.label_selected.show()
+                data.w_roadmap.push_edit.show()
+                data.w_roadmap.push_delete.show()
+                data.w_roadmap.push_close.show()
             else:
-                data.w_roadmap.push_edit.setEnabled(False)
-                data.w_roadmap.push_delete.setEnabled(False)
-                data.w_roadmap.push_close.setEnabled(False)
+                data.w_roadmap.label_selected.hide()
+                data.w_roadmap.push_edit.hide()
+                data.w_roadmap.push_delete.hide()
+                data.w_roadmap.push_close.hide()
             self.table.selectRow(0)
 
         if preserveLayout:
