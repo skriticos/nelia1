@@ -16,7 +16,7 @@ from log     import NxLog
 from roadmap import NxRoadmap
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-class MainWindow(QObject):
+class MainWindow():
     """
     The main window control class contains the application main container
     window and container tab widget. It commands global actions, like tab
@@ -24,8 +24,7 @@ class MainWindow(QObject):
     """
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def __init__(self, argv):
-        super().__init__()
+    def __init__(self, argv, app):
         # load ui to data.w_*
         loader = QtUiTools.QUiLoader()
         for name, fname in (
@@ -82,9 +81,9 @@ class MainWindow(QObject):
             shortcut = QShortcut(QKeySequence(keys), data.w_main)
             shortcut.activated.connect(target)
 
-        # Intercept close event (see self.eventFilter).
-        QObject.installEventFilter(data.w_main, self)
-        signal.signal(signal.SIGTERM, self.onExit)
+        # Intercept close event (see self.onAboutToQuit).
+        app.aboutToQuit.connect(self.onAboutToQuit)
+        signal.signal(signal.SIGTERM, self.onSigTerm)
 
         self.applyConfig()
         data.c_project.reset()
@@ -242,42 +241,33 @@ class MainWindow(QObject):
             data.w_roadmap.check_refactor.setChecked(False)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onExit(self, num, frame):
+    def onSigTerm(self, num, frame):
         """
         We want to shut down normally on SIGTERM too. This can happen when the
         computer is turned off, without closing the application first. This
-        will issue the main window to close, which will trigger the event
-        filter and shout down properly.
+        will issue the application to quit, which in turn triggers
+        onAboutToQuit. The QTimer in run.py is required for this to work.
         """
-
-        data.w_main.close()
+        QApplication.quit()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def eventFilter(self, obj, event):
+    def onAboutToQuit(self):
         """
         Capture main window close event.  This might be caused by the user
         clicking the (x) window button or by exiting via the Ctrl-w shortcut
-        (or any other way that tells the main window to close).
+        (or any other way that tells the main window to close). Might also come
+        from a SIGTERM (see onSigTerm)
         """
-
-        if obj == data.w_main and isinstance(event, QCloseEvent):
-            self.updateConfig()
-            data.c_config.writeConfig()
-            # note: this does not actually work -> has to be debugged
-            if data.run['changed']:
-                if data.run['path']:
-                    data.save_document(data.run['path'])
-                else:
-                    base = data.default_path
-                    path = os.path.join(
-                        base,'.'+str(int(time.time()))+'.tmp.nelia1')
-                    data.save_document(path)
-        res = False
-        try:
-            res = QObject.eventFilter(data.w_main, obj, event)
-        except:
-            pass
-        return res
+        self.updateConfig()
+        data.c_config.writeConfig()
+        if data.run['changed']:
+            if data.run['path']:
+                data.save_document(data.run['path'])
+            else:
+                base = data.default_path
+                path = os.path.join(
+                    base,'.'+str(int(time.time()))+'.tmp.nelia1')
+                data.save_document(path)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabForward(self):
