@@ -74,17 +74,13 @@ class MainWindow(QObject):
         # Connect signals and slots.
         data.w_main.tabnavi.currentChanged.connect(self.tabChanged)
 
-        # Global shortcuts.
-        close_shortcut = QShortcut(QKeySequence('Ctrl+w'), data.w_main)
-        close_shortcut.activated.connect(data.w_main.close)
-        switch_forward = QShortcut(QKeySequence('Ctrl+PgUp'), data.w_main)
-        switch_forward.activated.connect(self.onTabForward)
-        switch_backward = QShortcut(QKeySequence('Ctrl+PgDown'), data.w_main)
-        switch_backward.activated.connect(self.onTabBackward)
-        save = QShortcut(QKeySequence('Ctrl+s'), data.w_main)
-        save.activated.connect(self.onSaveShortcutActivated)
-        debug = QShortcut(QKeySequence('Ctrl+d'), data.w_main)
-        debug.activated.connect(self.debug)
+        # global shortcuts
+        for keys, target in [('Ctrl+w', data.w_main.close),
+                             ('Ctrl+PgUp', self.onTabForward),
+                             ('Ctrl+PgDown', self.onTabBackward),
+                             ('Ctrl+s', self.onSaveShortcutActivated)]:
+            shortcut = QShortcut(QKeySequence(keys), data.w_main)
+            shortcut.activated.connect(target)
 
         # Intercept close event (see self.eventFilter).
         QObject.installEventFilter(data.w_main, self)
@@ -100,12 +96,6 @@ class MainWindow(QObject):
         if data.run['changed']:
             data.c_project.onSaveClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def debug(self):
-
-        home = os.path.expanduser('~')
-        with open(os.path.join(home, '.cache', 'nelia.debug.py'), 'w') as f:
-            f.write(pprint.pformat(data.__dict__))
-
     def updateConfig(self):
 
         """
