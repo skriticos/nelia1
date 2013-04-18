@@ -3,5 +3,5 @@ all:
 
 clean:
 	rm -rf ~/.config/nelia1
-	find . -name __pycache__ -exec rm -rf {} \; 2>/dev/null
+	find . -name __pycache__ -exec rm -rf {} \; || True
 
