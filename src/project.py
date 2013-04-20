@@ -184,25 +184,26 @@ class NxProject:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-
-        self.header_width = []
+        data.conf['project']['header_width'] = []
         for i in range(10):
-            self.header_width.append(self.table.columnWidth(i))
+            data.conf['project']['header_width'].append(
+                self.table.columnWidth(i))
         if self.horizontal_header.sortIndicatorSection() < 10:
-            self.sort_column = self.horizontal_header.sortIndicatorSection()
-            self.sort_order = self.horizontal_header.sortIndicatorOrder()
+            data.conf['project']['sort_column'] \
+                    = self.horizontal_header.sortIndicatorSection()
+            data.conf['project']['sort_order'] \
+                    = self.horizontal_header.sortIndicatorOrder().__repr__()
         else:
-            self.sort_column = -1
-            self.sort_order = None
-
+            data.conf['project']['sort_column'] = -1
+            data.conf['project']['sort_order'] = None
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
-
-        for i,v in enumerate(self.header_width):
+        for i,v in enumerate(data.conf['project']['header_width']):
             self.table.setColumnWidth(i, v)
-        if self.sort_column != -1:
-            self.horizontal_header.setSortIndicator(self.sort_column, self.sort_order)
-
+        if data.conf['project']['sort_column'] != -1:
+            self.horizontal_header.setSortIndicator(
+                data.conf['project']['sort_column'],
+                data.convert(data.conf['project']['sort_order']))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
 

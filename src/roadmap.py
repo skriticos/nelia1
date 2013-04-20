@@ -15,7 +15,10 @@ class NxRoadmap:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self):
-
+        # used in saveLayout and loadLayout
+        self.filter_names = ['feature', 'issue', 'open', 'closed', 'low',
+                             'medium', 'high', 'core', 'auxiliary', 'security',
+                             'corrective', 'architecture', 'refactor']
         # setup backbone
         self.mc     = NxMilestone()
 
@@ -317,26 +320,35 @@ class NxRoadmap:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-
-        self.header_width = []
+        data.conf['roadmap']['header_width'] = []
         for i in range(8):
-            self.header_width.append(self.table.columnWidth(i))
+            data.conf['roadmap']['header_width'].append(
+                self.table.columnWidth(i))
         if self.horizontal_header.sortIndicatorSection() < 8:
-            self.sort_column = self.horizontal_header.sortIndicatorSection()
-            self.sort_order = self.horizontal_header.sortIndicatorOrder()
+            data.conf['roadmap']['sort_column'] \
+                    = self.horizontal_header.sortIndicatorSection()
+            data.conf['roadmap']['sort_order'] \
+                    = self.horizontal_header.sortIndicatorOrder().__repr__()
         else:
-            self.sort_column = -1
-            self.sort_order = None
-
+            data.conf['roadmap']['sort_column'] = -1
+            data.conf['roadmap']['sort_order'] = None
+        # save filter checkbox states
+        for filter_name in self.filter_names:
+            data.conf['roadmap']['show_{}'.format(filter_name)] \
+                    = data.w_roadmap.__dict__['check_{}'.format(filter_name)] \
+                    .isChecked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
-
-        for i,v in enumerate(self.header_width):
+        for i,v in enumerate(data.conf['roadmap']['header_width']):
             self.table.setColumnWidth(i, v)
-        if self.sort_column != -1:
+        if data.conf['roadmap']['sort_column'] != -1:
             self.horizontal_header.setSortIndicator(
-                self.sort_column, self.sort_order)
-
+                data.conf['roadmap']['sort_column'],
+                data.convert(data.conf['roadmap']['sort_order']))
+        # restore filter checkbox states
+        for filter_name in self.filter_names:
+            data.w_roadmap.__dict__['check_{}'.format(filter_name)].setChecked(
+                    data.conf['roadmap']['show_{}'.format(filter_name)])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
 

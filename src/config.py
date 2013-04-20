@@ -45,18 +45,14 @@ class NxConfig:
 
 # ------------------------------------------------------------------------------
     def readConfig(self):
-
-        # read application configuration from config file
-        if not os.path.exists(self.fullpath):
-            self.no_config = True
-            return
-
-        with open(self.fullpath, 'rb') as f:
-                file_buffer = f.read()
-
-        decompressed = gzip.decompress(file_buffer)
-        data.conf = pickle.loads(decompressed)
-        self.no_config = False
-
+        try:
+            with open(self.fullpath, 'rb') as f:
+                    file_buffer = f.read()
+            decompressed = gzip.decompress(file_buffer)
+            data.conf = pickle.loads(decompressed)
+            self.previous_loaded = True
+        except:
+            self.conf = {}
+            self.previous_loaded = False
 # ------------------------------------------------------------------------------
 

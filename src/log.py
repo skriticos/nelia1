@@ -62,32 +62,25 @@ class NxLog:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-        """
-        Internally save the layout before table reload.
-        """
-
-        self.header_width = []
+        data.conf['log']['header_width'] = []
         for i in range(3):
-            self.header_width.append(self.table.columnWidth(i))
+            data.conf['log']['header_width'].append(self.table.columnWidth(i))
         if self.horizontal_header.sortIndicatorSection() < 3:
-            self.sort_column = self.horizontal_header.sortIndicatorSection()
-            self.sort_order = self.horizontal_header.sortIndicatorOrder()
+            data.conf['log']['sort_column'] \
+                    = self.horizontal_header.sortIndicatorSection()
+            data.conf['log']['sort_order'] \
+                    = self.horizontal_header.sortIndicatorOrder().__repr__()
         else:
-            self.sort_column = -1
-            self.sort_order = None
-
+            data.conf['log']['sort_column'] = -1
+            data.conf['log']['sort_order'] = None
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
-        """
-        Restore layout when table is reloaded.
-        """
-
-        for i,v in enumerate(self.header_width):
+        for i,v in enumerate(data.conf['log']['header_width']):
             self.table.setColumnWidth(i, v)
-        if self.sort_column != -1:
-            self.horizontal_header.setSortIndicator(self.sort_column,
-                                                    self.sort_order)
-
+        if data.conf['log']['sort_column'] != -1:
+            self.horizontal_header.setSortIndicator(
+                    data.conf['log']['sort_column'],
+                    data.convert(data.conf['log']['sort_order']))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
         """
