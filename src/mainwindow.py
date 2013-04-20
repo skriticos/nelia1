@@ -301,16 +301,14 @@ class MainWindow():
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def enableTabs(self):
-
-        for i in range(1,3):
+        # enable tab log and roadmap
+        for i in range(1, data.w_main.tabnavi.count()):
             data.w_main.tabnavi.setTabEnabled(i, True)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def dissableTabs(self):
-
-        for i in range(1,3):
+        # disable tab log and roadmap
+        for i in range(1, data.w_main.tabnavi.count()):
             data.w_main.tabnavi.setTabEnabled(i, False)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def tabChanged(self):
 
