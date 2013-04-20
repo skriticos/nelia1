@@ -79,25 +79,25 @@ class MainWindow():
         data.c_project.saveLayout()
         data.c_log.saveLayout()
         data.c_roadmap.saveLayout()
-        data.c_config.config_data['project']['header_width'] = \
+        data.conf['project']['header_width'] = \
                 data.c_project.header_width
-        data.c_config.config_data['project']['sort_column'] = \
+        data.conf['project']['sort_column'] = \
                 data.c_project.sort_column
-        data.c_config.config_data['project']['sort_order'] = \
+        data.conf['project']['sort_order'] = \
                 data.c_project.sort_order.__repr__()
-        data.c_config.config_data['log']['header_width'] = \
+        data.conf['log']['header_width'] = \
                 data.c_log.header_width
-        data.c_config.config_data['log']['sort_column'] = \
+        data.conf['log']['sort_column'] = \
                 data.c_log.sort_column
-        data.c_config.config_data['log']['sort_order'] = \
+        data.conf['log']['sort_order'] = \
                 data.c_log.sort_order.__repr__()
-        data.c_config.config_data['roadmap']['header_width'] = \
+        data.conf['roadmap']['header_width'] = \
                 data.c_roadmap.header_width
-        data.c_config.config_data['roadmap']['sort_column'] = \
+        data.conf['roadmap']['sort_column'] = \
                 data.c_roadmap.sort_column
-        data.c_config.config_data['roadmap']['sort_order'] = \
+        data.conf['roadmap']['sort_order'] = \
                 data.c_roadmap.sort_order.__repr__()
-        x = data.c_config.config_data['roadmap']
+        x = data.conf['roadmap']
         x['show_feature'] = data.w_roadmap.check_feature.isChecked()
         x['show_issue'] = data.w_roadmap.check_issue.isChecked()
         x['show_open'] = data.w_roadmap.check_open.isChecked()
@@ -116,45 +116,45 @@ class MainWindow():
         if data.c_config.no_config == True:
             return
         data.c_project.header_width = \
-            data.c_config.config_data['project']['header_width']
+            data.conf['project']['header_width']
         data.c_project.sort_column = \
-            data.c_config.config_data['project']['sort_column']
-        if data.c_config.config_data['project']['sort_order'] \
+            data.conf['project']['sort_column']
+        if data.conf['project']['sort_order'] \
            == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
                 data.c_project.sort_order \
                         = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif data.c_config.config_data['project']['sort_order'] \
+        elif data.conf['project']['sort_order'] \
                 == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
                 data.c_project.sort_order \
                         = PySide.QtCore.Qt.SortOrder.AscendingOrder
         data.c_log.header_width = \
-            data.c_config.config_data['log']['header_width']
+            data.conf['log']['header_width']
         data.c_log.sort_column = \
-            data.c_config.config_data['log']['sort_column']
-        if data.c_config.config_data['log']['sort_order'] \
+            data.conf['log']['sort_column']
+        if data.conf['log']['sort_order'] \
            == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
                 data.c_log.sort_order \
                         = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif data.c_config.config_data['log']['sort_order'] \
+        elif data.conf['log']['sort_order'] \
                 == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
                 data.c_log.sort_order \
                         = PySide.QtCore.Qt.SortOrder.AscendingOrder
         data.c_roadmap.header_width = \
-            data.c_config.config_data['roadmap']['header_width']
+            data.conf['roadmap']['header_width']
         data.c_roadmap.sort_column = \
-            data.c_config.config_data['roadmap']['sort_column']
-        if data.c_config.config_data['roadmap']['sort_order'] \
+            data.conf['roadmap']['sort_column']
+        if data.conf['roadmap']['sort_order'] \
            == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
                 data.c_roadmap.sort_order \
                         = PySide.QtCore.Qt.SortOrder.DescendingOrder
-        elif data.c_config.config_data['roadmap']['sort_order'] \
+        elif data.conf['roadmap']['sort_order'] \
                 == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
                 data.c_roadmap.sort_order \
                         = PySide.QtCore.Qt.SortOrder.AscendingOrder
         data.c_project.loadLayout()
         data.c_log.loadLayout()
         data.c_roadmap.loadLayout()
-        x = data.c_config.config_data['roadmap']
+        x = data.conf['roadmap']
         if x['show_feature']:
             data.w_roadmap.check_feature.setChecked(True)
         else:

@@ -35,7 +35,7 @@ class NxProject:
         data.w_project.push_delete.clicked.connect(self.onDeleteProject)
 
         data.w_project.push_open.clicked.connect(self.onOpenClicked)
-        if 'lastpath' not in data.c_config.config_data['datastore']:
+        if 'lastpath' not in data.conf['datastore']:
             data.w_project.push_open_last.hide()
 
         data.w_project.push_open_last.clicked.connect(self.onOpenLast)
@@ -98,7 +98,7 @@ class NxProject:
         data.w_project.push_save.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
-        path = data.c_config.config_data['datastore']['lastpath']
+        path = data.conf['datastore']['lastpath']
         result = data.open_document(path)
         if isinstance(result, Exception):
             title, message = 'Open failed', 'Open failed! ' + str(result)

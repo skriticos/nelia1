@@ -15,7 +15,6 @@ class NxConfig:
 
 # ------------------------------------------------------------------------------
     def __init__(self):
-
         # configuration is stored in $HOME/.config/nelia1/nelia1.config
         self.home = os.path.expanduser('~')
         self.basepath = os.path.join(self.home, '.config', 'nelia1')
@@ -24,7 +23,7 @@ class NxConfig:
         os.makedirs(self.basepath, exist_ok=True)
 
         # internal config data structure
-        self.config_data = {
+        data.conf = {
             'datastore': {},
             'project': {},
             'log': {},
@@ -38,7 +37,7 @@ class NxConfig:
     def writeConfig(self):
 
         # write current application state to configuration file
-        pickled_data = pickle.dumps(self.config_data, 3)
+        pickled_data = pickle.dumps(data.conf, 3)
         compressed_data = gzip.compress(pickled_data)
 
         with open(self.fullpath, 'wb') as f:
@@ -56,7 +55,7 @@ class NxConfig:
                 file_buffer = f.read()
 
         decompressed = gzip.decompress(file_buffer)
-        self.config_data = pickle.loads(decompressed)
+        data.conf = pickle.loads(decompressed)
         self.no_config = False
 
 # ------------------------------------------------------------------------------
