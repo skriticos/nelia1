@@ -1,29 +1,17 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+import signal, os, time, PySide
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
-import PySide
-import signal
-import os, pprint
-import time
-
 from datastore import data
 from config  import NxConfig
 from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MainWindow():
-    """
-    The main window control class contains the application main container
-    window and container tab widget. It commands global actions, like tab
-    switching, exit handling, saving and loading.
-    """
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, argv, app):
         # load ui to data.w_*
         loader = QtUiTools.QUiLoader()
@@ -57,22 +45,18 @@ class MainWindow():
         # icon and window size
         data.w_main.setWindowIcon(QIcon('img/nelia-icon32.png'))
         data.w_main.setGeometry(100,70,1000,600)
-
         # initialize modules
         data.c_main    = self
         data.c_config  = NxConfig()
         data.c_project = NxProject()
         data.c_log     = NxLog()
         data.c_roadmap = NxRoadmap()
-
-        # Dissable all tabs except the project tab.
-        # They show the data from the selected project, and are in undefined
-        # before a selection is made.
+        # dissable all tabs except the project tab
+        # they show the data from the selected project, and are in undefined
+        # before a selection is made
         self.dissableTabs()
-
-        # Connect signals and slots.
+        # connect signals and slots
         data.w_main.tabnavi.currentChanged.connect(self.tabChanged)
-
         # global shortcuts
         for keys, target in [('Ctrl+w', data.w_main.close),
                              ('Ctrl+PgUp', self.onTabForward),
@@ -80,26 +64,18 @@ class MainWindow():
                              ('Ctrl+s', self.onSaveShortcutActivated)]:
             shortcut = QShortcut(QKeySequence(keys), data.w_main)
             shortcut.activated.connect(target)
-
-        # Intercept close event (see self.onAboutToQuit).
+        # intercept close event (see self.onAboutToQuit)
         app.aboutToQuit.connect(self.onAboutToQuit)
         signal.signal(signal.SIGTERM, self.onSigTerm)
-
         self.applyConfig()
         data.c_project.reset()
-
         data.w_main.show()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
         if data.run['changed']:
             data.c_project.onSaveClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def updateConfig(self):
-
-        """
-            Update configuration details. This is mostly the column widths.
-        """
         data.c_project.saveLayout()
         data.c_log.saveLayout()
         data.c_roadmap.saveLayout()
@@ -121,7 +97,6 @@ class MainWindow():
                 data.c_roadmap.sort_column
         data.c_config.config_data['roadmap']['sort_order'] = \
                 data.c_roadmap.sort_order.__repr__()
-
         x = data.c_config.config_data['roadmap']
         x['show_feature'] = data.w_roadmap.check_feature.isChecked()
         x['show_issue'] = data.w_roadmap.check_issue.isChecked()
@@ -136,13 +111,10 @@ class MainWindow():
         x['show_corrective'] = data.w_roadmap.check_corrective.isChecked()
         x['show_architecture'] = data.w_roadmap.check_architecture.isChecked()
         x['show_refactor'] = data.w_roadmap.check_refactor.isChecked()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def applyConfig(self):
-
         if data.c_config.no_config == True:
             return
-
         data.c_project.header_width = \
             data.c_config.config_data['project']['header_width']
         data.c_project.sort_column = \
@@ -182,9 +154,7 @@ class MainWindow():
         data.c_project.loadLayout()
         data.c_log.loadLayout()
         data.c_roadmap.loadLayout()
-
         x = data.c_config.config_data['roadmap']
-
         if x['show_feature']:
             data.w_roadmap.check_feature.setChecked(True)
         else:
@@ -201,7 +171,6 @@ class MainWindow():
             data.w_roadmap.check_closed.setChecked(True)
         else:
             data.w_roadmap.check_closed.setChecked(False)
-
         if x['show_low']:
             data.w_roadmap.check_low.setChecked(True)
         else:
@@ -214,7 +183,6 @@ class MainWindow():
             data.w_roadmap.check_high.setChecked(True)
         else:
             data.w_roadmap.check_high.setChecked(False)
-
         if x['show_core']:
             data.w_roadmap.check_core.setChecked(True)
         else:
@@ -239,7 +207,6 @@ class MainWindow():
             data.w_roadmap.check_refactor.setChecked(True)
         else:
             data.w_roadmap.check_refactor.setChecked(False)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSigTerm(self, num, frame):
         """
@@ -249,7 +216,6 @@ class MainWindow():
         onAboutToQuit. The QTimer in run.py is required for this to work.
         """
         QApplication.quit()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAboutToQuit(self):
         """
@@ -268,37 +234,23 @@ class MainWindow():
                 path = os.path.join(
                     base,'.'+str(int(time.time()))+'.tmp.nelia1')
                 data.save_document(path)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabForward(self):
-
-        # get current tab index
         tab_index = data.w_main.tabnavi.currentIndex()
-
-        # get max index
         tab_count = data.w_main.tabnavi.count()
-
-        # next tab
         if tab_index+1 == tab_count:
             data.w_main.tabnavi.setCurrentIndex(0)
         elif data.w_main.tabnavi.isTabEnabled(tab_index+1):
             data.w_main.tabnavi.setCurrentIndex(tab_index+1)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabBackward(self):
-
-        # get current tab index
         tab_index = data.w_main.tabnavi.currentIndex()
-
-        # get max index
         tab_count = data.w_main.tabnavi.count()
-
         if tab_index == 0:
             if data.w_main.tabnavi.isTabEnabled(tab_count-1):
                 data.w_main.tabnavi.setCurrentIndex(tab_count-1)
         else:
             data.w_main.tabnavi.setCurrentIndex(tab_index-1)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def enableTabs(self):
         # enable tab log and roadmap
@@ -311,15 +263,11 @@ class MainWindow():
             data.w_main.tabnavi.setTabEnabled(i, False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def tabChanged(self):
-
-        # PREPARE DATA
         tab_widget = data.w_main.tabnavi
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
-
         if cur_tab_name == '&Log':
             data.c_log.onShowTab()
         if cur_tab_name == '&Roadmap':
             data.c_roadmap.onShowTab()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
