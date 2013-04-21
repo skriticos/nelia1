@@ -179,19 +179,15 @@ class NxProject:
                 data.conf['project']['sort_column'],
                 data.convert(data.conf['project']['sort_order']))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def reloadTable(self, state=None, preserveLayout=True):
-
+    def reloadTable(self):
         self.init = True
-
-        if preserveLayout:
-            self.saveLayout()
-
+        self.saveLayout()
+        # clean out data
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.table_headers)
-
-        if len(data.project) > 1:
-            data.w_project.push_open_last.hide()
-
+        # hide open last after first activity
+        data.w_project.push_open_last.hide()
+        # load project items into table
         for pid, project in data.project.items():
             if pid == 0: continue
             major, minor = data.project[pid]['meta']['current_milestone']
@@ -207,14 +203,10 @@ class NxProject:
                 QStandardItem(str(project['priority'])),
                 QStandardItem(str(project['challenge'])),
                 QStandardItem(disptime1),
-                QStandardItem(disptime2),
-            ])
-
-        self.table.sortByColumn(8, Qt.DescendingOrder)
-
-        if preserveLayout:
-            self.loadLayout()
-
+                QStandardItem(disptime2)])
+        # restore previous layout (sorting)
+        self.loadLayout()
+        # apply selection
         for i in range(self.model.rowCount()):
             index = self.model.index(i, 0)
             pid = int(self.model.itemFromIndex(index).text())
@@ -223,21 +215,19 @@ class NxProject:
                 selmod.select(index,
                     QItemSelectionModel.Select|QItemSelectionModel.Rows)
                 break
-
+        # set state of controls
         if len(data.project) > 1:
-
-            self.table.selectRow(0)
-
             data.c_main.enableTabs()
             data.w_project.push_edit.show()
             data.w_project.push_delete.show()
             data.w_project.push_save.show()
             data.w_project.push_new.setDefault(False)
-
             self.table.setFocus()
-
+        # last project deleted
         else:
-
+            # don't want to save empty document
+            data.run['changed'] = False
+            # set default state
             data.w_project.text_description.clear()
             data.w_project.text_description.setEnabled(False)
             data.c_main.dissableTabs()
@@ -245,9 +235,7 @@ class NxProject:
             data.w_project.push_delete.hide()
             data.w_project.push_save.hide()
             data.w_project.push_new.setFocus()
-
         self.init = False
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewProject(self):
 
