@@ -5,7 +5,7 @@ import os, datetime, time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
-from datastore import data
+from datastore import data, convert
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
     def __init__(self):
@@ -123,8 +123,7 @@ class NxProject:
         timestamp = int(time.time())
         data.spro['modified'] = timestamp
         row = self.table.currentIndex().row()
-        self.model.setItem(row, 8,
-            QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
+        self.model.setItem(row, 8, QStandardItem(convert(timestamp)))
         data.run['changed'] = True
         data.w_project.push_save.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,7 +160,7 @@ class NxProject:
         if data.conf['project']['sort_column']:
             self.horizontal_header.setSortIndicator(
                 data.conf['project']['sort_column'],
-                data.convert(data.conf['project']['sort_order']))
+                convert(data.conf['project']['sort_order']))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self):
         self.init = True
@@ -175,8 +174,6 @@ class NxProject:
         for pid, project in data.project.items():
             if pid == 0: continue
             major, minor = data.project[pid]['meta']['current_milestone']
-            disptime1 = datetime.datetime.fromtimestamp(project['modified']).isoformat()
-            disptime2 = datetime.datetime.fromtimestamp(project['created']).isoformat()
             self.model.insertRow(0, [
                 QStandardItem(str(pid).zfill(4)),
                 QStandardItem(project['name']),
@@ -186,8 +183,9 @@ class NxProject:
                 QStandardItem(project['category']),
                 QStandardItem(str(project['priority'])),
                 QStandardItem(str(project['challenge'])),
-                QStandardItem(disptime1),
-                QStandardItem(disptime2)])
+                QStandardItem(convert(project['modified'])),
+                QStandardItem(convert(project['created']))
+            ])
         # restore previous layout (sorting)
         self.loadLayout()
         # apply selection

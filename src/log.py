@@ -5,7 +5,7 @@ import os, time, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
-from datastore import data
+from datastore import data, convert
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
@@ -76,7 +76,7 @@ class NxLog:
         if data.conf['log']['sort_column']:
             self.horizontal_header.setSortIndicator(
                     data.conf['log']['sort_column'],
-                    data.convert(data.conf['log']['sort_order']))
+                    convert(data.conf['log']['sort_order']))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
         """
@@ -96,8 +96,7 @@ class NxLog:
             log = data.spro['log'][lid]
             self.model.insertRow(0, [
                 QStandardItem(str(lid).zfill(4)),
-                QStandardItem(datetime.datetime.fromtimestamp(
-                    log['created']).isoformat()),
+                QStandardItem(convert(log['created'])),
                 QStandardItem(log['summary'])
             ])
 
@@ -146,7 +145,6 @@ class NxLog:
 
         lid = data.spro['meta']['next_lid']
         timestamp = int(time.time())
-        disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
         # populate data
         data.spro['log'][lid] = {
@@ -163,7 +161,7 @@ class NxLog:
         self.model.insertRow(
             0, [
                 QStandardItem(str(lid).zfill(4)),
-                QStandardItem(disptime),
+                QStandardItem(convert(timestamp)),
                 QStandardItem(data.w_log_diag_new.line_summary.text())
             ]
         )

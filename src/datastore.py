@@ -2,7 +2,7 @@
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from PySide.QtGui import *
-import pickle, gzip, os, PySide
+import pickle, gzip, os, PySide, datetime
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # data.w_*  -- widgets
 # data.c_{main,project,log,roadmap,config}  -- modules
@@ -87,12 +87,17 @@ class NxDataStore:
         self.reset()
         return True
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def convert(self, item):
-        # we can't pickle PySide objects :(
-        if item == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
-            return PySide.QtCore.Qt.SortOrder.DescendingOrder
-        if item == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
-            return PySide.QtCore.Qt.SortOrder.AscendingOrder
+# general purpose conversion functions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def convert(item):
+    # convert timestamps (int)
+    if isinstance(item, int):
+        return datetime.datetime.fromtimestamp(item).isoformat()
+    # we can't pickle PySide objects :(
+    if item == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
+        return PySide.QtCore.Qt.SortOrder.DescendingOrder
+    if item == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
+        return PySide.QtCore.Qt.SortOrder.AscendingOrder
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 data = NxDataStore()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

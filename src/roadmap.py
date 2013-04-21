@@ -8,7 +8,7 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 from mpushbutton import MPushButton
 from milestone import NxMilestone
-from datastore import data
+from datastore import data, convert
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
@@ -311,10 +311,8 @@ class NxRoadmap:
             QStandardItem(status),
             QStandardItem(icat),
             QStandardItem(str(v['priority'])),
-            QStandardItem(datetime.datetime.fromtimestamp(
-                v['created']).isoformat()),
-            QStandardItem(datetime.datetime.fromtimestamp(
-                v['modified']).isoformat())
+            QStandardItem(convert(v['created'])),
+            QStandardItem(convert(v['modified']))
         ])
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -339,7 +337,7 @@ class NxRoadmap:
         if data.conf['roadmap']['sort_column']:
             self.horizontal_header.setSortIndicator(
                 data.conf['roadmap']['sort_column'],
-                data.convert(data.conf['roadmap']['sort_order']))
+                convert(data.conf['roadmap']['sort_order']))
         # restore filter checkbox states
         for filter_name in self.filter_names:
             data.w_roadmap.__dict__['check_{}'.format(filter_name)].setChecked(
