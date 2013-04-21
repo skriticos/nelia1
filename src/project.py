@@ -220,7 +220,10 @@ class NxProject:
             data.c_main.enableTabs()
             data.w_project.push_edit.show()
             data.w_project.push_delete.show()
-            data.w_project.push_save.show()
+            if data.run['changed']:
+                data.w_project.push_save.show()
+            else:
+                data.w_project.push_save.hide()
             data.w_project.push_new.setDefault(False)
             self.table.setFocus()
         # last project deleted
