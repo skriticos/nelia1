@@ -215,6 +215,14 @@ class NxProject:
         if preserveLayout:
             self.loadLayout()
 
+        for i in range(self.model.rowCount()):
+            index = self.model.index(i, 0)
+            pid = int(self.model.itemFromIndex(index).text())
+            if pid == data.spid:
+                selmod = self.table.selectionModel()
+                selmod.select(index,
+                    QItemSelectionModel.Select|QItemSelectionModel.Rows)
+                break
 
         if len(data.project) > 1:
 
@@ -279,6 +287,8 @@ class NxProject:
 
         data.project[0]['next_pid'] += 1
 
+        data.spid = pid
+        data.spro = data.project[data.spid]
         self.reloadTable()
         self.touchProject()
 
@@ -327,6 +337,7 @@ class NxProject:
             return
 
         del data.spro
+        data.spid = 0
         self.reloadTable()
 
         # can't touch deleted project, direct changed update
