@@ -138,15 +138,11 @@ class NxProject:
         """
         timestamp = int(time.time())
         data.project[data.spid]['modified'] = timestamp
-        self.model.setItem(self.getActiveRow(), 8,
+        row = self.table.currentIndex().row()
+        self.model.setItem(row, 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         data.run['changed'] = True
         data.w_project.push_save.show()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getActiveRow(self):
-
-        return self.table.currentIndex().row()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChanged(self):
         # set selected project id and store dictionary reference
