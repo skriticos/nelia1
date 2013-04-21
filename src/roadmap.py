@@ -323,14 +323,10 @@ class NxRoadmap:
         for i in range(8):
             data.conf['roadmap']['header_width'].append(
                 self.table.columnWidth(i))
-        if self.horizontal_header.sortIndicatorSection() < 8:
-            data.conf['roadmap']['sort_column'] \
-                    = self.horizontal_header.sortIndicatorSection()
-            data.conf['roadmap']['sort_order'] \
-                    = self.horizontal_header.sortIndicatorOrder().__repr__()
-        else:
-            data.conf['roadmap']['sort_column'] = -1
-            data.conf['roadmap']['sort_order'] = None
+        data.conf['roadmap']['sort_column'] \
+                = self.horizontal_header.sortIndicatorSection()
+        data.conf['roadmap']['sort_order'] \
+                = self.horizontal_header.sortIndicatorOrder().__repr__()
         # save filter checkbox states
         for filter_name in self.filter_names:
             data.conf['roadmap']['show_{}'.format(filter_name)] \
@@ -340,7 +336,7 @@ class NxRoadmap:
     def loadLayout(self):
         for i,v in enumerate(data.conf['roadmap']['header_width']):
             self.table.setColumnWidth(i, v)
-        if data.conf['roadmap']['sort_column'] != -1:
+        if data.conf['roadmap']['sort_column']:
             self.horizontal_header.setSortIndicator(
                 data.conf['roadmap']['sort_column'],
                 data.convert(data.conf['roadmap']['sort_order']))

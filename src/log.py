@@ -65,19 +65,15 @@ class NxLog:
         data.conf['log']['header_width'] = list()
         for i in range(3):
             data.conf['log']['header_width'].append(self.table.columnWidth(i))
-        if self.horizontal_header.sortIndicatorSection() < 3:
-            data.conf['log']['sort_column'] \
-                    = self.horizontal_header.sortIndicatorSection()
-            data.conf['log']['sort_order'] \
-                    = self.horizontal_header.sortIndicatorOrder().__repr__()
-        else:
-            data.conf['log']['sort_column'] = -1
-            data.conf['log']['sort_order'] = None
+        data.conf['log']['sort_column'] \
+                = self.horizontal_header.sortIndicatorSection()
+        data.conf['log']['sort_order'] \
+                = self.horizontal_header.sortIndicatorOrder().__repr__()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
         for i,v in enumerate(data.conf['log']['header_width']):
             self.table.setColumnWidth(i, v)
-        if data.conf['log']['sort_column'] != -1:
+        if data.conf['log']['sort_column']:
             self.horizontal_header.setSortIndicator(
                     data.conf['log']['sort_column'],
                     data.convert(data.conf['log']['sort_order']))
