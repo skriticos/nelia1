@@ -10,17 +10,7 @@ from datastore import data, convert
 class NxProject:
     def __init__(self):
         # show new project dialog
-        data.w_project.push_new.clicked.connect(
-            lambda: (
-            data.w_project_diag_new.line_name.clear(),
-            data.w_project_diag_new.combo_ptype.setCurrentIndex(0),
-            data.w_project_diag_new.combo_status.setCurrentIndex(0),
-            data.w_project_diag_new.combo_category.setCurrentIndex(0),
-            data.w_project_diag_new.spin_priority.setValue(0),
-            data.w_project_diag_new.spin_challenge.setValue(0),
-            data.w_project_diag_new.text_description.clear(),
-            data.w_project_diag_new.line_name.setFocus(),
-            data.w_project_diag_new.show()))
+        data.w_project.push_new.clicked.connect(self.onNewClicked)
         # show edit project dialog
         data.w_project.push_edit.clicked.connect(self.showEditProject)
         data.w_project_diag_new.accepted.connect(self.onNewProject)
@@ -53,6 +43,17 @@ class NxProject:
         # global handles for getting currently selected pid and updating
         # timestamp for currently selected project
         data.touchProject = self.touchProject
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onNewClicked(self):
+        data.w_project_diag_new.line_name.clear()
+        data.w_project_diag_new.combo_ptype.setCurrentIndex(0)
+        data.w_project_diag_new.combo_status.setCurrentIndex(0)
+        data.w_project_diag_new.combo_category.setCurrentIndex(0)
+        data.w_project_diag_new.spin_priority.setValue(0)
+        data.w_project_diag_new.spin_challenge.setValue(0)
+        data.w_project_diag_new.text_description.clear()
+        data.w_project_diag_new.line_name.setFocus()
+        data.w_project_diag_new.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenClicked(self):
         # throw away changes?
