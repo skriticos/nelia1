@@ -56,7 +56,7 @@ class NxLog:
         if self.model.rowCount() > 0 and not self.init:
             data.w_log.text_detail.setEnabled(True)
             data.w_log.text_detail.setPlainText(
-                data.project [data.getPid()] ['log'] [self.getSelectedLogId()] \
+                data.project [data.spid] ['log'] [self.getSelectedLogId()] \
                 ['detail']
             )
 
@@ -96,8 +96,8 @@ class NxLog:
         self.model.setHorizontalHeaderLabels(self.table_headers)
 
         # populate table
-        for lid in range(1, data.project[data.getPid()]['meta']['next_lid']):
-            log = data.project[data.getPid()]['log'][lid]
+        for lid in range(1, data.project[data.spid]['meta']['next_lid']):
+            log = data.project[data.spid]['log'][lid]
             self.model.insertRow(0, [
                 QStandardItem(str(lid).zfill(4)),
                 QStandardItem(datetime.datetime.fromtimestamp(
@@ -109,7 +109,7 @@ class NxLog:
         self.table.sortByColumn(0, Qt.DescendingOrder)
 
         self.init = False # re-enable selection change callback
-        if data.project[data.getPid()]['meta']['next_lid'] > 1:
+        if data.project[data.spid]['meta']['next_lid'] > 1:
             self.table.selectRow(0)
             self.table.setFocus()
         else:
@@ -129,10 +129,10 @@ class NxLog:
         """
 
         # check if project selection changed
-        if data.run['log_pid_last'] != data.getPid():
+        if data.run['log_pid_last'] != data.spid:
 
             # set data
-            data.run['log_pid_last'] = data.getPid()
+            data.run['log_pid_last'] = data.spid
             self.init = True # skip selection change callback
 
             # setup widget
@@ -149,12 +149,12 @@ class NxLog:
         User submits a new log entry. Add it to NxDataStrore and update view.
         """
 
-        lid = data.project[data.getPid()]['meta']['next_lid']
+        lid = data.project[data.spid]['meta']['next_lid']
         timestamp = int(time.time())
         disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
         # populate data
-        data.project[data.getPid()]['log'][lid] = {
+        data.project[data.spid]['log'][lid] = {
             'created': timestamp,
             'summary': data.w_log_diag_new.line_summary.text(),
             'detail':  data.w_log_diag_new.text_detail.toPlainText()
@@ -162,7 +162,7 @@ class NxLog:
 
         # update
         data.touchProject()
-        data.project[data.getPid()]['meta']['next_lid'] += 1
+        data.project[data.spid]['meta']['next_lid'] += 1
 
         # populate data
         self.model.insertRow(

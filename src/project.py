@@ -66,7 +66,6 @@ class NxProject:
 
         # global handles for getting currently selected pid and updating
         # timestamp for currently selected project
-        data.getPid = self.getPid
         data.touchProject = self.touchProject
 
 
@@ -138,22 +137,11 @@ class NxProject:
         changes as true.
         """
         timestamp = int(time.time())
-        data.project[self.getPid()]['modified'] = timestamp
+        data.project[data.spid]['modified'] = timestamp
         self.model.setItem(self.getActiveRow(), 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
         data.run['changed'] = True
         data.w_project.push_save.show()
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getPid(self):
-
-        if not self.init:
-            if self.table.currentIndex().row() == -1:
-                return 0
-            return int(self.model.itemFromIndex(
-                    self.model.index(self.table.currentIndex().row(), 0)).text())
-
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedProjectName(self):
 
@@ -167,17 +155,21 @@ class NxProject:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChanged(self):
-        if self.init: return
-        if data.project[0]['next_pid'] > 1 and self.getPid() != 0:
-            data.w_project.text_description.setEnabled(True)
-            data.w_project.text_description.setPlainText(
-                data.project[self.getPid()]['description'])
+        # set selected project id and store dictionary reference
+        row = self.table.currentIndex().row()
+        if row == -1: return
+        index = self.model.index(row, 0)
+        data.spid = int(self.model.itemFromIndex(index).text())
+        data.spro = data.project[data.spid]
+        # update content and enable project description widget
+        for w in [data.w_project.text_description]:
+            w.setPlainText(data.spro['description'])
+            w.setEnabled(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChange(self):
-
-        data.project[self.getPid()]['description'] = \
+        if self.init: return
+        data.project[data.spid]['description'] = \
                 data.w_project.text_description.toPlainText()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         data.conf['project']['header_width'] = []
@@ -237,7 +229,6 @@ class NxProject:
         if preserveLayout:
             self.loadLayout()
 
-        self.init = False
 
         if len(data.project) > 1:
 
@@ -260,6 +251,8 @@ class NxProject:
             data.w_project.push_delete.hide()
             data.w_project.push_save.hide()
             data.w_project.push_new.setFocus()
+
+        self.init = False
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewProject(self):
@@ -306,7 +299,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showEditProject(self):
 
-        p = data.project[self.getPid()]
+        p = data.project[data.spid]
 
         self.diag_edit.line_name.setText(p['name'])
         self.diag_edit.combo_ptype.setCurrentIndex(
@@ -325,7 +318,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditProject(self):
 
-        pid = self.getPid()
+        pid = data.spid
         p = data.project[pid]
 
         p['name']        = self.diag_edit.line_name.text()
@@ -342,7 +335,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDeleteProject(self):
 
-        pid = self.getPid()
+        pid = data.spid
 
         response = QMessageBox.question(
             data.w_project,
