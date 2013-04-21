@@ -62,7 +62,7 @@ class NxLog:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-        data.conf['log']['header_width'] = []
+        data.conf['log']['header_width'] = list()
         for i in range(3):
             data.conf['log']['header_width'].append(self.table.columnWidth(i))
         if self.horizontal_header.sortIndicatorSection() < 3:

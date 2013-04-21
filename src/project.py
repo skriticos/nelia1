@@ -162,7 +162,7 @@ class NxProject:
                 data.w_project.text_description.toPlainText()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-        data.conf['project']['header_width'] = []
+        data.conf['project']['header_width'] = list()
         for i in range(10):
             data.conf['project']['header_width'].append(
                 self.table.columnWidth(i))

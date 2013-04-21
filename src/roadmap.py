@@ -319,7 +319,7 @@ class NxRoadmap:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-        data.conf['roadmap']['header_width'] = []
+        data.conf['roadmap']['header_width'] = list()
         for i in range(8):
             data.conf['roadmap']['header_width'].append(
                 self.table.columnWidth(i))
