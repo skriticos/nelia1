@@ -72,7 +72,6 @@ class MainWindow():
             data.c_project.loadLayout()
             data.c_log.loadLayout()
             data.c_roadmap.loadLayout()
-            data.c_project.reset()
         # show window
         data.w_main.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

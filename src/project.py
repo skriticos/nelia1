@@ -78,8 +78,8 @@ class NxProject:
             QMessageBox.critical(data.w_main, title, message)
             data.run['path'] = None
             return
-        self.reset()
-        data.w_project.push_save.hide()
+        self.reloadTable()
+        data.run['changed'] = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
         path = data.conf['datastore']['lastpath']
@@ -88,9 +88,8 @@ class NxProject:
             title, message = 'Open failed', 'Open failed! ' + str(result)
             QMessageBox.critical(data.w_main, title, message)
             return
-        self.reset()
-        data.w_project.push_open_last.hide()
-        data.w_project.push_save.hide()
+        self.reloadTable()
+        data.run['changed'] = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveClicked(self):
         if not data.run['path']:
@@ -294,9 +293,5 @@ class NxProject:
         # can't touch deleted project, direct changed update
         data.run['changed'] = True
         self.reloadTable()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def reset(self):
-        self.reloadTable()
-        data.run['changed'] = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
