@@ -318,8 +318,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditProject(self):
 
-        pid = data.spid
-        p = data.project[pid]
+        p = data.project[data.spid]
 
         p['name']        = self.diag_edit.line_name.text()
         p['category']    = self.diag_edit.combo_category.currentText()
@@ -335,19 +334,17 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDeleteProject(self):
 
-        pid = data.spid
-
         response = QMessageBox.question(
             data.w_project,
             'Delete project?',
             'Sure you want to delete project {}: {}?'.format(
-                str(pid), self.getSelectedProjectName()),
+                str(data.spid), self.getSelectedProjectName()),
             QMessageBox.Yes|QMessageBox.No)
 
         if response == QMessageBox.StandardButton.No:
             return
 
-        del data.project[pid]
+        del data.spro
         self.reloadTable()
 
         # can't touch deleted project, direct changed update
