@@ -78,6 +78,7 @@ class NxProject:
             QMessageBox.critical(data.w_main, title, message)
             data.run['path'] = None
             return
+        data.spid = 1
         self.reloadTable()
         data.run['changed'] = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,6 +89,7 @@ class NxProject:
             title, message = 'Open failed', 'Open failed! ' + str(result)
             QMessageBox.critical(data.w_main, title, message)
             return
+        data.spid = 1
         self.reloadTable()
         data.run['changed'] = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
