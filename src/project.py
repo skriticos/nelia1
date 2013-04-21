@@ -43,6 +43,9 @@ class NxProject:
         # global handles for getting currently selected pid and updating
         # timestamp for currently selected project
         data.touchProject = self.touchProject
+        self.reloadTable()
+        if data.conf['datastore']['lastpath']:
+            data.w_project.push_open_last.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewClicked(self):
         data.w_project_diag_new.line_name.clear()
