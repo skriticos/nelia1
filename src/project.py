@@ -60,7 +60,7 @@ class NxProject:
 
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
         data.w_project.text_description.textChanged.connect(
-            self.onDescriptionChange)
+            self.onDescriptionChanged)
 
         self.table.activated.connect(self.showEditProject)
 
@@ -160,7 +160,7 @@ class NxProject:
             w.setPlainText(data.spro['description'])
             w.setEnabled(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onDescriptionChange(self):
+    def onDescriptionChanged(self):
         if self.init: return
         data.project[data.spid]['description'] = \
                 data.w_project.text_description.toPlainText()
