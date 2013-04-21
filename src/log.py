@@ -136,9 +136,8 @@ class NxLog:
             self.init = True # skip selection change callback
 
             # setup widget
-            pname = data.c_project.getSelectedProjectName()
-            data.w_log.line_project.setText(pname)
-            data.w_log_diag_new.line_project.setText(pname)
+            data.w_log.line_project.setText(data.spro['name'])
+            data.w_log_diag_new.line_project.setText(data.spro['name'])
 
             self.reloadTable()
 

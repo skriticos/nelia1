@@ -158,9 +158,8 @@ class NxRoadmap:
 
             pro = data.project[data.spid]
 
-            project_name = data.c_project.getSelectedProjectName()
-            data.w_roadmap.line_project.setText(project_name)
-            data.w_roadmap_diag_add.line_project.setText(project_name)
+            data.w_roadmap.line_project.setText(data.spro['name'])
+            data.w_roadmap_diag_add.line_project.setText(data.spro['name'])
 
             x, y = pro['meta']['current_milestone']
             milestones = pro['milestone']

@@ -143,12 +143,6 @@ class NxProject:
         data.run['changed'] = True
         data.w_project.push_save.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getSelectedProjectName(self):
-
-        return self.model.itemFromIndex(
-                self.model.index(self.table.currentIndex().row(), 1)).text()
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getActiveRow(self):
 
         return self.table.currentIndex().row()
@@ -338,7 +332,7 @@ class NxProject:
             data.w_project,
             'Delete project?',
             'Sure you want to delete project {}: {}?'.format(
-                str(data.spid), self.getSelectedProjectName()),
+                str(data.spid), data.spro['name']),
             QMessageBox.Yes|QMessageBox.No)
 
         if response == QMessageBox.StandardButton.No:
