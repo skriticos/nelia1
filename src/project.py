@@ -327,7 +327,7 @@ class NxProject:
         if response == QMessageBox.StandardButton.No:
             return
 
-        del data.spro
+        del data.project[data.spid]
         data.spid = 0
         self.reloadTable()
 
