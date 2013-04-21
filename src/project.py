@@ -167,15 +167,11 @@ class NxProject:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChanged(self):
-
-        if not self.init:
-            pid = self.getPid()
-            if data.project[0]['next_pid'] > 1 and pid != 0:
-                data.w_project.text_description.setEnabled(True)
-                data.w_project.text_description.setPlainText(
-                    data.project[pid]['description']
-                )
-
+        if self.init: return
+        if data.project[0]['next_pid'] > 1 and self.getPid() != 0:
+            data.w_project.text_description.setEnabled(True)
+            data.w_project.text_description.setPlainText(
+                data.project[self.getPid()]['description'])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChange(self):
 
