@@ -137,7 +137,7 @@ class NxProject:
         changes as true.
         """
         timestamp = int(time.time())
-        data.project[data.spid]['modified'] = timestamp
+        data.spro['modified'] = timestamp
         row = self.table.currentIndex().row()
         self.model.setItem(row, 8,
             QStandardItem(datetime.datetime.fromtimestamp(timestamp).isoformat()))
@@ -158,7 +158,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChanged(self):
         if self.init: return
-        data.project[data.spid]['description'] = \
+        data.spro['description'] = \
                 data.w_project.text_description.toPlainText()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
@@ -289,18 +289,16 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showEditProject(self):
 
-        p = data.project[data.spid]
-
-        self.diag_edit.line_name.setText(p['name'])
+        self.diag_edit.line_name.setText(data.spro['name'])
         self.diag_edit.combo_ptype.setCurrentIndex(
-            self.diag_edit.combo_ptype.findText(p['ptype']))
+            self.diag_edit.combo_ptype.findText(data.spro['ptype']))
         self.diag_edit.combo_status.setCurrentIndex(
-            self.diag_edit.combo_status.findText(p['status']))
+            self.diag_edit.combo_status.findText(data.spro['status']))
         self.diag_edit.combo_category.setCurrentIndex(
-            self.diag_edit.combo_category.findText(p['category']))
-        self.diag_edit.spin_priority.setValue(p['priority'])
-        self.diag_edit.spin_challenge.setValue(p['challenge'])
-        self.diag_edit.text_description.setPlainText(p['description'])
+            self.diag_edit.combo_category.findText(data.spro['category']))
+        self.diag_edit.spin_priority.setValue(data.spro['priority'])
+        self.diag_edit.spin_challenge.setValue(data.spro['challenge'])
+        self.diag_edit.text_description.setPlainText(data.spro['description'])
 
         self.diag_edit.show()
         self.diag_edit.line_name.setFocus()
@@ -308,15 +306,13 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditProject(self):
 
-        p = data.project[data.spid]
-
-        p['name']        = self.diag_edit.line_name.text()
-        p['category']    = self.diag_edit.combo_category.currentText()
-        p['status']      = self.diag_edit.combo_status.currentText()
-        p['ptype']       = self.diag_edit.combo_ptype.currentText()
-        p['priority']    = self.diag_edit.spin_priority.value()
-        p['challenge']   = self.diag_edit.spin_challenge.value()
-        p['description'] = self.diag_edit.text_description.toPlainText()
+        data.spro['name']        = self.diag_edit.line_name.text()
+        data.spro['category']    = self.diag_edit.combo_category.currentText()
+        data.spro['status']      = self.diag_edit.combo_status.currentText()
+        data.spro['ptype']       = self.diag_edit.combo_ptype.currentText()
+        data.spro['priority']    = self.diag_edit.spin_priority.value()
+        data.spro['challenge']   = self.diag_edit.spin_challenge.value()
+        data.spro['description'] = self.diag_edit.text_description.toPlainText()
 
         self.reloadTable()
         self.touchProject()

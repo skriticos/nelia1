@@ -96,8 +96,8 @@ class NxLog:
         self.model.setHorizontalHeaderLabels(self.table_headers)
 
         # populate table
-        for lid in range(1, data.project[data.spid]['meta']['next_lid']):
-            log = data.project[data.spid]['log'][lid]
+        for lid in range(1, data.spro['meta']['next_lid']):
+            log = data.spro['log'][lid]
             self.model.insertRow(0, [
                 QStandardItem(str(lid).zfill(4)),
                 QStandardItem(datetime.datetime.fromtimestamp(
@@ -109,7 +109,7 @@ class NxLog:
         self.table.sortByColumn(0, Qt.DescendingOrder)
 
         self.init = False # re-enable selection change callback
-        if data.project[data.spid]['meta']['next_lid'] > 1:
+        if data.spro['meta']['next_lid'] > 1:
             self.table.selectRow(0)
             self.table.setFocus()
         else:
@@ -148,12 +148,12 @@ class NxLog:
         User submits a new log entry. Add it to NxDataStrore and update view.
         """
 
-        lid = data.project[data.spid]['meta']['next_lid']
+        lid = data.spro['meta']['next_lid']
         timestamp = int(time.time())
         disptime = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
         # populate data
-        data.project[data.spid]['log'][lid] = {
+        data.spro['log'][lid] = {
             'created': timestamp,
             'summary': data.w_log_diag_new.line_summary.text(),
             'detail':  data.w_log_diag_new.text_detail.toPlainText()
@@ -161,7 +161,7 @@ class NxLog:
 
         # update
         data.touchProject()
-        data.project[data.spid]['meta']['next_lid'] += 1
+        data.spro['meta']['next_lid'] += 1
 
         # populate data
         self.model.insertRow(
