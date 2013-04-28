@@ -9,6 +9,7 @@ from datastore import data, convert
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
     def __init__(self):
+        data.spid = 0
         # show new project dialog
         data.w_project.push_new.clicked.connect(self.onNewClicked)
         # show edit project dialog
@@ -135,6 +136,7 @@ class NxProject:
     def onSelectionChanged(self):
         # set selected project id and store dictionary reference
         row = self.table.currentIndex().row()
+        print (row)
         if row == -1 or self.init: return
         index = self.model.index(row, 0)
         data.spid = int(self.model.itemFromIndex(index).text())
@@ -193,7 +195,11 @@ class NxProject:
             ])
         # restore previous layout (sorting)
         self.loadLayout()
-        # apply selection
+        # -- apply selection
+        # if project was deleted, data.spid == 0, we want to select the last
+        # project ID
+        if not data.spid and len(data.project) > 1:
+            data.spid = sorted(data.project.keys())[-1]
         for i in range(self.model.rowCount()):
             index = self.model.index(i, 0)
             pid = int(self.model.itemFromIndex(index).text())
@@ -297,6 +303,7 @@ class NxProject:
         data.spid = 0
         # can't touch deleted project, direct changed update
         data.run['changed'] = True
+        # reload table
         self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
