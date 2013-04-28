@@ -25,22 +25,22 @@ class NxProject:
         data.w_project.push_help.clicked.connect(
             data.w_project_diag_help.show)
         # setup table
-        self.table = data.w_project.table_project_list
-        self.table_headers = [
+        self.view = data.w_project.view
+        self.view_headers = [
                 'ID', 'Name', 'Status', 'Type', 'Verson', 'Category',
                 'Priority', 'Challenge', 'Modified', 'Created' ]
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(self.table_headers)
-        self.table.setModel(self.model)
-        self.selection_model = self.table.selectionModel()
-        self.horizontal_header = self.table.horizontalHeader()
-        self.table.setAlternatingRowColors(True)
+        self.model.setHorizontalHeaderLabels(self.view_headers)
+        self.view.setModel(self.model)
+        self.selection_model = self.view.selectionModel()
+        self.horizontal_header = self.view.horizontalHeader()
+        self.view.setAlternatingRowColors(True)
         self.diag_new = data.w_project_diag_new
         self.diag_edit = data.w_project_diag_edit
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
         data.w_project.text_description.textChanged.connect(
             self.onDescriptionChanged)
-        self.table.activated.connect(self.showEditProject)
+        self.view.activated.connect(self.showEditProject)
         # global handles for getting currently selected pid and updating
         # timestamp for currently selected project
         data.touchProject = self.touchProject
@@ -117,7 +117,7 @@ class NxProject:
             QMessageBox.critical(data.w_main, title, message)
             return
         data.w_project.push_save.hide()
-        self.table.setFocus()
+        self.view.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def touchProject(self):
         """
@@ -128,15 +128,14 @@ class NxProject:
         """
         timestamp = int(time.time())
         data.spro['modified'] = timestamp
-        row = self.table.currentIndex().row()
+        row = self.view.currentIndex().row()
         self.model.setItem(row, 8, QStandardItem(convert(timestamp)))
         data.run['changed'] = True
         data.w_project.push_save.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChanged(self):
         # set selected project id and store dictionary reference
-        row = self.table.currentIndex().row()
-        print (row)
+        row = self.view.currentIndex().row()
         if row == -1 or self.init: return
         index = self.model.index(row, 0)
         data.spid = int(self.model.itemFromIndex(index).text())
@@ -155,7 +154,7 @@ class NxProject:
         data.conf['project']['header_width'] = list()
         for i in range(10):
             data.conf['project']['header_width'].append(
-                self.table.columnWidth(i))
+                self.view.columnWidth(i))
         data.conf['project']['sort_column'] \
                 = self.horizontal_header.sortIndicatorSection()
         data.conf['project']['sort_order'] \
@@ -163,7 +162,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
         for i,v in enumerate(data.conf['project']['header_width']):
-            self.table.setColumnWidth(i, v)
+            self.view.setColumnWidth(i, v)
         if data.conf['project']['sort_column']:
             self.horizontal_header.setSortIndicator(
                 data.conf['project']['sort_column'],
@@ -174,7 +173,7 @@ class NxProject:
         self.saveLayout()
         # clean out data
         self.model.clear()
-        self.model.setHorizontalHeaderLabels(self.table_headers)
+        self.model.setHorizontalHeaderLabels(self.view_headers)
         # hide open last after first activity
         data.w_project.push_open_last.hide()
         # load project items into table
@@ -204,7 +203,7 @@ class NxProject:
             index = self.model.index(i, 0)
             pid = int(self.model.itemFromIndex(index).text())
             if pid == data.spid:
-                selmod = self.table.selectionModel()
+                selmod = self.view.selectionModel()
                 selmod.select(index,
                     QItemSelectionModel.Select|QItemSelectionModel.Rows)
                 break
@@ -218,7 +217,7 @@ class NxProject:
             else:
                 data.w_project.push_save.hide()
             data.w_project.push_new.setDefault(False)
-            self.table.setFocus()
+            self.view.setFocus()
         # last project deleted
         else:
             # don't want to save empty document
