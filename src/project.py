@@ -135,7 +135,7 @@ class NxProject:
     def onSelectionChanged(self):
         # set selected project id and store dictionary reference
         row = self.table.currentIndex().row()
-        if row == -1: return
+        if row == -1 or self.init: return
         index = self.model.index(row, 0)
         data.spid = int(self.model.itemFromIndex(index).text())
         data.spro = data.project[data.spid]
