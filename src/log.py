@@ -72,15 +72,14 @@ class NxLog:
                     data.conf['log']['sort_column'],
                     convert(data.conf['log']['sort_order']))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def reloadTable(self, state=None, preserveLayout=True):
+    def reloadTable(self):
         """
         Uses the NxDataCore data to reload the table. Used when it has to be
         updated, like load time, different project selected or adding log
         entries.
         """
 
-        if preserveLayout:
-            self.saveLayout()
+        self.saveLayout()
 
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.view_headers)
@@ -106,8 +105,7 @@ class NxLog:
             data.w_log.text_detail.setEnabled(False)
             data.w_log.push_new_entry.setFocus()
 
-        if preserveLayout:
-            self.loadLayout()
+        self.loadLayout()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
