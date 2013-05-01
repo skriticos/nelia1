@@ -133,10 +133,12 @@ class NxProject:
         data.run['changed'] = True
         data.w_project.push_save.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onSelectionChanged(self):
-        # set selected project id and store dictionary reference
-        row = self.view.currentIndex().row()
-        if row == -1 or self.init: return
+    def onSelectionChanged(self, item_selection):
+        # get indexes
+        indexes = item_selection.indexes()
+        # return if no indexes are selected
+        if not indexes: return
+        row = indexes[0].row()
         index = self.model.index(row, 0)
         data.spid = int(self.model.itemFromIndex(index).text())
         data.spro = data.project[data.spid]
