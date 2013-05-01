@@ -34,7 +34,7 @@ class NxLog:
 
         # connect add roadmap callbacks
         data.w_log.push_new_entry.clicked.connect(self.onNewEntryClicked)
-        data.w_log_diag_new.accepted.connect(self.onNewEntry)
+        data.w_log_diag_new.accepted.connect(self.onNewSubmit)
 
         # update text_detail on selection change
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
@@ -140,7 +140,7 @@ class NxLog:
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onNewEntry(self):
+    def onNewSubmit(self):
         """
         User submits a new log entry. Add it to NxDataStrore and update view.
         """
