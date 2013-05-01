@@ -318,7 +318,7 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         data.conf['roadmap']['header_width'] = list()
-        for i in range(8):
+        for i in range(self.model.columnCount()):
             data.conf['roadmap']['header_width'].append(
                 self.table.columnWidth(i))
         data.conf['roadmap']['sort_column'] \

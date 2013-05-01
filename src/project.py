@@ -153,7 +153,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         data.conf['project']['header_width'] = list()
-        for i in range(10):
+        for i in range(self.model.columnCount()):
             data.conf['project']['header_width'].append(
                 self.view.columnWidth(i))
         data.conf['project']['sort_column'] \

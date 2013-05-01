@@ -57,7 +57,7 @@ class NxLog:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         data.conf['log']['header_width'] = list()
-        for i in range(3):
+        for i in range(self.model.columnCount()):
             data.conf['log']['header_width'].append(self.view.columnWidth(i))
         data.conf['log']['sort_column'] \
                 = self.horizontal_header.sortIndicatorSection()
