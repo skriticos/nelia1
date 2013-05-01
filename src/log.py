@@ -74,6 +74,7 @@ class NxLog:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self):
         self.saveLayout()
+        self.selection_model.clear()
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.view_headers)
         for lid in range(1, data.spro['meta']['next_lid']):
@@ -83,14 +84,18 @@ class NxLog:
                 QStandardItem(convert(log['created'])),
                 QStandardItem(log['summary'])
             ])
+        for i in range(self.model.rowCount()):
+            index = self.model.index(i, 0)
+            lid = int(self.model.itemFromIndex(index).text())
+            if lid == self.slogid:
+                self.selection_model.select(index,
+                    QItemSelectionModel.Select|QItemSelectionModel.Rows)
+                break
+        self.loadLayout()
         if data.spro['meta']['next_lid'] > 1:
-            self.view.selectRow(0)
             self.view.setFocus()
         else:
-            data.w_log.text_detail.setPlainText('No log selected')
-            data.w_log.text_detail.setEnabled(False)
             data.w_log.push_new_entry.setFocus()
-        self.loadLayout()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         """
@@ -104,10 +109,13 @@ class NxLog:
             # set data
             data.run['log_pid_last'] = data.spid
 
+
             # setup widget
             data.w_log.line_project.setText(data.spro['name'])
             data.w_log_diag_new.line_project.setText(data.spro['name'])
 
+            if data.spro['log']:
+                self.slogid = sorted(data.spro['log'].keys())[-1]
             self.reloadTable()
 
 
@@ -131,10 +139,10 @@ class NxLog:
         data.touchProject()
         data.spro['meta']['next_lid'] += 1
 
+        self.slogid = lid
         self.reloadTable()
 
         # update state
-        self.view.selectRow(0)
         self.view.setFocus()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
