@@ -53,8 +53,7 @@ class NxLog:
         slogid = int(self.model.itemFromIndex(index).text())
         # populate detail widget
         data.w_log.text_detail.setEnabled(True)
-        data.w_log.text_detail.setPlainText(
-            data.spro['log'][slogid]['detail'])
+        data.w_log.text_detail.setPlainText(data.spro['log'][slogid]['detail'])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         data.conf['log']['header_width'] = list()
