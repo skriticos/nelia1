@@ -93,9 +93,6 @@ class NxLog:
                 QStandardItem(log['summary'])
             ])
 
-        # setup state
-        self.view.sortByColumn(0, Qt.DescendingOrder)
-
         self.init = False # re-enable selection change callback
         if data.spro['meta']['next_lid'] > 1:
             self.view.selectRow(0)
