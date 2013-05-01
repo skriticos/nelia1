@@ -51,15 +51,16 @@ class NxLog:
                 self.model.index(self.view.currentIndex().row(), 0)).text())
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onSelectionChange(self):
-
-        if self.model.rowCount() > 0 and not self.init:
-            data.w_log.text_detail.setEnabled(True)
-            data.w_log.text_detail.setPlainText(
-                data.project [data.spid] ['log'] [self.getSelectedLogId()] \
-                ['detail']
-            )
-
+    def onSelectionChange(self, item_selection):
+        indexes = item_selection.indexes()
+        if not indexes:
+            data.w_log.text_detail.setEnabled(False)
+            data.w_log.text_detail.setPlainText('No log selected')
+            return
+        row = indexes[0].row()
+        data.w_log.text_detail.setEnabled(True)
+        data.w_log.text_detail.setPlainText(
+            data.spro['log'][self.getSelectedLogId()]['detail'])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         data.conf['log']['header_width'] = list()
