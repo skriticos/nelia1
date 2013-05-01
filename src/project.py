@@ -45,7 +45,7 @@ class NxProject:
         # timestamp for currently selected project
         data.touchProject = self.touchProject
         self.reloadTable()
-        if data.conf['datastore']['lastpath']:
+        if 'lastpath' in data.conf['datastore']:
             data.w_project.push_open_last.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewClicked(self):
