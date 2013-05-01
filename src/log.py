@@ -131,14 +131,7 @@ class NxLog:
         data.touchProject()
         data.spro['meta']['next_lid'] += 1
 
-        # populate data
-        self.model.insertRow(
-            0, [
-                QStandardItem(str(lid).zfill(4)),
-                QStandardItem(convert(timestamp)),
-                QStandardItem(data.w_log_diag_new.line_summary.text())
-            ]
-        )
+        self.reloadTable()
 
         # update state
         self.view.selectRow(0)
