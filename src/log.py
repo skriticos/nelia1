@@ -33,16 +33,17 @@ class NxLog:
         self.view.setColumnWidth(2, 550)
 
         # connect add roadmap callbacks
-        data.w_log.push_new_entry.clicked.connect(lambda: (
-            data.w_log_diag_new.text_detail.clear(),
-            data.w_log_diag_new.line_summary.clear(),
-            data.w_log_diag_new.line_summary.setFocus(),
-            data.w_log_diag_new.show()))
+        data.w_log.push_new_entry.clicked.connect(self.onNewEntryClicked)
         data.w_log_diag_new.accepted.connect(self.onNewEntry)
 
         # update text_detail on selection change
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onNewEntryClicked(self):
+        data.w_log_diag_new.text_detail.clear()
+        data.w_log_diag_new.line_summary.clear()
+        data.w_log_diag_new.show()
+        data.w_log_diag_new.line_summary.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedLogId(self):
 
