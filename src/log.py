@@ -73,18 +73,9 @@ class NxLog:
                     convert(data.conf['log']['sort_order']))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self):
-        """
-        Uses the NxDataCore data to reload the table. Used when it has to be
-        updated, like load time, different project selected or adding log
-        entries.
-        """
-
         self.saveLayout()
-
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.view_headers)
-
-        # populate table
         for lid in range(1, data.spro['meta']['next_lid']):
             log = data.spro['log'][lid]
             self.model.insertRow(0, [
@@ -92,8 +83,6 @@ class NxLog:
                 QStandardItem(convert(log['created'])),
                 QStandardItem(log['summary'])
             ])
-
-        self.init = False # re-enable selection change callback
         if data.spro['meta']['next_lid'] > 1:
             self.view.selectRow(0)
             self.view.setFocus()
@@ -101,10 +90,7 @@ class NxLog:
             data.w_log.text_detail.setPlainText('No log selected')
             data.w_log.text_detail.setEnabled(False)
             data.w_log.push_new_entry.setFocus()
-
         self.loadLayout()
-
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         """
@@ -117,7 +103,6 @@ class NxLog:
 
             # set data
             data.run['log_pid_last'] = data.spid
-            self.init = True # skip selection change callback
 
             # setup widget
             data.w_log.line_project.setText(data.spro['name'])
