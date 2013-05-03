@@ -1,131 +1,117 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# asumption: all functions in this module operate on the currently selected
+#            project
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from PySide.QtCore import *
 from PySide.QtGui import *
 import time
 from pprint import pprint
 from datastore import data
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def versionToIndex(major, minor):
+    # there is no 0.0 milestone, first one is 0.1. there is 1.0 though
+    if major > 0:
+        return major, minor
+    else:
+        return major, minor - 1
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-class NxMilestone:
+def _indexToVersion(x, y):
+
+    if x > 0:
+        return x, y
+    else:
+        return x, y + 1
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def versionToIndex(self, major, minor):
+def _addMilestone(major, minor):
 
-        if major > 0:
-            return major, minor
-        else:
-            return major, minor - 1
+    x, y = versionToIndex(major, minor)
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def indexToVersion(self, x, y):
-
-        if x > 0:
-            return x, y
-        else:
-            return x, y + 1
+    if y == 0:
+        data.spro['milestone'].append(
+           [{'description': '', 'm': '{}.{}'.format(major, minor),
+              'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}])
+    else:
+        data.spro['milestone'][x].append(
+            {'description': '', 'm': '{}.{}'.format(major, minor),
+             'fo': {}, 'fc': {}, 'io': {}, 'ic': {}})
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def addMilestone(self, pid, major, minor):
+def _removeMilestone(major, minor):
 
-        x, y = self.versionToIndex(major, minor)
+    x, y = versionToIndex(major, minor)
 
-        if y == 0:
-            data.project[pid] ['milestone'].append(
-                [{'description': '', 'm': '{}.{}'.format(major, minor),
-                  'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
-            )
-        else:
-            data.project[pid] ['milestone'] [x].append(
-                {'description': '', 'm': '{}.{}'.format(major, minor),
-                 'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-            )
+    # n.0 deletes major milestone
+    if y == 0: del data.spro['milestone'][x]
+    # otherwise we are only deleting minor milestone
+    else: del data.spro['milestone'][x][y]
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def removeMilestone(self, pid, major, minor):
+def _updateMilestoneTree():
 
-        x, y = self.versionToIndex(major, minor)
+    '''
+        If an item is created/moved to/from the milestone graph edge,
+        edge graph has to be updated.
+    '''
 
-        # n.0 deletes major milestone
-        if y == 0:
-            del data.project[pid]['milestone'][x]
-        # otherwise we are only deleting minor milestone
-        else:
-            del data.project[pid]['milestone'][x][y]
+    cmajor, cminor = data.spro['meta']['current_milestone']
+    cx, cy = versionToIndex(cmajor, cminor)
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def updateMilestoneTree(self, pid):
+    for x in range(len(data.spro['milestone'])):
 
-        '''
-            If an item is created/moved to/from the milestone graph edge,
-            edge graph has to be updated.
-        '''
+        # if we have removed the last major branch before, we want to get
+        # out
+        if x == len(data.spro['milestone']):
+            break
 
-        p = data.project[pid]
-        cmajor, cminor = data.project[pid]['meta']['current_milestone']
-        cx, cy = self.versionToIndex(cmajor, cminor)
+        # check for new edge item
+        last_index = len(data.spro['milestone'][x]) - 1
+        major, minor = _indexToVersion(x, last_index)
+        item_count = (
+                len(data.spro['milestone'][x][last_index]['fo']) +
+                len(data.spro['milestone'][x][last_index]['fc']) +
+                len(data.spro['milestone'][x][last_index]['io']) +
+                len(data.spro['milestone'][x][last_index]['ic']))
+        if item_count > 0:
+            if minor == 0:
+                _addMilestone(major, 1)
+                _addMilestone(major + 1, 0)
+            else:
+                _addMilestone(major, minor + 1)
 
-        for x in range(len(p['milestone'])):
-
-            # if we have removed the last major branch before, we want to get
-            # out
-            if x == len(p['milestone']):
-                break
-
-            # check for new edge item
-            last_index = len(p['milestone'][x]) - 1
-            major, minor = self.indexToVersion(x, last_index)
+        # check for removed edge item
+        if len(data.spro['milestone'][x]) > 1:
+            index = len(data.spro['milestone'][x]) - 2
+            major, minor = _indexToVersion(x, index)
             item_count = (
-                    len(p ['milestone'] [x] [last_index] ['fo']) +
-                    len(p ['milestone'] [x] [last_index] ['fc']) +
-                    len(p ['milestone'] [x] [last_index] ['io']) +
-                    len(p ['milestone'] [x] [last_index] ['ic'])
-            )
-            if item_count > 0:
+                    len(data.spro['milestone'][x][index]['fo']) +
+                    len(data.spro['milestone'][x][index]['fc']) +
+                    len(data.spro['milestone'][x][index]['io']) +
+                    len(data.spro['milestone'][x][index]['ic']))
+            if item_count == 0:
                 if minor == 0:
-                    self.addMilestone(pid, major, 1)
-                    self.addMilestone(pid, major + 1, 0)
+                    _removeMilestone(major, 1)
+                    _removeMilestone(major + 1, 0)
                 else:
-                    self.addMilestone(pid, major, minor + 1)
-
-            # check for removed edge item
-            if len(p['milestone'][x]) > 1:
-                index = len(p['milestone'][x]) - 2
-                major, minor = self.indexToVersion(x, index)
-                item_count = (
-                        len(p ['milestone'] [x] [index] ['fo']) +
-                        len(p ['milestone'] [x] [index] ['fc']) +
-                        len(p ['milestone'] [x] [index] ['io']) +
-                        len(p ['milestone'] [x] [index] ['ic'])
-                )
-                if item_count == 0:
-                    if minor == 0:
-                        self.removeMilestone(pid, major, 1)
-                        self.removeMilestone(pid, major + 1, 0)
-                    else:
-                        self.removeMilestone(pid, major, minor + 1)
+                    _removeMilestone(major, minor + 1)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getItemData(self, pid, item_id):
+def _getItemData(item_id):
 
-        p = data.project[pid]
-        ma, mi, fioc = p['mi_index'] [item_id]
-        x, y = self.versionToIndex(ma, mi)
+    ma, mi, fioc = data.spro['mi_index'][item_id]
+    x, y = versionToIndex(ma, mi)
 
-        item = p['milestone'] [x] [y] [fioc] [item_id]
+    item = data.spro['milestone'][x][y][fioc][item_id]
 
-        if fioc[0] == 'f':
-            itype = 'Feature'
-        elif fioc[0] == 'i':
-            itype = 'Issue'
-        if fioc[1] == 'o':
-            status = 'Open'
-        elif fioc[1] == 'c':
-            status = 'Closed'
+    if   fioc[0] == 'f': itype  = 'Feature'
+    elif fioc[0] == 'i': itype  = 'Issue'
+    if   fioc[1] == 'o': status = 'Open'
+    elif fioc[1] == 'c': status = 'Closed'
 
-        return {
-            'major': ma,
+    return {'major': ma,
             'minor': mi,
             'x': x,
             'y': y,
@@ -135,133 +121,120 @@ class NxMilestone:
             'priority': item['priority'],
             'description': item['description'],
             'status': status,
-            'fioc': fioc
-        }
+            'fioc': fioc}
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getAttribute(self, pid, item_id, attr_name):
+def _getAttribute(item_id, attr_name):
 
-        idat = self.getItemData(pid, itme_id)
-        return idat[attr_name]
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def setAttibute(self, pid, item_id, attr_name, value):
-
-        idat = self.getItemData(pid, item_id)
-        data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
-                [idat['fioc']] [item_id] [attr_name] = value
+    idat = _getItemData(item_id)
+    return idat[attr_name]
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def touchItem(self, pid, item_id):
+def _setAttribute(item_id, attr_name, value):
 
-        self.setAttibute(pid, item_id, 'modified', int(time.time()))
+    idat = _getItemData(item_id)
+    data.spro['milestone'][idat['x']][idat['y']] \
+           [idat['fioc']][item_id][attr_name] = value
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def addItem(self, pid, major, minor, itype, icat, name, priority,
-                description, status='Open'):
+def _touchItem(item_id):
 
-        item_id = data.project[pid] ['meta'] ['next_miid']
+    _setAttribute(item_id, 'modified', int(time.time()))
 
-        new_item = {
-            'name': name,
-            'icat': icat,
-            'priority': priority,
-            'description': description,
-            'created': int(time.time()),
-        }
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def addItem(major, minor, itype, icat, name, priority,
+            description, status='Open'):
 
-        x, y = self.versionToIndex(major, minor)
+    print(major, minor, itype, icat, name, priority)
+
+    item_id = data.spro['meta']['next_miid']
+
+    new_item = {'name': name,
+                'icat': icat,
+                'priority': priority,
+                'description': description,
+                'created': int(time.time())}
+
+    x, y = versionToIndex(major, minor)
+    if   itype == 'Feature': fioc = 'fo'
+    elif itype == 'Issue':   fioc = 'io'
+
+    data.spro['milestone'][x][y][fioc][item_id] = new_item
+    data.spro['mi_index'][item_id] = (major, minor, fioc)
+
+    data.spro['meta']['next_miid'] += 1
+    _touchItem(item_id)
+
+    _updateMilestoneTree()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def editItem(major, minor, item_id, itype, icat, name, priority, description):
+
+    idat = _getItemData(item_id)
+    for k, v in (('icat', icat),
+                 ('name', name),
+                 ('priority', priority),
+                 ('description', description)):
+        _setAttribute(item_id, k, v)
+
+    if itype != idat['itype'] or major != idat['major'] \
+            or minor != idat['minor']:
+        _moveItem(item_id, major, minor, itype, idat['status'])
+
+    _touchItem(item_id)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def _moveItem(item_id, new_major, new_minor, itype=None, status=None):
+
+    idat = _getItemData(item_id)
+    nx, ny = versionToIndex(new_major, new_minor)
+
+    if not itype and not status:
+        nfioc = idat['fioc']
+    else:
         if itype == 'Feature':
-            fioc = 'fo'
+            if not status:
+                nfioc = 'f' + idat['fioc'][1]
+            elif status == 'Open':
+                nfioc = 'fo'
+            elif status == 'Closed':
+                nfioc = 'fc'
         elif itype == 'Issue':
-            fioc = 'io'
+            if not status:
+                nfioc = 'i' + idat['fioc'][1]
+            elif status == 'Open':
+                nfioc = 'io'
+            elif status == 'Closed':
+                nfioc = 'ic'
 
-        data.project[pid] ['milestone'] [x] [y] [fioc] [item_id] = new_item
-        data.project[pid] ['mi_index'] [item_id] = (major, minor, fioc)
-
-        data.project[pid] ['meta'] ['next_miid'] += 1
-        self.touchItem(pid, item_id)
-
-        self.updateMilestoneTree(pid)
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def editItem(self, pid, major, minor, item_id, itype, icat, name, priority,
-                 description):
-
-        idat = self.getItemData(pid, item_id)
-        for k, v in (
-            ('icat', icat),
-            ('name', name),
-            ('priority', priority),
-            ('description', description)
-        ):
-            self.setAttibute(pid, item_id, k, v)
-
-        if itype != idat['itype'] or major != idat['major'] \
-           or minor != idat['minor']:
-            self.moveItem(pid, item_id, major, minor, itype, idat['status'])
-
-        self.touchItem(pid, item_id)
+    item = data.spro['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
+    data.spro['milestone'][nx][ny][nfioc][item_id] = item
+    del data.spro['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
+    data.spro['mi_index'][item_id] = (new_major, new_minor, nfioc)
+    _touchItem(item_id)
+    _updateMilestoneTree()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def moveItem(self, pid, item_id, new_major, new_minor, itype=None,
-                 status=None):
+def closeItem(item_id):
 
-        idat = self.getItemData(pid, item_id)
-        nx, ny = self.versionToIndex(new_major, new_minor)
-
-        if not itype and not status:
-            nfioc = idat['fioc']
-        else:
-            if itype == 'Feature':
-                if not status:
-                    nfioc = 'f' + idat['fioc'] [1]
-                elif status == 'Open':
-                    nfioc = 'fo'
-                elif status == 'Closed':
-                    nfioc = 'fc'
-            elif itype == 'Issue':
-                if not status:
-                    nfioc = 'i' + idat['fioc'] [1]
-                elif status == 'Open':
-                    nfioc = 'io'
-                elif status == 'Closed':
-                    nfioc = 'ic'
-
-        item = data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
-                [idat['fioc']] [item_id]
-        data.project[pid] ['milestone'] [nx] [ny] [nfioc] [item_id] = item
-        del data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
-                [idat['fioc']] [item_id]
-        data.project[pid] ['mi_index'] [item_id] = (new_major, new_minor,
-                                                         nfioc)
-        self.touchItem(pid, item_id)
-        self.updateMilestoneTree(pid)
+    idat = _getItemData(item_id)
+    _moveItem(item_id, idat['major'], idat['minor'], idat['itype'], 'Closed')
+    _touchItem(item_id)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def closeItem(self, pid, item_id):
+def reopenItem(item_id):
 
-        idat = self.getItemData(pid, item_id)
-        self.moveItem(pid, item_id, idat['major'], idat['minor'], idat['itype'],
-                      'Closed')
-        self.touchItem(pid, item_id)
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def reopenItem(self, pid, item_id):
-
-        idat = self.getItemData(pid, item_id)
-        self.moveItem(pid, item_id, idat['major'], idat['minor'], idat['itype'],
-                      'Open')
-        self.touchItem(pid, item_id)
+    idat = _getItemData(item_id)
+    _moveItem(item_id, idat['major'], idat['minor'], idat['itype'], 'Open')
+    _touchItem(item_id)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def deleteItem(self, pid, item_id):
+def deleteItem(item_id):
 
-        idat = self.getItemData(pid, item_id)
-        del data.project[pid] ['milestone'] [idat['x']] [idat['y']] \
-                [idat['fioc']] [item_id]
-        del data.project[pid] ['mi_index'] [item_id]
-        self.updateMilestoneTree(pid)
+    idat = _getItemData(item_id)
+    del data.spro['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
+    del data.spro['mi_index'][item_id]
+    _updateMilestoneTree()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

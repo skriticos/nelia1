@@ -7,9 +7,8 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 from mpushbutton import MPushButton
-from milestone import NxMilestone
+from milestone import *
 from datastore import data, convert
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
 
@@ -19,9 +18,6 @@ class NxRoadmap:
         self.filter_names = ['feature', 'issue', 'open', 'closed', 'low',
                              'medium', 'high', 'core', 'auxiliary', 'security',
                              'corrective', 'architecture', 'refactor']
-        # setup backbone
-        self.mc     = NxMilestone()
-
         # setup table
         self.feature_headers = \
             ['ID', 'Name', 'Type', 'Status', 'Category', 'Priority',
@@ -132,7 +128,7 @@ class NxRoadmap:
 
         if self.init: return
 
-        sx, sy = self.mc.versionToIndex(
+        sx, sy = versionToIndex(
             self.selected_major, self.selected_minor)
         data.spro['milestone'][sx][sy]['description'] \
                 = data.w_roadmap.text_description.toPlainText()
@@ -192,7 +188,7 @@ class NxRoadmap:
             self.table.currentIndex().row(),3)).text()
         if status == 'Open':
             # check if this is the last item in the milestone
-            x, y = self.mc.versionToIndex(
+            x, y = versionToIndex(
                 self.selected_major, self.selected_minor)
             fo_sum = len(data.spro
                          ['milestone'] [x] [y] ['fo'])
@@ -201,9 +197,9 @@ class NxRoadmap:
             if fo_sum + io_sum == 1:
                 self.closeMilestone(x, y)
             else:
-                self.mc.closeItem(data.spid, self.getSelectedItemId())
+                closeItem(self.getSelectedItemId())
         if status == 'Closed':
-            self.mc.reopenItem(data.spid, self.getSelectedItemId())
+            reopenItem(self.getSelectedItemId())
         data.touchProject()
         self.onChangeVersionSelection(self.selected_major, self.selected_minor)
 
@@ -226,12 +222,12 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMilestone(self):
 
-        self.mc.closeItem(data.spid, self.getSelectedItemId())
+        closeItem(self.getSelectedItemId())
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMajorMilestone(self):
 
-        self.mc.closeItem(data.spid, self.getSelectedItemId())
+        closeItem(self.getSelectedItemId())
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
@@ -267,7 +263,7 @@ class NxRoadmap:
 
         self.selected_major = major
         self.selected_minor = minor
-        sx, sy = self.mc.versionToIndex(major, minor)
+        sx, sy = versionToIndex(major, minor)
         data.w_roadmap.text_description.setPlainText(
             data.spro['milestone'][sx][sy]['description']
         )
@@ -433,7 +429,7 @@ class NxRoadmap:
             item_id = self.getSelectedItemId()
             tmajor, tminor, fioc \
                     = data.spro['mi_index'][item_id]
-            tx, ty = self.mc.versionToIndex(tmajor, tminor)
+            tx, ty = versionToIndex(tmajor, tminor)
             item = data.spro\
                     ['milestone'][tx][ty][fioc][item_id]
 
@@ -514,15 +510,11 @@ class NxRoadmap:
             category = 'Refactor'
 
         if mode == 'add':
-            self.mc.addItem(
-                data.spid, tmajor, tminor, ri_type, category,
-                name, priority, description
-            )
+            addItem(tmajor, tminor, ri_type, category,
+                    name, priority, description)
         if mode == 'edit':
-            self.mc.editItem(
-                data.spid, tmajor, tminor, self.getSelectedItemId(),
-                ri_type, category, name, priority, description
-            )
+            editItem(tmajor, tminor, self.getSelectedItemId(),
+                     ri_type, category, name, priority, description)
 
         self.reloadMilestoneButton()
         self.reloadTable()
@@ -533,7 +525,7 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def deleteMilestoneItem(self):
 
-        self.mc.deleteItem(data.spid, self.getSelectedItemId())
+        deleteItem(self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
         data.touchProject()
