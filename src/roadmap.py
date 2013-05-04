@@ -314,31 +314,30 @@ class NxRoadmap:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-        data.conf['roadmap']['header_width'] = list()
+        dc.c.roadmap.header.width.v = list()
         for i in range(self.model.columnCount()):
-            data.conf['roadmap']['header_width'].append(
-                self.table.columnWidth(i))
-        data.conf['roadmap']['sort_column'] \
+            dc.c.roadmap.header.width.v.append(self.table.columnWidth(i))
+        dc.c.roadmap.sort.column.v \
                 = self.horizontal_header.sortIndicatorSection()
-        data.conf['roadmap']['sort_order'] \
+        dc.c.roadmap.sort.order.v \
                 = self.horizontal_header.sortIndicatorOrder().__repr__()
         # save filter checkbox states
         for filter_name in self.filter_names:
-            data.conf['roadmap']['show_{}'.format(filter_name)] \
+            dc.c.roadmap._('show_{}'.format(filter_name)).v \
                     = dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)] \
                     .isChecked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
-        for i,v in enumerate(data.conf['roadmap']['header_width']):
+        for i,v in enumerate(dc.c.roadmap.header.width.v):
             self.table.setColumnWidth(i, v)
-        if data.conf['roadmap']['sort_column']:
+        if dc.c.roadmap.sort.column.v:
             self.horizontal_header.setSortIndicator(
-                data.conf['roadmap']['sort_column'],
-                convert(data.conf['roadmap']['sort_order']))
+                dc.c.roadmap.sort.column.v,
+                convert(dc.c.roadmap.sort.order.v))
         # restore filter checkbox states
         for filter_name in self.filter_names:
             dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)].setChecked(
-                    data.conf['roadmap']['show_{}'.format(filter_name)])
+                    dc.c.roadmap._('show_{}'.format(filter_name)).v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
 

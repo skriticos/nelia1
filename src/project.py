@@ -19,8 +19,6 @@ class NxProject:
         dc.ui.project_diag_edit.v.accepted.connect(self.onEditProject)
         dc.ui.project.v.push_delete.clicked.connect(self.onDeleteProject)
         dc.ui.project.v.push_open.clicked.connect(self.onOpenClicked)
-        if 'lastpath' not in data.conf['datastore']:
-            dc.ui.project.v.push_open_last.hide()
         dc.ui.project.v.push_open_last.clicked.connect(self.onOpenLast)
         dc.ui.project.v.push_save.clicked.connect(self.onSaveClicked)
         dc.ui.project.v.push_help.clicked.connect(
@@ -46,8 +44,8 @@ class NxProject:
         # timestamp for currently selected project
         data.touchProject = self.touchProject
         self.reloadTable()
-        if 'lastpath' in data.conf['datastore']:
-            dc.ui.project.v.push_open_last.show()
+        if dc.c.lastpath.v: dc.ui.project.v.push_open_last.show()
+        else:               dc.ui.project.v.push_open_last.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewClicked(self):
         dc.ui.project_diag_new.v.line_name.clear()
@@ -88,7 +86,7 @@ class NxProject:
         data.run['changed'] = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
-        path = data.conf['datastore']['lastpath']
+        path = dc.c.lastpath.v
         result = data.open_document(path)
         if isinstance(result, Exception):
             title, message = 'Open failed', 'Open failed! ' + str(result)
@@ -150,25 +148,23 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChanged(self):
         if self.init: return
-        data.spro['description'] = dc.ui.project.v.text_description.toPlainText()
+        data.spro['description'] =dc.ui.project.v.text_description.toPlainText()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-        data.conf['project']['header_width'] = list()
+        dc.c.project.header.width.v = list()
         for i in range(self.model.columnCount()):
-            data.conf['project']['header_width'].append(
-                self.view.columnWidth(i))
-        data.conf['project']['sort_column'] \
+            dc.c.project.header.width.v.append(self.view.columnWidth(i))
+        dc.c.project.sort.column.v \
                 = self.horizontal_header.sortIndicatorSection()
-        data.conf['project']['sort_order'] \
+        dc.c.project.sort.order.v \
                 = self.horizontal_header.sortIndicatorOrder().__repr__()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
-        for i,v in enumerate(data.conf['project']['header_width']):
+        for i,v in enumerate(dc.c.project.header.width.v):
             self.view.setColumnWidth(i, v)
-        if data.conf['project']['sort_column']:
+        if dc.c.project.sort.column.v:
             self.horizontal_header.setSortIndicator(
-                data.conf['project']['sort_column'],
-                convert(data.conf['project']['sort_order']))
+                dc.c.project.sort.column.v, convert(dc.c.project.sort.order.v))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self):
         self.init = True

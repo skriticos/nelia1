@@ -8,7 +8,6 @@ from PySide import QtUiTools
 from datacore import *
 from datacore import _dcdump
 from datastore import data
-from config  import NxConfig
 from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
@@ -49,7 +48,6 @@ class MainWindow():
         dc.ui.main.v.setGeometry(100,70,1000,600)
         # initialize modules
         data.c_main    = self
-        data.c_config  = NxConfig()
         data.c_project = NxProject()
         data.c_log     = NxLog()
         data.c_roadmap = NxRoadmap()
@@ -70,13 +68,13 @@ class MainWindow():
         app.aboutToQuit.connect(self.onAboutToQuit)
         signal.signal(signal.SIGTERM, self.onSigTerm)
         # load configuration, if existent
-        if data.c_config.previous_loaded:
+        dcloadconfig()
+        if dc.x.config.loaded.v:
             data.c_project.loadLayout()
             data.c_log.loadLayout()
             data.c_roadmap.loadLayout()
         # show window
         dc.ui.main.v.show()
-        _dcdump()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
         if data.run['changed']:
@@ -101,7 +99,7 @@ class MainWindow():
         data.c_project.saveLayout()
         data.c_log.saveLayout()
         data.c_roadmap.saveLayout()
-        data.c_config.writeConfig()
+        dcsaveconfig()
         if data.run['changed']:
             if data.run['path']:
                 data.save_document(data.run['path'])

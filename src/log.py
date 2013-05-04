@@ -43,21 +43,20 @@ class NxLog:
         dc.ui.log.v.text_detail.setPlainText(data.spro['log'][slogid]['detail'])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
-        data.conf['log']['header_width'] = list()
+        dc.c.log.header.width.v = list()
         for i in range(self.model.columnCount()):
-            data.conf['log']['header_width'].append(self.view.columnWidth(i))
-        data.conf['log']['sort_column'] \
+            dc.c.log.header.width.v.append(self.view.columnWidth(i))
+        dc.c.log.sort.column.v \
                 = self.horizontal_header.sortIndicatorSection()
-        data.conf['log']['sort_order'] \
+        dc.c.log.sort.order.v \
                 = self.horizontal_header.sortIndicatorOrder().__repr__()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
-        for i,v in enumerate(data.conf['log']['header_width']):
+        for i,v in enumerate(dc.c.log.header.width.v):
             self.view.setColumnWidth(i, v)
-        if data.conf['log']['sort_column']:
+        if dc.c.log.sort.column.v:
             self.horizontal_header.setSortIndicator(
-                    data.conf['log']['sort_column'],
-                    convert(data.conf['log']['sort_order']))
+                    dc.c.log.sort.column.v, convert(dc.c.log.sort.order.v))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self):
         self.saveLayout()

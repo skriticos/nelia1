@@ -16,14 +16,37 @@ class _dcNode:
         if isinstance(key, int): k = '_' + str(key)
         if k not in self.__dict__: self.__dict__[k] = _dcNode()
         return self.__dict__[k]
+    def __serialize__(self, data={}):
+        data['_dcNode'] = {}
+        for key, value in self.__dict__.items():
+            if isinstance(value, _dcNode):
+                data['_dcNode'][key] = {}
+                value.__serialize__(data['_dcNode'][key])
+            else:
+                data[key] = value
+        if not data['_dcNode']: del data['_dcNode']
+        return data
+    def __deserialize__(self, data):
+        for key, value in data.items():
+            if key == '_dcNode':
+                for key in value:
+                    n = self.__dict__[key] = _dcNode()
+                    n.__deserialize__(value[key])
+            else:
+                self.__dict__[key] = value
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 dc = _dcNode()
 # x = internal, c = config, r = run, s = store (document)
 dc.x, dc.c, dc.r, dc.s
 dc.x.changed.v = False
-dc.x.storepath.v = None
+dc.x.path.v = None
 dc.x.appname.v = __APPNAME__
 dc.c.lastpath.v = None
+# config path related stuff
+dc.x.home.v = os.path.expanduser('~')
+dc.x.config.basepath.v = os.path.join(dc.x.home.v, '.config', dc.x.appname.v)
+dc.x.config.filepath.v \
+    = os.path.join(dc.x.config.basepath.v, '{}.config'.format(dc.x.appname.v))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def dcsave(path=None):
     if not path and not dc.x.storepath.v:
@@ -42,19 +65,18 @@ def dcload(path):
     dc.x.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def dcsaveconfig():
-    path = os.path.join(os.path.expanduser('~'),
-        '.config', dc.x.appname.v, '{}.config'.format(dc.x.appname.v))
-    pdat = pickle.dumps(dc.c, 3)
+    os.makedirs(dc.x.config.basepath.v, exist_ok=True)
+    pdat = pickle.dumps(dc.c.__serialize__(), 3)
     cdat = gzip.compress(pdat)
-    with open(path, 'w') as f: f.write(cdat)
+    with open(dc.x.config.filepath.v, 'wb') as f: f.write(cdat)
+    return True
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def dcloadconfig():
-    path = os.path.join(os.path.expanduser('~'),
-        '.config', dc.x.appname.v, '{}.config'.format(dc.x.appname.v))
-    if not os.path.exists(path): return
-    with open(path, 'r') as f: cdat = f.read()
+    if not os.path.exists(dc.x.config.filepath.v): return
+    with open(dc.x.config.filepath.v, 'rb') as f: cdat = f.read()
     pdat = gzip.decompress(cdat)
-    dc.c = pickle.loads(pdat)
+    dc.c.__deserialize__(pickle.loads(pdat))
+    dc.x.config.loaded.v = True
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _dcdump(node=None, path=''):
     if not node: node = dc
