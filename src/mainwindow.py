@@ -5,6 +5,8 @@ import signal, os, time, PySide
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+from datacore import *
+from datacore import _dcdump
 from datastore import data
 from config  import NxConfig
 from project import NxProject
@@ -13,38 +15,38 @@ from roadmap import NxRoadmap
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MainWindow():
     def __init__(self, argv, app):
-        # load ui to data.w_*
+        # load ui to dc.w_*
         loader = QtUiTools.QUiLoader()
         for name, fname in (
-            ('w_main',                  'forms/mainwindow.ui'),
-            ('w_project',               'forms/project.ui'),
-            ('w_project_diag_help',     'forms/project_help.ui'),
-            ('w_log',                   'forms/log.ui'),
-            ('w_roadmap',               'forms/roadmap.ui'),
-            ('w_project_diag_new',      'forms/project_diag_new.ui'),
-            ('w_project_diag_edit',     'forms/project_diag_edit.ui'),
-            ('w_log_diag_new',          'forms/log_new_entry.ui'),
-            ('w_roadmap_diag_add',      'forms/roadmap_add.ui'),
-            ('w_roadmap_diag_finalize', 'forms/roadmap_finalize_milestone.ui')):
+            ('main',                  'forms/mainwindow.ui'),
+            ('project',               'forms/project.ui'),
+            ('project_diag_help',     'forms/project_help.ui'),
+            ('log',                   'forms/log.ui'),
+            ('roadmap',               'forms/roadmap.ui'),
+            ('project_diag_new',      'forms/project_diag_new.ui'),
+            ('project_diag_edit',     'forms/project_diag_edit.ui'),
+            ('log_diag_new',          'forms/log_new_entry.ui'),
+            ('roadmap_diag_add',      'forms/roadmap_add.ui'),
+            ('roadmap_diag_finalize', 'forms/roadmap_finalize_milestone.ui')):
             f = QFile(fname)
             f.open(QFile.ReadOnly)
-            obj = data.__dict__[name] = loader.load(f)
+            obj = dc.ui._(name).v= loader.load(f)
             f.close()
             if name.find('diag') > 0:
-                obj.setParent(data.w_main)
+                obj.setParent(dc.ui.main.v)
                 obj.setWindowFlags(Qt.Dialog)
         loader.deleteLater()
         # position module widgets
-        for cname, pname in (('w_project', 'tab_project'),
-                             ('w_log',     'tab_log'),
-                             ('w_roadmap', 'tab_roadmap')):
+        for cname, pname in (('project', 'tab_project'),
+                             ('log',     'tab_log'),
+                             ('roadmap', 'tab_roadmap')):
             grid = QGridLayout()
-            grid.addWidget(data.__dict__[cname], 0, 0)
+            grid.addWidget(dc.ui._(cname).v, 0, 0)
             grid.setContentsMargins(0, 0, 0, 0)
-            data.w_main.__dict__[pname].setLayout(grid)
+            dc.ui.main.v.__dict__[pname].setLayout(grid)
         # icon and window size
-        data.w_main.setWindowIcon(QIcon('img/nelia-icon32.png'))
-        data.w_main.setGeometry(100,70,1000,600)
+        dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
+        dc.ui.main.v.setGeometry(100,70,1000,600)
         # initialize modules
         data.c_main    = self
         data.c_config  = NxConfig()
@@ -56,13 +58,13 @@ class MainWindow():
         # before a selection is made
         self.dissableTabs()
         # connect signals and slots
-        data.w_main.tabnavi.currentChanged.connect(self.tabChanged)
+        dc.ui.main.v.tabnavi.currentChanged.connect(self.tabChanged)
         # global shortcuts
-        for keys, target in [('Ctrl+w', data.w_main.close),
+        for keys, target in [('Ctrl+w', dc.ui.main.v.close),
                              ('Ctrl+PgUp', self.onTabForward),
                              ('Ctrl+PgDown', self.onTabBackward),
                              ('Ctrl+s', self.onSaveShortcutActivated)]:
-            shortcut = QShortcut(QKeySequence(keys), data.w_main)
+            shortcut = QShortcut(QKeySequence(keys), dc.ui.main.v)
             shortcut.activated.connect(target)
         # intercept close event (see self.onAboutToQuit)
         app.aboutToQuit.connect(self.onAboutToQuit)
@@ -73,7 +75,8 @@ class MainWindow():
             data.c_log.loadLayout()
             data.c_roadmap.loadLayout()
         # show window
-        data.w_main.show()
+        dc.ui.main.v.show()
+        _dcdump()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
         if data.run['changed']:
@@ -109,34 +112,34 @@ class MainWindow():
                 data.save_document(path)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabForward(self):
-        tab_index = data.w_main.tabnavi.currentIndex()
-        tab_count = data.w_main.tabnavi.count()
+        tab_index = dc.ui.main.v.tabnavi.currentIndex()
+        tab_count = dc.ui.main.v.tabnavi.count()
         if tab_index+1 == tab_count:
-            data.w_main.tabnavi.setCurrentIndex(0)
-        elif data.w_main.tabnavi.isTabEnabled(tab_index+1):
-            data.w_main.tabnavi.setCurrentIndex(tab_index+1)
+            dc.ui.main.v.tabnavi.setCurrentIndex(0)
+        elif dc.ui.main.v.tabnavi.isTabEnabled(tab_index+1):
+            dc.ui.main.v.tabnavi.setCurrentIndex(tab_index+1)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabBackward(self):
-        tab_index = data.w_main.tabnavi.currentIndex()
-        tab_count = data.w_main.tabnavi.count()
+        tab_index = dc.ui.main.v.tabnavi.currentIndex()
+        tab_count = dc.ui.main.v.tabnavi.count()
         if tab_index == 0:
-            if data.w_main.tabnavi.isTabEnabled(tab_count-1):
-                data.w_main.tabnavi.setCurrentIndex(tab_count-1)
+            if dc.ui.main.v.tabnavi.isTabEnabled(tab_count-1):
+                dc.ui.main.v.tabnavi.setCurrentIndex(tab_count-1)
         else:
-            data.w_main.tabnavi.setCurrentIndex(tab_index-1)
+            dc.ui.main.v.tabnavi.setCurrentIndex(tab_index-1)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def enableTabs(self):
         # enable tab log and roadmap
-        for i in range(1, data.w_main.tabnavi.count()):
-            data.w_main.tabnavi.setTabEnabled(i, True)
+        for i in range(1, dc.ui.main.v.tabnavi.count()):
+            dc.ui.main.v.tabnavi.setTabEnabled(i, True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def dissableTabs(self):
         # disable tab log and roadmap
-        for i in range(1, data.w_main.tabnavi.count()):
-            data.w_main.tabnavi.setTabEnabled(i, False)
+        for i in range(1, dc.ui.main.v.tabnavi.count()):
+            dc.ui.main.v.tabnavi.setTabEnabled(i, False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def tabChanged(self):
-        tab_widget = data.w_main.tabnavi
+        tab_widget = dc.ui.main.v.tabnavi
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
         if cur_tab_name == '&Log':
             data.c_log.onShowTab()

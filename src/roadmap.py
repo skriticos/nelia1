@@ -9,6 +9,7 @@ from PySide import QtUiTools
 from mpushbutton import MPushButton
 from milestone import *
 from datastore import data, convert
+from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
 
@@ -25,46 +26,46 @@ class NxRoadmap:
 
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
-        self.table = data.w_roadmap.table
+        self.table = dc.ui.roadmap.v.table
         self.table.setModel(self.model)
         self.selection_model = self.table.selectionModel()
         self.horizontal_header = self.table.horizontalHeader()
         self.table.setAlternatingRowColors(True)
 
         # connect feature / issue add push buttons
-        data.w_roadmap.push_add_feature.clicked.connect(lambda: (
-            data.w_roadmap_diag_add.radio_feature.setChecked(True),
+        dc.ui.roadmap.v.push_add_feature.clicked.connect(lambda: (
+            dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True),
             self.showAddEditMI('add')))
-        data.w_roadmap.push_add_issue.clicked.connect(lambda: (
-            data.w_roadmap_diag_add.radio_issue.setChecked(True),
+        dc.ui.roadmap.v.push_add_issue.clicked.connect(lambda: (
+            dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True),
             self.showAddEditMI('add')))
-        data.w_roadmap_diag_add.accepted.connect(self.onSubmitDialog)
+        dc.ui.roadmap_diag_add.v.accepted.connect(self.onSubmitDialog)
 
         # connect all the filter checkboxes to update the milestone item table
-        data.w_roadmap.check_feature.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_issue.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_open.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_closed.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_low.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_medium.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_high.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_core.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_auxiliary.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_security.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_corrective.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_architecture.stateChanged.connect(self.reloadTable)
-        data.w_roadmap.check_refactor.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_feature.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_issue.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_open.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_closed.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_low.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_medium.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_high.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_core.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_auxiliary.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_security.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_corrective.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_architecture.stateChanged.connect(self.reloadTable)
+        dc.ui.roadmap.v.check_refactor.stateChanged.connect(self.reloadTable)
 
         # connect push milestone item action push buttons
-        data.w_roadmap.push_delete.clicked.connect(self.deleteMilestoneItem)
-        data.w_roadmap.push_edit.clicked.connect(lambda:(
+        dc.ui.roadmap.v.push_delete.clicked.connect(self.deleteMilestoneItem)
+        dc.ui.roadmap.v.push_edit.clicked.connect(lambda:(
             self.showAddEditMI('edit')))
-        data.w_roadmap.push_close.clicked.connect(self.closeMilestoneItem)
+        dc.ui.roadmap.v.push_close.clicked.connect(self.closeMilestoneItem)
 
         # connect finalize widget button callbacks
-        data.w_roadmap_diag_finalize.push_finalize_major.clicked.connect(
+        dc.ui.roadmap_diag_finalize.v.push_finalize_major.clicked.connect(
             self.onCloseMajorMilestone)
-        data.w_roadmap_diag_finalize.push_finalize_minor.clicked.connect(
+        dc.ui.roadmap_diag_finalize.v.push_finalize_minor.clicked.connect(
             self.onCloseMinorMilestone)
 
         # connect selection changed (for close item)
@@ -72,7 +73,7 @@ class NxRoadmap:
             self.onItemSelectionChanged
         )
         # connect milestone description changed
-        data.w_roadmap.text_description.textChanged.connect(
+        dc.ui.roadmap.v.text_description.textChanged.connect(
             self.onMilestoneDescriptionChanged
         )
 
@@ -81,10 +82,10 @@ class NxRoadmap:
             self.onMilestoneItemActivated
         )
 
-        data.w_roadmap.label_selected.hide()
-        data.w_roadmap.push_edit.hide()
-        data.w_roadmap.push_delete.hide()
-        data.w_roadmap.push_close.hide()
+        dc.ui.roadmap.v.label_selected.hide()
+        dc.ui.roadmap.v.push_edit.hide()
+        dc.ui.roadmap.v.push_delete.hide()
+        dc.ui.roadmap.v.push_close.hide()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getCellContent(self, i):
@@ -103,10 +104,10 @@ class NxRoadmap:
     def extractSelection(self, targetw='root'):
 
         if targetw == 'root':
-            w = data.w_roadmap
+            w = dc.ui.roadmap.v
             target_label = w.push_target.text()
         elif targetw == 'add_edit_dialog':
-            d = data.w_roadmap_diag_add
+            d = dc.ui.roadmap_diag_add.v
             target_label = d.push_target.text()
 
         tmajor, tminor = target_label.split(' ')[3][1:].split('.')
@@ -119,9 +120,9 @@ class NxRoadmap:
         status = self.model.itemFromIndex(self.model.index(
             self.table.currentIndex().row(),3)).text()
         if status == 'Open':
-            data.w_roadmap.push_close.setText('&Close Item')
+            dc.ui.roadmap.v.push_close.setText('&Close Item')
         if status == 'Closed':
-            data.w_roadmap.push_close.setText('Reopen Ite&m')
+            dc.ui.roadmap.v.push_close.setText('Reopen Ite&m')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneDescriptionChanged(self):
@@ -131,7 +132,7 @@ class NxRoadmap:
         sx, sy = self.selected_major, \
                  minorIndex(self.selected_major, self.selected_minor)
         data.spro['milestone'][sx][sy]['description'] \
-                = data.w_roadmap.text_description.toPlainText()
+                = dc.ui.roadmap.v.text_description.toPlainText()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneItemActivated(self):
@@ -154,30 +155,30 @@ class NxRoadmap:
 
             pro = data.spro
 
-            data.w_roadmap.line_project.setText(data.spro['name'])
-            data.w_roadmap_diag_add.line_project.setText(data.spro['name'])
+            dc.ui.roadmap.v.line_project.setText(data.spro['name'])
+            dc.ui.roadmap_diag_add.v.line_project.setText(data.spro['name'])
 
             x, y = pro['meta']['current_milestone']
             milestones = pro['milestone']
 
-            data.w_roadmap.gridLayout_3.removeWidget(data.w_roadmap.push_milestone)
-            data.w_roadmap.push_milestone.close()
-            data.w_roadmap.push_milestone = MPushButton(
-                x, y, milestones, data.w_roadmap, self.onChangeVersionSelection)
-            data.w_roadmap.gridLayout_3.addWidget(
-                data.w_roadmap.push_milestone, 0, 1, 1, 1)
-            data.w_roadmap.label_2.setBuddy(data.w_roadmap.push_milestone)
+            dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
+            dc.ui.roadmap.v.push_milestone.close()
+            dc.ui.roadmap.v.push_milestone = MPushButton(
+                x, y, milestones, dc.ui.roadmap.v, self.onChangeVersionSelection)
+            dc.ui.roadmap.v.gridLayout_3.addWidget(
+                dc.ui.roadmap.v.push_milestone, 0, 1, 1, 1)
+            dc.ui.roadmap.v.label_2.setBuddy(dc.ui.roadmap.v.push_milestone)
 
             self.reloadTable()
 
             # computing next_x, next_y is quite tricky, so we take it
             # from the milestone widget (which does it anyway)
-            major = self.selected_major = data.w_roadmap.push_milestone.next_x
-            minor = self.selected_minor = data.w_roadmap.push_milestone.next_y
+            major = self.selected_major = dc.ui.roadmap.v.push_milestone.next_x
+            minor = self.selected_minor = dc.ui.roadmap.v.push_milestone.next_y
 
             self.onChangeVersionSelection(major, minor)
 
-            d = data.w_roadmap_diag_add
+            d = dc.ui.roadmap_diag_add.v
             d.radio_medium.setChecked(True)
             d.radio_feature.setChecked(True)
 
@@ -211,13 +212,13 @@ class NxRoadmap:
         io_sum1 = len(data.spro
                       ['milestone'] [x] [y+1] ['io'])
         if fo_sum1 + io_sum1 == 0:
-            data.w_roadmap_diag_finalize.push_finalize_major.setEnabled(
+            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(
                 True)
         else:
-            data.w_roadmap_diag_finalize.push_finalize_major.setEnabled(
+            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(
                 False)
 
-        data.w_roadmap_diag_finalize.show()
+        dc.ui.roadmap_diag_finalize.v.show()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMilestone(self):
@@ -236,27 +237,27 @@ class NxRoadmap:
                 = data.spro['meta']['current_milestone']
         milestones = data.spro['milestone']
         if targetw == 'root':
-            data.w_roadmap.gridLayout_3.removeWidget(data.w_roadmap.push_milestone)
-            data.w_roadmap.push_milestone.hide()
-            data.w_roadmap.push_milestone.close()
-            data.w_roadmap.push_milestone = MPushButton(
-                cmajor, cminor, milestones, data.w_roadmap,
+            dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
+            dc.ui.roadmap.v.push_milestone.hide()
+            dc.ui.roadmap.v.push_milestone.close()
+            dc.ui.roadmap.v.push_milestone = MPushButton(
+                cmajor, cminor, milestones, dc.ui.roadmap.v,
                 self.onChangeVersionSelection,
                 self.selected_major, self.selected_minor)
-            data.w_roadmap.gridLayout_3.addWidget(
-                data.w_roadmap.push_milestone, 0, 1, 1, 1)
-            data.w_roadmap.label_2.setBuddy(data.w_roadmap.push_milestone)
+            dc.ui.roadmap.v.gridLayout_3.addWidget(
+                dc.ui.roadmap.v.push_milestone, 0, 1, 1, 1)
+            dc.ui.roadmap.v.label_2.setBuddy(dc.ui.roadmap.v.push_milestone)
         elif targetw == 'diag_new_edit':
-            data.w_roadmap_diag_add.gridLayout_2.removeWidget(
-                data.w_roadmap_diag_add.push_target)
-            data.w_roadmap_diag_add.push_target.close()
-            data.w_roadmap_diag_add.push_target \
+            dc.ui.roadmap_diag_add.v.gridLayout_2.removeWidget(
+                dc.ui.roadmap_diag_add.v.push_target)
+            dc.ui.roadmap_diag_add.v.push_target.close()
+            dc.ui.roadmap_diag_add.v.push_target \
                     = MPushButton(cmajor,cminor,milestones,
-                                  data.w_roadmap_diag_add,None,self.selected_major,
+                                  dc.ui.roadmap_diag_add.v,None,self.selected_major,
                                   self.selected_minor,True)
-            data.w_roadmap_diag_add.gridLayout_2.addWidget(
-                data.w_roadmap_diag_add.push_target, 1, 1, 1, 1);
-            data.w_roadmap_diag_add.label_3.setBuddy(data.w_roadmap_diag_add.push_target)
+            dc.ui.roadmap_diag_add.v.gridLayout_2.addWidget(
+                dc.ui.roadmap_diag_add.v.push_target, 1, 1, 1, 1);
+            dc.ui.roadmap_diag_add.v.label_3.setBuddy(dc.ui.roadmap_diag_add.v.push_target)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onChangeVersionSelection(self, major, minor, text=None):
@@ -264,7 +265,7 @@ class NxRoadmap:
         self.selected_major = major
         self.selected_minor = minor
         sx, sy = major, minorIndex(major, minor)
-        data.w_roadmap.text_description.setPlainText(
+        dc.ui.roadmap.v.text_description.setPlainText(
             data.spro['milestone'][sx][sy]['description']
         )
         self.reloadMilestoneButton('root')
@@ -274,31 +275,31 @@ class NxRoadmap:
     def prependTable(self, key, itype, status, priority, icat, v):
 
         if itype == 'Feature' \
-           and not data.w_roadmap.check_feature.isChecked(): return
+           and not dc.ui.roadmap.v.check_feature.isChecked(): return
         if itype == 'Issue' \
-           and not data.w_roadmap.check_issue.isChecked(): return
+           and not dc.ui.roadmap.v.check_issue.isChecked(): return
         if status == 'Open' \
-           and not data.w_roadmap.check_open.isChecked(): return
+           and not dc.ui.roadmap.v.check_open.isChecked(): return
         if status == 'Closed' \
-           and not data.w_roadmap.check_closed.isChecked(): return
+           and not dc.ui.roadmap.v.check_closed.isChecked(): return
         if priority == 'Low' \
-           and not data.w_roadmap.check_low.isChecked(): return
+           and not dc.ui.roadmap.v.check_low.isChecked(): return
         if priority == 'Medium' \
-           and not data.w_roadmap.check_medium.isChecked(): return
+           and not dc.ui.roadmap.v.check_medium.isChecked(): return
         if priority == 'High' \
-           and not data.w_roadmap.check_high.isChecked(): return
+           and not dc.ui.roadmap.v.check_high.isChecked(): return
         if icat == 'Core' \
-           and not data.w_roadmap.check_core.isChecked(): return
+           and not dc.ui.roadmap.v.check_core.isChecked(): return
         if icat == 'Auxiliary' \
-           and not data.w_roadmap.check_auxiliary.isChecked(): return
+           and not dc.ui.roadmap.v.check_auxiliary.isChecked(): return
         if icat == 'Security' \
-           and not data.w_roadmap.check_security.isChecked(): return
+           and not dc.ui.roadmap.v.check_security.isChecked(): return
         if icat == 'Corrective' \
-           and not data.w_roadmap.check_corrective.isChecked(): return
+           and not dc.ui.roadmap.v.check_corrective.isChecked(): return
         if icat == 'Architecture' \
-           and not data.w_roadmap.check_architecture.isChecked(): return
+           and not dc.ui.roadmap.v.check_architecture.isChecked(): return
         if icat == 'Refactor' \
-           and not data.w_roadmap.check_refactor.isChecked(): return
+           and not dc.ui.roadmap.v.check_refactor.isChecked(): return
 
         self.model.insertRow(0, [
             QStandardItem(str(key).zfill(4)),
@@ -324,7 +325,7 @@ class NxRoadmap:
         # save filter checkbox states
         for filter_name in self.filter_names:
             data.conf['roadmap']['show_{}'.format(filter_name)] \
-                    = data.w_roadmap.__dict__['check_{}'.format(filter_name)] \
+                    = dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)] \
                     .isChecked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
@@ -336,12 +337,12 @@ class NxRoadmap:
                 convert(data.conf['roadmap']['sort_order']))
         # restore filter checkbox states
         for filter_name in self.filter_names:
-            data.w_roadmap.__dict__['check_{}'.format(filter_name)].setChecked(
+            dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)].setChecked(
                     data.conf['roadmap']['show_{}'.format(filter_name)])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
 
-        if not isinstance(data.w_roadmap.push_milestone, MPushButton):
+        if not isinstance(dc.ui.roadmap.v.push_milestone, MPushButton):
             return
 
         self.init = True
@@ -351,10 +352,10 @@ class NxRoadmap:
 
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
-        data.w_roadmap.push_close.setText('&Close Item')
+        dc.ui.roadmap.v.push_close.setText('&Close Item')
 
         self.selected_major, self.selected_minor \
-                = data.w_roadmap.push_milestone.getVersion()
+                = dc.ui.roadmap.v.push_milestone.getVersion()
         cmajor, cminor = data.spro['meta']['current_milestone']
         yy = self.selected_minor
         if self.selected_major == 0: yy = self.selected_minor-1
@@ -395,15 +396,15 @@ class NxRoadmap:
             if self.selected_major > cmajor \
                or (self.selected_major == cmajor \
                    and self.selected_minor > cminor):
-                data.w_roadmap.label_selected.show()
-                data.w_roadmap.push_edit.show()
-                data.w_roadmap.push_delete.show()
-                data.w_roadmap.push_close.show()
+                dc.ui.roadmap.v.label_selected.show()
+                dc.ui.roadmap.v.push_edit.show()
+                dc.ui.roadmap.v.push_delete.show()
+                dc.ui.roadmap.v.push_close.show()
             else:
-                data.w_roadmap.label_selected.hide()
-                data.w_roadmap.push_edit.hide()
-                data.w_roadmap.push_delete.hide()
-                data.w_roadmap.push_close.hide()
+                dc.ui.roadmap.v.label_selected.hide()
+                dc.ui.roadmap.v.push_edit.hide()
+                dc.ui.roadmap.v.push_delete.hide()
+                dc.ui.roadmap.v.push_close.hide()
             self.table.selectRow(0)
 
         if preserveLayout:
@@ -419,12 +420,12 @@ class NxRoadmap:
         # set dialog type flag
         if diag_type == 'add':
             self.diag_type = 'add'
-            data.w_roadmap_diag_add.setWindowTitle('Add Roadmap Item')
-            data.w_roadmap_diag_add.line_name.clear()
-            data.w_roadmap_diag_add.text_description.clear()
+            dc.ui.roadmap_diag_add.v.setWindowTitle('Add Roadmap Item')
+            dc.ui.roadmap_diag_add.v.line_name.clear()
+            dc.ui.roadmap_diag_add.v.text_description.clear()
         else:
             self.diag_type = 'edit'
-            data.w_roadmap_diag_add.setWindowTitle('Edit Roadmap Item')
+            dc.ui.roadmap_diag_add.v.setWindowTitle('Edit Roadmap Item')
 
             item_id = self.getSelectedItemId()
             tmajor, tminor, fioc \
@@ -437,35 +438,35 @@ class NxRoadmap:
             if fioc[0] == 'i': itype = 'Isssue'
 
             if itype == 'Feature':
-                data.w_roadmap_diag_add.radio_feature.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
             if itype == 'Issue':
-                data.w_roadmap_diag_add.radio_issue.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True)
             if item['priority'] == 'Low':
-                data.w_roadmap_diag_add.radio_low.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_low.setChecked(True)
             if item['priority'] == 'Medium':
-                data.w_roadmap_diag_add.radio_medium.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_medium.setChecked(True)
             if item['priority'] == 'High':
-                data.w_roadmap_diag_add.radio_high.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_high.setChecked(True)
             if item['icat'] == 'Core':
-                data.w_roadmap_diag_add.radio_core.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_core.setChecked(True)
             if item['icat'] == 'Auxiliary':
-                data.w_roadmap_diag_add.radio_auxiliary.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_auxiliary.setChecked(True)
             if item['icat'] == 'Security':
-                data.w_roadmap_diag_add.radio_security.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_security.setChecked(True)
             if item['icat'] == 'Corrective':
-                data.w_roadmap_diag_add.radio_corrective.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_corrective.setChecked(True)
             if item['icat'] == 'Architecture':
-                data.w_roadmap_diag_add.radio_architecture.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_architecture.setChecked(True)
             if item['icat'] == 'Refactor':
-                data.w_roadmap_diag_add.radio_refactor.setChecked(True)
+                dc.ui.roadmap_diag_add.v.radio_refactor.setChecked(True)
 
-            data.w_roadmap_diag_add.line_name.setText(item['name'])
-            data.w_roadmap_diag_add.text_description.setPlainText(
+            dc.ui.roadmap_diag_add.v.line_name.setText(item['name'])
+            dc.ui.roadmap_diag_add.v.text_description.setPlainText(
                 item['description'])
 
         # show dialog
-        data.w_roadmap_diag_add.show()
-        data.w_roadmap_diag_add.line_name.setFocus()
+        dc.ui.roadmap_diag_add.v.show()
+        dc.ui.roadmap_diag_add.v.line_name.setFocus()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitDialog(self):
@@ -481,32 +482,32 @@ class NxRoadmap:
 
         tmajor, tminor = self.extractSelection('add_edit_dialog')
 
-        name = data.w_roadmap_diag_add.line_name.text()
-        description = data.w_roadmap_diag_add.text_description.toPlainText()
+        name = dc.ui.roadmap_diag_add.v.line_name.text()
+        description = dc.ui.roadmap_diag_add.v.text_description.toPlainText()
 
-        if data.w_roadmap_diag_add.radio_feature.isChecked():
+        if dc.ui.roadmap_diag_add.v.radio_feature.isChecked():
             ri_type = 'Feature'
         else:
             ri_type = 'Issue'
 
-        if data.w_roadmap_diag_add.radio_medium.isChecked():
+        if dc.ui.roadmap_diag_add.v.radio_medium.isChecked():
             priority = 'Medium'
-        elif data.w_roadmap_diag_add.radio_high.isChecked():
+        elif dc.ui.roadmap_diag_add.v.radio_high.isChecked():
             priority = 'High'
-        elif data.w_roadmap_diag_add.radio_low.isChecked():
+        elif dc.ui.roadmap_diag_add.v.radio_low.isChecked():
             priority = 'Low'
 
-        if data.w_roadmap_diag_add.radio_core.isChecked():
+        if dc.ui.roadmap_diag_add.v.radio_core.isChecked():
             category = 'Core'
-        elif data.w_roadmap_diag_add.radio_auxiliary.isChecked():
+        elif dc.ui.roadmap_diag_add.v.radio_auxiliary.isChecked():
             category = 'Auxiliary'
-        elif data.w_roadmap_diag_add.radio_security.isChecked():
+        elif dc.ui.roadmap_diag_add.v.radio_security.isChecked():
             category = 'Security'
-        elif data.w_roadmap_diag_add.radio_corrective.isChecked():
+        elif dc.ui.roadmap_diag_add.v.radio_corrective.isChecked():
             category = 'Corrective'
-        elif data.w_roadmap_diag_add.radio_architecture.isChecked():
+        elif dc.ui.roadmap_diag_add.v.radio_architecture.isChecked():
             category = 'Architecture'
-        elif data.w_roadmap_diag_add.radio_refactor.isChecked():
+        elif dc.ui.roadmap_diag_add.v.radio_refactor.isChecked():
             category = 'Refactor'
 
         if mode == 'add':

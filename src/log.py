@@ -5,10 +5,11 @@ import time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from datastore import data, convert
+from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
     def __init__(self):
-        self.view = data.w_log.table_history
+        self.view = dc.ui.log.v.table_history
         self.model = QStandardItemModel()
         self.view_headers = ['ID', 'Created', 'Summary']
         self.model.setHorizontalHeaderLabels(self.view_headers)
@@ -17,29 +18,29 @@ class NxLog:
         self.horizontal_header = self.view.horizontalHeader()
         self.view.setAlternatingRowColors(True)
         # connect add roadmap callbacks
-        data.w_log.push_new_entry.clicked.connect(self.onNewEntryClicked)
-        data.w_log_diag_new.accepted.connect(self.onNewSubmit)
+        dc.ui.log.v.push_new_entry.clicked.connect(self.onNewEntryClicked)
+        dc.ui.log_diag_new.v.accepted.connect(self.onNewSubmit)
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewEntryClicked(self):
-        data.w_log_diag_new.text_detail.clear()
-        data.w_log_diag_new.line_summary.clear()
-        data.w_log_diag_new.show()
-        data.w_log_diag_new.line_summary.setFocus()
+        dc.ui.log_diag_new.v.text_detail.clear()
+        dc.ui.log_diag_new.v.line_summary.clear()
+        dc.ui.log_diag_new.v.show()
+        dc.ui.log_diag_new.v.line_summary.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChange(self, item_selection):
         indexes = item_selection.indexes()
         if not indexes:
-            data.w_log.text_detail.setEnabled(False)
-            data.w_log.text_detail.setPlainText('No log selected')
+            dc.ui.log.v.text_detail.setEnabled(False)
+            dc.ui.log.v.text_detail.setPlainText('No log selected')
             return
         row = indexes[0].row()
         # get selected log id
         index = self.model.index(row, 0)
         slogid = int(self.model.itemFromIndex(index).text())
         # populate detail widget
-        data.w_log.text_detail.setEnabled(True)
-        data.w_log.text_detail.setPlainText(data.spro['log'][slogid]['detail'])
+        dc.ui.log.v.text_detail.setEnabled(True)
+        dc.ui.log.v.text_detail.setPlainText(data.spro['log'][slogid]['detail'])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         data.conf['log']['header_width'] = list()
@@ -81,14 +82,14 @@ class NxLog:
         if data.spro['meta']['next_lid'] > 1:
             self.view.setFocus()
         else:
-            data.w_log.push_new_entry.setFocus()
+            dc.ui.log.v.push_new_entry.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         # check if project selection changed
         if data.run['log_pid_last'] != data.spid:
             data.run['log_pid_last'] = data.spid
-            data.w_log.line_project.setText(data.spro['name'])
-            data.w_log_diag_new.line_project.setText(data.spro['name'])
+            dc.ui.log.v.line_project.setText(data.spro['name'])
+            dc.ui.log_diag_new.v.line_project.setText(data.spro['name'])
             if data.spro['log']:
                 self.slogid = sorted(data.spro['log'].keys())[-1]
             self.reloadTable()
@@ -98,8 +99,8 @@ class NxLog:
         timestamp = int(time.time())
         data.spro['log'][lid] = {
             'created': timestamp,
-            'summary': data.w_log_diag_new.line_summary.text(),
-            'detail':  data.w_log_diag_new.text_detail.toPlainText()
+            'summary': dc.ui.log_diag_new.v.line_summary.text(),
+            'detail':  dc.ui.log_diag_new.v.text_detail.toPlainText()
         }
         data.touchProject()
         data.spro['meta']['next_lid'] += 1
