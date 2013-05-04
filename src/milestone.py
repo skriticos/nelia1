@@ -7,7 +7,6 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 import time
-from pprint import pprint
 from datastore import data
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def versionToIndex(major, minor):
