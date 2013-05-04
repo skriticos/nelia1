@@ -17,6 +17,10 @@ def _minorVersion(x, y):
     if x is 0: return y + 1
     return y
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def _getItemCount(major, minor):
+    m = data.spro['milestone'][major][minorIndex(major, minor)]
+    return sum(len(x) for x in [m['fo'], m['fc'], m['io'], m['ic']])
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _addMilestone(major, minor):
     d = {'description': '', 'm': '{}.{}'.format(major, minor),
          'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
@@ -39,40 +43,29 @@ def _updateMilestoneTree():
         edge graph has to be updated.
     '''
 
-    cmajor, cminor = data.spro['meta']['current_milestone']
-
-    for x in range(len(data.spro['milestone'])):
+    for major in range(len(data.spro['milestone'])):
 
         # if we have removed the last major branch before, we want to get
         # out
-        if x == len(data.spro['milestone']):
+        if major == len(data.spro['milestone']):
             break
 
         # check for new edge item
-        last_index = len(data.spro['milestone'][x]) - 1
-        major, minor = x, _minorVersion(x, last_index)
-        item_count = (
-                len(data.spro['milestone'][x][last_index]['fo']) +
-                len(data.spro['milestone'][x][last_index]['fc']) +
-                len(data.spro['milestone'][x][last_index]['io']) +
-                len(data.spro['milestone'][x][last_index]['ic']))
-        if item_count > 0:
-            if minor == 0:
+        last_minor = _minorVersion(major, len(data.spro['milestone'][major])-1)
+        if _getItemCount(major, last_minor):
+            if last_minor is 0:
                 _addMilestone(major, 1)
                 _addMilestone(major + 1, 0)
             else:
-                _addMilestone(major, minor + 1)
+                _addMilestone(major, last_minor + 1)
 
         # check for removed edge item
-        if len(data.spro['milestone'][x]) > 1:
-            index = len(data.spro['milestone'][x]) - 2
-            major, minor = x, _minorVersion(x, index)
-            item_count = (
-                    len(data.spro['milestone'][x][index]['fo']) +
-                    len(data.spro['milestone'][x][index]['fc']) +
-                    len(data.spro['milestone'][x][index]['io']) +
-                    len(data.spro['milestone'][x][index]['ic']))
-            if item_count == 0:
+        # TODO: check if this works if if major has to be removed
+        # TODO: edge case - create a bunch of milestones, then back to start
+        if len(data.spro['milestone'][major]) > 1:
+            before_last_minor = \
+                    _minorVersion(major, len(data.spro['milestone'][major])-2)
+            if _getItemCount(major, before_last_minor) is 0:
                 if minor == 0:
                     _removeMilestone(major, 1)
                     _removeMilestone(major + 1, 0)
