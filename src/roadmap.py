@@ -128,8 +128,8 @@ class NxRoadmap:
 
         if self.init: return
 
-        sx, sy = versionToIndex(
-            self.selected_major, self.selected_minor)
+        sx, sy = self.selected_major, \
+                 minorIndex(self.selected_major, self.selected_minor)
         data.spro['milestone'][sx][sy]['description'] \
                 = data.w_roadmap.text_description.toPlainText()
 
@@ -188,8 +188,8 @@ class NxRoadmap:
             self.table.currentIndex().row(),3)).text()
         if status == 'Open':
             # check if this is the last item in the milestone
-            x, y = versionToIndex(
-                self.selected_major, self.selected_minor)
+            x, y = self.selected_major, \
+                   minorIndex(self.selected_major, self.selected_minor)
             fo_sum = len(data.spro
                          ['milestone'] [x] [y] ['fo'])
             io_sum = len(data.spro
@@ -263,7 +263,7 @@ class NxRoadmap:
 
         self.selected_major = major
         self.selected_minor = minor
-        sx, sy = versionToIndex(major, minor)
+        sx, sy = major, minorIndex(major, minor)
         data.w_roadmap.text_description.setPlainText(
             data.spro['milestone'][sx][sy]['description']
         )
@@ -429,7 +429,7 @@ class NxRoadmap:
             item_id = self.getSelectedItemId()
             tmajor, tminor, fioc \
                     = data.spro['mi_index'][item_id]
-            tx, ty = versionToIndex(tmajor, tminor)
+            tx, ty = tmajor, minorIndex(tmajor, tminor)
             item = data.spro\
                     ['milestone'][tx][ty][fioc][item_id]
 

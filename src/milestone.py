@@ -9,44 +9,27 @@ from PySide.QtGui import *
 import time
 from datastore import data
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def versionToIndex(major, minor):
-    # there is no 0.0 milestone, first one is 0.1. there is 1.0 though
-    if major > 0:
-        return major, minor
-    else:
-        return major, minor - 1
-
+def minorIndex(major, minor):
+    if major is 0: return minor - 1
+    return minor
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _indexToVersion(x, y):
-
-    if x > 0:
-        return x, y
-    else:
-        return x, y + 1
-
+def _minorVersion(x, y):
+    if x is 0: return y + 1
+    return y
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _addMilestone(major, minor):
-
-    x, y = versionToIndex(major, minor)
-
-    if y == 0:
-        data.spro['milestone'].append(
-           [{'description': '', 'm': '{}.{}'.format(major, minor),
-              'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}])
+    d = {'description': '', 'm': '{}.{}'.format(major, minor),
+         'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
+    if minorIndex(major, minor) is 0:
+        data.spro['milestone'].append([d])
     else:
-        data.spro['milestone'][x].append(
-            {'description': '', 'm': '{}.{}'.format(major, minor),
-             'fo': {}, 'fc': {}, 'io': {}, 'ic': {}})
-
+        data.spro['milestone'][major].append(d)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _removeMilestone(major, minor):
-
-    x, y = versionToIndex(major, minor)
-
-    # n.0 deletes major milestone
-    if y == 0: del data.spro['milestone'][x]
-    # otherwise we are only deleting minor milestone
-    else: del data.spro['milestone'][x][y]
+    if minorIndex(major, minor) is 0:
+        del data.spro['milestone'][major]
+    else:
+        del data.spro['milestone'][major][minorIndex(major, minor)]
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _updateMilestoneTree():
@@ -57,7 +40,6 @@ def _updateMilestoneTree():
     '''
 
     cmajor, cminor = data.spro['meta']['current_milestone']
-    cx, cy = versionToIndex(cmajor, cminor)
 
     for x in range(len(data.spro['milestone'])):
 
@@ -68,7 +50,7 @@ def _updateMilestoneTree():
 
         # check for new edge item
         last_index = len(data.spro['milestone'][x]) - 1
-        major, minor = _indexToVersion(x, last_index)
+        major, minor = x, _minorVersion(x, last_index)
         item_count = (
                 len(data.spro['milestone'][x][last_index]['fo']) +
                 len(data.spro['milestone'][x][last_index]['fc']) +
@@ -84,7 +66,7 @@ def _updateMilestoneTree():
         # check for removed edge item
         if len(data.spro['milestone'][x]) > 1:
             index = len(data.spro['milestone'][x]) - 2
-            major, minor = _indexToVersion(x, index)
+            major, minor = x, _minorVersion(x, index)
             item_count = (
                     len(data.spro['milestone'][x][index]['fo']) +
                     len(data.spro['milestone'][x][index]['fc']) +
@@ -101,9 +83,7 @@ def _updateMilestoneTree():
 def _getItemData(item_id):
 
     ma, mi, fioc = data.spro['mi_index'][item_id]
-    x, y = versionToIndex(ma, mi)
-
-    item = data.spro['milestone'][x][y][fioc][item_id]
+    item = data.spro['milestone'][ma][minorIndex(ma, mi)][fioc][item_id]
 
     if   fioc[0] == 'f': itype  = 'Feature'
     elif fioc[0] == 'i': itype  = 'Issue'
@@ -112,8 +92,8 @@ def _getItemData(item_id):
 
     return {'major': ma,
             'minor': mi,
-            'x': x,
-            'y': y,
+            'x': ma,
+            'y': minorIndex(ma, mi),
             'name': item['name'],
             'itype': itype,
             'icat': item['icat'],
@@ -144,8 +124,6 @@ def _touchItem(item_id):
 def addItem(major, minor, itype, icat, name, priority,
             description, status='Open'):
 
-    print(major, minor, itype, icat, name, priority)
-
     item_id = data.spro['meta']['next_miid']
 
     new_item = {'name': name,
@@ -154,11 +132,11 @@ def addItem(major, minor, itype, icat, name, priority,
                 'description': description,
                 'created': int(time.time())}
 
-    x, y = versionToIndex(major, minor)
     if   itype == 'Feature': fioc = 'fo'
     elif itype == 'Issue':   fioc = 'io'
 
-    data.spro['milestone'][x][y][fioc][item_id] = new_item
+    y = minorIndex(major, minor)
+    data.spro['milestone'][major][y][fioc][item_id] = new_item
     data.spro['mi_index'][item_id] = (major, minor, fioc)
 
     data.spro['meta']['next_miid'] += 1
@@ -186,7 +164,7 @@ def editItem(major, minor, item_id, itype, icat, name, priority, description):
 def _moveItem(item_id, new_major, new_minor, itype=None, status=None):
 
     idat = _getItemData(item_id)
-    nx, ny = versionToIndex(new_major, new_minor)
+    nx, ny = new_major, minorIndex(new_major, new_minor)
 
     if not itype and not status:
         nfioc = idat['fioc']
