@@ -207,7 +207,7 @@ class NxProject:
                 break
         # set state of controls
         if len(data.project) > 1:
-            data.c_main.enableTabs()
+            dc.m.main.v.enableTabs()
             dc.ui.project.v.push_edit.show()
             dc.ui.project.v.push_delete.show()
             if data.run['changed']:
@@ -223,7 +223,7 @@ class NxProject:
             # set default state
             dc.ui.project.v.text_description.clear()
             dc.ui.project.v.text_description.setEnabled(False)
-            data.c_main.dissableTabs()
+            dc.m.main.v.dissableTabs()
             dc.ui.project.v.push_edit.hide()
             dc.ui.project.v.push_delete.hide()
             dc.ui.project.v.push_save.hide()

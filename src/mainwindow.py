@@ -47,10 +47,10 @@ class MainWindow():
         dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
         dc.ui.main.v.setGeometry(100,70,1000,600)
         # initialize modules
-        data.c_main    = self
-        data.c_project = NxProject()
-        data.c_log     = NxLog()
-        data.c_roadmap = NxRoadmap()
+        dc.m.main.v    = self
+        dc.m.project.v = NxProject()
+        dc.m.log.v     = NxLog()
+        dc.m.roadmap.v = NxRoadmap()
         # dissable all tabs except the project tab
         # they show the data from the selected project, and are in undefined
         # before a selection is made
@@ -70,15 +70,15 @@ class MainWindow():
         # load configuration, if existent
         dcloadconfig()
         if dc.x.config.loaded.v:
-            data.c_project.loadLayout()
-            data.c_log.loadLayout()
-            data.c_roadmap.loadLayout()
+            dc.m.project.v.loadLayout()
+            dc.m.log.v.loadLayout()
+            dc.m.roadmap.v.loadLayout()
         # show window
         dc.ui.main.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
         if data.run['changed']:
-            data.c_project.onSaveClicked()
+            dc.m.project.v.onSaveClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSigTerm(self, num, frame):
         """
@@ -96,9 +96,9 @@ class MainWindow():
         (or any other way that tells the main window to close). Might also come
         from a SIGTERM (see onSigTerm)
         """
-        data.c_project.saveLayout()
-        data.c_log.saveLayout()
-        data.c_roadmap.saveLayout()
+        dc.m.project.v.saveLayout()
+        dc.m.log.v.saveLayout()
+        dc.m.roadmap.v.saveLayout()
         dcsaveconfig()
         if data.run['changed']:
             if data.run['path']:
@@ -140,8 +140,8 @@ class MainWindow():
         tab_widget = dc.ui.main.v.tabnavi
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
         if cur_tab_name == '&Log':
-            data.c_log.onShowTab()
+            dc.m.log.v.onShowTab()
         if cur_tab_name == '&Roadmap':
-            data.c_roadmap.onShowTab()
+            dc.m.roadmap.v.onShowTab()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
