@@ -140,6 +140,7 @@ class NxProject:
         index = self.model.index(row, 0)
         dc.spid.v = int(self.model.itemFromIndex(index).text())
         dc.spro.v = data.project[dc.spid.v]
+        dc.sp = dc.s._(dc.spid.v)
         # update content and enable project description widget
         for w in [dc.ui.project.v.text_description]:
             w.setPlainText(dc.spro.v['description'])

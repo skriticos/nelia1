@@ -39,8 +39,7 @@ class NxLog:
         slogid = int(self.model.itemFromIndex(index).text())
         # populate detail widget
         dc.ui.log.v.text_detail.setEnabled(True)
-        dc.ui.log.v.text_detail.setPlainText(
-                dc.s._(dc.spid.v).log._(slogid).detail.v)
+        dc.ui.log.v.text_detail.setPlainText(dc.sp.log._(slogid).detail.v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.log.header.width.v = list()
@@ -63,12 +62,11 @@ class NxLog:
         self.selection_model.clear()
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.view_headers)
-        for lid in range(1, dc.s._(dc.spid.v).nextlid.v):
-
+        for lid in range(1, dc.sp.nextlid.v):
             self.model.insertRow(0, [
                 QStandardItem(str(lid).zfill(4)),
-                QStandardItem(convert(dc.s._(dc.spid.v).log._(lid).created.v)),
-                QStandardItem(dc.s._(dc.spid.v).log._(lid).summary.v)
+                QStandardItem(convert(dc.sp.log._(lid).created.v)),
+                QStandardItem(dc.sp.log._(lid).summary.v)
             ])
         for i in range(self.model.rowCount()):
             index = self.model.index(i, 0)
@@ -78,10 +76,8 @@ class NxLog:
                     QItemSelectionModel.Select|QItemSelectionModel.Rows)
                 break
         self.loadLayout()
-        if dc.s._(dc.spid.v).nextlid.v > 1:
-            self.view.setFocus()
-        else:
-            dc.ui.log.v.push_new_entry.setFocus()
+        if dc.sp.nextlid.v > 1: self.view.setFocus()
+        else:                   dc.ui.log.v.push_new_entry.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         # check if project selection changed
@@ -90,17 +86,16 @@ class NxLog:
             dc.ui.log.v.line_project.setText(dc.spro.v['name'])
             dc.ui.log_diag_new.v.line_project.setText(dc.spro.v['name'])
             if dc.spro.v['log']:
-                self.slogid = dc.s._(dc.spid.v).nextlid.v
+                self.slogid = dc.sp.nextlid.v
             self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewSubmit(self):
-        lid = self.slogid = dc.s._(dc.spid.v).nextlid.v
-        dc.s._(dc.spid.v).log._(lid).created.v = int(time.time())
-        dc.s._(dc.spid.v).log._(lid).summary.v \
-                = dc.ui.log_diag_new.v.line_summary.text()
-        dc.s._(dc.spid.v).log._(lid).detail.v \
+        lid = self.slogid = dc.sp.nextlid.v
+        dc.sp.log._(lid).created.v = int(time.time())
+        dc.sp.log._(lid).summary.v = dc.ui.log_diag_new.v.line_summary.text()
+        dc.sp.log._(lid).detail.v \
                 = dc.ui.log_diag_new.v.text_detail.toPlainText()
-        dc.s._(dc.spid.v).nextlid.v += 1
+        dc.sp.nextlid.v += 1
         dc.m.project.v.touchProject()
         self.reloadTable()
         self.view.setFocus()
