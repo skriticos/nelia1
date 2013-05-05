@@ -3,6 +3,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from PySide.QtGui import *
 import pickle, gzip, os, PySide, datetime
+from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # data.w_*  -- widgets
 # data.c_{main,project,log,roadmap,config}  -- modules
@@ -27,12 +28,8 @@ class NxDataStore:
         # static variables
         self.version        = 1
         self.app_name       = 'nelia1'
-        self.extension      = '.nelia1'
-        self.default_path   = os.path.expanduser('~/Documents')
         # pointers
         self.initData()
-        # the run path is not reset during normal open
-        self.run['path']    = None
         # used to reset state on init and after loading a document
         self.reset()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,14 +38,13 @@ class NxDataStore:
         self.run = {}
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reset(self):
-        self.run['changed']          = False
         self.run['curr_milestone']   = None
         self.run['next_milestone']   = None
         self.run['sel_milestone']    = None
         self.run['roadmap_pid_last'] = 0
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def save_document(self, path):
-        self.run['path'] = path
+        dc.r.path.v = path
         # compile save data
         data = {'meta'   : {'version': self.version, 'app_name': self.app_name},
                 'project': self.project }
@@ -56,18 +52,18 @@ class NxDataStore:
         try:
             pickled_data = pickle.dumps(data, 3)
             compressed_data = gzip.compress(pickled_data)
-            self.conf['datastore']['lastpath'] = path
+            dc.c.lastpath.v = path
             with open(path, 'wb') as f:
                 f.write(compressed_data)
         except Exception as e:
-            self.run['path'] = None
+            dc.r.path.v = None
             return e
         # update application data state
-        self.run['changed'] = False
+        dc.r.changed.v = False
         return True
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def open_document(self, path):
-        self.run['path'] = path
+        dc.r.path.v = path
         # load document data to datastore
         try:
             with open(path, 'rb') as f:
@@ -75,10 +71,10 @@ class NxDataStore:
             data = pickle.loads(decompressed)
         # open failed, pass exception
         except Exception as e:
-            self.run['path'] = None
+            dc.r.path.v = None
             return e
         # save path in configuration (for NxProject.onOpenLast)
-        self.conf['datastore']['lastpath'] = path
+        dc.c.lastpath.v = path
         # replace document data
         del self.project
         self.project = data['project']

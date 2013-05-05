@@ -59,7 +59,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenClicked(self):
         # throw away changes?
-        if data.run['changed']:
+        if dc.r.changed.v:
             response = QMessageBox.question(
                 dc.ui.main.v, 'Discard changes?',
                 'Opening a file will discard your changes. ' + \
@@ -68,8 +68,8 @@ class NxProject:
             if response == QMessageBox.StandardButton.No: return
         # read path
         path = QFileDialog.getOpenFileName(
-            dc.ui.main.v, 'Open nelia1 document', data.default_path,
-            'Nelia Files (*{})'.format(data.extension))[0]
+            dc.ui.main.v, 'Open nelia1 document', dc.x.default.path.v,
+            'Nelia Files (*{})'.format(dc.x.extension.v))[0]
         # path dialog aborted
         if not path:
             return False
@@ -78,11 +78,11 @@ class NxProject:
         if isinstance(result, Exception):
             title, message = 'open failed', 'open failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)
-            data.run['path'] = None
+            dc.r.path.v = None
             return
         dc.spid.v = 1
         self.reloadTable()
-        data.run['changed'] = False
+        dc.r.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
         path = dc.c.lastpath.v
@@ -93,22 +93,22 @@ class NxProject:
             return
         dc.spid.v = 1
         self.reloadTable()
-        data.run['changed'] = False
+        dc.r.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveClicked(self):
-        if not data.run['path']:
+        if not dc.r.path.v:
             path = QFileDialog.getSaveFileName(
                 dc.ui.main.v,
-                'Save nelia1 document', data.default_path,
-                'Nelia Files (*{})'.format(data.extension))[0]
+                'Save nelia1 document', dc.x.default.path.v,
+                'Nelia Files (*{})'.format(dc.x.extension.v))[0]
             # dialog aborted?
             if path == '':
                 return
             # extension check and optional appending
-            extension_start = len(path) - len(data.extension)
-            if path.rfind(data.extension) != extension_start:
-                path += data.extension
-        else: path = data.run['path']
+            extension_start = len(path) - len(dc.x.extension.v)
+            if path.rfind(dc.x.extension.v) != extension_start:
+                path += dc.x.extension.v
+        else: path = dc.r.path.v
         result = data.save_document(path)
         if isinstance(result, Exception):
             title, message = 'Save failed', 'Save failed! ' + str(result)
@@ -128,7 +128,7 @@ class NxProject:
         dc.spro.v['modified'] = timestamp
         row = self.view.currentIndex().row()
         self.model.setItem(row, 8, QStandardItem(convert(timestamp)))
-        data.run['changed'] = True
+        dc.r.changed.v = True
         dc.ui.project.v.push_save.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChanged(self, item_selection):
@@ -209,7 +209,7 @@ class NxProject:
             dc.m.main.v.enableTabs()
             dc.ui.project.v.push_edit.show()
             dc.ui.project.v.push_delete.show()
-            if data.run['changed']:
+            if dc.r.changed.v:
                 dc.ui.project.v.push_save.show()
             else:
                 dc.ui.project.v.push_save.hide()
@@ -218,7 +218,7 @@ class NxProject:
         # last project deleted
         else:
             # don't want to save empty document
-            data.run['changed'] = False
+            dc.r.changed.v = False
             # set default state
             dc.ui.project.v.text_description.clear()
             dc.ui.project.v.text_description.setEnabled(False)
@@ -298,7 +298,7 @@ class NxProject:
         del data.project[dc.spid.v]
         dc.spid.v = 0
         # can't touch deleted project, direct changed update
-        data.run['changed'] = True
+        dc.r.changed.v = True
         # reload table
         self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -77,7 +77,7 @@ class MainWindow():
         dc.ui.main.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
-        if data.run['changed']:
+        if dc.r.changed.v:
             dc.m.project.v.onSaveClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSigTerm(self, num, frame):
@@ -100,9 +100,9 @@ class MainWindow():
         dc.m.log.v.saveLayout()
         dc.m.roadmap.v.saveLayout()
         dcsaveconfig()
-        if data.run['changed']:
-            if data.run['path']:
-                data.save_document(data.run['path'])
+        if dc.r.changed.v:
+            if dc.r.path.v:
+                data.save_document(dc.r.path.v)
             else:
                 base = data.default_path
                 path = os.path.join(
