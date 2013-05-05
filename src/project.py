@@ -231,7 +231,7 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewProject(self):
         timestamp = int(time.time())
-        pid = data.project[0]['next_pid']
+        pid = dc.s.nextpid.v
         # create new project entry
         # meta: general project data
         # log: log data
@@ -256,7 +256,7 @@ class NxProject:
         p['description'] = self.diag_new.text_description.toPlainText()
         p['created']     = timestamp
         p['modified']    = timestamp
-        data.project[0]['next_pid'] += 1
+        dc.s.nextpid.v += 1
         dc.spid.v = pid
         dc.spro.v = data.project[dc.spid.v]
         self.reloadTable()

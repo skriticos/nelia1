@@ -49,6 +49,8 @@ dc.x.config.filepath.v \
 # document path stuff
 dc.x.extension.v = '.nelia1'
 dc.x.default.path.v = os.path.expanduser('~/Documents')
+# default document values
+dc.s.nextpid.v = 1
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def dcsave(path=None):
     if not path and not dc.x.storepath.v:
