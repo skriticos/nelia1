@@ -45,7 +45,6 @@ class NxDataStore:
         self.run['curr_milestone']   = None
         self.run['next_milestone']   = None
         self.run['sel_milestone']    = None
-        self.run['log_pid_last']     = 0
         self.run['roadmap_pid_last'] = 0
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def save_document(self, path):

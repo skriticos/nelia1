@@ -4,7 +4,6 @@
 import time
 from PySide.QtCore import *
 from PySide.QtGui import *
-from datastore import data
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
@@ -85,8 +84,8 @@ class NxLog:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         # check if project selection changed
-        if data.run['log_pid_last'] != dc.spid.v:
-            data.run['log_pid_last'] = dc.spid.v
+        if dc.r.log.pid.last.v != dc.spid.v:
+            dc.r.log.pid.last.v = dc.spid.v
             dc.ui.log.v.line_project.setText(dc.spro.v['name'])
             dc.ui.log_diag_new.v.line_project.setText(dc.spro.v['name'])
             if dc.spro.v['log']:
