@@ -135,9 +135,9 @@ class NxRoadmap:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneItemActivated(self):
-        if self.smajor > dc.s.curr.major.v or \
-                (self.smajor == dc.s.curr.major.v \
-                 and self.sminor > dc.s.curr.minor.v):
+        if self.smajor > dc.s._(dc.spid.v).curr.major.v or \
+                (self.smajor == dc.s._(dc.spid.v).curr.major.v \
+                 and self.sminor > dc.s._(dc.spid.v).curr.minor.v):
             self.showAddEditMI('edit')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
@@ -152,7 +152,7 @@ class NxRoadmap:
             dc.ui.roadmap.v.line_project.setText(dc.spro.v['name'])
             dc.ui.roadmap_diag_add.v.line_project.setText(dc.spro.v['name'])
 
-            x, y = dc.s.curr.major.v, dc.s.curr.minor.v
+            x, y = dc.s._(dc.spid.v).curr.major.v, dc.s._(dc.spid.v).curr.minor.v
             milestones = pro['milestone']
 
             dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
@@ -227,7 +227,7 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
 
-        cmajor, cminor = dc.s.curr.major.v, dc.s.curr.minor.v
+        cmajor, cminor = dc.s._(dc.spid.v).curr.major.v, dc.s._(dc.spid.v).curr.minor.v
         milestones = dc.spro.v['milestone']
         if targetw == 'root':
             dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
@@ -348,7 +348,8 @@ class NxRoadmap:
 
         self.smajor, self.sminor \
                 = dc.ui.roadmap.v.push_milestone.getVersion()
-        cmajor, cminor = dc.s.curr.major.v, dc.s.curr.minor.v
+        cmajor, cminor \
+                = dc.s._(dc.spid.v).curr.major.v, dc.s._(dc.spid.v).curr.minor.v
         yy = self.sminor
         if self.smajor == 0: yy = self.sminor-1
         fo = dc.spro.v['milestone'][self.smajor][yy]['fo']

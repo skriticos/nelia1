@@ -234,8 +234,9 @@ class NxProject:
         pid = dc.s.nextpid.v
 
         dc.s.nextpid.v += 1
-        dc.s.nextlid.v = dc.s.nextmiid.v = 1
-        dc.s.curr.major.v = dc.s.curr.minor.v = 0
+        dc.spid.v = pid
+        dc.s._(pid).nextlid.v = dc.s._(dc.spid.v).nextmiid.v = 1
+        dc.s._(pid).curr.major.v = dc.s._(pid).curr.minor.v = 0
 
         p = data.project[pid] = {
                 'log': {},
@@ -246,6 +247,7 @@ class NxProject:
                       'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
                     ],
                 'mi_index' : {}}
+        dc.spro.v = data.project[dc.spid.v]
         p['name']        = self.diag_new.line_name.text()
         p['category']    = self.diag_new.combo_category.currentText()
         p['status']      = self.diag_new.combo_status.currentText()
@@ -255,8 +257,6 @@ class NxProject:
         p['description'] = self.diag_new.text_description.toPlainText()
         p['created']     = timestamp
         p['modified']    = timestamp
-        dc.spid.v = pid
-        dc.spro.v = data.project[dc.spid.v]
         self.reloadTable()
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
