@@ -101,7 +101,7 @@ class NxLog:
             'summary': dc.ui.log_diag_new.v.line_summary.text(),
             'detail':  dc.ui.log_diag_new.v.text_detail.toPlainText()
         }
-        data.touchProject()
+        dc.m.project.v.touchProject()
         data.spro['meta']['next_lid'] += 1
         self.slogid = lid
         self.reloadTable()

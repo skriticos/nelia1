@@ -42,7 +42,6 @@ class NxProject:
         self.view.activated.connect(self.showEditProject)
         # global handles for getting currently selected pid and updating
         # timestamp for currently selected project
-        data.touchProject = self.touchProject
         self.reloadTable()
         if dc.c.lastpath.v: dc.ui.project.v.push_open_last.show()
         else:               dc.ui.project.v.push_open_last.hide()

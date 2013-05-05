@@ -201,7 +201,7 @@ class NxRoadmap:
                 closeItem(self.getSelectedItemId())
         if status == 'Closed':
             reopenItem(self.getSelectedItemId())
-        data.touchProject()
+        dc.m.project.v.touchProject()
         self.onChangeVersionSelection(self.selected_major, self.selected_minor)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -519,7 +519,7 @@ class NxRoadmap:
         self.reloadMilestoneButton()
         self.reloadTable()
 
-        data.touchProject()
+        dc.m.project.v.touchProject()
         print('touching project')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -528,7 +528,7 @@ class NxRoadmap:
         deleteItem(self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
-        data.touchProject()
+        dc.m.project.v.touchProject()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
