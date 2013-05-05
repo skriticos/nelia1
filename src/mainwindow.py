@@ -104,7 +104,7 @@ class MainWindow():
             if dc.r.path.v:
                 data.save_document(dc.r.path.v)
             else:
-                base = data.default_path
+                base = dc.x.default.path.v
                 path = os.path.join(
                     base,'.'+str(int(time.time()))+'.tmp.nelia1')
                 data.save_document(path)

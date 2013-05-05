@@ -30,18 +30,9 @@ class NxDataStore:
         self.app_name       = 'nelia1'
         # pointers
         self.initData()
-        # used to reset state on init and after loading a document
-        self.reset()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def initData(self):
         self.project = {0: {'next_pid': 1}}
-        self.run = {}
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def reset(self):
-        self.run['curr_milestone']   = None
-        self.run['next_milestone']   = None
-        self.run['sel_milestone']    = None
-        self.run['roadmap_pid_last'] = 0
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def save_document(self, path):
         dc.r.path.v = path

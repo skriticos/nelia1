@@ -148,10 +148,10 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
 
-        if data.run['roadmap_pid_last'] == 0 \
-           or data.run['roadmap_pid_last'] != dc.spid.v:
+        if dc.r.roadmap.pid.last.v == 0 \
+           or dc.r.roadmap.pid.last.v != dc.spid.v:
 
-            data.run['roadmap_pid_last'] = dc.spid.v
+            dc.r.roadmap.pid.last.v = dc.spid.v
 
             pro = dc.spro.v
 
