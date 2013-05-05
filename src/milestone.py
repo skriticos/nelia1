@@ -92,11 +92,11 @@ def addItem(major, minor, itype, icat, name,priority,description,status='Open'):
     if   itype == 'Feature': fioc = 'fo'
     elif itype == 'Issue':   fioc = 'io'
     y = minorIndex(major, minor)
-    dc.spro.v['milestone'][major][y][fioc][dc.s._(dc.spid.v).nextmiid.v] \
+    dc.spro.v['milestone'][major][y][fioc][dc.sp.nextmiid.v] \
             = new_item
-    dc.spro.v['mi_index'][dc.s._(dc.spid.v).nextmiid.v] = (major, minor, fioc)
-    _touchItem(dc.s._(dc.spid.v).nextmiid.v)
-    dc.s._(dc.spid.v).nextmiid.v += 1
+    dc.spro.v['mi_index'][dc.sp.nextmiid.v] = (major, minor, fioc)
+    _touchItem(dc.sp.nextmiid.v)
+    dc.sp.nextmiid.v += 1
     _updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def editItem(major, minor, item_id, itype, icat, name, priority, description):

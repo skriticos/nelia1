@@ -236,8 +236,10 @@ class NxProject:
 
         dc.s.nextpid.v += 1
         dc.spid.v = pid
-        dc.s._(pid).nextlid.v = dc.s._(dc.spid.v).nextmiid.v = 1
-        dc.s._(pid).curr.major.v = dc.s._(pid).curr.minor.v = 0
+        dc.s._(pid).nextlid.v = 1
+        dc.s._(pid).nextmiid.v = 1
+        dc.s._(pid).curr.major.v = 0
+        dc.s._(pid).curr.minor.v = 0
 
         p = data.project[pid] = {
                 'log': {},
