@@ -5,7 +5,7 @@ import os, datetime, time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
-from datastore import data, convert
+from datastore import data
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:

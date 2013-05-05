@@ -87,18 +87,6 @@ class NxDataStore:
         self.reset()
         return True
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# general purpose conversion functions
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def convert(item):
-    # convert timestamps (int)
-    if isinstance(item, int):
-        return datetime.datetime.fromtimestamp(item).isoformat()
-    # we can't pickle PySide objects :(
-    if item == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
-        return PySide.QtCore.Qt.SortOrder.DescendingOrder
-    if item == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
-        return PySide.QtCore.Qt.SortOrder.AscendingOrder
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 data = NxDataStore()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

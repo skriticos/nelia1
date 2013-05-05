@@ -4,7 +4,7 @@
 import time
 from PySide.QtCore import *
 from PySide.QtGui import *
-from datastore import data, convert
+from datastore import data
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
