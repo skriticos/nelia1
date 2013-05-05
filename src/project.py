@@ -242,7 +242,6 @@ class NxProject:
         dc.s._(pid).curr.minor.v = 0
 
         p = data.project[pid] = {
-                'log': {},
                 'milestone' : [
                     [{'description': '', 'm': '0.1',
                       'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
