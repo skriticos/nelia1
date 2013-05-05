@@ -8,6 +8,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 import time
 from datastore import data
+from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def minorIndex(major, minor):
     if major is 0: return minor - 1
@@ -18,29 +19,29 @@ def _minorVersion(x, y):
     return y
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _getItemCount(major, minor):
-    m = data.spro['milestone'][major][minorIndex(major, minor)]
+    m = dc.spro.v['milestone'][major][minorIndex(major, minor)]
     return sum(len(x) for x in [m['fo'], m['fc'], m['io'], m['ic']])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _addMilestone(major, minor):
     d = {'description': '', 'm': '{}.{}'.format(major, minor),
          'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
     if minorIndex(major, minor) is 0:
-        data.spro['milestone'].append([d])
+        dc.spro.v['milestone'].append([d])
     else:
-        data.spro['milestone'][major].append(d)
+        dc.spro.v['milestone'][major].append(d)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _removeMilestone(major, minor):
     if minorIndex(major, minor) is 0:
-        del data.spro['milestone'][major]
+        del dc.spro.v['milestone'][major]
     else:
-        del data.spro['milestone'][major][minorIndex(major, minor)]
+        del dc.spro.v['milestone'][major][minorIndex(major, minor)]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _updateMilestoneTree():
-    for major in range(len(data.spro['milestone'])):
+    for major in range(len(dc.spro.v['milestone'])):
         # if we have removed the last major branch before, we want to get out
-        if major == len(data.spro['milestone']): break
+        if major == len(dc.spro.v['milestone']): break
         # check for new edge item
-        last_minor = _minorVersion(major, len(data.spro['milestone'][major])-1)
+        last_minor = _minorVersion(major, len(dc.spro.v['milestone'][major])-1)
         if _getItemCount(major, last_minor):
             if last_minor is 0:
                 _addMilestone(major, 1)
@@ -50,9 +51,9 @@ def _updateMilestoneTree():
         # check for removed edge item
         # TODO: check if this works if if major has to be removed
         # TODO: edge case - create a bunch of milestones, then back to start
-        if len(data.spro['milestone'][major]) > 1:
+        if len(dc.spro.v['milestone'][major]) > 1:
             before_last_minor = \
-                    _minorVersion(major, len(data.spro['milestone'][major])-2)
+                    _minorVersion(major, len(dc.spro.v['milestone'][major])-2)
             if _getItemCount(major, before_last_minor) is 0:
                 if minor == 0:
                     _removeMilestone(major, 1)
@@ -61,8 +62,8 @@ def _updateMilestoneTree():
                     _removeMilestone(major, minor + 1)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _getItemData(item_id):
-    ma, mi, fioc = data.spro['mi_index'][item_id]
-    item = data.spro['milestone'][ma][minorIndex(ma, mi)][fioc][item_id]
+    ma, mi, fioc = dc.spro.v['mi_index'][item_id]
+    item = dc.spro.v['milestone'][ma][minorIndex(ma, mi)][fioc][item_id]
     if   fioc[0] == 'f': itype  = 'Feature'
     elif fioc[0] == 'i': itype  = 'Issue'
     if   fioc[1] == 'o': status = 'Open'
@@ -78,23 +79,23 @@ def _getAttribute(item_id, attr_name):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _setAttribute(item_id, attr_name, value):
     idat = _getItemData(item_id)
-    data.spro['milestone'][idat['x']][idat['y']] \
+    dc.spro.v['milestone'][idat['x']][idat['y']] \
            [idat['fioc']][item_id][attr_name] = value
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _touchItem(item_id):
     _setAttribute(item_id, 'modified', int(time.time()))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def addItem(major, minor, itype, icat, name,priority,description,status='Open'):
-    item_id = data.spro['meta']['next_miid']
+    item_id = dc.spro.v['meta']['next_miid']
     new_item = {'name': name, 'icat': icat,
                 'priority': priority, 'description': description,
                 'created': int(time.time())}
     if   itype == 'Feature': fioc = 'fo'
     elif itype == 'Issue':   fioc = 'io'
     y = minorIndex(major, minor)
-    data.spro['milestone'][major][y][fioc][item_id] = new_item
-    data.spro['mi_index'][item_id] = (major, minor, fioc)
-    data.spro['meta']['next_miid'] += 1
+    dc.spro.v['milestone'][major][y][fioc][item_id] = new_item
+    dc.spro.v['mi_index'][item_id] = (major, minor, fioc)
+    dc.spro.v['meta']['next_miid'] += 1
     _touchItem(item_id)
     _updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -122,10 +123,10 @@ def _moveItem(item_id, new_major, new_minor, itype=None, status=None):
             if not status:             nfioc = 'i' + idat['fioc'][1]
             elif   status == 'Open':   nfioc = 'io'
             elif   status == 'Closed': nfioc = 'ic'
-    item = data.spro['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
-    data.spro['milestone'][nx][ny][nfioc][item_id] = item
-    del data.spro['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
-    data.spro['mi_index'][item_id] = (new_major, new_minor, nfioc)
+    item = dc.spro.v['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
+    dc.spro.v['milestone'][nx][ny][nfioc][item_id] = item
+    del dc.spro.v['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
+    dc.spro.v['mi_index'][item_id] = (new_major, new_minor, nfioc)
     _touchItem(item_id)
     _updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,8 +142,8 @@ def reopenItem(item_id):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def deleteItem(item_id):
     idat = _getItemData(item_id)
-    del data.spro['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
-    del data.spro['mi_index'][item_id]
+    del dc.spro.v['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
+    del dc.spro.v['mi_index'][item_id]
     _updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

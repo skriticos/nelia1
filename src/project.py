@@ -10,7 +10,7 @@ from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
     def __init__(self):
-        data.spid = 0
+        dc.spid.v = 0
         # show new project dialog
         dc.ui.project.v.push_new.clicked.connect(self.onNewClicked)
         # show edit project dialog
@@ -80,7 +80,7 @@ class NxProject:
             QMessageBox.critical(dc.ui.main.v, title, message)
             data.run['path'] = None
             return
-        data.spid = 1
+        dc.spid.v = 1
         self.reloadTable()
         data.run['changed'] = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -91,7 +91,7 @@ class NxProject:
             title, message = 'Open failed', 'Open failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)
             return
-        data.spid = 1
+        dc.spid.v = 1
         self.reloadTable()
         data.run['changed'] = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,7 +125,7 @@ class NxProject:
         changes as true.
         """
         timestamp = int(time.time())
-        data.spro['modified'] = timestamp
+        dc.spro.v['modified'] = timestamp
         row = self.view.currentIndex().row()
         self.model.setItem(row, 8, QStandardItem(convert(timestamp)))
         data.run['changed'] = True
@@ -138,16 +138,16 @@ class NxProject:
         if not indexes: return
         row = indexes[0].row()
         index = self.model.index(row, 0)
-        data.spid = int(self.model.itemFromIndex(index).text())
-        data.spro = data.project[data.spid]
+        dc.spid.v = int(self.model.itemFromIndex(index).text())
+        dc.spro.v = data.project[dc.spid.v]
         # update content and enable project description widget
         for w in [dc.ui.project.v.text_description]:
-            w.setPlainText(data.spro['description'])
+            w.setPlainText(dc.spro.v['description'])
             w.setEnabled(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChanged(self):
         if self.init: return
-        data.spro['description'] =dc.ui.project.v.text_description.toPlainText()
+        dc.spro.v['description'] =dc.ui.project.v.text_description.toPlainText()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.project.header.width.v = list()
@@ -192,14 +192,14 @@ class NxProject:
         # restore previous layout (sorting)
         self.loadLayout()
         # -- apply selection
-        # if project was deleted, data.spid == 0, we want to select the last
+        # if project was deleted, dc.spid.v == 0, we want to select the last
         # project ID
-        if not data.spid and len(data.project) > 1:
-            data.spid = sorted(data.project.keys())[-1]
+        if not dc.spid.v and len(data.project) > 1:
+            dc.spid.v = sorted(data.project.keys())[-1]
         for i in range(self.model.rowCount()):
             index = self.model.index(i, 0)
             pid = int(self.model.itemFromIndex(index).text())
-            if pid == data.spid:
+            if pid == dc.spid.v:
                 selmod = self.view.selectionModel()
                 selmod.select(index,
                     QItemSelectionModel.Select|QItemSelectionModel.Rows)
@@ -257,33 +257,33 @@ class NxProject:
         p['created']     = timestamp
         p['modified']    = timestamp
         data.project[0]['next_pid'] += 1
-        data.spid = pid
-        data.spro = data.project[data.spid]
+        dc.spid.v = pid
+        dc.spro.v = data.project[dc.spid.v]
         self.reloadTable()
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showEditProject(self):
-        self.diag_edit.line_name.setText(data.spro['name'])
+        self.diag_edit.line_name.setText(dc.spro.v['name'])
         self.diag_edit.combo_ptype.setCurrentIndex(
-            self.diag_edit.combo_ptype.findText(data.spro['ptype']))
+            self.diag_edit.combo_ptype.findText(dc.spro.v['ptype']))
         self.diag_edit.combo_status.setCurrentIndex(
-            self.diag_edit.combo_status.findText(data.spro['status']))
+            self.diag_edit.combo_status.findText(dc.spro.v['status']))
         self.diag_edit.combo_category.setCurrentIndex(
-            self.diag_edit.combo_category.findText(data.spro['category']))
-        self.diag_edit.spin_priority.setValue(data.spro['priority'])
-        self.diag_edit.spin_challenge.setValue(data.spro['challenge'])
-        self.diag_edit.text_description.setPlainText(data.spro['description'])
+            self.diag_edit.combo_category.findText(dc.spro.v['category']))
+        self.diag_edit.spin_priority.setValue(dc.spro.v['priority'])
+        self.diag_edit.spin_challenge.setValue(dc.spro.v['challenge'])
+        self.diag_edit.text_description.setPlainText(dc.spro.v['description'])
         self.diag_edit.show()
         self.diag_edit.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditProject(self):
-        data.spro['name']        = self.diag_edit.line_name.text()
-        data.spro['category']    = self.diag_edit.combo_category.currentText()
-        data.spro['status']      = self.diag_edit.combo_status.currentText()
-        data.spro['ptype']       = self.diag_edit.combo_ptype.currentText()
-        data.spro['priority']    = self.diag_edit.spin_priority.value()
-        data.spro['challenge']   = self.diag_edit.spin_challenge.value()
-        data.spro['description'] = self.diag_edit.text_description.toPlainText()
+        dc.spro.v['name']        = self.diag_edit.line_name.text()
+        dc.spro.v['category']    = self.diag_edit.combo_category.currentText()
+        dc.spro.v['status']      = self.diag_edit.combo_status.currentText()
+        dc.spro.v['ptype']       = self.diag_edit.combo_ptype.currentText()
+        dc.spro.v['priority']    = self.diag_edit.spin_priority.value()
+        dc.spro.v['challenge']   = self.diag_edit.spin_challenge.value()
+        dc.spro.v['description'] = self.diag_edit.text_description.toPlainText()
         self.reloadTable()
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -292,11 +292,11 @@ class NxProject:
             dc.ui.project.v,
             'Delete project?',
             'Sure you want to delete project {}: {}?'.format(
-                str(data.spid), data.spro['name']),
+                str(dc.spid.v), dc.spro.v['name']),
             QMessageBox.Yes|QMessageBox.No)
         if response == QMessageBox.StandardButton.No: return
-        del data.project[data.spid]
-        data.spid = 0
+        del data.project[dc.spid.v]
+        dc.spid.v = 0
         # can't touch deleted project, direct changed update
         data.run['changed'] = True
         # reload table

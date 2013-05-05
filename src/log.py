@@ -40,7 +40,7 @@ class NxLog:
         slogid = int(self.model.itemFromIndex(index).text())
         # populate detail widget
         dc.ui.log.v.text_detail.setEnabled(True)
-        dc.ui.log.v.text_detail.setPlainText(data.spro['log'][slogid]['detail'])
+        dc.ui.log.v.text_detail.setPlainText(dc.spro.v['log'][slogid]['detail'])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.log.header.width.v = list()
@@ -63,8 +63,8 @@ class NxLog:
         self.selection_model.clear()
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.view_headers)
-        for lid in range(1, data.spro['meta']['next_lid']):
-            log = data.spro['log'][lid]
+        for lid in range(1, dc.spro.v['meta']['next_lid']):
+            log = dc.spro.v['log'][lid]
             self.model.insertRow(0, [
                 QStandardItem(str(lid).zfill(4)),
                 QStandardItem(convert(log['created'])),
@@ -78,31 +78,31 @@ class NxLog:
                     QItemSelectionModel.Select|QItemSelectionModel.Rows)
                 break
         self.loadLayout()
-        if data.spro['meta']['next_lid'] > 1:
+        if dc.spro.v['meta']['next_lid'] > 1:
             self.view.setFocus()
         else:
             dc.ui.log.v.push_new_entry.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         # check if project selection changed
-        if data.run['log_pid_last'] != data.spid:
-            data.run['log_pid_last'] = data.spid
-            dc.ui.log.v.line_project.setText(data.spro['name'])
-            dc.ui.log_diag_new.v.line_project.setText(data.spro['name'])
-            if data.spro['log']:
-                self.slogid = sorted(data.spro['log'].keys())[-1]
+        if data.run['log_pid_last'] != dc.spid.v:
+            data.run['log_pid_last'] = dc.spid.v
+            dc.ui.log.v.line_project.setText(dc.spro.v['name'])
+            dc.ui.log_diag_new.v.line_project.setText(dc.spro.v['name'])
+            if dc.spro.v['log']:
+                self.slogid = sorted(dc.spro.v['log'].keys())[-1]
             self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewSubmit(self):
-        lid = data.spro['meta']['next_lid']
+        lid = dc.spro.v['meta']['next_lid']
         timestamp = int(time.time())
-        data.spro['log'][lid] = {
+        dc.spro.v['log'][lid] = {
             'created': timestamp,
             'summary': dc.ui.log_diag_new.v.line_summary.text(),
             'detail':  dc.ui.log_diag_new.v.text_detail.toPlainText()
         }
         dc.m.project.v.touchProject()
-        data.spro['meta']['next_lid'] += 1
+        dc.spro.v['meta']['next_lid'] += 1
         self.slogid = lid
         self.reloadTable()
         self.view.setFocus()

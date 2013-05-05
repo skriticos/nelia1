@@ -131,14 +131,14 @@ class NxRoadmap:
 
         sx, sy = self.selected_major, \
                  minorIndex(self.selected_major, self.selected_minor)
-        data.spro['milestone'][sx][sy]['description'] \
+        dc.spro.v['milestone'][sx][sy]['description'] \
                 = dc.ui.roadmap.v.text_description.toPlainText()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneItemActivated(self):
 
         cmajor, cminor \
-                = data.spro['meta']['current_milestone']
+                = dc.spro.v['meta']['current_milestone']
         if self.model.rowCount() > 0:
             if self.selected_major > cmajor \
                or (self.selected_major == cmajor \
@@ -149,14 +149,14 @@ class NxRoadmap:
     def onShowTab(self):
 
         if data.run['roadmap_pid_last'] == 0 \
-           or data.run['roadmap_pid_last'] != data.spid:
+           or data.run['roadmap_pid_last'] != dc.spid.v:
 
-            data.run['roadmap_pid_last'] = data.spid
+            data.run['roadmap_pid_last'] = dc.spid.v
 
-            pro = data.spro
+            pro = dc.spro.v
 
-            dc.ui.roadmap.v.line_project.setText(data.spro['name'])
-            dc.ui.roadmap_diag_add.v.line_project.setText(data.spro['name'])
+            dc.ui.roadmap.v.line_project.setText(dc.spro.v['name'])
+            dc.ui.roadmap_diag_add.v.line_project.setText(dc.spro.v['name'])
 
             x, y = pro['meta']['current_milestone']
             milestones = pro['milestone']
@@ -191,9 +191,9 @@ class NxRoadmap:
             # check if this is the last item in the milestone
             x, y = self.selected_major, \
                    minorIndex(self.selected_major, self.selected_minor)
-            fo_sum = len(data.spro
+            fo_sum = len(dc.spro.v
                          ['milestone'] [x] [y] ['fo'])
-            io_sum = len(data.spro
+            io_sum = len(dc.spro.v
                          ['milestone'] [x] [y] ['io'])
             if fo_sum + io_sum == 1:
                 self.closeMilestone(x, y)
@@ -207,9 +207,9 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestone(self, x, y):
 
-        fo_sum1 = len(data.spro
+        fo_sum1 = len(dc.spro.v
                       ['milestone'] [x] [y+1] ['fo'])
-        io_sum1 = len(data.spro
+        io_sum1 = len(dc.spro.v
                       ['milestone'] [x] [y+1] ['io'])
         if fo_sum1 + io_sum1 == 0:
             dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(
@@ -234,8 +234,8 @@ class NxRoadmap:
     def reloadMilestoneButton(self, targetw='root'):
 
         cmajor, cminor \
-                = data.spro['meta']['current_milestone']
-        milestones = data.spro['milestone']
+                = dc.spro.v['meta']['current_milestone']
+        milestones = dc.spro.v['milestone']
         if targetw == 'root':
             dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
             dc.ui.roadmap.v.push_milestone.hide()
@@ -266,7 +266,7 @@ class NxRoadmap:
         self.selected_minor = minor
         sx, sy = major, minorIndex(major, minor)
         dc.ui.roadmap.v.text_description.setPlainText(
-            data.spro['milestone'][sx][sy]['description']
+            dc.spro.v['milestone'][sx][sy]['description']
         )
         self.reloadMilestoneButton('root')
         self.reloadTable()
@@ -355,13 +355,13 @@ class NxRoadmap:
 
         self.selected_major, self.selected_minor \
                 = dc.ui.roadmap.v.push_milestone.getVersion()
-        cmajor, cminor = data.spro['meta']['current_milestone']
+        cmajor, cminor = dc.spro.v['meta']['current_milestone']
         yy = self.selected_minor
         if self.selected_major == 0: yy = self.selected_minor-1
-        fo = data.spro['milestone'][self.selected_major][yy]['fo']
-        fc = data.spro['milestone'][self.selected_major][yy]['fc']
-        io = data.spro['milestone'][self.selected_major][yy]['io']
-        ic = data.spro['milestone'][self.selected_major][yy]['ic']
+        fo = dc.spro.v['milestone'][self.selected_major][yy]['fo']
+        fc = dc.spro.v['milestone'][self.selected_major][yy]['fc']
+        io = dc.spro.v['milestone'][self.selected_major][yy]['io']
+        ic = dc.spro.v['milestone'][self.selected_major][yy]['ic']
 
         for key, value in ic.items():
             itype = 'Issue'
@@ -428,9 +428,9 @@ class NxRoadmap:
 
             item_id = self.getSelectedItemId()
             tmajor, tminor, fioc \
-                    = data.spro['mi_index'][item_id]
+                    = dc.spro.v['mi_index'][item_id]
             tx, ty = tmajor, minorIndex(tmajor, tminor)
-            item = data.spro\
+            item = dc.spro.v\
                     ['milestone'][tx][ty][fioc][item_id]
 
             if fioc[0] == 'f': itype = 'Feature'
