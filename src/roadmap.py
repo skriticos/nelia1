@@ -129,22 +129,16 @@ class NxRoadmap:
 
         if self.init: return
 
-        sx, sy = self.selected_major, \
-                 minorIndex(self.selected_major, self.selected_minor)
+        sx, sy = self.smajor, minorIndex(self.smajor, self.sminor)
         dc.spro.v['milestone'][sx][sy]['description'] \
                 = dc.ui.roadmap.v.text_description.toPlainText()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneItemActivated(self):
-
-        cmajor, cminor \
-                = dc.spro.v['meta']['current_milestone']
-        if self.model.rowCount() > 0:
-            if self.selected_major > cmajor \
-               or (self.selected_major == cmajor \
-                   and self.selected_minor > cminor):
-                self.showAddEditMI('edit')
-
+        if self.smajor > dc.s.curr.major.v or \
+                (self.smajor == dc.s.curr.major.v \
+                 and self.sminor > dc.s.curr.minor.v):
+            self.showAddEditMI('edit')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
 
@@ -158,7 +152,7 @@ class NxRoadmap:
             dc.ui.roadmap.v.line_project.setText(dc.spro.v['name'])
             dc.ui.roadmap_diag_add.v.line_project.setText(dc.spro.v['name'])
 
-            x, y = pro['meta']['current_milestone']
+            x, y = dc.s.curr.major.v, dc.s.curr.minor.v
             milestones = pro['milestone']
 
             dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
@@ -173,8 +167,8 @@ class NxRoadmap:
 
             # computing next_x, next_y is quite tricky, so we take it
             # from the milestone widget (which does it anyway)
-            major = self.selected_major = dc.ui.roadmap.v.push_milestone.next_x
-            minor = self.selected_minor = dc.ui.roadmap.v.push_milestone.next_y
+            major = self.smajor = dc.ui.roadmap.v.push_milestone.next_x
+            minor = self.sminor = dc.ui.roadmap.v.push_milestone.next_y
 
             self.onChangeVersionSelection(major, minor)
 
@@ -189,8 +183,8 @@ class NxRoadmap:
             self.table.currentIndex().row(),3)).text()
         if status == 'Open':
             # check if this is the last item in the milestone
-            x, y = self.selected_major, \
-                   minorIndex(self.selected_major, self.selected_minor)
+            x, y = self.smajor, \
+                   minorIndex(self.smajor, self.sminor)
             fo_sum = len(dc.spro.v
                          ['milestone'] [x] [y] ['fo'])
             io_sum = len(dc.spro.v
@@ -202,7 +196,7 @@ class NxRoadmap:
         if status == 'Closed':
             reopenItem(self.getSelectedItemId())
         dc.m.project.v.touchProject()
-        self.onChangeVersionSelection(self.selected_major, self.selected_minor)
+        self.onChangeVersionSelection(self.smajor, self.sminor)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestone(self, x, y):
@@ -233,8 +227,7 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
 
-        cmajor, cminor \
-                = dc.spro.v['meta']['current_milestone']
+        cmajor, cminor = dc.s.curr.major.v, dc.s.curr.minor.v
         milestones = dc.spro.v['milestone']
         if targetw == 'root':
             dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
@@ -243,7 +236,7 @@ class NxRoadmap:
             dc.ui.roadmap.v.push_milestone = MPushButton(
                 cmajor, cminor, milestones, dc.ui.roadmap.v,
                 self.onChangeVersionSelection,
-                self.selected_major, self.selected_minor)
+                self.smajor, self.sminor)
             dc.ui.roadmap.v.gridLayout_3.addWidget(
                 dc.ui.roadmap.v.push_milestone, 0, 1, 1, 1)
             dc.ui.roadmap.v.label_2.setBuddy(dc.ui.roadmap.v.push_milestone)
@@ -253,8 +246,8 @@ class NxRoadmap:
             dc.ui.roadmap_diag_add.v.push_target.close()
             dc.ui.roadmap_diag_add.v.push_target \
                     = MPushButton(cmajor,cminor,milestones,
-                                  dc.ui.roadmap_diag_add.v,None,self.selected_major,
-                                  self.selected_minor,True)
+                                  dc.ui.roadmap_diag_add.v,None,self.smajor,
+                                  self.sminor,True)
             dc.ui.roadmap_diag_add.v.gridLayout_2.addWidget(
                 dc.ui.roadmap_diag_add.v.push_target, 1, 1, 1, 1);
             dc.ui.roadmap_diag_add.v.label_3.setBuddy(dc.ui.roadmap_diag_add.v.push_target)
@@ -262,8 +255,8 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onChangeVersionSelection(self, major, minor, text=None):
 
-        self.selected_major = major
-        self.selected_minor = minor
+        self.smajor = major
+        self.sminor = minor
         sx, sy = major, minorIndex(major, minor)
         dc.ui.roadmap.v.text_description.setPlainText(
             dc.spro.v['milestone'][sx][sy]['description']
@@ -353,15 +346,15 @@ class NxRoadmap:
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         dc.ui.roadmap.v.push_close.setText('&Close Item')
 
-        self.selected_major, self.selected_minor \
+        self.smajor, self.sminor \
                 = dc.ui.roadmap.v.push_milestone.getVersion()
-        cmajor, cminor = dc.spro.v['meta']['current_milestone']
-        yy = self.selected_minor
-        if self.selected_major == 0: yy = self.selected_minor-1
-        fo = dc.spro.v['milestone'][self.selected_major][yy]['fo']
-        fc = dc.spro.v['milestone'][self.selected_major][yy]['fc']
-        io = dc.spro.v['milestone'][self.selected_major][yy]['io']
-        ic = dc.spro.v['milestone'][self.selected_major][yy]['ic']
+        cmajor, cminor = dc.s.curr.major.v, dc.s.curr.minor.v
+        yy = self.sminor
+        if self.smajor == 0: yy = self.sminor-1
+        fo = dc.spro.v['milestone'][self.smajor][yy]['fo']
+        fc = dc.spro.v['milestone'][self.smajor][yy]['fc']
+        io = dc.spro.v['milestone'][self.smajor][yy]['io']
+        ic = dc.spro.v['milestone'][self.smajor][yy]['ic']
 
         for key, value in ic.items():
             itype = 'Issue'
@@ -392,9 +385,9 @@ class NxRoadmap:
 
         # only enable controls for future milestones
         if self.model.rowCount() > 0:
-            if self.selected_major > cmajor \
-               or (self.selected_major == cmajor \
-                   and self.selected_minor > cminor):
+            if self.smajor > cmajor \
+               or (self.smajor == cmajor \
+                   and self.sminor > cminor):
                 dc.ui.roadmap.v.label_selected.show()
                 dc.ui.roadmap.v.push_edit.show()
                 dc.ui.roadmap.v.push_delete.show()

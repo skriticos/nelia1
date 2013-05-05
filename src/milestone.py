@@ -86,17 +86,16 @@ def _touchItem(item_id):
     _setAttribute(item_id, 'modified', int(time.time()))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def addItem(major, minor, itype, icat, name,priority,description,status='Open'):
-    item_id = dc.spro.v['meta']['next_miid']
     new_item = {'name': name, 'icat': icat,
                 'priority': priority, 'description': description,
                 'created': int(time.time())}
     if   itype == 'Feature': fioc = 'fo'
     elif itype == 'Issue':   fioc = 'io'
     y = minorIndex(major, minor)
-    dc.spro.v['milestone'][major][y][fioc][item_id] = new_item
-    dc.spro.v['mi_index'][item_id] = (major, minor, fioc)
-    dc.spro.v['meta']['next_miid'] += 1
-    _touchItem(item_id)
+    dc.spro.v['milestone'][major][y][fioc][dc.s.nextmiid.v] = new_item
+    dc.spro.v['mi_index'][dc.s.nextmiid.v] = (major, minor, fioc)
+    _touchItem(dc.s.nextmiid.v)
+    dc.s.nextmiid.v += 1
     _updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def editItem(major, minor, item_id, itype, icat, name, priority, description):

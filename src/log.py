@@ -62,7 +62,7 @@ class NxLog:
         self.selection_model.clear()
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.view_headers)
-        for lid in range(1, dc.spro.v['meta']['next_lid']):
+        for lid in range(1, dc.s.nextlid.v):
             log = dc.spro.v['log'][lid]
             self.model.insertRow(0, [
                 QStandardItem(str(lid).zfill(4)),
@@ -77,7 +77,7 @@ class NxLog:
                     QItemSelectionModel.Select|QItemSelectionModel.Rows)
                 break
         self.loadLayout()
-        if dc.spro.v['meta']['next_lid'] > 1:
+        if dc.s.nextlid.v > 1:
             self.view.setFocus()
         else:
             dc.ui.log.v.push_new_entry.setFocus()
@@ -93,16 +93,14 @@ class NxLog:
             self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewSubmit(self):
-        lid = dc.spro.v['meta']['next_lid']
-        timestamp = int(time.time())
-        dc.spro.v['log'][lid] = {
-            'created': timestamp,
+        dc.spro.v['log'][dc.s.nextlid.v] = {
+            'created': int(time.time()),
             'summary': dc.ui.log_diag_new.v.line_summary.text(),
             'detail':  dc.ui.log_diag_new.v.text_detail.toPlainText()
         }
         dc.m.project.v.touchProject()
-        dc.spro.v['meta']['next_lid'] += 1
-        self.slogid = lid
+        self.slogid = dc.s.nextlid.v
+        dc.s.nextlid.v += 1
         self.reloadTable()
         self.view.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

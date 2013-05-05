@@ -176,7 +176,7 @@ class NxProject:
         # load project items into table
         for pid, project in data.project.items():
             if pid == 0: continue
-            major, minor = data.project[pid]['meta']['current_milestone']
+            major, minor = dc.s.curr.major.v, dc.s.curr.minor.v
             self.model.insertRow(0, [
                 QStandardItem(str(pid).zfill(4)),
                 QStandardItem(project['name']),
@@ -232,13 +232,12 @@ class NxProject:
     def onNewProject(self):
         timestamp = int(time.time())
         pid = dc.s.nextpid.v
-        # create new project entry
-        # meta: general project data
-        # log: log data
-        # milestone: versions, features, issues
+
+        dc.s.nextpid.v += 1
+        dc.s.nextlid.v = dc.s.nextmiid.v = 1
+        dc.s.curr.major.v = dc.s.curr.minor.v = 0
+
         p = data.project[pid] = {
-                'meta': {'next_lid': 1, 'next_miid': 1,
-                         'current_milestone': (0,0)},
                 'log': {},
                 'milestone' : [
                     [{'description': '', 'm': '0.1',
@@ -256,7 +255,6 @@ class NxProject:
         p['description'] = self.diag_new.text_description.toPlainText()
         p['created']     = timestamp
         p['modified']    = timestamp
-        dc.s.nextpid.v += 1
         dc.spid.v = pid
         dc.spro.v = data.project[dc.spid.v]
         self.reloadTable()
