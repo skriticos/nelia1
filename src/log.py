@@ -83,8 +83,8 @@ class NxLog:
         # check if project selection changed
         if dc.r.log.pid.last.v != dc.spid.v:
             dc.r.log.pid.last.v = dc.spid.v
-            dc.ui.log.v.line_project.setText(dc.spro.v['name'])
-            dc.ui.log_diag_new.v.line_project.setText(dc.spro.v['name'])
+            dc.ui.log.v.line_project.setText(dc.sp.name.v)
+            dc.ui.log_diag_new.v.line_project.setText(dc.sp.name.v)
             self.slogid = dc.sp.nextlid.v
             self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -149,8 +149,8 @@ class NxRoadmap:
 
             pro = dc.spro.v
 
-            dc.ui.roadmap.v.line_project.setText(dc.spro.v['name'])
-            dc.ui.roadmap_diag_add.v.line_project.setText(dc.spro.v['name'])
+            dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
+            dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
 
             x, y = dc.sp.curr.major.v, dc.sp.curr.minor.v
             milestones = pro['milestone']
