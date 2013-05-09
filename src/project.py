@@ -74,7 +74,7 @@ class NxProject:
         if not path:
             return False
         # set path and save document
-        result = data.open_document(path)
+        result = dcload(path)
         if isinstance(result, Exception):
             title, message = 'open failed', 'open failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)
@@ -85,8 +85,7 @@ class NxProject:
         dc.r.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenLast(self):
-        path = dc.c.lastpath.v
-        result = data.open_document(path)
+        result = dcload(dc.c.lastpath.v)
         if isinstance(result, Exception):
             title, message = 'Open failed', 'Open failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)
@@ -109,7 +108,7 @@ class NxProject:
             if path.rfind(dc.x.extension.v) != extension_start:
                 path += dc.x.extension.v
         else: path = dc.r.path.v
-        result = data.save_document(path)
+        result = dcsave(path)
         if isinstance(result, Exception):
             title, message = 'Save failed', 'Save failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)

@@ -54,19 +54,20 @@ dc.s.nextpid.v = 1
 dc.s.index.pid.v = set()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def dcsave(path=None):
-    if not path and not dc.x.storepath.v:
+    if not path and not dc.x.path.v:
         raise ValueError('Storepath not defined')
-    if path: dc.x.storepath.v = path
-    pdat = pickle.dumps(dc.s, 3)
+    if path: dc.x.path.v = path
+    pdat = pickle.dumps(dc.s.__serialize__(), 3)
     cdat = gzip.compress(pdat)
-    with open(dc.x.storepath.v, 'w') as f: f.write(cdat)
+    with open(dc.x.path.v, 'wb') as f: f.write(cdat)
+    dc.c.lastpath.v = dc.x.path.v
     dc.x.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def dcload(path):
-    with open(path, 'r') as f: cdat = f.read()
+    with open(path, 'rb') as f: cdat = f.read()
     pdat = gzip.decompress(cdat)
-    dc.s = pickle.loads(pdat)
-    dc.x.storepath.v = path
+    dc.s.__deserialize__(pickle.loads(pdat))
+    dc.x.path.v = path
     dc.x.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def dcsaveconfig():

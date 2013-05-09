@@ -7,7 +7,6 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 from datacore import *
 from datacore import _dcdump
-from datastore import data
 from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
@@ -99,15 +98,12 @@ class MainWindow():
         dc.m.project.v.saveLayout()
         dc.m.log.v.saveLayout()
         dc.m.roadmap.v.saveLayout()
-        dcsaveconfig()
         if dc.r.changed.v:
-            if dc.r.path.v:
-                data.save_document(dc.r.path.v)
-            else:
-                base = dc.x.default.path.v
-                path = os.path.join(
-                    base,'.'+str(int(time.time()))+'.tmp.nelia1')
-                data.save_document(path)
+            if not dc.r.path.v:
+                dc.x.path.v = os.path.join(dc.x.default.path.v,
+                       '.{}.tmp.nelia1'.format(str(int(time.time()))))
+            dcsave()
+        dcsaveconfig()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onTabForward(self):
         tab_index = dc.ui.main.v.tabnavi.currentIndex()
