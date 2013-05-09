@@ -4,24 +4,24 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 import sys
+from datacore import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MPushButton(QPushButton):
     """
     This class contains a push button with menu that is displaying the
-    milestone version and enables to select milestone versions (e.g. for
+    milestone version and enables to select milestone (e.g. for
     current selection or for feature / issue targets).
     """
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def __init__(self, x, y, versions, parent=None, change_callback=None,
+    def __init__(self, parent=None, change_callback=None,
                  sel_x=None, sel_y=None, open_only=False):
 
         super().__init__(parent)
 
-        self.x = x                  # current major milestone
-        self.y = y                  # current minor milestone
-        self.versions = versions    # milestone version data tree
+        x = dc.sp.curr.major.v
+        y = dc.sp.curr.minor.v
 
         self.setText('        no data        ')
         self.root_menu = QMenu(self)
@@ -33,35 +33,35 @@ class MPushButton(QPushButton):
         The following nested loop is somewhat hard to digest.  (At least, it
         was quite hard to create). It calculates the major and minor deltas
         of each milestone version compared to the current version. Δn
-        is the difference of major versions, quite simple.  Δm is the
+        is the difference of major milestone, quite simple.  Δm is the
         challangeing part: it is the total difference of minor milestone
-        versions compared to the current one. E.g. If you are at version
-        3.4, version 1 and two have 5 milestones each, then the minor delta
+        compared to the current one. E.g. If you are at version
+        3.4, version 1 and two have 5 milestone each, then the minor delta
         for 1.2 will be 2 + 5 + 4 = (-)11. Major will be -2 -> -2,11 See
         nelia/calculations/version-delta.py for detailed discussion.
         """
 
-        # loop through major versions
+        # loop through major dc.spro.v['milestone']
         Δn = 0
-        for n in range(len(versions)):
+        for n in range(len(dc.spro.v['milestone'])):
             Δn = n - x
             # major version menu instance (will be labeled further down)
             major_menu = QMenu(self)
 
-            # loop through minor versions
+            # loop through minor dc.spro.v['milestone']
             Δm = 0
             # reset major version feature counters
             mfo = mfc = mio = mic = 0
-            for m in range(len(versions[n])):
+            for m in range(len(dc.spro.v['milestone'][n])):
 
                 # create action instance
                 action = QAction(self)
 
                 # compute minor version feature / issue count
-                fo = len(versions[n][m]['fo'])
-                fc = len(versions[n][m]['fc'])
-                io = len(versions[n][m]['io'])
-                ic = len(versions[n][m]['ic'])
+                fo = len(dc.spro.v['milestone'][n][m]['fo'])
+                fc = len(dc.spro.v['milestone'][n][m]['fc'])
+                io = len(dc.spro.v['milestone'][n][m]['io'])
+                ic = len(dc.spro.v['milestone'][n][m]['ic'])
 
                 # add to major version feature / issue count
                 mfo += fo
@@ -73,17 +73,19 @@ class MPushButton(QPushButton):
                 if n == 0:
                     m += 1
 
-                # current version = 0.0 (no milestones reached)
+                # current version = 0.0 (no dc.spro.v['milestone'] reached)
                 if x == 0 and y == 0:
                     if n == 0:
                         Δm = m
                     if n > 0:
-                        Δm = sum(len(versions[s]) for s in range(n)) + m + 1
+                        Δm = sum(len(dc.spro.v['milestone'][s])
+                                  for s in range(n)) + m + 1
                 # current version = 0.y, y>0
                 if x == 0 and y > 0:
                     if n > 0:
-                        Δm = sum(len(versions[s]) for s in range(1,n)) \
-                                + m + len(versions[0]) - y + 1
+                        Δm = sum(len(dc.spro.v['milestone'][s])
+                                  for s in range(1,n)) \
+                                + m + len(dc.spro.v['milestone'][0]) - y + 1
                     else:
                         Δm = m - y
                 # current version = 1.y, y>=0
@@ -91,10 +93,11 @@ class MPushButton(QPushButton):
                     if n == x:
                         Δm = m - y
                     if n > x:
-                        Δm = sum(len(versions[s]) for s in range(x+1,n)) \
-                                + m + len(versions[x]) - y
+                        Δm = sum(len(dc.spro.v['milestone'][s])
+                                  for s in range(x+1,n)) \
+                                + m + len(dc.spro.v['milestone'][x]) - y
                     if n < x:
-                        Δm = -1 * (y + (len(versions[0])-m))
+                        Δm = -1 * (y + (len(dc.spro.v['milestone'][0])-m))
                         if n == 0:
                             Δm -= 1
                 # current major version > 1
@@ -102,12 +105,14 @@ class MPushButton(QPushButton):
                     if n == x:
                         Δm = m - y
                     if n > x:
-                        Δm = sum(len(versions[s]) for s in range(x+1,n)) \
-                                + m + len(versions[x]) - y
+                        Δm = sum(len(dc.spro.v['milestone'][s])
+                                  for s in range(x+1,n)) \
+                                + m + len(dc.spro.v['milestone'][x]) - y
                     if n < x:
                         Δm = -1 * (
-                            (  len(versions[n]) - m)
-                             + sum(len(versions[s]) for s in range(n+1, x))
+                            (  len(dc.spro.v['milestone'][n]) - m)
+                             + sum(len(dc.spro.v['milestone'][s])
+                                   for s in range(n+1, x))
                              + y  )
                         if n == 0:
                             Δm -= 1

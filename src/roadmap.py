@@ -158,7 +158,7 @@ class NxRoadmap:
             dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
             dc.ui.roadmap.v.push_milestone.close()
             dc.ui.roadmap.v.push_milestone = MPushButton(
-                x, y, milestones, dc.ui.roadmap.v, self.onChangeVersionSelection)
+                dc.ui.roadmap.v, self.onChangeVersionSelection)
             dc.ui.roadmap.v.gridLayout_3.addWidget(
                 dc.ui.roadmap.v.push_milestone, 0, 1, 1, 1)
             dc.ui.roadmap.v.label_2.setBuddy(dc.ui.roadmap.v.push_milestone)
@@ -227,15 +227,13 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
 
-        cmajor, cminor = dc.sp.curr.major.v, dc.sp.curr.minor.v
         milestones = dc.spro.v['milestone']
         if targetw == 'root':
             dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
             dc.ui.roadmap.v.push_milestone.hide()
             dc.ui.roadmap.v.push_milestone.close()
             dc.ui.roadmap.v.push_milestone = MPushButton(
-                cmajor, cminor, milestones, dc.ui.roadmap.v,
-                self.onChangeVersionSelection,
+                dc.ui.roadmap.v, self.onChangeVersionSelection,
                 self.smajor, self.sminor)
             dc.ui.roadmap.v.gridLayout_3.addWidget(
                 dc.ui.roadmap.v.push_milestone, 0, 1, 1, 1)
@@ -245,8 +243,7 @@ class NxRoadmap:
                 dc.ui.roadmap_diag_add.v.push_target)
             dc.ui.roadmap_diag_add.v.push_target.close()
             dc.ui.roadmap_diag_add.v.push_target \
-                    = MPushButton(cmajor,cminor,milestones,
-                                  dc.ui.roadmap_diag_add.v,None,self.smajor,
+                    = MPushButton(dc.ui.roadmap_diag_add.v,None,self.smajor,
                                   self.sminor,True)
             dc.ui.roadmap_diag_add.v.gridLayout_2.addWidget(
                 dc.ui.roadmap_diag_add.v.push_target, 1, 1, 1, 1);
