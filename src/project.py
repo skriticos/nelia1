@@ -5,7 +5,9 @@ import os, datetime, time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
-from datastore import data
+# remove me
+from datastore import *
+# /remove me
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
@@ -239,7 +241,7 @@ class NxProject:
         dc.s._(pid).nextmiid.v = 1
         dc.s._(pid).curr.major.v = 0
         dc.s._(pid).curr.minor.v = 0
-
+        # remove me
         p = data.project[pid] = {
                 'milestone' : [
                     [{'description': '', 'm': '0.1',
@@ -249,6 +251,7 @@ class NxProject:
                     ],
                 'mi_index' : {}}
         dc.spro.v = data.project[dc.spid.v]
+        # /remove me
         dc.sp = dc.s._(pid)
         dc.sp.name.v        = self.diag_new.line_name.text()
         dc.sp.category.v    = self.diag_new.combo_category.currentText()
@@ -259,6 +262,11 @@ class NxProject:
         dc.sp.description.v = self.diag_new.text_description.toPlainText()
         dc.sp.created.v     = timestamp
         dc.sp.modified.v    = timestamp
+        dc.sp.m._(0)._(1).description.v = ''
+        dc.sp.m._(1)._(0).description.v = ''
+        dc.sp.m.index.v = {0, 1}
+        dc.sp.m._(0).index.v = {1}
+        dc.sp.m._(1).index.v = {0}
         self.reloadTable()
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -295,14 +303,14 @@ class NxProject:
                 str(dc.spid.v), dc.sp.name.v),
             QMessageBox.Yes|QMessageBox.No)
         if response == QMessageBox.StandardButton.No: return
+        # remove me
         del data.project[dc.spid.v]
+        # /remove me
         dc.s.index.pid.v.remove(dc.spid.v)
         n = dc.s._(dc.spid.v)
         del n
         dc.spid.v = 0
-        # can't touch deleted project, direct changed update
         dc.r.changed.v = True
-        # reload table
         self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
