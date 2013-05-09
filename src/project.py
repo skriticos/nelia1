@@ -193,8 +193,8 @@ class NxProject:
         # -- apply selection
         # if project was deleted, dc.spid.v == 0, we want to select the last
         # project ID
-        if not dc.spid.v and len(data.project) > 1:
-            dc.spid.v = sorted(data.project.keys())[-1]
+        if not dc.spid.v and len(dc.s.index.pid.v) > 1:
+            dc.spid.v = max(dc.s.index.pid.v)
         for i in range(self.model.rowCount()):
             index = self.model.index(i, 0)
             pid = int(self.model.itemFromIndex(index).text())
@@ -204,7 +204,7 @@ class NxProject:
                     QItemSelectionModel.Select|QItemSelectionModel.Rows)
                 break
         # set state of controls
-        if len(data.project) > 1:
+        if len(dc.s.index.pid.v) > 1:
             dc.m.main.v.enableTabs()
             dc.ui.project.v.push_edit.show()
             dc.ui.project.v.push_delete.show()
