@@ -296,7 +296,7 @@ class NxProject:
             QMessageBox.Yes|QMessageBox.No)
         if response == QMessageBox.StandardButton.No: return
         del data.project[dc.spid.v]
-        dc.s.index.pid.v.add(dc.spid.v)
+        dc.s.index.pid.v.remove(dc.spid.v)
         n = dc.s._(dc.spid.v)
         del n
         dc.spid.v = 0
