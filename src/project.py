@@ -262,10 +262,13 @@ class NxProject:
         dc.sp.description.v = self.diag_new.text_description.toPlainText()
         dc.sp.created.v     = timestamp
         dc.sp.modified.v    = timestamp
+        dc.sp.midx.v = {} # dict with item id's and position id -> x, y
         dc.sp.m._(0)._(1).description.v = ''
+        dc.sp.m._(0)._(1).idx.v = set()
         dc.sp.m._(1)._(0).description.v = ''
-        dc.sp.m.index.v = {0, 1}
-        dc.sp.m._(0).index.v = {1}
+        dc.sp.m._(1)._(0).idx.v = set()
+        dc.sp.m.index.v = {0, 1} # major milestone index
+        dc.sp.m._(0).index.v = {1} # minor milestone index (for 0.x)
         dc.sp.m._(1).index.v = {0}
         self.reloadTable()
         self.touchProject()
