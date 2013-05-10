@@ -8,6 +8,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 import time
 from datacore import *
+# remove me
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def minorIndex(major, minor):
     if major is 0: return minor - 1
@@ -34,8 +35,40 @@ def _removeMilestone(major, minor):
         del dc.spro.v['milestone'][major]
     else:
         del dc.spro.v['milestone'][major][minorIndex(major, minor)]
+# /remove me
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _updateMilestoneTree():
+    for imajor in reversed(list(dc.sp.m.index.v)):
+        # major branch receaves first item
+        if imajor > 0 and imajor+1 not in dc.sp.m.index.v \
+                      and len(dc.sp.m._(imajor)._(0).idx.v):
+            # add imajor+1.0, imajor.1
+            dc.sp.m.index.v.add(imajor+1)
+            dc.sp.m._(imajor+1).index.v = {0}
+            dc.sp.m._(imajor+1)._(0).description.v = ''
+            dc.sp.m._(imajor+1)._(0).idx.v = set()
+            dc.sp.m._(imajor).index.v.add(1)
+            dc.sp.m._(imajor)._(1).description.v = ''
+            dc.sp.m._(imajor)._(1).idx.v = set()
+            continue
+        # major branch looses last item
+        elif imajor > 1 and not len(dc.sp.m._(imajor-1)._(0).idx.v):
+            x = dc.sp.m._(imajor)
+            del x
+            dc.sp.m.index.v.remove(imajor)
+            continue
+        lminor = max(dc.sp.m._(imajor).index.v)
+        # last minor branch receaves first item
+        if len(dc.sp.m._(imajor)._(lminor).idx.v):
+            dc.sp.m._(imajor).index.v.add(lminor+1)
+            dc.sp.m._(imajor)._(lminor+1).description.v = ''
+            dc.sp.m._(imajor)._(lminor+1).idx.v = set()
+        # previous to last minor branch looses last item
+        elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
+            dc.sp.m._(imajor).index.v.remove(lminor)
+            x = dc.sp.m._(imajor)._(lminor)
+            del x
+    # remove me
     for major in range(len(dc.spro.v['milestone'])):
         # if we have removed the last major branch before, we want to get out
         if major == len(dc.spro.v['milestone']): break
@@ -59,6 +92,8 @@ def _updateMilestoneTree():
                     _removeMilestone(major + 1, 0)
                 else:
                     _removeMilestone(major, minor + 1)
+    # /remove me
+# remove me
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _getItemData(item_id):
     ma, mi, fioc = dc.spro.v['mi_index'][item_id]
@@ -83,12 +118,13 @@ def _setAttribute(item_id, attr_name, value):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _touchItem(item_id):
     _setAttribute(item_id, 'modified', int(time.time()))
+# /remove me
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def addItem(major, minor, itype, icat,
             name, priority, description, status='Open'):
     miid = dc.sp.nextmiid.v
     dc.sp.nextmiid.v += 1
-    dc.sp.midx.v[miid] = major, minor # register milestone item
+    dc.sp.midx.v[miid] = major, minor # store milestone item location
     dc.sp.mi._(miid).name.v = name
     dc.sp.mi._(miid).description.v = description
     dc.sp.mi._(miid).priority.v = priority
