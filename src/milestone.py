@@ -190,9 +190,15 @@ def reopenItem(item_id):
     _touchItem(item_id)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def deleteItem(item_id):
+    del dc.sp.mi.__dict__['_{}'.format(item_id)]
+    major, minor = dc.sp.midx.v[item_id]
+    del dc.sp.midx.v[item_id]
+    dc.sp.m._(major)._(minor).idx.v.remove(item_id)
+    # remove me
     idat = _getItemData(item_id)
     del dc.spro.v['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
     del dc.spro.v['mi_index'][item_id]
+    # /remove me
     _updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
