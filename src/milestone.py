@@ -7,7 +7,6 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 import time
-from datastore import data
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def minorIndex(major, minor):
@@ -85,7 +84,22 @@ def _setAttribute(item_id, attr_name, value):
 def _touchItem(item_id):
     _setAttribute(item_id, 'modified', int(time.time()))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def addItem(major, minor, itype, icat, name,priority,description,status='Open'):
+def addItem(major, minor, itype, icat,
+            name, priority, description, status='Open'):
+    miid = dc.sp.nextmiid.v
+    dc.sp.nextmiid.v += 1
+    dc.sp.midx.v[miid] = major, minor # register milestone item
+    dc.sp.mi._(miid).name.v = name
+    dc.sp.mi._(miid).description.v = description
+    dc.sp.mi._(miid).priority.v = priority
+    dc.sp.mi._(miid).category.v = icat
+    dc.sp.mi._(miid).itype.v = itype
+    dc.sp.mi._(miid).status.v = status
+    t = int(time.time())
+    dc.sp.mi._(miid).created.v = t
+    dc.sp.mi._(miid).modified.v = t
+    dc.sp.m._(major)._(minor).idx.v.add(miid)
+    # remove me
     new_item = {'name': name, 'icat': icat,
                 'priority': priority, 'description': description,
                 'created': int(time.time())}
@@ -96,7 +110,7 @@ def addItem(major, minor, itype, icat, name,priority,description,status='Open'):
             = new_item
     dc.spro.v['mi_index'][dc.sp.nextmiid.v] = (major, minor, fioc)
     _touchItem(dc.sp.nextmiid.v)
-    dc.sp.nextmiid.v += 1
+    # /remove me
     _updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def editItem(major, minor, item_id, itype, icat, name, priority, description):
