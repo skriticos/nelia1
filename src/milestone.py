@@ -142,10 +142,9 @@ def addItem(major, minor, itype, icat,
     if   itype == 'Feature': fioc = 'fo'
     elif itype == 'Issue':   fioc = 'io'
     y = minorIndex(major, minor)
-    dc.spro.v['milestone'][major][y][fioc][dc.sp.nextmiid.v] \
-            = new_item
-    dc.spro.v['mi_index'][dc.sp.nextmiid.v] = (major, minor, fioc)
-    _touchItem(dc.sp.nextmiid.v)
+    dc.spro.v['milestone'][major][y][fioc][miid] = new_item
+    dc.spro.v['mi_index'][miid] = (major, minor, fioc)
+    _touchItem(miid)
     # /remove me
     _updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
