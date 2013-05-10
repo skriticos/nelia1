@@ -53,8 +53,7 @@ def _updateMilestoneTree():
             continue
         # major branch looses last item
         elif imajor > 1 and not len(dc.sp.m._(imajor-1)._(0).idx.v):
-            x = dc.sp.m._(imajor)
-            del x
+            del dc.sp.m.__dict__['_{}'.format(imajor)]
             dc.sp.m.index.v.remove(imajor)
             continue
         lminor = max(dc.sp.m._(imajor).index.v)
@@ -66,8 +65,7 @@ def _updateMilestoneTree():
         # previous to last minor branch looses last item
         elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
             dc.sp.m._(imajor).index.v.remove(lminor)
-            x = dc.sp.m._(imajor)._(lminor)
-            del x
+            del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
     # remove me
     for major in range(len(dc.spro.v['milestone'])):
         # if we have removed the last major branch before, we want to get out
