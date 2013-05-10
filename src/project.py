@@ -310,8 +310,9 @@ class NxProject:
         del data.project[dc.spid.v]
         # /remove me
         dc.s.index.pid.v.remove(dc.spid.v)
-        n = dc.s._(dc.spid.v)
-        del n
+        del dc.s.__dict__['_{}'.format(dc.spid.v)]
+        from datacore import _dcdump
+        _dcdump(dc.s)
         dc.spid.v = 0
         dc.r.changed.v = True
         self.reloadTable()
