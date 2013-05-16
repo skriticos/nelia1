@@ -176,7 +176,7 @@ class NxProject:
         # hide open last after first activity
         dc.ui.project.v.push_open_last.hide()
         # load project items into table
-        for pid in dc.s.index.pid.v:
+        for pid in dc.s.idx.pid.v:
             major, minor = dc.s._(pid).curr.major.v, dc.s._(pid).curr.minor.v
             self.model.insertRow(0, [
                 QStandardItem(str(pid).zfill(4)),
@@ -195,8 +195,8 @@ class NxProject:
         # -- apply selection
         # if project was deleted, dc.spid.v == 0, we want to select the last
         # project ID
-        if not dc.spid.v and len(dc.s.index.pid.v):
-            dc.spid.v = max(dc.s.index.pid.v)
+        if not dc.spid.v and len(dc.s.idx.pid.v):
+            dc.spid.v = max(dc.s.idx.pid.v)
         for i in range(self.model.rowCount()):
             index = self.model.index(i, 0)
             pid = int(self.model.itemFromIndex(index).text())
@@ -206,7 +206,7 @@ class NxProject:
                     QItemSelectionModel.Select|QItemSelectionModel.Rows)
                 break
         # set state of controls
-        if len(dc.s.index.pid.v):
+        if len(dc.s.idx.pid.v):
             dc.m.main.v.enableTabs()
             dc.ui.project.v.push_edit.show()
             dc.ui.project.v.push_delete.show()
@@ -233,7 +233,7 @@ class NxProject:
     def onNewProject(self):
         timestamp = int(time.time())
         pid = dc.s.nextpid.v
-        dc.s.index.pid.v.add(pid)
+        dc.s.idx.pid.v.add(pid)
 
         dc.s.nextpid.v += 1
         dc.spid.v = pid
@@ -267,9 +267,9 @@ class NxProject:
         dc.sp.m._(0)._(1).idx.v = set()
         dc.sp.m._(1)._(0).description.v = ''
         dc.sp.m._(1)._(0).idx.v = set()
-        dc.sp.m.index.v = {0, 1} # major milestone index
-        dc.sp.m._(0).index.v = {1} # minor milestone index (for 0.x)
-        dc.sp.m._(1).index.v = {0}
+        dc.sp.m.idx.v = {0, 1} # major milestone index
+        dc.sp.m._(0).idx.v = {1} # minor milestone index (for 0.x)
+        dc.sp.m._(1).idx.v = {0}
         self.reloadTable()
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -309,7 +309,7 @@ class NxProject:
         # remove me
         del data.project[dc.spid.v]
         # /remove me
-        dc.s.index.pid.v.remove(dc.spid.v)
+        dc.s.idx.pid.v.remove(dc.spid.v)
         del dc.s.__dict__['_{}'.format(dc.spid.v)]
         from datacore import _dcdump
         _dcdump(dc.s)

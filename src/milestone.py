@@ -1,202 +1,138 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# asumption: all functions in this module operate on the currently selected
-#            project
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from PySide.QtCore import *
 from PySide.QtGui import *
 import time
 from datacore import *
-# remove me
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def minorIndex(major, minor):
-    if major is 0: return minor - 1
-    return minor
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _minorVersion(x, y):
-    if x is 0: return y + 1
-    return y
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _getItemCount(major, minor):
-    m = dc.spro.v['milestone'][major][minorIndex(major, minor)]
-    return sum(len(x) for x in [m['fo'], m['fc'], m['io'], m['ic']])
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _addMilestone(major, minor):
-    d = {'description': '', 'm': '{}.{}'.format(major, minor),
-         'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}
-    if minorIndex(major, minor) is 0:
-        dc.spro.v['milestone'].append([d])
-    else:
-        dc.spro.v['milestone'][major].append(d)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _removeMilestone(major, minor):
-    if minorIndex(major, minor) is 0:
-        del dc.spro.v['milestone'][major]
-    else:
-        del dc.spro.v['milestone'][major][minorIndex(major, minor)]
-# /remove me
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _updateMilestoneTree():
-    for imajor in reversed(list(dc.sp.m.index.v)):
+def updateMilestoneTree():
+    for imajor in reversed(list(dc.sp.m.idx.v)):
         # major branch receaves first item
-        if imajor > 0 and imajor+1 not in dc.sp.m.index.v \
+        if imajor > 0 and imajor+1 not in dc.sp.m.idx.v \
                       and len(dc.sp.m._(imajor)._(0).idx.v):
+            print('... updateMilestoneTree: adding major {}.0 and minor {}.{}'.format(imajor+1, imajor, 1))
             # add imajor+1.0, imajor.1
-            dc.sp.m.index.v.add(imajor+1)
-            dc.sp.m._(imajor+1).index.v = {0}
+            dc.sp.m.idx.v.add(imajor+1)
+            dc.sp.m._(imajor+1).idx.v = {0}
             dc.sp.m._(imajor+1)._(0).description.v = ''
             dc.sp.m._(imajor+1)._(0).idx.v = set()
-            dc.sp.m._(imajor).index.v.add(1)
+            dc.sp.m._(imajor).idx.v.add(1)
             dc.sp.m._(imajor)._(1).description.v = ''
             dc.sp.m._(imajor)._(1).idx.v = set()
             continue
         # major branch looses last item
         elif imajor > 1 and not len(dc.sp.m._(imajor-1)._(0).idx.v):
+            print('... updateMilestoneTree: removing major', imajor)
             del dc.sp.m.__dict__['_{}'.format(imajor)]
-            dc.sp.m.index.v.remove(imajor)
+            dc.sp.m.idx.v.remove(imajor)
             continue
-        lminor = max(dc.sp.m._(imajor).index.v)
+        lminor = max(dc.sp.m._(imajor).idx.v)
+        print('... updateMilestoneTree: imajor {}, lminor {}'.format(imajor, lminor))
+        if imajor is 0 and lminor is 1 and not dc.sp.m._(0)._(1).idx.v:
+            break
         # last minor branch receaves first item
         if len(dc.sp.m._(imajor)._(lminor).idx.v):
-            dc.sp.m._(imajor).index.v.add(lminor+1)
+            print('... updateMilestoneTree: adding minor milestone')
+            dc.sp.m._(imajor).idx.v.add(lminor+1)
             dc.sp.m._(imajor)._(lminor+1).description.v = ''
             dc.sp.m._(imajor)._(lminor+1).idx.v = set()
         # previous to last minor branch looses last item
         elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
-            dc.sp.m._(imajor).index.v.remove(lminor)
+            print('... updateMilestoneTree: removing minor {}.{}'.format(imajor, lminor))
+            dc.sp.m._(imajor).idx.v.remove(lminor)
             del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
-    # remove me
-    for major in range(len(dc.spro.v['milestone'])):
-        # if we have removed the last major branch before, we want to get out
-        if major == len(dc.spro.v['milestone']): break
-        # check for new edge item
-        last_minor = _minorVersion(major, len(dc.spro.v['milestone'][major])-1)
-        if _getItemCount(major, last_minor):
-            if last_minor is 0:
-                _addMilestone(major, 1)
-                _addMilestone(major + 1, 0)
-            else:
-                _addMilestone(major, last_minor + 1)
-        # check for removed edge item
-        # TODO: check if this works if if major has to be removed
-        # TODO: edge case - create a bunch of milestones, then back to start
-        if len(dc.spro.v['milestone'][major]) > 1:
-            before_last_minor = \
-                    _minorVersion(major, len(dc.spro.v['milestone'][major])-2)
-            if _getItemCount(major, before_last_minor) is 0:
-                if minor == 0:
-                    _removeMilestone(major, 1)
-                    _removeMilestone(major + 1, 0)
-                else:
-                    _removeMilestone(major, minor + 1)
-    # /remove me
-# remove me
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _getItemData(item_id):
-    ma, mi, fioc = dc.spro.v['mi_index'][item_id]
-    item = dc.spro.v['milestone'][ma][minorIndex(ma, mi)][fioc][item_id]
-    if   fioc[0] == 'f': itype  = 'Feature'
-    elif fioc[0] == 'i': itype  = 'Issue'
-    if   fioc[1] == 'o': status = 'Open'
-    elif fioc[1] == 'c': status = 'Closed'
-    return {'major': ma, 'minor': mi, 'x': ma, 'y': minorIndex(ma, mi),
-            'name': item['name'], 'itype': itype, 'icat': item['icat'],
-            'priority': item['priority'], 'description': item['description'],
-            'status': status, 'fioc': fioc}
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _getAttribute(item_id, attr_name):
-    idat = _getItemData(item_id)
-    return idat[attr_name]
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _setAttribute(item_id, attr_name, value):
-    idat = _getItemData(item_id)
-    dc.spro.v['milestone'][idat['x']][idat['y']] \
-           [idat['fioc']][item_id][attr_name] = value
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _touchItem(item_id):
-    _setAttribute(item_id, 'modified', int(time.time()))
-# /remove me
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def addItem(major, minor, itype, icat,
-            name, priority, description, status='Open'):
+def addMI(major, minor, itype, category,
+          name, priority, description, status='Open'):
+    # milestone item id
     miid = dc.sp.nextmiid.v
     dc.sp.nextmiid.v += 1
-    dc.sp.midx.v[miid] = major, minor # store milestone item location
+    # milestone item location
+    dc.sp.midx.v[miid] = major, minor
+    # milestone item attributes
     dc.sp.mi._(miid).name.v = name
     dc.sp.mi._(miid).description.v = description
     dc.sp.mi._(miid).priority.v = priority
-    dc.sp.mi._(miid).category.v = icat
+    dc.sp.mi._(miid).category.v = category
     dc.sp.mi._(miid).itype.v = itype
     dc.sp.mi._(miid).status.v = status
     t = int(time.time())
     dc.sp.mi._(miid).created.v = t
     dc.sp.mi._(miid).modified.v = t
+    # milestone item reference in tree
     dc.sp.m._(major)._(minor).idx.v.add(miid)
-    # remove me
-    new_item = {'name': name, 'icat': icat,
-                'priority': priority, 'description': description,
-                'created': int(time.time())}
-    if   itype == 'Feature': fioc = 'fo'
-    elif itype == 'Issue':   fioc = 'io'
-    y = minorIndex(major, minor)
-    dc.spro.v['milestone'][major][y][fioc][miid] = new_item
-    dc.spro.v['mi_index'][miid] = (major, minor, fioc)
-    _touchItem(miid)
-    # /remove me
-    _updateMilestoneTree()
+    updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def editItem(major, minor, item_id, itype, icat, name, priority, description):
-    idat = _getItemData(item_id)
-    for k, v in (('icat', icat),
-                 ('name', name),
-                 ('priority', priority),
-                 ('description', description)):
-        _setAttribute(item_id, k, v)
-    if itype!=idat['itype'] or major!=idat['major'] or minor!=idat['minor']:
-        _moveItem(item_id, major, minor, itype, idat['status'])
-    _touchItem(item_id)
+def editMI(major, minor, miid, itype, category, name, priority, description):
+    if (major, minor) != dc.sp.midx.v[miid]:
+        old_major, old_minor = dc.sp.midx.v[miid]
+        dc.sp.m._(old_major)._(old_minor).idx.v.remove(miid)
+        dc.sp.m._(major)._(minor).idx.v.add(miid)
+        dc.sp.midx.v[miid] = major, minor
+    dc.sp.mi._(miid).itype.v = itype
+    dc.sp.mi._(miid).name.v  = name
+    dc.sp.mi._(miid).category.v = category
+    dc.sp.mi._(miid).priority.v = priority
+    dc.sp.mi._(miid).description.v = description
+    dc.sp.mi._(miid).changed.v = int(time.time())
+    updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _moveItem(item_id, new_major, new_minor, itype=None, status=None):
-    idat = _getItemData(item_id)
-    nx, ny = new_major, minorIndex(new_major, new_minor)
-    if not itype and not status:       nfioc = idat['fioc']
-    else:
-        if itype == 'Feature':
-            if not status:             nfioc = 'f' + idat['fioc'][1]
-            elif   status == 'Open':   nfioc = 'fo'
-            elif   status == 'Closed': nfioc = 'fc'
-        elif itype == 'Issue':
-            if not status:             nfioc = 'i' + idat['fioc'][1]
-            elif   status == 'Open':   nfioc = 'io'
-            elif   status == 'Closed': nfioc = 'ic'
-    item = dc.spro.v['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
-    dc.spro.v['milestone'][nx][ny][nfioc][item_id] = item
-    del dc.spro.v['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
-    dc.spro.v['mi_index'][item_id] = (new_major, new_minor, nfioc)
-    _touchItem(item_id)
-    _updateMilestoneTree()
+def closeMI(miid):
+    dc.sp.mi._(miid).status.v = 'Closed'
+    dc.sp.mi._(miid).changed.v = int(time.time())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def closeItem(item_id):
-    idat = _getItemData(item_id)
-    _moveItem(item_id, idat['major'], idat['minor'], idat['itype'], 'Closed')
-    _touchItem(item_id)
+def reopenMI(miid):
+    dc.sp.mi._(miid).status.v = 'Open'
+    dc.sp.mi._(miid).changed.v = int(time.time())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def reopenItem(item_id):
-    idat = _getItemData(item_id)
-    _moveItem(item_id, idat['major'], idat['minor'], idat['itype'], 'Open')
-    _touchItem(item_id)
+def deleteMI(miid):
+    del dc.sp.mi.__dict__['_{}'.format(miid)]
+    major, minor = dc.sp.midx.v[miid]
+    del dc.sp.midx.v[miid]
+    dc.sp.m._(major)._(minor).idx.v.remove(miid)
+    updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def deleteItem(item_id):
-    del dc.sp.mi.__dict__['_{}'.format(item_id)]
-    major, minor = dc.sp.midx.v[item_id]
-    del dc.sp.midx.v[item_id]
-    dc.sp.m._(major)._(minor).idx.v.remove(item_id)
-    # remove me
-    idat = _getItemData(item_id)
-    del dc.spro.v['milestone'][idat['x']][idat['y']][idat['fioc']][item_id]
-    del dc.spro.v['mi_index'][item_id]
-    # /remove me
-    _updateMilestoneTree()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+if __name__ == '__main__':
+    # initial data
+    dc.sp.nextmiid.v    = 1
+    dc.sp.curr.major.v  = 0
+    dc.sp.curr.minor.v  = 0
+    dc.sp.midx.v = {}
+    dc.sp.m._(0)._(1).description.v = ''
+    dc.sp.m._(0)._(1).idx.v = set()
+    dc.sp.m._(1)._(0).description.v = ''
+    dc.sp.m._(1)._(0).idx.v = set()
+    dc.sp.m.idx.v = {0, 1}
+    dc.sp.m._(0).idx.v = {1}
+    dc.sp.m._(1).idx.v = {0}
+
+    print('\initial data')
+    from datacore import _dcdump
+    _dcdump(dc.sp)
+    print('\ndry-run updateMilestoneTree (should not change anything)')
+    updateMilestoneTree()
+    assert (dc.sp.m.idx.v == {0, 1})
+    assert (dc.sp.m._(0).idx.v == {1})
+    assert (dc.sp.m._(1).idx.v == {0})
+    _dcdump(dc.sp)
+
+    # add milestone item to 0.1
+    # check item attributes
+    # check milestone item index
+    # check milestone update (0.1, 0.2, 1.0)
+    # def addMI(major, minor, itype, category,
+    #          name, priority, description, status='Open'):
+    print('\nadding feature to 0.1')
+    print('this should create milestone 0.2')
+    print('dc.sp.m._0._2.*')
+    print("run addMI(0, 1, 'type', 'cat', 'name', 0, 'desc')")
+    addMI(0, 1, 'type', 'cat', 'name', 0, 'desc')
+    _dcdump(dc.sp)
+    assert(dc.sp.mi._(1).name.v == 'name')
+    assert(dc.sp.midx.v[1] == (0, 1))
+    assert(dc.sp.m._(0).idx.v == {1, 2})
+    assert(dc.sp.m._(1).idx.v == {0})
+
 
