@@ -86,7 +86,11 @@ def dcloadconfig():
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def _dcdump(node=None, path=''):
     if not node: node = dc
-    if node.v: print('dc.' + path + '.v = ', node.v)
+    if node.v is not None:
+        if node.v == '':
+            print('dc.' + path + '.v =  \'\'')
+        else:
+            print('dc.' + path + '.v = ', node.v)
     for x in node.__dict__.keys():
         if isinstance(node.__dict__[x], _dcNode):
             _dcdump(node=node.__dict__[x], path=path + bool(path)*'.' + x)
