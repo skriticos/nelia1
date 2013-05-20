@@ -7,7 +7,6 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 from mpushbutton import MPushButton
-from milestone import *
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
@@ -86,6 +85,89 @@ class NxRoadmap:
         dc.ui.roadmap.v.push_delete.hide()
         dc.ui.roadmap.v.push_close.hide()
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def updateMilestoneTree(self, ):
+        for imajor in reversed(list(dc.sp.m.idx.v)):
+            # major branch receaves first item
+            if imajor > 0 and imajor+1 not in dc.sp.m.idx.v \
+                          and len(dc.sp.m._(imajor)._(0).idx.v):
+                # add imajor+1.0, imajor.1
+                dc.sp.m.idx.v.add(imajor+1)
+                dc.sp.m._(imajor+1).idx.v = {0}
+                dc.sp.m._(imajor+1)._(0).description.v = ''
+                dc.sp.m._(imajor+1)._(0).idx.v = set()
+                dc.sp.m._(imajor).idx.v.add(1)
+                dc.sp.m._(imajor)._(1).description.v = ''
+                dc.sp.m._(imajor)._(1).idx.v = set()
+                continue
+            # major branch looses last item
+            elif imajor > 1 and not len(dc.sp.m._(imajor-1)._(0).idx.v):
+                del dc.sp.m.__dict__['_{}'.format(imajor)]
+                dc.sp.m.idx.v.remove(imajor)
+                continue
+            lminor = max(dc.sp.m._(imajor).idx.v)
+            if imajor is 0 and lminor is 1 and not dc.sp.m._(0)._(1).idx.v:
+                break
+            # last minor branch receaves first item
+            if len(dc.sp.m._(imajor)._(lminor).idx.v):
+                dc.sp.m._(imajor).idx.v.add(lminor+1)
+                dc.sp.m._(imajor)._(lminor+1).description.v = ''
+                dc.sp.m._(imajor)._(lminor+1).idx.v = set()
+            # previous to last minor branch looses last item
+            elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
+                dc.sp.m._(imajor).idx.v.remove(lminor)
+                del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def addMI(self, major, minor, itype, category,
+              name, priority, description, status='Open'):
+        # milestone item id
+        miid = dc.sp.nextmiid.v
+        dc.sp.nextmiid.v += 1
+        # milestone item location
+        dc.sp.midx.v[miid] = major, minor
+        # milestone item attributes
+        dc.sp.mi._(miid).name.v = name
+        dc.sp.mi._(miid).description.v = description
+        dc.sp.mi._(miid).priority.v = priority
+        dc.sp.mi._(miid).category.v = category
+        dc.sp.mi._(miid).itype.v = itype
+        dc.sp.mi._(miid).status.v = status
+        t = int(time.time())
+        dc.sp.mi._(miid).created.v = t
+        dc.sp.mi._(miid).modified.v = t
+        # milestone item reference in tree
+        dc.sp.m._(major)._(minor).idx.v.add(miid)
+        self.updateMilestoneTree()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def editMI(self, major, minor, miid, itype, category, name,
+               priority, description):
+        if (major, minor) != dc.sp.midx.v[miid]:
+            old_major, old_minor = dc.sp.midx.v[miid]
+            dc.sp.m._(old_major)._(old_minor).idx.v.remove(miid)
+            dc.sp.m._(major)._(minor).idx.v.add(miid)
+            dc.sp.midx.v[miid] = major, minor
+        dc.sp.mi._(miid).itype.v = itype
+        dc.sp.mi._(miid).name.v  = name
+        dc.sp.mi._(miid).category.v = category
+        dc.sp.mi._(miid).priority.v = priority
+        dc.sp.mi._(miid).description.v = description
+        dc.sp.mi._(miid).changed.v = int(time.time())
+        self.updateMilestoneTree()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def closeMI(self, miid):
+        dc.sp.mi._(miid).status.v = 'Closed'
+        dc.sp.mi._(miid).changed.v = int(time.time())
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def reopenMI(self, miid):
+        dc.sp.mi._(miid).status.v = 'Open'
+        dc.sp.mi._(miid).changed.v = int(time.time())
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def deleteMI(self, miid):
+        del dc.sp.mi.__dict__['_{}'.format(miid)]
+        major, minor = dc.sp.midx.v[miid]
+        del dc.sp.midx.v[miid]
+        dc.sp.m._(major)._(minor).idx.v.remove(miid)
+        self.updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getCellContent(self, i):
 
@@ -191,9 +273,9 @@ class NxRoadmap:
             if fo_sum + io_sum == 1:
                 self.closeMilestone(x, y)
             else:
-                closeItem(self.getSelectedItemId())
+                self.closeMI(self.getSelectedItemId())
         if status == 'Closed':
-            reopenItem(self.getSelectedItemId())
+            self.reopenMI(self.getSelectedItemId())
         dc.m.project.v.touchProject()
         self.onChangeVersionSelection(self.smajor, self.sminor)
 
@@ -216,12 +298,12 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMilestone(self):
 
-        closeItem(self.getSelectedItemId())
+        self.closeMI(self.getSelectedItemId())
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMajorMilestone(self):
 
-        closeItem(self.getSelectedItemId())
+        self.closeMI(self.getSelectedItemId())
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
@@ -500,10 +582,10 @@ class NxRoadmap:
             category = 'Refactor'
 
         if mode == 'add':
-            addItem(tmajor, tminor, ri_type, category,
+            self.addMI(tmajor, tminor, ri_type, category,
                     name, priority, description)
         if mode == 'edit':
-            editItem(tmajor, tminor, self.getSelectedItemId(),
+            self.editMI(tmajor, tminor, self.getSelectedItemId(),
                      ri_type, category, name, priority, description)
 
         self.reloadMilestoneButton()
@@ -515,7 +597,7 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def deleteMilestoneItem(self):
 
-        deleteItem(self.getSelectedItemId())
+        self.deleteMI(self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
