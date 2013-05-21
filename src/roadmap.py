@@ -2,7 +2,6 @@
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 import os, time, gzip, pickle, datetime
-from pprint import pprint
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
@@ -10,8 +9,6 @@ from mpushbutton import MPushButton
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self):
         # used in saveLayout and loadLayout
         self.filter_names = ['feature', 'issue', 'open', 'closed', 'low',
@@ -21,7 +18,6 @@ class NxRoadmap:
         self.feature_headers = \
             ['ID', 'Name', 'Type', 'Status', 'Category', 'Priority',
              'Created', 'Modified']
-
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         self.table = dc.ui.roadmap.v.table
@@ -29,7 +25,6 @@ class NxRoadmap:
         self.selection_model = self.table.selectionModel()
         self.horizontal_header = self.table.horizontalHeader()
         self.table.setAlternatingRowColors(True)
-
         # connect feature / issue add push buttons
         dc.ui.roadmap.v.push_add_feature.clicked.connect(lambda: (
             dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True),
@@ -38,7 +33,6 @@ class NxRoadmap:
             dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True),
             self.showAddEditMI('add')))
         dc.ui.roadmap_diag_add.v.accepted.connect(self.onSubmitDialog)
-
         # connect all the filter checkboxes to update the milestone item table
         dc.ui.roadmap.v.check_feature.stateChanged.connect(self.reloadTable)
         dc.ui.roadmap.v.check_issue.stateChanged.connect(self.reloadTable)
@@ -53,38 +47,29 @@ class NxRoadmap:
         dc.ui.roadmap.v.check_corrective.stateChanged.connect(self.reloadTable)
         dc.ui.roadmap.v.check_architecture.stateChanged.connect(self.reloadTable)
         dc.ui.roadmap.v.check_refactor.stateChanged.connect(self.reloadTable)
-
         # connect push milestone item action push buttons
         dc.ui.roadmap.v.push_delete.clicked.connect(self.deleteMilestoneItem)
         dc.ui.roadmap.v.push_edit.clicked.connect(lambda:(
             self.showAddEditMI('edit')))
         dc.ui.roadmap.v.push_close.clicked.connect(self.closeMilestoneItem)
-
         # connect finalize widget button callbacks
         dc.ui.roadmap_diag_finalize.v.push_finalize_major.clicked.connect(
             self.onCloseMajorMilestone)
         dc.ui.roadmap_diag_finalize.v.push_finalize_minor.clicked.connect(
             self.onCloseMinorMilestone)
-
         # connect selection changed (for close item)
         self.selection_model.selectionChanged.connect(
-            self.onItemSelectionChanged
-        )
+            self.onItemSelectionChanged)
         # connect milestone description changed
         dc.ui.roadmap.v.text_description.textChanged.connect(
-            self.onMilestoneDescriptionChanged
-        )
-
+            self.onMilestoneDescriptionChanged)
         # selection activate callback
         self.table.activated.connect(
-            self.onMilestoneItemActivated
-        )
-
+            self.onMilestoneItemActivated)
         dc.ui.roadmap.v.label_selected.hide()
         dc.ui.roadmap.v.push_edit.hide()
         dc.ui.roadmap.v.push_delete.hide()
         dc.ui.roadmap.v.push_close.hide()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def updateMilestoneTree(self, ):
         for imajor in reversed(list(dc.sp.m.idx.v)):
@@ -170,33 +155,23 @@ class NxRoadmap:
         self.updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getCellContent(self, i):
-
         return int(self.model.itemFromIndex(
-            self.model.index(
-                self.table.currentIndex().row(),i)
-        ).text())
-
+            self.model.index(self.table.currentIndex().row(),i)).text())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedItemId(self):
-
         return self.getCellContent(0)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def extractSelection(self, targetw='root'):
-
         if targetw == 'root':
             w = dc.ui.roadmap.v
             target_label = w.push_target.text()
         elif targetw == 'add_edit_dialog':
             d = dc.ui.roadmap_diag_add.v
             target_label = d.push_target.text()
-
         tmajor, tminor = target_label.split(' ')[3][1:].split('.')
         return int(tmajor), int(tminor)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onItemSelectionChanged(self):
-
         if self.table.currentIndex().row() == -1: return
         status = self.model.itemFromIndex(self.model.index(
             self.table.currentIndex().row(),3)).text()
@@ -204,16 +179,12 @@ class NxRoadmap:
             dc.ui.roadmap.v.push_close.setText('&Close Item')
         if status == 'Closed':
             dc.ui.roadmap.v.push_close.setText('Reopen Ite&m')
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneDescriptionChanged(self):
-
         if self.init: return
-
         sx, sy = self.smajor, minorIndex(self.smajor, self.sminor)
         dc.spro.v['milestone'][sx][sy]['description'] \
                 = dc.ui.roadmap.v.text_description.toPlainText()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneItemActivated(self):
         if self.smajor > dc.sp.curr.major.v or \
@@ -222,20 +193,14 @@ class NxRoadmap:
             self.showAddEditMI('edit')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
-
         if dc.r.roadmap.pid.last.v == 0 \
-           or dc.r.roadmap.pid.last.v != dc.spid.v:
-
+                   or dc.r.roadmap.pid.last.v != dc.spid.v:
             dc.r.roadmap.pid.last.v = dc.spid.v
-
             pro = dc.spro.v
-
             dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
             dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
-
             x, y = dc.sp.curr.major.v, dc.sp.curr.minor.v
             milestones = pro['milestone']
-
             dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
             dc.ui.roadmap.v.push_milestone.close()
             dc.ui.roadmap.v.push_milestone = MPushButton(
@@ -243,23 +208,17 @@ class NxRoadmap:
             dc.ui.roadmap.v.gridLayout_3.addWidget(
                 dc.ui.roadmap.v.push_milestone, 0, 1, 1, 1)
             dc.ui.roadmap.v.label_2.setBuddy(dc.ui.roadmap.v.push_milestone)
-
             self.reloadTable()
-
             # computing next_x, next_y is quite tricky, so we take it
             # from the milestone widget (which does it anyway)
             major = self.smajor = dc.ui.roadmap.v.push_milestone.next_x
             minor = self.sminor = dc.ui.roadmap.v.push_milestone.next_y
-
             self.onChangeVersionSelection(major, minor)
-
             d = dc.ui.roadmap_diag_add.v
             d.radio_medium.setChecked(True)
             d.radio_feature.setChecked(True)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestoneItem(self):
-
         status = self.model.itemFromIndex(self.model.index(
             self.table.currentIndex().row(),3)).text()
         if status == 'Open':
@@ -278,39 +237,27 @@ class NxRoadmap:
             self.reopenMI(self.getSelectedItemId())
         dc.m.project.v.touchProject()
         self.onChangeVersionSelection(self.smajor, self.sminor)
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestone(self, x, y):
-
-        fo_sum1 = len(dc.spro.v
-                      ['milestone'] [x] [y+1] ['fo'])
-        io_sum1 = len(dc.spro.v
-                      ['milestone'] [x] [y+1] ['io'])
+        fo_sum1 = len(dc.spro.v ['milestone'] [x] [y+1] ['fo'])
+        io_sum1 = len(dc.spro.v ['milestone'] [x] [y+1] ['io'])
         if fo_sum1 + io_sum1 == 0:
-            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(
-                True)
+            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(True)
         else:
-            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(
-                False)
-
+            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(False)
         dc.ui.roadmap_diag_finalize.v.show()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMilestone(self):
-
         self.closeMI(self.getSelectedItemId())
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMajorMilestone(self):
-
         self.closeMI(self.getSelectedItemId())
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
-
         milestones = dc.spro.v['milestone']
         if targetw == 'root':
-            dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
+            dc.ui.roadmap.v.gridLayout_3.removeWidget(
+                    dc.ui.roadmap.v.push_milestone)
             dc.ui.roadmap.v.push_milestone.hide()
             dc.ui.roadmap.v.push_milestone.close()
             dc.ui.roadmap.v.push_milestone = MPushButton(
@@ -328,23 +275,19 @@ class NxRoadmap:
                                   self.sminor,True)
             dc.ui.roadmap_diag_add.v.gridLayout_2.addWidget(
                 dc.ui.roadmap_diag_add.v.push_target, 1, 1, 1, 1);
-            dc.ui.roadmap_diag_add.v.label_3.setBuddy(dc.ui.roadmap_diag_add.v.push_target)
-
+            dc.ui.roadmap_diag_add.v.label_3.setBuddy(
+                    dc.ui.roadmap_diag_add.v.push_target)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onChangeVersionSelection(self, major, minor, text=None):
-
         self.smajor = major
         self.sminor = minor
         sx, sy = major, minorIndex(major, minor)
         dc.ui.roadmap.v.text_description.setPlainText(
-            dc.spro.v['milestone'][sx][sy]['description']
-        )
+            dc.spro.v['milestone'][sx][sy]['description'])
         self.reloadMilestoneButton('root')
         self.reloadTable()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def prependTable(self, key, itype, status, priority, icat, v):
-
         if itype == 'Feature' \
            and not dc.ui.roadmap.v.check_feature.isChecked(): return
         if itype == 'Issue' \
@@ -371,7 +314,6 @@ class NxRoadmap:
            and not dc.ui.roadmap.v.check_architecture.isChecked(): return
         if icat == 'Refactor' \
            and not dc.ui.roadmap.v.check_refactor.isChecked(): return
-
         self.model.insertRow(0, [
             QStandardItem(str(key).zfill(4)),
             QStandardItem(v['name']),
@@ -382,7 +324,6 @@ class NxRoadmap:
             QStandardItem(convert(v['created'])),
             QStandardItem(convert(v['modified']))
         ])
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.roadmap.header.width.v = list()
@@ -411,30 +352,22 @@ class NxRoadmap:
                     dc.c.roadmap._('show_{}'.format(filter_name)).v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self, state=None, preserveLayout=True):
-
         if not isinstance(dc.ui.roadmap.v.push_milestone, MPushButton):
             return
-
         self.init = True
-
         if preserveLayout:
             self.saveLayout()
-
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         dc.ui.roadmap.v.push_close.setText('&Close Item')
-
-        self.smajor, self.sminor \
-                = dc.ui.roadmap.v.push_milestone.getVersion()
-        cmajor, cminor \
-                = dc.sp.curr.major.v, dc.sp.curr.minor.v
+        self.smajor, self.sminor = dc.ui.roadmap.v.push_milestone.getVersion()
+        cmajor, cminor = dc.sp.curr.major.v, dc.sp.curr.minor.v
         yy = self.sminor
         if self.smajor == 0: yy = self.sminor-1
         fo = dc.spro.v['milestone'][self.smajor][yy]['fo']
         fc = dc.spro.v['milestone'][self.smajor][yy]['fc']
         io = dc.spro.v['milestone'][self.smajor][yy]['io']
         ic = dc.spro.v['milestone'][self.smajor][yy]['ic']
-
         for key, value in ic.items():
             itype = 'Issue'
             status = 'Closed'
@@ -459,9 +392,7 @@ class NxRoadmap:
             icat = value['icat']
             priority = value['priority']
             self.prependTable(key, itype, status, priority, icat, value)
-
         self.init = False
-
         # only enable controls for future milestones
         if self.model.rowCount() > 0:
             if self.smajor > cmajor \
@@ -477,17 +408,12 @@ class NxRoadmap:
                 dc.ui.roadmap.v.push_delete.hide()
                 dc.ui.roadmap.v.push_close.hide()
             self.table.selectRow(0)
-
         if preserveLayout:
             self.loadLayout()
-
         self.table.setFocus()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showAddEditMI(self, diag_type=None):
-
         self.reloadMilestoneButton('diag_new_edit')
-
         # set dialog type flag
         if diag_type == 'add':
             self.diag_type = 'add'
@@ -497,17 +423,14 @@ class NxRoadmap:
         else:
             self.diag_type = 'edit'
             dc.ui.roadmap_diag_add.v.setWindowTitle('Edit Roadmap Item')
-
             item_id = self.getSelectedItemId()
             tmajor, tminor, fioc \
                     = dc.spro.v['mi_index'][item_id]
             tx, ty = tmajor, minorIndex(tmajor, tminor)
             item = dc.spro.v\
                     ['milestone'][tx][ty][fioc][item_id]
-
             if fioc[0] == 'f': itype = 'Feature'
             if fioc[0] == 'i': itype = 'Isssue'
-
             if itype == 'Feature':
                 dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
             if itype == 'Issue':
@@ -530,44 +453,34 @@ class NxRoadmap:
                 dc.ui.roadmap_diag_add.v.radio_architecture.setChecked(True)
             if item['icat'] == 'Refactor':
                 dc.ui.roadmap_diag_add.v.radio_refactor.setChecked(True)
-
             dc.ui.roadmap_diag_add.v.line_name.setText(item['name'])
             dc.ui.roadmap_diag_add.v.text_description.setPlainText(
                 item['description'])
-
         # show dialog
         dc.ui.roadmap_diag_add.v.show()
         dc.ui.roadmap_diag_add.v.line_name.setFocus()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitDialog(self):
-
         # simple switch between add and edit mode for the dialog
         if self.diag_type == 'add':
             self.onSubmitNewEditMI('add')
         if self.diag_type == 'edit':
             self.onSubmitNewEditMI('edit')
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitNewEditMI(self, mode):
-
         tmajor, tminor = self.extractSelection('add_edit_dialog')
-
         name = dc.ui.roadmap_diag_add.v.line_name.text()
         description = dc.ui.roadmap_diag_add.v.text_description.toPlainText()
-
         if dc.ui.roadmap_diag_add.v.radio_feature.isChecked():
             ri_type = 'Feature'
         else:
             ri_type = 'Issue'
-
         if dc.ui.roadmap_diag_add.v.radio_medium.isChecked():
             priority = 'Medium'
         elif dc.ui.roadmap_diag_add.v.radio_high.isChecked():
             priority = 'High'
         elif dc.ui.roadmap_diag_add.v.radio_low.isChecked():
             priority = 'Low'
-
         if dc.ui.roadmap_diag_add.v.radio_core.isChecked():
             category = 'Core'
         elif dc.ui.roadmap_diag_add.v.radio_auxiliary.isChecked():
@@ -580,27 +493,20 @@ class NxRoadmap:
             category = 'Architecture'
         elif dc.ui.roadmap_diag_add.v.radio_refactor.isChecked():
             category = 'Refactor'
-
         if mode == 'add':
             self.addMI(tmajor, tminor, ri_type, category,
                     name, priority, description)
         if mode == 'edit':
             self.editMI(tmajor, tminor, self.getSelectedItemId(),
                      ri_type, category, name, priority, description)
-
         self.reloadMilestoneButton()
         self.reloadTable()
-
         dc.m.project.v.touchProject()
-        print('touching project')
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def deleteMilestoneItem(self):
-
         self.deleteMI(self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
