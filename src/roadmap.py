@@ -182,9 +182,8 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneDescriptionChanged(self):
         if self.init: return
-        sx, sy = self.smajor, minorIndex(self.smajor, self.sminor)
-        dc.spro.v['milestone'][sx][sy]['description'] \
-                = dc.ui.roadmap.v.text_description.toPlainText()
+        description = dc.ui.roadmap.v.text_description.toPlainText()
+        dc.sp.m._(self.smajor)._(self.sminor).description.v = description
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMilestoneItemActivated(self):
         if self.smajor > dc.sp.curr.major.v or \
@@ -193,30 +192,24 @@ class NxRoadmap:
             self.showAddEditMI('edit')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
-        if dc.r.roadmap.pid.last.v == 0 \
-                   or dc.r.roadmap.pid.last.v != dc.spid.v:
-            dc.r.roadmap.pid.last.v = dc.spid.v
-            pro = dc.spro.v
-            dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
-            dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
-            x, y = dc.sp.curr.major.v, dc.sp.curr.minor.v
-            milestones = pro['milestone']
-            dc.ui.roadmap.v.gridLayout_3.removeWidget(dc.ui.roadmap.v.push_milestone)
-            dc.ui.roadmap.v.push_milestone.close()
-            dc.ui.roadmap.v.push_milestone = MPushButton(
-                dc.ui.roadmap.v, self.onChangeVersionSelection)
-            dc.ui.roadmap.v.gridLayout_3.addWidget(
-                dc.ui.roadmap.v.push_milestone, 0, 1, 1, 1)
-            dc.ui.roadmap.v.label_2.setBuddy(dc.ui.roadmap.v.push_milestone)
-            self.reloadTable()
-            # computing next_x, next_y is quite tricky, so we take it
-            # from the milestone widget (which does it anyway)
-            major = self.smajor = dc.ui.roadmap.v.push_milestone.next_x
-            minor = self.sminor = dc.ui.roadmap.v.push_milestone.next_y
-            self.onChangeVersionSelection(major, minor)
-            d = dc.ui.roadmap_diag_add.v
-            d.radio_medium.setChecked(True)
-            d.radio_feature.setChecked(True)
+        if dc.r.roadmap.pid.last.v == dc.spid.v: return
+        dc.r.roadmap.pid.last.v = dc.spid.v
+        dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
+        dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
+        gl = dc.ui.roadmap.v.gridLayout_3
+        gl.removeWidget(dc.ui.roadmap.v.push_milestone)
+        dc.ui.roadmap.v.push_milestone.close()
+        mpb = MPushButton(dc.ui.roadmap.v, self.onChangeVersionSelection)
+        dc.ui.roadmap.v.push_milestone = mpb
+        gl.addWidget(mpb, 0, 1, 1, 1)
+        dc.ui.roadmap.v.label_2.setBuddy(mpb)
+        self.reloadTable()
+        major = dc.ui.roadmap.v.push_milestone.next_x
+        minor = dc.ui.roadmap.v.push_milestone.next_y
+        self.onChangeVersionSelection(major, minor)
+        d = dc.ui.roadmap_diag_add.v
+        d.radio_medium.setChecked(True)
+        d.radio_feature.setChecked(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestoneItem(self):
         status = self.model.itemFromIndex(self.model.index(
@@ -278,52 +271,13 @@ class NxRoadmap:
             dc.ui.roadmap_diag_add.v.label_3.setBuddy(
                     dc.ui.roadmap_diag_add.v.push_target)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onChangeVersionSelection(self, major, minor, text=None):
+    def onChangeVersionSelection(self, major, minor):
         self.smajor = major
         self.sminor = minor
-        sx, sy = major, minorIndex(major, minor)
-        dc.ui.roadmap.v.text_description.setPlainText(
-            dc.spro.v['milestone'][sx][sy]['description'])
+        description = dc.sp.m._(major)._(minor).description.v
+        dc.ui.roadmap.v.text_description.setPlainText(description)
         self.reloadMilestoneButton('root')
         self.reloadTable()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def prependTable(self, key, itype, status, priority, icat, v):
-        if itype == 'Feature' \
-           and not dc.ui.roadmap.v.check_feature.isChecked(): return
-        if itype == 'Issue' \
-           and not dc.ui.roadmap.v.check_issue.isChecked(): return
-        if status == 'Open' \
-           and not dc.ui.roadmap.v.check_open.isChecked(): return
-        if status == 'Closed' \
-           and not dc.ui.roadmap.v.check_closed.isChecked(): return
-        if priority == 'Low' \
-           and not dc.ui.roadmap.v.check_low.isChecked(): return
-        if priority == 'Medium' \
-           and not dc.ui.roadmap.v.check_medium.isChecked(): return
-        if priority == 'High' \
-           and not dc.ui.roadmap.v.check_high.isChecked(): return
-        if icat == 'Core' \
-           and not dc.ui.roadmap.v.check_core.isChecked(): return
-        if icat == 'Auxiliary' \
-           and not dc.ui.roadmap.v.check_auxiliary.isChecked(): return
-        if icat == 'Security' \
-           and not dc.ui.roadmap.v.check_security.isChecked(): return
-        if icat == 'Corrective' \
-           and not dc.ui.roadmap.v.check_corrective.isChecked(): return
-        if icat == 'Architecture' \
-           and not dc.ui.roadmap.v.check_architecture.isChecked(): return
-        if icat == 'Refactor' \
-           and not dc.ui.roadmap.v.check_refactor.isChecked(): return
-        self.model.insertRow(0, [
-            QStandardItem(str(key).zfill(4)),
-            QStandardItem(v['name']),
-            QStandardItem(itype),
-            QStandardItem(status),
-            QStandardItem(icat),
-            QStandardItem(str(v['priority'])),
-            QStandardItem(convert(v['created'])),
-            QStandardItem(convert(v['modified']))
-        ])
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.roadmap.header.width.v = list()
@@ -361,43 +315,31 @@ class NxRoadmap:
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         dc.ui.roadmap.v.push_close.setText('&Close Item')
         self.smajor, self.sminor = dc.ui.roadmap.v.push_milestone.getVersion()
-        cmajor, cminor = dc.sp.curr.major.v, dc.sp.curr.minor.v
-        yy = self.sminor
-        if self.smajor == 0: yy = self.sminor-1
-        fo = dc.spro.v['milestone'][self.smajor][yy]['fo']
-        fc = dc.spro.v['milestone'][self.smajor][yy]['fc']
-        io = dc.spro.v['milestone'][self.smajor][yy]['io']
-        ic = dc.spro.v['milestone'][self.smajor][yy]['ic']
-        for key, value in ic.items():
-            itype = 'Issue'
-            status = 'Closed'
-            icat = value['icat']
-            priority = value['priority']
-            self.prependTable(key, itype, status, priority, icat, value)
-        for key, value in fc.items():
-            itype = 'Feature'
-            status = 'Closed'
-            icat = value['icat']
-            priority = value['priority']
-            self.prependTable(key, itype, status, priority, icat, value)
-        for key, value in io.items():
-            itype = 'Issue'
-            status = 'Open'
-            icat = value['icat']
-            priority = value['priority']
-            self.prependTable(key, itype, status, priority, icat, value)
-        for key, value in fo.items():
-            itype = 'Feature'
-            status = 'Open'
-            icat = value['icat']
-            priority = value['priority']
-            self.prependTable(key, itype, status, priority, icat, value)
+        filter_names = [key[6:] for key in dc.ui.roadmap.v.__dict__.keys() \
+                        if key.startswith('check')]
+        filter_status = set()
+        for name in filter_names:
+            if dc.ui.roadmap.v.__dict__['check_'+name].isChecked():
+                filter_status.add(name)
+        for miid in dc.sp.m._(self.smajor)._(self.sminor).idx.v:
+            md = dc.sp.mi._(miid)
+            if not {md.itype.v.lower(), md.status.v.lower(),
+                    md.category.v.lower(), md.priority.v.lower()} \
+                .issubset(filter_status): continue
+            self.model.insertRow(0, [
+                QStandardItem(str(miid).zfill(4)),
+                QStandardItem(md.name.v),
+                QStandardItem(md.itype.v),
+                QStandardItem(md.status.v),
+                QStandardItem(md.category.v),
+                QStandardItem(md.priority.v),
+                QStandardItem(convert(md.created.v)),
+                QStandardItem(convert(md.modified.v)) ])
         self.init = False
         # only enable controls for future milestones
         if self.model.rowCount() > 0:
-            if self.smajor > cmajor \
-               or (self.smajor == cmajor \
-                   and self.sminor > cminor):
+            ma, mi = dc.sp.curr.major.v, dc.sp.curr.minor.v
+            if self.smajor > ma or (self.smajor == ma and self.sminor > mi):
                 dc.ui.roadmap.v.label_selected.show()
                 dc.ui.roadmap.v.push_edit.show()
                 dc.ui.roadmap.v.push_delete.show()
