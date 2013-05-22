@@ -247,29 +247,23 @@ class NxRoadmap:
         self.closeMI(self.getSelectedItemId())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
-        milestones = dc.spro.v['milestone']
         if targetw == 'root':
-            dc.ui.roadmap.v.gridLayout_3.removeWidget(
-                    dc.ui.roadmap.v.push_milestone)
-            dc.ui.roadmap.v.push_milestone.hide()
-            dc.ui.roadmap.v.push_milestone.close()
-            dc.ui.roadmap.v.push_milestone = MPushButton(
-                dc.ui.roadmap.v, self.onChangeVersionSelection,
-                self.smajor, self.sminor)
-            dc.ui.roadmap.v.gridLayout_3.addWidget(
-                dc.ui.roadmap.v.push_milestone, 0, 1, 1, 1)
-            dc.ui.roadmap.v.label_2.setBuddy(dc.ui.roadmap.v.push_milestone)
+            ui = dc.ui.roadmap.v
+            ui.gridLayout_3.removeWidget(ui.push_milestone)
+            ui.push_milestone.hide()
+            ui.push_milestone.close()
+            ui.push_milestone = MPushButton(ui, self.onChangeVersionSelection,
+                                            self.smajor, self.sminor)
+            ui.gridLayout_3.addWidget(ui.push_milestone, 0, 1, 1, 1)
+            ui.label_2.setBuddy(ui.push_milestone)
         elif targetw == 'diag_new_edit':
-            dc.ui.roadmap_diag_add.v.gridLayout_2.removeWidget(
-                dc.ui.roadmap_diag_add.v.push_target)
-            dc.ui.roadmap_diag_add.v.push_target.close()
-            dc.ui.roadmap_diag_add.v.push_target \
-                    = MPushButton(dc.ui.roadmap_diag_add.v,None,self.smajor,
-                                  self.sminor,True)
-            dc.ui.roadmap_diag_add.v.gridLayout_2.addWidget(
-                dc.ui.roadmap_diag_add.v.push_target, 1, 1, 1, 1);
-            dc.ui.roadmap_diag_add.v.label_3.setBuddy(
-                    dc.ui.roadmap_diag_add.v.push_target)
+            diag = dc.ui.roadmap_diag_add.v
+            diag.gridLayout_2.removeWidget(diag.push_target)
+            diag.push_target.close()
+            diag.push_target \
+                    = MPushButton(diag,None,self.smajor, self.sminor,True)
+            diag.gridLayout_2.addWidget(diag.push_target, 1, 1, 1, 1);
+            diag.label_3.setBuddy(diag.push_target)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onChangeVersionSelection(self, major, minor):
         self.smajor = major
@@ -305,12 +299,11 @@ class NxRoadmap:
             dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)].setChecked(
                     dc.c.roadmap._('show_{}'.format(filter_name)).v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def reloadTable(self, state=None, preserveLayout=True):
+    def reloadTable(self):
         if not isinstance(dc.ui.roadmap.v.push_milestone, MPushButton):
             return
         self.init = True
-        if preserveLayout:
-            self.saveLayout()
+        self.saveLayout()
         self.model.clear()
         self.model.setHorizontalHeaderLabels(self.feature_headers)
         dc.ui.roadmap.v.push_close.setText('&Close Item')
@@ -350,8 +343,7 @@ class NxRoadmap:
                 dc.ui.roadmap.v.push_delete.hide()
                 dc.ui.roadmap.v.push_close.hide()
             self.table.selectRow(0)
-        if preserveLayout:
-            self.loadLayout()
+        self.loadLayout()
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showAddEditMI(self, diag_type=None):
