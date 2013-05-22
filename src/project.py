@@ -5,9 +5,6 @@ import os, datetime, time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
-# remove me
-from datastore import *
-# /remove me
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
@@ -140,7 +137,6 @@ class NxProject:
         row = indexes[0].row()
         index = self.model.index(row, 0)
         dc.spid.v = int(self.model.itemFromIndex(index).text())
-        dc.spro.v = data.project[dc.spid.v]
         dc.sp = dc.s._(dc.spid.v)
         # update content and enable project description widget
         for w in [dc.ui.project.v.text_description]:
@@ -237,17 +233,6 @@ class NxProject:
 
         dc.s.nextpid.v += 1
         dc.spid.v = pid
-        # remove me
-        p = data.project[pid] = {
-                'milestone' : [
-                    [{'description': '', 'm': '0.1',
-                      'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}],
-                    [{'description': '', 'm': '1.0',
-                      'fo': {}, 'fc': {}, 'io': {}, 'ic': {}}]
-                    ],
-                'mi_index' : {}}
-        dc.spro.v = data.project[dc.spid.v]
-        # /remove me
         dc.sp = dc.s._(pid)
         dc.sp.nextlid.v     = 1
         dc.sp.nextmiid.v    = 1
@@ -306,13 +291,8 @@ class NxProject:
                 str(dc.spid.v), dc.sp.name.v),
             QMessageBox.Yes|QMessageBox.No)
         if response == QMessageBox.StandardButton.No: return
-        # remove me
-        del data.project[dc.spid.v]
-        # /remove me
         dc.s.idx.pid.v.remove(dc.spid.v)
         del dc.s.__dict__['_{}'.format(dc.spid.v)]
-        from datacore import _dcdump
-        _dcdump(dc.s)
         dc.spid.v = 0
         dc.r.changed.v = True
         self.reloadTable()
