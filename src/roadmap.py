@@ -7,6 +7,7 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 from mpushbutton import MPushButton
 from datacore import *
+from datacore import _dcdump
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
     def __init__(self):
@@ -51,7 +52,7 @@ class NxRoadmap:
         dc.ui.roadmap.v.push_delete.clicked.connect(self.deleteMilestoneItem)
         dc.ui.roadmap.v.push_edit.clicked.connect(lambda:(
             self.showAddEditMI('edit')))
-        dc.ui.roadmap.v.push_close.clicked.connect(self.closeMilestoneItem)
+        dc.ui.roadmap.v.push_close.clicked.connect(self.onCloseMIClicked)
         # connect finalize widget button callbacks
         dc.ui.roadmap_diag_finalize.v.push_finalize_major.clicked.connect(
             self.onCloseMajorMilestone)
@@ -211,25 +212,23 @@ class NxRoadmap:
         d.radio_medium.setChecked(True)
         d.radio_feature.setChecked(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def closeMilestoneItem(self):
-        status = self.model.itemFromIndex(self.model.index(
-            self.table.currentIndex().row(),3)).text()
-        if status == 'Open':
-            # check if this is the last item in the milestone
-            x, y = self.smajor, \
-                   minorIndex(self.smajor, self.sminor)
-            fo_sum = len(dc.spro.v
-                         ['milestone'] [x] [y] ['fo'])
-            io_sum = len(dc.spro.v
-                         ['milestone'] [x] [y] ['io'])
-            if fo_sum + io_sum == 1:
-                self.closeMilestone(x, y)
-            else:
-                self.closeMI(self.getSelectedItemId())
+    def onCloseMIClicked(self):
+        sumopen = 0
+        for itemid in dc.sp.m._(self.smajor)._(self.sminor).idx.v:
+            if dc.sp.mi._(itemid).status.v == 'Open':
+                sumopen += 1
+        if sumopen == 1:
+            self.closeMilestone()
+        else:
+            self.closeMI(self.getSelectedItemId())
+            self.reloadTable()
+        # FIXME: move re-open to dedicated method and add dedicated control
+        """
         if status == 'Closed':
             self.reopenMI(self.getSelectedItemId())
         dc.m.project.v.touchProject()
         self.onChangeVersionSelection(self.smajor, self.sminor)
+        """
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestone(self, x, y):
         fo_sum1 = len(dc.spro.v ['milestone'] [x] [y+1] ['fo'])
