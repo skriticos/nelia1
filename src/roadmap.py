@@ -230,13 +230,15 @@ class NxRoadmap:
         self.onChangeVersionSelection(self.smajor, self.sminor)
         """
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def closeMilestone(self, x, y):
-        fo_sum1 = len(dc.spro.v ['milestone'] [x] [y+1] ['fo'])
-        io_sum1 = len(dc.spro.v ['milestone'] [x] [y+1] ['io'])
-        if fo_sum1 + io_sum1 == 0:
-            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(True)
-        else:
+    def closeMilestone(self):
+        sumopen = 0
+        for itemid in dc.sp.m._(self.smajor)._(self.sminor+1).idx.v:
+            if dc.sp.mi._(itemid).status.v == 'Open':
+                sumopen += 1
+        if sumopen:
             dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(False)
+        else:
+            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(True)
         dc.ui.roadmap_diag_finalize.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMilestone(self):
