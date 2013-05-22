@@ -153,6 +153,6 @@ class MPushButton(QPushButton):
         # execute external callback, e.g. for roadmap table widget update
         if self.change_callback:
             x, y = self.getVersion()
-            self.change_callback(x, y, self.current_text)
+            self.change_callback(x, y)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
