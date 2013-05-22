@@ -16,87 +16,72 @@ class MPushButton(QPushButton):
         self.root_menu = QMenu(self)
         self.setMenu(self.root_menu)
         self.change_callback = change_callback
-        """
-        ### DELTA CALCULATION ###
-        The following nested loop is somewhat hard to digest.  (At least, it
-        was quite hard to create). It calculates the major and minor deltas
-        of each milestone version compared to the current version. Δn
-        is the difference of major milestone, quite simple.  Δm is the
-        challangeing part: it is the total difference of minor milestone
-        compared to the current one. E.g. If you are at version
-        3.4, version 1 and two have 5 milestone each, then the minor delta
-        for 1.2 will be 2 + 5 + 4 = (-)11. Major will be -2 -> -2,11 See
-        nelia/calculations/version-delta.py for detailed discussion.
-        """
-        # loop through major dc.spro.v['milestone']
         Δn = 0
-        for n in range(len(dc.spro.v['milestone'])):
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        for n in dc.sp.m.idx.v: # n == major verions
             Δn = n - x
-            # major version menu instance (will be labeled further down)
             major_menu = QMenu(self)
-            # loop through minor dc.spro.v['milestone']
             Δm = 0
-            # reset major version feature counters
-            mfo = mfc = mio = mic = 0
-            for m in range(len(dc.spro.v['milestone'][n])):
-                # create action instance
+            mfo = mfc = mio = mic = 0 # reset major version feature counters
+            for m in dc.sp.m._(n).idx.v: # m == minor versions
                 action = QAction(self)
                 # compute minor version feature / issue count
-                fo = len(dc.spro.v['milestone'][n][m]['fo'])
-                fc = len(dc.spro.v['milestone'][n][m]['fc'])
-                io = len(dc.spro.v['milestone'][n][m]['io'])
-                ic = len(dc.spro.v['milestone'][n][m]['ic'])
+                fo = fc = io = ic = 0
+                for miid in dc.sp.m._(n)._(m).idx.v:
+                    if dc.sp.mi._(miid).itype == 'Feature':
+                        if dc.sp.mi._(miid).status == 'Open':
+                            fo += 1
+                        else:
+                            fc += 1
+                    elif dc.sp.mi._(miid).itype == 'Issue':
+                        if dc.sp.mi._(miid).status == 'Open':
+                            io += 1
+                        else:
+                            ic += 1
                 # add to major version feature / issue count
                 mfo += fo
                 mfc += fc
                 mio += io
                 mic += ic
-                # 0.x series starts with 0.1 instead of 0.0
-                if n == 0:
-                    m += 1
-                # current version = 0.0 (no dc.spro.v['milestone'] reached)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                # we are on second level iteration n.m, x.y is current version
+                # if current version = 0.0 (no milestone reached)
                 if x == 0 and y == 0:
                     if n == 0:
                         Δm = m
                     if n > 0:
-                        Δm = sum(len(dc.spro.v['milestone'][s])
-                                  for s in range(n)) + m + 1
+                        Δm = sum(len(dc.sp.m._(s).idx.v) for s in range(n)) \
+                            + m + 1
                 # current version = 0.y, y>0
                 if x == 0 and y > 0:
-                    if n > 0:
-                        Δm = sum(len(dc.spro.v['milestone'][s])
-                                  for s in range(1,n)) \
-                                + m + len(dc.spro.v['milestone'][0]) - y + 1
-                    else:
+                    if n == 0:
                         Δm = m - y
+                    if n > 0:
+                        Δm = sum(len(dc.sp.m._(s).idx.v) for s in range(1,n)) \
+                            + m + len(dc.sp.m._(0).idx.v) - y + 1
                 # current version = 1.y, y>=0
                 if x == 1:
+                    if n == 0:
+                        Δm = -1 * (y + (len(dc.sp.m._(0).idx.v - m))) - 1
                     if n == x:
                         Δm = m - y
                     if n > x:
-                        Δm = sum(len(dc.spro.v['milestone'][s])
-                                  for s in range(x+1,n)) \
-                                + m + len(dc.spro.v['milestone'][x]) - y
-                    if n < x:
-                        Δm = -1 * (y + (len(dc.spro.v['milestone'][0])-m))
-                        if n == 0:
-                            Δm -= 1
-                # current major version > 1
+                        Δm = sum(len(dc.sp.m._(s).idx.v) for s in range(x+1,n))\
+                            + m + len(dc.sp.m._(x).idx.v) - y
+                # current version = x.y, x>1
                 if x > 1:
+                    if n < x:
+                        Δm = -1 * ((len(dc.sp.m._(n).idx.v) - m)
+                            + sum(len(dc.sp.m._(s).idx.v) for s in range(n+1,x))
+                            + y)
+                        if n == 0:
+                            Δm -= 1
                     if n == x:
                         Δm = m - y
                     if n > x:
-                        Δm = sum(len(dc.spro.v['milestone'][s])
-                                  for s in range(x+1,n)) \
-                                + m + len(dc.spro.v['milestone'][x]) - y
-                    if n < x:
-                        Δm = -1 * (
-                            (  len(dc.spro.v['milestone'][n]) - m)
-                             + sum(len(dc.spro.v['milestone'][s])
-                                   for s in range(n+1, x))
-                             + y  )
-                        if n == 0:
-                            Δm -= 1
+                        Δm = sum(len(dc.sp.m._(s).idx.v) for s in range(x+1,n))\
+                            + m + len(dc.sp.m._(x).idx.v) - y
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 # compute completion symbol and sign
                 oo = False
                 if Δm > 1:
@@ -137,6 +122,7 @@ class MPushButton(QPushButton):
                 action.setText(label)
                 action.triggered.connect(self.selectionChanged)
                 major_menu.addAction(action)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             # compute major version icon
             oo = False
             if Δn > 0:
