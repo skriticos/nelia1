@@ -300,8 +300,6 @@ class NxRoadmap:
         self.model.setHorizontalHeaderLabels(headers)
         dc.ui.roadmap.v.push_close.setText('&Close Item')
         self.smajor, self.sminor = dc.ui.roadmap.v.push_milestone.getVersion()
-        filters = [key[6:] for key in dc.ui.roadmap.v.__dict__.keys() \
-                        if key.startswith('check')]
         filter_status = set()
         for name in filters:
             if dc.ui.roadmap.v.__dict__['check_'+name].isChecked():
