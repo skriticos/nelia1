@@ -269,27 +269,24 @@ class NxRoadmap:
         dc.c.roadmap.header.width.v = list()
         for i in range(self.model.columnCount()):
             dc.c.roadmap.header.width.v.append(self.table.columnWidth(i))
-        dc.c.roadmap.sort.column.v \
-                = self.horizontal_header.sortIndicatorSection()
-        dc.c.roadmap.sort.order.v \
-                = self.horizontal_header.sortIndicatorOrder().__repr__()
-        # save filter checkbox states
-        for filter_name in filters:
-            dc.c.roadmap._('show_{}'.format(filter_name)).v \
-                    = dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)] \
-                    .isChecked()
+        cnode   = dc.c.roadmap.sort.column
+        cnode.v = self.horizontal_header.sortIndicatorSection()
+        cnode   = dc.c.roadmap.sort.order
+        cnode.v = self.horizontal_header.sortIndicatorOrder().__repr__()
+        for f in filters:
+            cnode   = dc.c.roadmap._('show_{}'.format(f))
+            cnode.v = dc.ui.roadmap.v.__dict__['check_{}'.format(f)].isChecked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
-        for i,v in enumerate(dc.c.roadmap.header.width.v):
-            self.table.setColumnWidth(i, v)
+        for index, width in enumerate(dc.c.roadmap.header.width.v):
+            self.table.setColumnWidth(index, width)
         if dc.c.roadmap.sort.column.v:
-            self.horizontal_header.setSortIndicator(
-                dc.c.roadmap.sort.column.v,
-                convert(dc.c.roadmap.sort.order.v))
-        # restore filter checkbox states
-        for filter_name in filters:
-            dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)].setChecked(
-                    dc.c.roadmap._('show_{}'.format(filter_name)).v)
+            column = dc.c.roadmap.sort.column.v
+            order  = convert(dc.c.roadmap.sort.order.v)
+            self.horizontal_header.setSortIndicator(column, order)
+        for f in filters:
+            widget = dc.ui.roadmap.v.__dict__['check_{}'.format(f)]
+            widget.setChecked(dc.c.roadmap._('show_{}'.format(f)).v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self):
         if not isinstance(dc.ui.roadmap.v.push_milestone, MPushButton):
