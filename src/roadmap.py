@@ -138,15 +138,6 @@ class NxRoadmap:
         dc.sp.m._(major)._(minor).idx.v.remove(miid)
         self.updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getCellContent(self, column):
-        row   = self.table.currentIndex().row()
-        index = self.model.index(row, column)
-        item  = self.model.itemFromIndex(index)
-        return int(item.text())
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getSelectedItemId(self):
-        return self.getCellContent(0)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def extractSelection(self, targetw='root'):
         if targetw == 'root':
             w = dc.ui.roadmap.v
@@ -157,13 +148,23 @@ class NxRoadmap:
         tmajor, tminor = target_label.split(' ')[3][1:].split('.')
         return int(tmajor), int(tminor)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onItemSelectionChanged(self):
-        if self.table.currentIndex().row() == -1: return
-        status = self.model.itemFromIndex(self.model.index(
-            self.table.currentIndex().row(),3)).text()
-        if status == 'Open':
+    def onItemSelectionChanged(self, item_selection):
+        indexes = item_selection.indexes()
+        if not indexes:
+            if not len(dc.sp.m._(self.smajor)._(self.sminor).idx.v):
+                dc.ui.roadmap.v.label_selected.hide()
+                dc.ui.roadmap.v.push_edit.hide()
+                dc.ui.roadmap.v.push_delete.hide()
+                dc.ui.roadmap.v.push_close.hide()
+            return
+        row = indexes[0].row()
+        index = self.model.index(row, 0)
+        item  = self.model.itemFromIndex(index)
+        self.smiid = int(item.text())
+        # TODO: create additional button and switch visible attribute
+        if dc.sp.mi._(self.smiid).status == 'Open':
             dc.ui.roadmap.v.push_close.setText('&Close Item')
-        if status == 'Closed':
+        else:
             dc.ui.roadmap.v.push_close.setText('Reopen Ite&m')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMsDescChanged(self):
@@ -180,6 +181,7 @@ class NxRoadmap:
     def onShowTab(self):
         if dc.r.roadmap.pid.last.v == dc.spid.v: return
         dc.r.roadmap.pid.last.v = dc.spid.v
+        self.smiid = 0
         dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
         dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
         gl = dc.ui.roadmap.v.gridLayout_3
@@ -205,12 +207,12 @@ class NxRoadmap:
         if sumopen == 1:
             self.closeMilestone()
         else:
-            self.closeMI(self.getSelectedItemId())
+            self.closeMI(self.smiid)
             self.reloadTable()
         # FIXME: move re-open to dedicated method and add dedicated control
         """
         if status == 'Closed':
-            self.reopenMI(self.getSelectedItemId())
+            self.reopenMI(self.smiid)
         dc.m.project.v.touchProject()
         self.onChangeVersionSelection(self.smajor, self.sminor)
         """
@@ -227,10 +229,10 @@ class NxRoadmap:
         dc.ui.roadmap_diag_finalize.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMilestone(self):
-        self.closeMI(self.getSelectedItemId())
+        self.closeMI(self.smiid)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMajorMilestone(self):
-        self.closeMI(self.getSelectedItemId())
+        self.closeMI(self.smiid)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadMilestoneButton(self, targetw='root'):
         if targetw == 'root':
@@ -343,7 +345,7 @@ class NxRoadmap:
         else:
             self.diag_type = 'edit'
             dc.ui.roadmap_diag_add.v.setWindowTitle('Edit Roadmap Item')
-            item_id = self.getSelectedItemId()
+            item_id = self.smiid
             tmajor, tminor, fioc \
                     = dc.spro.v['mi_index'][item_id]
             tx, ty = tmajor, minorIndex(tmajor, tminor)
@@ -417,14 +419,14 @@ class NxRoadmap:
             self.addMI(tmajor, tminor, ri_type, category,
                     name, priority, description)
         if mode == 'edit':
-            self.editMI(tmajor, tminor, self.getSelectedItemId(),
+            self.editMI(tmajor, tminor, self.smiid,
                      ri_type, category, name, priority, description)
         self.reloadMilestoneButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDeleteMIClicked(self):
-        self.deleteMI(self.getSelectedItemId())
+        self.deleteMI(self.smiid)
         self.reloadMilestoneButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
