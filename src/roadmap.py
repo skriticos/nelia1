@@ -10,7 +10,7 @@ from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 filters = [
     'feature', 'issue', 'open', 'closed', 'low', 'medium', 'high',
-    'core', 'auxiliary', 'security', 'corrective', 'architecture', 'refactor']
+   'core', 'auxiliary', 'security', 'corrective', 'architecture', 'refactor']
 headers = [
     'ID', 'Name', 'Type', 'Status', 'Category', 'Priority',
     'Created', 'Modified']
@@ -21,44 +21,41 @@ class NxRoadmap:
         self.model.setHorizontalHeaderLabels(headers)
         self.table = dc.ui.roadmap.v.table
         self.table.setModel(self.model)
-        self.selection_model = self.table.selectionModel()
+        selmod = self.selection_model = self.table.selectionModel()
         self.horizontal_header = self.table.horizontalHeader()
-        # connect feature / issue add push buttons
-        dc.ui.roadmap.v.push_add_feature.clicked.connect(lambda: (
-            dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True),
-            self.showAddEditMI('add')))
-        dc.ui.roadmap.v.push_add_issue.clicked.connect(lambda: (
-            dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True),
-            self.showAddEditMI('add')))
+        # setup callbacks
+        win = dc.ui.roadmap.v
+        win.push_add_feature.clicked.connect(self.onAddFeatureClicked)
+        win.push_add_issue.clicked.connect(self.onAddIssueClicked)
         dc.ui.roadmap_diag_add.v.accepted.connect(self.onSubmitDialog)
         for f in filters:
-            widget = dc.ui.roadmap.v.__dict__['check_{}'.format(f)]
+            widget = win.__dict__['check_{}'.format(f)]
             widget.stateChanged.connect(self.reloadTable)
-        # connect push milestone item action push buttons
-        dc.ui.roadmap.v.push_delete.clicked.connect(self.deleteMilestoneItem)
-        dc.ui.roadmap.v.push_edit.clicked.connect(lambda:(
-            self.showAddEditMI('edit')))
-        dc.ui.roadmap.v.push_close.clicked.connect(self.onCloseMIClicked)
-        # connect finalize widget button callbacks
-        dc.ui.roadmap_diag_finalize.v.push_finalize_major.clicked.connect(
-            self.onCloseMajorMilestone)
-        dc.ui.roadmap_diag_finalize.v.push_finalize_minor.clicked.connect(
-            self.onCloseMinorMilestone)
-        # connect selection changed (for close item)
-        self.selection_model.selectionChanged.connect(
-            self.onItemSelectionChanged)
-        # connect milestone description changed
-        dc.ui.roadmap.v.text_description.textChanged.connect(
-            self.onMilestoneDescriptionChanged)
-        # selection activate callback
-        self.table.activated.connect(
-            self.onMilestoneItemActivated)
-        dc.ui.roadmap.v.label_selected.hide()
-        dc.ui.roadmap.v.push_edit.hide()
-        dc.ui.roadmap.v.push_delete.hide()
-        dc.ui.roadmap.v.push_close.hide()
+        win.push_delete.clicked.connect(self.onDeleteMIClicked)
+        # TODO: separate add/edit dialogs
+        win.push_edit.clicked.connect(self.onEditMIClicked)
+        win.push_close.clicked.connect(self.onCloseMIClicked)
+        dfin = dc.ui.roadmap_diag_finalize.v
+        dfin.push_finalize_major.clicked.connect(self.onCloseMajorMilestone)
+        dfin.push_finalize_minor.clicked.connect(self.onCloseMinorMilestone)
+        selmod.selectionChanged.connect(self.onItemSelectionChanged)
+        win.text_description.textChanged.connect(self.onMsDescChanged)
+        self.table.activated.connect(self.onMilestoneItemActivated)
+        for w in ['label_selected', 'push_edit', 'push_delete', 'push_close']:
+            win.__dict__[w].hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def updateMilestoneTree(self, ):
+    def onAddFeatureClicked(self):
+        dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
+        self.showAddEditMI('add')
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onAddIssueClicked(self):
+        dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True)
+        self.showAddEditMI('add')
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onEditMIClicked(self):
+        self.showAddEditMI('edit')
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def updateMilestoneTree(self):
         for imajor in reversed(list(dc.sp.m.idx.v)):
             # major branch receaves first item
             if imajor > 0 and imajor+1 not in dc.sp.m.idx.v \
@@ -167,7 +164,7 @@ class NxRoadmap:
         if status == 'Closed':
             dc.ui.roadmap.v.push_close.setText('Reopen Ite&m')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onMilestoneDescriptionChanged(self):
+    def onMsDescChanged(self):
         if self.init: return
         description = dc.ui.roadmap.v.text_description.toPlainText()
         dc.sp.m._(self.smajor)._(self.sminor).description.v = description
@@ -424,7 +421,7 @@ class NxRoadmap:
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def deleteMilestoneItem(self):
+    def onDeleteMIClicked(self):
         self.deleteMI(self.getSelectedItemId())
         self.reloadMilestoneButton()
         self.reloadTable()
