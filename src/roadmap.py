@@ -138,9 +138,11 @@ class NxRoadmap:
         dc.sp.m._(major)._(minor).idx.v.remove(miid)
         self.updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def getCellContent(self, i):
-        return int(self.model.itemFromIndex(
-            self.model.index(self.table.currentIndex().row(),i)).text())
+    def getCellContent(self, column):
+        row   = self.table.currentIndex().row()
+        index = self.model.index(row, column)
+        item  = self.model.itemFromIndex(index)
+        return int(item.text())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getSelectedItemId(self):
         return self.getCellContent(0)
