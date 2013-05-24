@@ -32,20 +32,9 @@ class NxRoadmap:
             dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True),
             self.showAddEditMI('add')))
         dc.ui.roadmap_diag_add.v.accepted.connect(self.onSubmitDialog)
-        # connect all the filter checkboxes to update the milestone item table
-        dc.ui.roadmap.v.check_feature.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_issue.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_open.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_closed.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_low.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_medium.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_high.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_core.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_auxiliary.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_security.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_corrective.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_architecture.stateChanged.connect(self.reloadTable)
-        dc.ui.roadmap.v.check_refactor.stateChanged.connect(self.reloadTable)
+        for f in filters:
+            widget = dc.ui.roadmap.v.__dict__['check_{}'.format(f)]
+            widget.stateChanged.connect(self.reloadTable)
         # connect push milestone item action push buttons
         dc.ui.roadmap.v.push_delete.clicked.connect(self.deleteMilestoneItem)
         dc.ui.roadmap.v.push_edit.clicked.connect(lambda:(
