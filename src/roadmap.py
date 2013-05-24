@@ -8,18 +8,17 @@ from PySide import QtUiTools
 from mpushbutton import MPushButton
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+filters = [
+    'feature', 'issue', 'open', 'closed', 'low', 'medium', 'high',
+    'core', 'auxiliary', 'security', 'corrective', 'architecture', 'refactor']
+headers = [
+    'ID', 'Name', 'Type', 'Status', 'Category', 'Priority',
+    'Created', 'Modified']
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
     def __init__(self):
-        # used in saveLayout and loadLayout
-        self.filter_names = ['feature', 'issue', 'open', 'closed', 'low',
-                             'medium', 'high', 'core', 'auxiliary', 'security',
-                             'corrective', 'architecture', 'refactor']
-        # setup table
-        self.feature_headers = \
-            ['ID', 'Name', 'Type', 'Status', 'Category', 'Priority',
-             'Created', 'Modified']
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(self.feature_headers)
+        self.model.setHorizontalHeaderLabels(headers)
         self.table = dc.ui.roadmap.v.table
         self.table.setModel(self.model)
         self.selection_model = self.table.selectionModel()
@@ -282,7 +281,7 @@ class NxRoadmap:
         dc.c.roadmap.sort.order.v \
                 = self.horizontal_header.sortIndicatorOrder().__repr__()
         # save filter checkbox states
-        for filter_name in self.filter_names:
+        for filter_name in filters:
             dc.c.roadmap._('show_{}'.format(filter_name)).v \
                     = dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)] \
                     .isChecked()
@@ -295,7 +294,7 @@ class NxRoadmap:
                 dc.c.roadmap.sort.column.v,
                 convert(dc.c.roadmap.sort.order.v))
         # restore filter checkbox states
-        for filter_name in self.filter_names:
+        for filter_name in filters:
             dc.ui.roadmap.v.__dict__['check_{}'.format(filter_name)].setChecked(
                     dc.c.roadmap._('show_{}'.format(filter_name)).v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -305,13 +304,13 @@ class NxRoadmap:
         self.init = True
         self.saveLayout()
         self.model.clear()
-        self.model.setHorizontalHeaderLabels(self.feature_headers)
+        self.model.setHorizontalHeaderLabels(headers)
         dc.ui.roadmap.v.push_close.setText('&Close Item')
         self.smajor, self.sminor = dc.ui.roadmap.v.push_milestone.getVersion()
-        filter_names = [key[6:] for key in dc.ui.roadmap.v.__dict__.keys() \
+        filters = [key[6:] for key in dc.ui.roadmap.v.__dict__.keys() \
                         if key.startswith('check')]
         filter_status = set()
-        for name in filter_names:
+        for name in filters:
             if dc.ui.roadmap.v.__dict__['check_'+name].isChecked():
                 filter_status.add(name)
         for miid in dc.sp.m._(self.smajor)._(self.sminor).idx.v:
