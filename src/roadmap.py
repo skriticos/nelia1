@@ -41,8 +41,15 @@ class NxRoadmap:
         selmod.selectionChanged.connect(self.onItemSelectionChanged)
         win.text_description.textChanged.connect(self.onMsDescChanged)
         self.table.activated.connect(self.onMilestoneItemActivated)
+        self.hideMIControls()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def hideMIControls(self):
         for w in ['label_selected', 'push_edit', 'push_delete', 'push_close']:
-            win.__dict__[w].hide()
+            dc.ui.roadmap.v.__dict__[w].hide()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def showMIControls(self):
+        for w in ['label_selected', 'push_edit', 'push_delete', 'push_close']:
+            dc.ui.roadmap.v.__dict__[w].show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAddFeatureClicked(self):
         dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
@@ -152,10 +159,7 @@ class NxRoadmap:
         indexes = item_selection.indexes()
         if not indexes:
             if not len(dc.sp.m._(self.smajor)._(self.sminor).idx.v):
-                dc.ui.roadmap.v.label_selected.hide()
-                dc.ui.roadmap.v.push_edit.hide()
-                dc.ui.roadmap.v.push_delete.hide()
-                dc.ui.roadmap.v.push_close.hide()
+                self.hideMIControls()
             return
         row = indexes[0].row()
         index = self.model.index(row, 0)
@@ -321,15 +325,9 @@ class NxRoadmap:
         if self.model.rowCount() > 0:
             ma, mi = dc.sp.curr.major.v, dc.sp.curr.minor.v
             if self.smajor > ma or (self.smajor == ma and self.sminor > mi):
-                dc.ui.roadmap.v.label_selected.show()
-                dc.ui.roadmap.v.push_edit.show()
-                dc.ui.roadmap.v.push_delete.show()
-                dc.ui.roadmap.v.push_close.show()
+                self.showMIControls()
             else:
-                dc.ui.roadmap.v.label_selected.hide()
-                dc.ui.roadmap.v.push_edit.hide()
-                dc.ui.roadmap.v.push_delete.hide()
-                dc.ui.roadmap.v.push_close.hide()
+                self.hideMIControls()
             self.table.selectRow(0)
         self.loadLayout()
         self.table.setFocus()
