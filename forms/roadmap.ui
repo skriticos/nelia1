@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1225</width>
+    <width>1178</width>
     <height>738</height>
    </rect>
   </property>
@@ -279,6 +279,9 @@
            <widget class="QTableView" name="table">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
             </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>

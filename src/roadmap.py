@@ -23,7 +23,6 @@ class NxRoadmap:
         self.table.setModel(self.model)
         self.selection_model = self.table.selectionModel()
         self.horizontal_header = self.table.horizontalHeader()
-        self.table.setAlternatingRowColors(True)
         # connect feature / issue add push buttons
         dc.ui.roadmap.v.push_add_feature.clicked.connect(lambda: (
             dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True),
