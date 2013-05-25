@@ -32,9 +32,9 @@ class NxRoadmap:
             widget = win.__dict__['check_{}'.format(f)]
             widget.stateChanged.connect(self.reloadTable)
         win.push_delete.clicked.connect(self.onDeleteMIClicked)
-        # TODO: separate add/edit dialogs
         win.push_edit.clicked.connect(self.onEditMIClicked)
         win.push_close.clicked.connect(self.onCloseMIClicked)
+        win.push_reopen.clicked.connect(self.onReopenMIClicked)
         dfin = dc.ui.roadmap_diag_finalize.v
         dfin.push_finalize_major.clicked.connect(self.onCloseMajorMilestone)
         dfin.push_finalize_minor.clicked.connect(self.onCloseMinorMilestone)
@@ -44,11 +44,12 @@ class NxRoadmap:
         self.hideMIControls()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def hideMIControls(self):
-        for w in ['label_selected', 'push_edit', 'push_delete', 'push_close']:
+        for w in ['label_selected', 'push_edit', 'push_delete', 'push_close',
+                  'push_reopen']:
             dc.ui.roadmap.v.__dict__[w].hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showMIControls(self):
-        for w in ['label_selected', 'push_edit', 'push_delete', 'push_close']:
+        for w in ['label_selected', 'push_edit', 'push_delete']:
             dc.ui.roadmap.v.__dict__[w].show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAddFeatureClicked(self):
@@ -161,15 +162,17 @@ class NxRoadmap:
             if not len(dc.sp.m._(self.smajor)._(self.sminor).idx.v):
                 self.hideMIControls()
             return
+        self.showMIControls()
         row = indexes[0].row()
         index = self.model.index(row, 0)
         item  = self.model.itemFromIndex(index)
         self.smiid = int(item.text())
-        # TODO: create additional button and switch visible attribute
-        if dc.sp.mi._(self.smiid).status == 'Open':
-            dc.ui.roadmap.v.push_close.setText('&Close Item')
-        else:
-            dc.ui.roadmap.v.push_close.setText('Reopen Ite&m')
+        if dc.sp.mi._(self.smiid).status.v == 'Open':
+            dc.ui.roadmap.v.push_close.show()
+            dc.ui.roadmap.v.push_reopen.hide()
+        if dc.sp.mi._(self.smiid).status.v == 'Closed':
+            dc.ui.roadmap.v.push_close.hide()
+            dc.ui.roadmap.v.push_reopen.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMsDescChanged(self):
         if self.init: return
@@ -316,14 +319,7 @@ class NxRoadmap:
                 QStandardItem(convert(md.created.v)),
                 QStandardItem(convert(md.modified.v)) ])
         self.init = False
-        # only enable controls for future milestones
-        if self.model.rowCount() > 0:
-            ma, mi = dc.sp.curr.major.v, dc.sp.curr.minor.v
-            if self.smajor > ma or (self.smajor == ma and self.sminor > mi):
-                self.showMIControls()
-            else:
-                self.hideMIControls()
-            self.table.selectRow(0)
+        if self.model.rowCount(): self.table.selectRow(0)
         self.loadLayout()
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
