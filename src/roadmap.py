@@ -27,7 +27,7 @@ class NxRoadmap:
         win = dc.ui.roadmap.v
         win.push_add_feature.clicked.connect(self.onAddFeatureClicked)
         win.push_add_issue.clicked.connect(self.onAddIssueClicked)
-        dc.ui.roadmap_diag_add.v.accepted.connect(self.onSubmitDialog)
+        dc.ui.roadmap_diag_add.v.accepted.connect(self.onSubmitNewMI)
         for f in filters:
             widget = win.__dict__['check_{}'.format(f)]
             widget.stateChanged.connect(self.reloadTable)
@@ -54,14 +54,41 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAddFeatureClicked(self):
         dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
-        self.showAddEditMI('add')
+        dc.ui.roadmap_diag_add.v.line_name.clear()
+        dc.ui.roadmap_diag_add.v.text_description.clear()
+        self.reloadMilestoneButton('diag_new_edit')
+        dc.ui.roadmap_diag_add.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAddIssueClicked(self):
         dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True)
-        self.showAddEditMI('add')
+        dc.ui.roadmap_diag_add.v.line_name.clear()
+        dc.ui.roadmap_diag_add.v.text_description.clear()
+        self.reloadMilestoneButton('diag_new_edit')
+        dc.ui.roadmap_diag_add.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditMIClicked(self):
-        self.showAddEditMI('edit')
+        diag = dc.ui.roadmap_diag_edit.v
+        if dc.sp.mi._(self.smiid).itype.v == 'Feature':
+            diag.radio_feature.setChecked(True)
+        if dc.sp.mi._(self.smiid).itype.v == 'Issue':
+            diag.radio_issue.setChecked(True)
+        inode = dc.sp.mi._(self.smiid)
+        itype, prio, cat = node.itype.v, node.priority.v, node.category.v
+        if itype == 'Feature': diag.radio_feature.setChecked(True)
+        if itype == 'Issue':   diag.radio_issue.setChecked(True)
+        if prio == 'Low':    diag.radio_low.setChecked(True)
+        if prio == 'Medium': diag.radio_medium.setChecked(True)
+        if prio == 'High':   diag.radio_high.setChecked(True)
+        if cat == 'Core':         diag.radio_core.setChecked(True)
+        if cat == 'Auxiliary':    diag.radio_auxiliary.setChecked(True)
+        if cat == 'Security':     diag.radio_security.setChecked(True)
+        if cat == 'Corrective':   diag.radio_corrective.setChecked(True)
+        if cat == 'Architecture': diag.radio_architecture.setChecked(True)
+        if cat == 'Refactor':     diag.radio_refactor.setChecked(True)
+        diag.line_name.setText(inode.name.v)
+        diag.text_description.setPlainText(inode.description.v)
+        diag.show()
+        diag.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def updateMilestoneTree(self):
         for imajor in reversed(list(dc.sp.m.idx.v)):
@@ -183,7 +210,7 @@ class NxRoadmap:
         if self.smajor > dc.sp.curr.major.v or \
                 (self.smajor == dc.sp.curr.major.v \
                  and self.sminor > dc.sp.curr.minor.v):
-            self.showAddEditMI('edit')
+            dc.ui.roadmap_diag_edit.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         if dc.r.roadmap.pid.last.v == dc.spid.v: return
@@ -191,6 +218,7 @@ class NxRoadmap:
         self.smiid = 0
         dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
         dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
+        dc.ui.roadmap_diag_edit.v.line_project.setText(dc.sp.name.v)
         gl = dc.ui.roadmap.v.gridLayout_3
         gl.removeWidget(dc.ui.roadmap.v.push_milestone)
         dc.ui.roadmap.v.push_milestone.close()
@@ -216,13 +244,13 @@ class NxRoadmap:
         else:
             self.closeMI(self.smiid)
             self.reloadTable()
-        # FIXME: move re-open to dedicated method and add dedicated control
-        """
-        if status == 'Closed':
-            self.reopenMI(self.smiid)
+        self.reloadMilestoneButton()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onReopenMIClicked(self):
+        self.reopenMI(self.smiid)
         dc.m.project.v.touchProject()
-        self.onChangeVersionSelection(self.smajor, self.sminor)
-        """
+        self.reloadTable()
+        self.reloadMilestoneButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMilestone(self):
         sumopen = 0
@@ -252,13 +280,14 @@ class NxRoadmap:
             ui.gridLayout_3.addWidget(ui.push_milestone, 0, 1, 1, 1)
             ui.label_2.setBuddy(ui.push_milestone)
         elif targetw == 'diag_new_edit':
-            diag = dc.ui.roadmap_diag_add.v
-            diag.gridLayout_2.removeWidget(diag.push_target)
-            diag.push_target.close()
-            diag.push_target \
-                    = MPushButton(diag,None,self.smajor, self.sminor,True)
-            diag.gridLayout_2.addWidget(diag.push_target, 1, 1, 1, 1);
-            diag.label_3.setBuddy(diag.push_target)
+            diags = dc.ui.roadmap_diag_add.v, dc.ui.roadmap_diag_edit.v
+            for d in diags:
+                d.gridLayout_2.removeWidget(d.push_target)
+                d.push_target.close()
+                d.push_target \
+                        = MPushButton(d,None,self.smajor, self.sminor,True)
+                d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
+                d.label_3.setBuddy(d.push_target)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onChangeVersionSelection(self, major, minor):
         self.smajor = major
@@ -323,93 +352,49 @@ class NxRoadmap:
         self.loadLayout()
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def showAddEditMI(self, diag_type=None):
-        self.reloadMilestoneButton('diag_new_edit')
-        # set dialog type flag
-        if diag_type == 'add':
-            self.diag_type = 'add'
-            dc.ui.roadmap_diag_add.v.setWindowTitle('Add Roadmap Item')
-            dc.ui.roadmap_diag_add.v.line_name.clear()
-            dc.ui.roadmap_diag_add.v.text_description.clear()
-        else:
-            self.diag_type = 'edit'
-            dc.ui.roadmap_diag_add.v.setWindowTitle('Edit Roadmap Item')
-            item_id = self.smiid
-            tmajor, tminor, fioc \
-                    = dc.spro.v['mi_index'][item_id]
-            tx, ty = tmajor, minorIndex(tmajor, tminor)
-            item = dc.spro.v\
-                    ['milestone'][tx][ty][fioc][item_id]
-            if fioc[0] == 'f': itype = 'Feature'
-            if fioc[0] == 'i': itype = 'Isssue'
-            if itype == 'Feature':
-                dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
-            if itype == 'Issue':
-                dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True)
-            if item['priority'] == 'Low':
-                dc.ui.roadmap_diag_add.v.radio_low.setChecked(True)
-            if item['priority'] == 'Medium':
-                dc.ui.roadmap_diag_add.v.radio_medium.setChecked(True)
-            if item['priority'] == 'High':
-                dc.ui.roadmap_diag_add.v.radio_high.setChecked(True)
-            if item['icat'] == 'Core':
-                dc.ui.roadmap_diag_add.v.radio_core.setChecked(True)
-            if item['icat'] == 'Auxiliary':
-                dc.ui.roadmap_diag_add.v.radio_auxiliary.setChecked(True)
-            if item['icat'] == 'Security':
-                dc.ui.roadmap_diag_add.v.radio_security.setChecked(True)
-            if item['icat'] == 'Corrective':
-                dc.ui.roadmap_diag_add.v.radio_corrective.setChecked(True)
-            if item['icat'] == 'Architecture':
-                dc.ui.roadmap_diag_add.v.radio_architecture.setChecked(True)
-            if item['icat'] == 'Refactor':
-                dc.ui.roadmap_diag_add.v.radio_refactor.setChecked(True)
-            dc.ui.roadmap_diag_add.v.line_name.setText(item['name'])
-            dc.ui.roadmap_diag_add.v.text_description.setPlainText(
-                item['description'])
-        # show dialog
-        dc.ui.roadmap_diag_add.v.show()
-        dc.ui.roadmap_diag_add.v.line_name.setFocus()
+    def onSubmitNewMI(self):
+        diag = dc.ui.roadmap_diag_add.v
+        tlabel = diag.push_target.text()
+        tmajor, tminor = tlabel.split(' ')[3][1:].split('.')
+        tmajor, tminor = int(tmajor), int(tminor)
+        name = diag.line_name.text()
+        description = diag.text_description.toPlainText()
+        if diag.radio_feature.isChecked(): itype = 'Feature'
+        if diag.radio_issue.isChecked():   itype = 'Issue'
+        if diag.radio_medium.isChecked(): priority = 'Medium'
+        elif diag.radio_high.isChecked(): priority = 'High'
+        elif diag.radio_low.isChecked():  priority = 'Low'
+        if diag.radio_core.isChecked():           category = 'Core'
+        elif diag.radio_auxiliary.isChecked():    category = 'Auxiliary'
+        elif diag.radio_security.isChecked():     category = 'Security'
+        elif diag.radio_corrective.isChecked():   category = 'Corrective'
+        elif diag.radio_architecture.isChecked(): category = 'Architecture'
+        elif diag.radio_refactor.isChecked():     category = 'Refactor'
+        self.addMI(tmajor, tminor, itype, category, name, priority, description)
+        self.reloadMilestoneButton()
+        self.reloadTable()
+        dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onSubmitDialog(self):
-        # simple switch between add and edit mode for the dialog
-        if self.diag_type == 'add':
-            self.onSubmitNewEditMI('add')
-        if self.diag_type == 'edit':
-            self.onSubmitNewEditMI('edit')
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onSubmitNewEditMI(self, mode):
-        tmajor, tminor = self.extractSelection('add_edit_dialog')
-        name = dc.ui.roadmap_diag_add.v.line_name.text()
-        description = dc.ui.roadmap_diag_add.v.text_description.toPlainText()
-        if dc.ui.roadmap_diag_add.v.radio_feature.isChecked():
-            ri_type = 'Feature'
-        else:
-            ri_type = 'Issue'
-        if dc.ui.roadmap_diag_add.v.radio_medium.isChecked():
-            priority = 'Medium'
-        elif dc.ui.roadmap_diag_add.v.radio_high.isChecked():
-            priority = 'High'
-        elif dc.ui.roadmap_diag_add.v.radio_low.isChecked():
-            priority = 'Low'
-        if dc.ui.roadmap_diag_add.v.radio_core.isChecked():
-            category = 'Core'
-        elif dc.ui.roadmap_diag_add.v.radio_auxiliary.isChecked():
-            category = 'Auxiliary'
-        elif dc.ui.roadmap_diag_add.v.radio_security.isChecked():
-            category = 'Security'
-        elif dc.ui.roadmap_diag_add.v.radio_corrective.isChecked():
-            category = 'Corrective'
-        elif dc.ui.roadmap_diag_add.v.radio_architecture.isChecked():
-            category = 'Architecture'
-        elif dc.ui.roadmap_diag_add.v.radio_refactor.isChecked():
-            category = 'Refactor'
-        if mode == 'add':
-            self.addMI(tmajor, tminor, ri_type, category,
-                    name, priority, description)
-        if mode == 'edit':
-            self.editMI(tmajor, tminor, self.smiid,
-                     ri_type, category, name, priority, description)
+    def onSubmitEditMI(self):
+        diag = dc.ui.roadmap_diag_edit.v
+        tlabel = diag.push_target.text()
+        tmajor, tminor = tlabel.split(' ')[3][1:].split('.')
+        tmajor, tminor = int(tmajor), int(tminor)
+        name = diag.line_name.text()
+        description = diag.text_description.toPlainText()
+        if diag.radio_feature.isChecked(): itype = 'Feature'
+        if diag.radio_issue.isChecked():   itype = 'Issue'
+        if diag.radio_medium.isChecked(): priority = 'Medium'
+        elif diag.radio_high.isChecked(): priority = 'High'
+        elif diag.radio_low.isChecked():  priority = 'Low'
+        if diag.radio_core.isChecked():           category = 'Core'
+        elif diag.radio_auxiliary.isChecked():    category = 'Auxiliary'
+        elif diag.radio_security.isChecked():     category = 'Security'
+        elif diag.radio_corrective.isChecked():   category = 'Corrective'
+        elif diag.radio_architecture.isChecked(): category = 'Architecture'
+        elif diag.radio_refactor.isChecked():     category = 'Refactor'
+        self.editMI(tmajor, tminor, self.smiid, itype, category, name, priority,
+                    description)
         self.reloadMilestoneButton()
         self.reloadTable()
         dc.m.project.v.touchProject()

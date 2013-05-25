@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Add/Edit Milestone Item</string>
+   <string>Add Milestone Item</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>

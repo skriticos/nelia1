@@ -94,20 +94,6 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="push_add_feature">
-        <property name="text">
-         <string>Add &amp;Feature..</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QPushButton" name="push_add_issue">
-        <property name="text">
-         <string>Add &amp;Issue..</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="5">
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
@@ -123,6 +109,20 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="push_add_feature">
+        <property name="text">
+         <string>Add &amp;Feature..</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="push_add_issue">
+        <property name="text">
+         <string>Add &amp;Issue..</string>
+        </property>
+       </widget>
       </item>
       <item row="0" column="6">
        <widget class="QLabel" name="label_selected">
@@ -161,7 +161,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="10">
+      <item row="0" column="11">
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -238,7 +238,10 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Selected Item Description:</string>
+          <string>&amp;Selected Item Description:</string>
+         </property>
+         <property name="buddy">
+          <cstring>text_mi_description</cstring>
          </property>
         </widget>
        </item>

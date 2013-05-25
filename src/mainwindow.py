@@ -25,6 +25,7 @@ class MainWindow():
             ('project_diag_edit',     'forms/project_diag_edit.ui'),
             ('log_diag_new',          'forms/log_new_entry.ui'),
             ('roadmap_diag_add',      'forms/roadmap_add.ui'),
+            ('roadmap_diag_edit',     'forms/roadmap_edit.ui'),
             ('roadmap_diag_finalize', 'forms/roadmap_finalize_milestone.ui')):
             f = QFile(fname)
             f.open(QFile.ReadOnly)
