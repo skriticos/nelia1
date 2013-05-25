@@ -122,27 +122,6 @@ class NxRoadmap:
                 dc.sp.m._(imajor).idx.v.remove(lminor)
                 del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def addMI(self, major, minor, itype, category,
-              name, priority, description, status='Open'):
-        # milestone item id
-        miid = dc.sp.nextmiid.v
-        dc.sp.nextmiid.v += 1
-        # milestone item location
-        dc.sp.midx.v[miid] = major, minor
-        # milestone item attributes
-        dc.sp.mi._(miid).name.v = name
-        dc.sp.mi._(miid).description.v = description
-        dc.sp.mi._(miid).priority.v = priority
-        dc.sp.mi._(miid).category.v = category
-        dc.sp.mi._(miid).itype.v = itype
-        dc.sp.mi._(miid).status.v = status
-        t = int(time.time())
-        dc.sp.mi._(miid).created.v = t
-        dc.sp.mi._(miid).modified.v = t
-        # milestone item reference in tree
-        dc.sp.m._(major)._(minor).idx.v.add(miid)
-        self.updateMilestoneTree()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def editMI(self, major, minor, miid, itype, category, name,
                priority, description):
         if (major, minor) != dc.sp.midx.v[miid]:
@@ -354,11 +333,6 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitNewMI(self):
         diag = dc.ui.roadmap_diag_add.v
-        tlabel = diag.push_target.text()
-        tmajor, tminor = tlabel.split(' ')[3][1:].split('.')
-        tmajor, tminor = int(tmajor), int(tminor)
-        name = diag.line_name.text()
-        description = diag.text_description.toPlainText()
         if diag.radio_feature.isChecked(): itype = 'Feature'
         if diag.radio_issue.isChecked():   itype = 'Issue'
         if diag.radio_medium.isChecked(): priority = 'Medium'
@@ -370,7 +344,22 @@ class NxRoadmap:
         elif diag.radio_corrective.isChecked():   category = 'Corrective'
         elif diag.radio_architecture.isChecked(): category = 'Architecture'
         elif diag.radio_refactor.isChecked():     category = 'Refactor'
-        self.addMI(tmajor, tminor, itype, category, name, priority, description)
+        tlabel = diag.push_target.text()
+        major, minor = tlabel.split(' ')[3][1:].split('.')
+        major, minor = int(major), int(minor)
+        self.smiid = dc.sp.nextmiid.v
+        dc.sp.nextmiid.v += 1
+        dc.sp.midx.v[self.smiid] = major, minor
+        node = dc.sp.mi._(self.smiid)
+        node.name.v        = diag.line_name.text()
+        node.description.v = diag.text_description.toPlainText()
+        node.priority.v    = priority
+        node.category.v    = category
+        node.itype.v       = itype
+        node.status.v      = 'Open'
+        node.created.v     = node.modified.v = int(time.time())
+        dc.sp.m._(major)._(minor).idx.v.add(self.smiid)
+        self.updateMilestoneTree()
         self.reloadMilestoneButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
