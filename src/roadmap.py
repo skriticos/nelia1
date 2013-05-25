@@ -72,7 +72,7 @@ class NxRoadmap:
             diag.radio_feature.setChecked(True)
         if dc.sp.mi._(self.smiid).itype.v == 'Issue':
             diag.radio_issue.setChecked(True)
-        inode = dc.sp.mi._(self.smiid)
+        node = dc.sp.mi._(self.smiid)
         itype, prio, cat = node.itype.v, node.priority.v, node.category.v
         if itype == 'Feature': diag.radio_feature.setChecked(True)
         if itype == 'Issue':   diag.radio_issue.setChecked(True)
@@ -85,8 +85,8 @@ class NxRoadmap:
         if cat == 'Corrective':   diag.radio_corrective.setChecked(True)
         if cat == 'Architecture': diag.radio_architecture.setChecked(True)
         if cat == 'Refactor':     diag.radio_refactor.setChecked(True)
-        diag.line_name.setText(inode.name.v)
-        diag.text_description.setPlainText(inode.description.v)
+        diag.line_name.setText(node.name.v)
+        diag.text_description.setPlainText(node.description.v)
         diag.show()
         diag.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,21 +121,6 @@ class NxRoadmap:
             elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
                 dc.sp.m._(imajor).idx.v.remove(lminor)
                 del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def editMI(self, major, minor, miid, itype, category, name,
-               priority, description):
-        if (major, minor) != dc.sp.midx.v[miid]:
-            old_major, old_minor = dc.sp.midx.v[miid]
-            dc.sp.m._(old_major)._(old_minor).idx.v.remove(miid)
-            dc.sp.m._(major)._(minor).idx.v.add(miid)
-            dc.sp.midx.v[miid] = major, minor
-        dc.sp.mi._(miid).itype.v = itype
-        dc.sp.mi._(miid).name.v  = name
-        dc.sp.mi._(miid).category.v = category
-        dc.sp.mi._(miid).priority.v = priority
-        dc.sp.mi._(miid).description.v = description
-        dc.sp.mi._(miid).changed.v = int(time.time())
-        self.updateMilestoneTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMI(self, miid):
         dc.sp.mi._(miid).status.v = 'Closed'
@@ -366,11 +351,6 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitEditMI(self):
         diag = dc.ui.roadmap_diag_edit.v
-        tlabel = diag.push_target.text()
-        tmajor, tminor = tlabel.split(' ')[3][1:].split('.')
-        tmajor, tminor = int(tmajor), int(tminor)
-        name = diag.line_name.text()
-        description = diag.text_description.toPlainText()
         if diag.radio_feature.isChecked(): itype = 'Feature'
         if diag.radio_issue.isChecked():   itype = 'Issue'
         if diag.radio_medium.isChecked(): priority = 'Medium'
@@ -382,8 +362,22 @@ class NxRoadmap:
         elif diag.radio_corrective.isChecked():   category = 'Corrective'
         elif diag.radio_architecture.isChecked(): category = 'Architecture'
         elif diag.radio_refactor.isChecked():     category = 'Refactor'
-        self.editMI(tmajor, tminor, self.smiid, itype, category, name, priority,
-                    description)
+        tlabel = diag.push_target.text()
+        major, minor = tlabel.split(' ')[3][1:].split('.')
+        major, minor = int(major), int(minor)
+        if (major, minor) != dc.sp.midx.v[self.smiid]:
+            old_major, old_minor = dc.sp.midx.v[self.smiid]
+            dc.sp.m._(old_major)._(old_minor).idx.v.remove(self.smiid)
+            dc.sp.m._(major)._(minor).idx.v.add(self.smiid)
+            dc.sp.midx.v[self.smiid] = major, minor
+        node = dc.sp.mi._(self.smiid)
+        node.itype.v       = itype
+        node.name.v        = diag.line_name.text()
+        node.category.v    = category
+        node.priority.v    = priority
+        node.description.v = diag.text_description.toPlainText()
+        node.changed.v     = int(time.time())
+        self.updateMilestoneTree()
         self.reloadMilestoneButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
