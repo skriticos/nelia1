@@ -28,13 +28,13 @@ class MPushButton(QPushButton):
                 # compute minor version feature / issue count
                 fo = fc = io = ic = 0
                 for miid in dc.sp.m._(n)._(m).idx.v:
-                    if dc.sp.mi._(miid).itype == 'Feature':
-                        if dc.sp.mi._(miid).status == 'Open':
+                    if dc.sp.mi._(miid).itype.v == 'Feature':
+                        if dc.sp.mi._(miid).status.v == 'Open':
                             fo += 1
                         else:
                             fc += 1
-                    elif dc.sp.mi._(miid).itype == 'Issue':
-                        if dc.sp.mi._(miid).status == 'Open':
+                    elif dc.sp.mi._(miid).itype.v == 'Issue':
+                        if dc.sp.mi._(miid).status.v == 'Open':
                             io += 1
                         else:
                             ic += 1
