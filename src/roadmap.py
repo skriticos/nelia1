@@ -294,16 +294,6 @@ class NxRoadmap:
             dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(True)
         dc.ui.roadmap_diag_finalize.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def extractSelection(self, targetw='root'):
-        if targetw == 'root':
-            w = dc.ui.roadmap.v
-            target_label = w.push_target.text()
-        elif targetw == 'add_edit_dialog':
-            d = dc.ui.roadmap_diag_add.v
-            target_label = d.push_target.text()
-        tmajor, tminor = target_label.split(' ')[3][1:].split('.')
-        return int(tmajor), int(tminor)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.roadmap.header.width.v = list()
         for i in range(self.model.columnCount()):
