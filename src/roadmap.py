@@ -236,7 +236,8 @@ class NxRoadmap:
         self.updateMsButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onReopenMIClicked(self):
-        self.reopenMI(self.smiid)
+        dc.sp.mi._(self.smiid).status.v = 'Open'
+        dc.sp.mi._(self.smiid).changed.v = int(time.time())
         dc.m.project.v.touchProject()
         self.reloadTable()
         self.updateMsButton()
@@ -272,10 +273,6 @@ class NxRoadmap:
             elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
                 dc.sp.m._(imajor).idx.v.remove(lminor)
                 del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def reopenMI(self, miid):
-        dc.sp.mi._(miid).status.v = 'Open'
-        dc.sp.mi._(miid).changed.v = int(time.time())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def deleteMI(self, miid):
         del dc.sp.mi.__dict__['_{}'.format(miid)]
