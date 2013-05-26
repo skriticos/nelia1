@@ -230,7 +230,6 @@ class NxProject:
         timestamp = int(time.time())
         pid = dc.s.nextpid.v
         dc.s.idx.pid.v.add(pid)
-
         dc.s.nextpid.v += 1
         dc.spid.v = pid
         dc.sp = dc.s._(pid)

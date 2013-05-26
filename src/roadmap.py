@@ -53,13 +53,8 @@ class NxRoadmap:
         dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
         dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
         dc.ui.roadmap_diag_edit.v.line_project.setText(dc.sp.name.v)
-        gl = dc.ui.roadmap.v.gridLayout_3
-        gl.removeWidget(dc.ui.roadmap.v.push_milestone)
-        dc.ui.roadmap.v.push_milestone.close()
-        mpb = MPushButton(dc.ui.roadmap.v, self.onMsSelectionChanged)
-        dc.ui.roadmap.v.push_milestone = mpb
-        gl.addWidget(mpb, 0, 1, 1, 1)
-        dc.ui.roadmap.v.label_2.setBuddy(mpb)
+        self.smajor, self.sminor = dc.sp.curr.major.v, dc.sp.curr.minor.v
+        self.updateRootMPushButton()
         self.reloadTable()
         major = dc.ui.roadmap.v.push_milestone.next_x
         minor = dc.ui.roadmap.v.push_milestone.next_y
@@ -319,8 +314,7 @@ class NxRoadmap:
             widget.setChecked(dc.c.roadmap._('show_{}'.format(f)).v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self):
-        if not isinstance(dc.ui.roadmap.v.push_milestone, MPushButton):
-            return
+        if not dc.ui.roadmap.v.isVisible(): return
         self.init = True
         self.saveLayout()
         self.model.clear()
@@ -333,18 +327,18 @@ class NxRoadmap:
                 filter_status.add(name)
         for miid in dc.sp.m._(self.smajor)._(self.sminor).idx.v:
             md = dc.sp.mi._(miid)
-            if not {md.itype.v.lower(), md.status.v.lower(),
+            if {md.itype.v.lower(), md.status.v.lower(),
                     md.category.v.lower(), md.priority.v.lower()} \
-                .issubset(filter_status): continue
-            self.model.insertRow(0, [
-                QStandardItem(str(miid).zfill(4)),
-                QStandardItem(md.name.v),
-                QStandardItem(md.itype.v),
-                QStandardItem(md.status.v),
-                QStandardItem(md.category.v),
-                QStandardItem(md.priority.v),
-                QStandardItem(convert(md.created.v)),
-                QStandardItem(convert(md.modified.v)) ])
+                   .issubset(filter_status):
+                self.model.insertRow(0, [
+                    QStandardItem(str(miid).zfill(4)),
+                    QStandardItem(md.name.v),
+                    QStandardItem(md.itype.v),
+                    QStandardItem(md.status.v),
+                    QStandardItem(md.category.v),
+                    QStandardItem(md.priority.v),
+                    QStandardItem(convert(md.created.v)),
+                    QStandardItem(convert(md.modified.v)) ])
         self.init = False
         if self.model.rowCount(): self.table.selectRow(0)
         self.loadLayout()
@@ -355,8 +349,8 @@ class NxRoadmap:
         ui.gridLayout_3.removeWidget(ui.push_milestone)
         ui.push_milestone.hide()
         ui.push_milestone.close()
-        ui.push_milestone = MPushButton(ui, self.onMsSelectionChanged,
-                                        self.smajor, self.sminor)
+        ma, mi = self.smajor, self.sminor
+        ui.push_milestone = MPushButton(ui, self.onMsSelectionChanged, ma, mi)
         ui.gridLayout_3.addWidget(ui.push_milestone, 0, 1, 1, 1)
         ui.label_2.setBuddy(ui.push_milestone)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
