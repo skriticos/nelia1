@@ -6,14 +6,12 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 from datacore import *
-from datacore import _dcdump
 from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MainWindow():
     def __init__(self, argv, app):
-        # load ui to dc.w_*
         loader = QtUiTools.QUiLoader()
         for name, fname in (
             ('main',                  'forms/mainwindow.ui'),
@@ -35,7 +33,6 @@ class MainWindow():
                 obj.setParent(dc.ui.main.v)
                 obj.setWindowFlags(Qt.Dialog)
         loader.deleteLater()
-        # position module widgets
         for cname, pname in (('project', 'tab_project'),
                              ('log',     'tab_log'),
                              ('roadmap', 'tab_roadmap')):
@@ -43,37 +40,27 @@ class MainWindow():
             grid.addWidget(dc.ui._(cname).v, 0, 0)
             grid.setContentsMargins(0, 0, 0, 0)
             dc.ui.main.v.__dict__[pname].setLayout(grid)
-        # icon and window size
         dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
         dc.ui.main.v.setGeometry(100,70,1000,600)
-        # initialize modules
         dc.m.main.v    = self
         dc.m.project.v = NxProject()
         dc.m.log.v     = NxLog()
         dc.m.roadmap.v = NxRoadmap()
-        # dissable all tabs except the project tab
-        # they show the data from the selected project, and are in undefined
-        # before a selection is made
         self.dissableTabs()
-        # connect signals and slots
         dc.ui.main.v.tabnavi.currentChanged.connect(self.tabChanged)
-        # global shortcuts
         for keys, target in [('Ctrl+w', dc.ui.main.v.close),
                              ('Ctrl+PgUp', self.onTabForward),
                              ('Ctrl+PgDown', self.onTabBackward),
                              ('Ctrl+s', self.onSaveShortcutActivated)]:
             shortcut = QShortcut(QKeySequence(keys), dc.ui.main.v)
             shortcut.activated.connect(target)
-        # intercept close event (see self.onAboutToQuit)
         app.aboutToQuit.connect(self.onAboutToQuit)
         signal.signal(signal.SIGTERM, self.onSigTerm)
-        # load configuration, if existent
         dcloadconfig()
         if dc.x.config.loaded.v:
             dc.m.project.v.loadLayout()
             dc.m.log.v.loadLayout()
             dc.m.roadmap.v.loadLayout()
-        # show window
         dc.ui.main.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
@@ -81,21 +68,9 @@ class MainWindow():
             dc.m.project.v.onSaveClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSigTerm(self, num, frame):
-        """
-        We want to shut down normally on SIGTERM too. This can happen when the
-        computer is turned off, without closing the application first. This
-        will issue the application to quit, which in turn triggers
-        onAboutToQuit. The QTimer in run.py is required for this to work.
-        """
         QApplication.quit()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAboutToQuit(self):
-        """
-        Capture main window close event.  This might be caused by the user
-        clicking the (x) window button or by exiting via the Ctrl-w shortcut
-        (or any other way that tells the main window to close). Might also come
-        from a SIGTERM (see onSigTerm)
-        """
         dc.m.project.v.saveLayout()
         dc.m.log.v.saveLayout()
         dc.m.roadmap.v.saveLayout()
@@ -124,12 +99,10 @@ class MainWindow():
             dc.ui.main.v.tabnavi.setCurrentIndex(tab_index-1)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def enableTabs(self):
-        # enable tab log and roadmap
         for i in range(1, dc.ui.main.v.tabnavi.count()):
             dc.ui.main.v.tabnavi.setTabEnabled(i, True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def dissableTabs(self):
-        # disable tab log and roadmap
         for i in range(1, dc.ui.main.v.tabnavi.count()):
             dc.ui.main.v.tabnavi.setTabEnabled(i, False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
