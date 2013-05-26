@@ -177,7 +177,11 @@ class NxRoadmap:
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDeleteMIClicked(self):
-        self.deleteMI(self.smiid)
+        del dc.sp.mi.__dict__['_{}'.format(self.smiid)]
+        major, minor = dc.sp.midx.v[self.smiid]
+        del dc.sp.midx.v[self.smiid]
+        dc.sp.m._(major)._(minor).idx.v.remove(self.smiid)
+        self.updateMsTree()
         self.updateMsButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
@@ -273,13 +277,6 @@ class NxRoadmap:
             elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
                 dc.sp.m._(imajor).idx.v.remove(lminor)
                 del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def deleteMI(self, miid):
-        del dc.sp.mi.__dict__['_{}'.format(miid)]
-        major, minor = dc.sp.midx.v[miid]
-        del dc.sp.midx.v[miid]
-        dc.sp.m._(major)._(minor).idx.v.remove(miid)
-        self.updateMsTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMs(self):
         sumopen = 0
