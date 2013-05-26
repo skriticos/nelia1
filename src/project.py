@@ -7,43 +7,38 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+headers =  [
+    'ID', 'Name', 'Status', 'Type', 'Verson', 'Category', 'Priority',
+    'Challenge', 'Modified', 'Created' ]
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
     def __init__(self):
         dc.spid.v = 0
-        # show new project dialog
-        dc.ui.project.v.push_new.clicked.connect(self.onNewClicked)
-        # show edit project dialog
-        dc.ui.project.v.push_edit.clicked.connect(self.showEditProject)
-        dc.ui.project_diag_new.v.accepted.connect(self.onNewProject)
-        dc.ui.project_diag_edit.v.accepted.connect(self.onEditProject)
-        dc.ui.project.v.push_delete.clicked.connect(self.onDeleteProject)
-        dc.ui.project.v.push_open.clicked.connect(self.onOpenClicked)
-        dc.ui.project.v.push_open_last.clicked.connect(self.onOpenLast)
-        dc.ui.project.v.push_save.clicked.connect(self.onSaveClicked)
-        dc.ui.project.v.push_help.clicked.connect(
-            dc.ui.project_diag_help.v.show)
-        # setup table
-        self.view = dc.ui.project.v.view
-        self.view_headers = [
-                'ID', 'Name', 'Status', 'Type', 'Verson', 'Category',
-                'Priority', 'Challenge', 'Modified', 'Created' ]
+        widget = dc.ui.project.v
+        diag_new = self.diag_new = dc.ui.project_diag_new.v
+        diag_edit = self.diag_edit = dc.ui.project_diag_edit.v
+        widget.push_new.clicked.connect (self.onNewClicked)
+        widget.push_edit.clicked.connect(self.showEditProject)
+        diag_new.accepted.connect(self.onNewProject)
+        diag_edit.accepted.connect(self.onEditProject)
+        widget.push_delete.clicked.connect(self.onDeleteProject)
+        widget.push_open.clicked.connect(self.onOpenClicked)
+        widget.push_open_last.clicked.connect(self.onOpenLast)
+        widget.push_save.clicked.connect(self.onSaveClicked)
+        widget.push_help.clicked.connect(dc.ui.project_diag_help.v.show)
+        self.view = widget.view
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(self.view_headers)
+        self.model.setHorizontalHeaderLabels(headers)
         self.view.setModel(self.model)
         self.selection_model = self.view.selectionModel()
         self.horizontal_header = self.view.horizontalHeader()
         self.view.setAlternatingRowColors(True)
-        self.diag_new = dc.ui.project_diag_new.v
-        self.diag_edit = dc.ui.project_diag_edit.v
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
-        dc.ui.project.v.text_description.textChanged.connect(
-            self.onDescriptionChanged)
+        widget.text_description.textChanged.connect(self.onDescriptionChanged)
         self.view.activated.connect(self.showEditProject)
-        # global handles for getting currently selected pid and updating
-        # timestamp for currently selected project
         self.reloadTable()
-        if dc.c.lastpath.v: dc.ui.project.v.push_open_last.show()
-        else:               dc.ui.project.v.push_open_last.hide()
+        if dc.c.lastpath.v: widget.push_open_last.show()
+        else:               widget.push_open_last.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewClicked(self):
         dc.ui.project_diag_new.v.line_name.clear()
@@ -168,7 +163,7 @@ class NxProject:
         self.saveLayout()
         # clean out data
         self.model.clear()
-        self.model.setHorizontalHeaderLabels(self.view_headers)
+        self.model.setHorizontalHeaderLabels(headers)
         # hide open last after first activity
         dc.ui.project.v.push_open_last.hide()
         # load project items into table
