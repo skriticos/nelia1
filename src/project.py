@@ -41,33 +41,30 @@ class NxProject:
         else:               widget.push_open_last.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewClicked(self):
-        dc.ui.project_diag_new.v.line_name.clear()
-        dc.ui.project_diag_new.v.combo_ptype.setCurrentIndex(0)
-        dc.ui.project_diag_new.v.combo_status.setCurrentIndex(0)
-        dc.ui.project_diag_new.v.combo_category.setCurrentIndex(0)
-        dc.ui.project_diag_new.v.spin_priority.setValue(0)
-        dc.ui.project_diag_new.v.spin_challenge.setValue(0)
-        dc.ui.project_diag_new.v.text_description.clear()
-        dc.ui.project_diag_new.v.line_name.setFocus()
-        dc.ui.project_diag_new.v.show()
+        diag = dc.ui.project_diag_new.v
+        diag.line_name.clear()
+        diag.combo_ptype.setCurrentIndex(0)
+        diag.combo_status.setCurrentIndex(0)
+        diag.combo_category.setCurrentIndex(0)
+        diag.spin_priority.setValue(0)
+        diag.spin_challenge.setValue(0)
+        diag.text_description.clear()
+        diag.line_name.setFocus()
+        diag.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onOpenClicked(self):
-        # throw away changes?
         if dc.r.changed.v:
-            response = QMessageBox.question(
-                dc.ui.main.v, 'Discard changes?',
-                'Opening a file will discard your changes. ' + \
-                'Do you want to proceed?',
-                QMessageBox.Yes|QMessageBox.No)
+            q = 'Discard changes?'
+            m = 'Opening a file will discard your changes. ' \
+                + 'Do you want to proceed?'
+            yes, no = QMessageBox.Yes, QMessageBox.No
+            response = QMessageBox.question(dc.ui.main.v, q, m, yes|no)
             if response == QMessageBox.StandardButton.No: return
-        # read path
+        title  = 'Open nelia1 document'
+        select = 'Nelia Files (*{})'.format(dc.x.extension.v)
         path = QFileDialog.getOpenFileName(
-            dc.ui.main.v, 'Open nelia1 document', dc.x.default.path.v,
-            'Nelia Files (*{})'.format(dc.x.extension.v))[0]
-        # path dialog aborted
-        if not path:
-            return False
-        # set path and save document
+            dc.ui.main.v, title, dc.x.default.path.v, select)[0]
+        if not path: return False
         result = dcload(path)
         if isinstance(result, Exception):
             title, message = 'open failed', 'open failed! ' + str(result)
