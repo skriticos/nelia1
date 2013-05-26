@@ -54,14 +54,14 @@ class NxRoadmap:
         gl = dc.ui.roadmap.v.gridLayout_3
         gl.removeWidget(dc.ui.roadmap.v.push_milestone)
         dc.ui.roadmap.v.push_milestone.close()
-        mpb = MPushButton(dc.ui.roadmap.v, self.onChangeVersionSelection)
+        mpb = MPushButton(dc.ui.roadmap.v, self.onMsSelectionChanged)
         dc.ui.roadmap.v.push_milestone = mpb
         gl.addWidget(mpb, 0, 1, 1, 1)
         dc.ui.roadmap.v.label_2.setBuddy(mpb)
         self.reloadTable()
         major = dc.ui.roadmap.v.push_milestone.next_x
         minor = dc.ui.roadmap.v.push_milestone.next_y
-        self.onChangeVersionSelection(major, minor)
+        self.onMsSelectionChanged(major, minor)
         d = dc.ui.roadmap_diag_add.v
         d.radio_medium.setChecked(True)
         d.radio_feature.setChecked(True)
@@ -204,7 +204,7 @@ class NxRoadmap:
             dc.ui.roadmap.v.push_close.hide()
             dc.ui.roadmap.v.push_reopen.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onChangeVersionSelection(self, major, minor):
+    def onMsSelectionChanged(self, major, minor):
         self.smajor = major
         self.sminor = minor
         description = dc.sp.m._(major)._(minor).description.v
@@ -369,7 +369,7 @@ class NxRoadmap:
             ui.gridLayout_3.removeWidget(ui.push_milestone)
             ui.push_milestone.hide()
             ui.push_milestone.close()
-            ui.push_milestone = MPushButton(ui, self.onChangeVersionSelection,
+            ui.push_milestone = MPushButton(ui, self.onMsSelectionChanged,
                                             self.smajor, self.sminor)
             ui.gridLayout_3.addWidget(ui.push_milestone, 0, 1, 1, 1)
             ui.label_2.setBuddy(ui.push_milestone)
