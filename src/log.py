@@ -6,17 +6,17 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+headers = ['ID', 'Created', 'Summary']
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
     def __init__(self):
         self.view = dc.ui.log.v.table_history
         self.model = QStandardItemModel()
-        self.view_headers = ['ID', 'Created', 'Summary']
-        self.model.setHorizontalHeaderLabels(self.view_headers)
+        self.model.setHorizontalHeaderLabels(headers)
         self.view.setModel(self.model)
         self.selection_model = self.view.selectionModel()
         self.horizontal_header = self.view.horizontalHeader()
         self.view.setAlternatingRowColors(True)
-        # connect add roadmap callbacks
         dc.ui.log.v.push_new_entry.clicked.connect(self.onNewEntryClicked)
         dc.ui.log_diag_new.v.accepted.connect(self.onNewSubmit)
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
@@ -34,10 +34,8 @@ class NxLog:
             dc.ui.log.v.text_detail.setPlainText('No log selected')
             return
         row = indexes[0].row()
-        # get selected log id
         index = self.model.index(row, 0)
         slogid = int(self.model.itemFromIndex(index).text())
-        # populate detail widget
         dc.ui.log.v.text_detail.setEnabled(True)
         dc.ui.log.v.text_detail.setPlainText(dc.sp.log._(slogid).detail.v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -45,10 +43,10 @@ class NxLog:
         dc.c.log.header.width.v = list()
         for i in range(self.model.columnCount()):
             dc.c.log.header.width.v.append(self.view.columnWidth(i))
-        dc.c.log.sort.column.v \
-                = self.horizontal_header.sortIndicatorSection()
-        dc.c.log.sort.order.v \
-                = self.horizontal_header.sortIndicatorOrder().__repr__()
+        column = self.horizontal_header.sortIndicatorSection()
+        order  = self.horizontal_header.sortIndicatorOrder().__repr__()
+        dc.c.log.sort.column.v = column
+        dc.c.log.sort.order.v  = order
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
         for i,v in enumerate(dc.c.log.header.width.v):
@@ -61,13 +59,12 @@ class NxLog:
         self.saveLayout()
         self.selection_model.clear()
         self.model.clear()
-        self.model.setHorizontalHeaderLabels(self.view_headers)
+        self.model.setHorizontalHeaderLabels(headers)
         for lid in range(1, dc.sp.nextlid.v):
             self.model.insertRow(0, [
                 QStandardItem(str(lid).zfill(4)),
                 QStandardItem(convert(dc.sp.log._(lid).created.v)),
-                QStandardItem(dc.sp.log._(lid).summary.v)
-            ])
+                QStandardItem(dc.sp.log._(lid).summary.v) ])
         for i in range(self.model.rowCount()):
             index = self.model.index(i, 0)
             lid = int(self.model.itemFromIndex(index).text())
@@ -92,8 +89,8 @@ class NxLog:
         lid = self.slogid = dc.sp.nextlid.v
         dc.sp.log._(lid).created.v = int(time.time())
         dc.sp.log._(lid).summary.v = dc.ui.log_diag_new.v.line_summary.text()
-        dc.sp.log._(lid).detail.v \
-                = dc.ui.log_diag_new.v.text_detail.toPlainText()
+        detail = dc.ui.log_diag_new.v.text_detail.toPlainText()
+        dc.sp.log._(lid).detail.v = detail
         dc.sp.nextlid.v += 1
         dc.m.project.v.touchProject()
         self.reloadTable()
