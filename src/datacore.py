@@ -41,15 +41,12 @@ dc.x, dc.c, dc.r, dc.s
 dc.x.path.v = None
 dc.x.appname.v = __APPNAME__
 dc.c.lastpath.v = None
-# config path related stuff
 dc.x.home.v = os.path.expanduser('~')
 dc.x.config.basepath.v = os.path.join(dc.x.home.v, '.config', dc.x.appname.v)
-dc.x.config.filepath.v \
-    = os.path.join(dc.x.config.basepath.v, '{}.config'.format(dc.x.appname.v))
-# document path stuff
+fp = os.path.join(dc.x.config.basepath.v, '{}.config'.format(dc.x.appname.v))
+dc.x.config.filepath.v = fp
 dc.x.extension.v = '.nelia1'
 dc.x.default.path.v = os.path.expanduser('~/Documents')
-# default document values
 dc.s.nextpid.v = 1
 dc.s.idx.pid.v = set()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
