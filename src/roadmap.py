@@ -41,7 +41,7 @@ class NxRoadmap:
         dfin.push_finalize_minor.clicked.connect(self.onCloseMinorMs)
         selmod.selectionChanged.connect(self.onItemSelectionChanged)
         win.text_description.textChanged.connect(self.onMsDescChanged)
-        self.table.activated.connect(self.onMsItemActivated)
+        self.table.activated.connect(self.onMIActivated)
         self.hideMIControls()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
@@ -104,7 +104,7 @@ class NxRoadmap:
         diag.show()
         diag.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onMsItemActivated(self):
+    def onMIActivated(self):
         if self.smajor > dc.sp.curr.major.v or \
                 (self.smajor == dc.sp.curr.major.v \
                  and self.sminor > dc.sp.curr.minor.v):
