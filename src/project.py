@@ -105,12 +105,6 @@ class NxProject:
         self.view.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def touchProject(self):
-        """
-        On project change (e.g. edit meta, add log or change roadmap),
-        this should be called with the timestamp. It will update the last
-        changed timestamp and update the project index display and mark
-        changes as true.
-        """
         timestamp = int(time.time())
         dc.sp.modified.v = timestamp
         row = self.view.currentIndex().row()
@@ -119,31 +113,28 @@ class NxProject:
         dc.ui.project.v.push_save.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSelectionChanged(self, item_selection):
-        # get indexes
         indexes = item_selection.indexes()
-        # return if no indexes are selected
         if not indexes: return
         row = indexes[0].row()
         index = self.model.index(row, 0)
         dc.spid.v = int(self.model.itemFromIndex(index).text())
         dc.sp = dc.s._(dc.spid.v)
-        # update content and enable project description widget
         for w in [dc.ui.project.v.text_description]:
             w.setPlainText(dc.sp.description.v)
             w.setEnabled(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChanged(self):
         if self.init: return
-        dc.sp.description.v =dc.ui.project.v.text_description.toPlainText()
+        dc.sp.description.v = dc.ui.project.v.text_description.toPlainText()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.project.header.width.v = list()
         for i in range(self.model.columnCount()):
             dc.c.project.header.width.v.append(self.view.columnWidth(i))
-        dc.c.project.sort.column.v \
-                = self.horizontal_header.sortIndicatorSection()
-        dc.c.project.sort.order.v \
-                = self.horizontal_header.sortIndicatorOrder().__repr__()
+        sort  = self.horizontal_header.sortIndicatorSection()
+        order = self.horizontal_header.sortIndicatorOrder().__repr__()
+        dc.c.project.sort.column.v = sort
+        dc.c.project.sort.order.v  = order
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def loadLayout(self):
         for i,v in enumerate(dc.c.project.header.width.v):
@@ -155,12 +146,9 @@ class NxProject:
     def reloadTable(self):
         self.init = True
         self.saveLayout()
-        # clean out data
         self.model.clear()
         self.model.setHorizontalHeaderLabels(headers)
-        # hide open last after first activity
         dc.ui.project.v.push_open_last.hide()
-        # load project items into table
         for pid in dc.s.idx.pid.v:
             major, minor = dc.s._(pid).curr.major.v, dc.s._(pid).curr.minor.v
             self.model.insertRow(0, [
@@ -173,13 +161,8 @@ class NxProject:
                 QStandardItem(str(dc.s._(pid).priority.v)),
                 QStandardItem(str(dc.s._(pid).challenge.v)),
                 QStandardItem(convert(dc.s._(pid).modified.v)),
-                QStandardItem(convert(dc.s._(pid).created.v))
-            ])
-        # restore previous layout (sorting)
+                QStandardItem(convert(dc.s._(pid).created.v)) ])
         self.loadLayout()
-        # -- apply selection
-        # if project was deleted, dc.spid.v == 0, we want to select the last
-        # project ID
         if not dc.spid.v and len(dc.s.idx.pid.v):
             dc.spid.v = max(dc.s.idx.pid.v)
         for i in range(self.model.rowCount()):
@@ -187,32 +170,27 @@ class NxProject:
             pid = int(self.model.itemFromIndex(index).text())
             if pid == dc.spid.v:
                 selmod = self.view.selectionModel()
-                selmod.select(index,
-                    QItemSelectionModel.Select|QItemSelectionModel.Rows)
+                s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+                selmod.select(index, s|r)
                 break
-        # set state of controls
+        w = dc.ui.project.v
         if len(dc.s.idx.pid.v):
             dc.m.main.v.enableTabs()
-            dc.ui.project.v.push_edit.show()
-            dc.ui.project.v.push_delete.show()
-            if dc.r.changed.v:
-                dc.ui.project.v.push_save.show()
-            else:
-                dc.ui.project.v.push_save.hide()
-            dc.ui.project.v.push_new.setDefault(False)
+            w.push_edit.show()
+            w.push_delete.show()
+            if dc.r.changed.v: w.push_save.show()
+            else:              w.push_save.hide()
+            w.push_new.setDefault(False)
             self.view.setFocus()
-        # last project deleted
         else:
-            # don't want to save empty document
             dc.r.changed.v = False
-            # set default state
-            dc.ui.project.v.text_description.clear()
-            dc.ui.project.v.text_description.setEnabled(False)
+            w.text_description.clear()
+            w.text_description.setEnabled(False)
             dc.m.main.v.dissableTabs()
-            dc.ui.project.v.push_edit.hide()
-            dc.ui.project.v.push_delete.hide()
-            dc.ui.project.v.push_save.hide()
-            dc.ui.project.v.push_new.setFocus()
+            w.push_edit.hide()
+            w.push_delete.hide()
+            w.push_save.hide()
+            w.push_new.setFocus()
         self.init = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onNewProject(self):
@@ -240,7 +218,7 @@ class NxProject:
         dc.sp.m._(0)._(1).idx.v = set()
         dc.sp.m._(1)._(0).description.v = ''
         dc.sp.m._(1)._(0).idx.v = set()
-        dc.sp.m.idx.v = {0, 1} # major milestone index
+        dc.sp.m.idx.v = {0, 1}   # major milestone index
         dc.sp.m._(0).idx.v = {1} # minor milestone index (for 0.x)
         dc.sp.m._(1).idx.v = {0}
         self.reloadTable()
@@ -248,12 +226,12 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def showEditProject(self):
         self.diag_edit.line_name.setText(dc.sp.name.v)
-        self.diag_edit.combo_ptype.setCurrentIndex(
-            self.diag_edit.combo_ptype.findText(dc.sp.ptype.v))
-        self.diag_edit.combo_status.setCurrentIndex(
-            self.diag_edit.combo_status.findText(dc.sp.status.v))
-        self.diag_edit.combo_category.setCurrentIndex(
-            self.diag_edit.combo_category.findText(dc.sp.category.v))
+        i = self.diag_edit.combo_ptype.findText(dc.sp.ptype.v)
+        self.diag_edit.combo_ptype.setCurrentIndex(i)
+        i = self.diag_edit.combo_status.findText(dc.sp.status.v)
+        self.diag_edit.combo_status.setCurrentIndex(i)
+        i = self.diag_edit.combo_category.findText(dc.sp.category.v)
+        self.diag_edit.combo_category.setCurrentIndex(i)
         self.diag_edit.spin_priority.setValue(dc.sp.priority.v)
         self.diag_edit.spin_challenge.setValue(dc.sp.challenge.v)
         self.diag_edit.text_description.setPlainText(dc.sp.description.v)
@@ -272,12 +250,11 @@ class NxProject:
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDeleteProject(self):
-        response = QMessageBox.question(
-            dc.ui.project.v,
-            'Delete project?',
-            'Sure you want to delete project {}: {}?'.format(
-                str(dc.spid.v), dc.sp.name.v),
-            QMessageBox.Yes|QMessageBox.No)
+        t = 'Delete project?'
+        q = 'Sure you want to delete project {}: {}?'\
+                .format(str(dc.spid.v), dc.sp.name.v)
+        yes, no = QMessageBox.Yes, QMessageBox.No
+        response = QMessageBox.question(dc.ui.project.v, t, q, yes|no)
         if response == QMessageBox.StandardButton.No: return
         dc.s.idx.pid.v.remove(dc.spid.v)
         del dc.s.__dict__['_{}'.format(dc.spid.v)]
