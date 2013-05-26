@@ -37,11 +37,11 @@ class NxRoadmap:
         win.push_close.clicked.connect(self.onCloseMIClicked)
         win.push_reopen.clicked.connect(self.onReopenMIClicked)
         dfin = dc.ui.roadmap_diag_finalize.v
-        dfin.push_finalize_major.clicked.connect(self.onCloseMajorMilestone)
-        dfin.push_finalize_minor.clicked.connect(self.onCloseMinorMilestone)
+        dfin.push_finalize_major.clicked.connect(self.onCloseMajorMs)
+        dfin.push_finalize_minor.clicked.connect(self.onCloseMinorMs)
         selmod.selectionChanged.connect(self.onItemSelectionChanged)
         win.text_description.textChanged.connect(self.onMsDescChanged)
-        self.table.activated.connect(self.onMilestoneItemActivated)
+        self.table.activated.connect(self.onMsItemActivated)
         self.hideMIControls()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
@@ -70,14 +70,14 @@ class NxRoadmap:
         dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
         dc.ui.roadmap_diag_add.v.line_name.clear()
         dc.ui.roadmap_diag_add.v.text_description.clear()
-        self.reloadMilestoneButton('diag_new_edit')
+        self.updateMsButton('diag_new_edit')
         dc.ui.roadmap_diag_add.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAddIssueClicked(self):
         dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True)
         dc.ui.roadmap_diag_add.v.line_name.clear()
         dc.ui.roadmap_diag_add.v.text_description.clear()
-        self.reloadMilestoneButton('diag_new_edit')
+        self.updateMsButton('diag_new_edit')
         dc.ui.roadmap_diag_add.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditMIClicked(self):
@@ -104,7 +104,7 @@ class NxRoadmap:
         diag.show()
         diag.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onMilestoneItemActivated(self):
+    def onMsItemActivated(self):
         if self.smajor > dc.sp.curr.major.v or \
                 (self.smajor == dc.sp.curr.major.v \
                  and self.sminor > dc.sp.curr.minor.v):
@@ -138,8 +138,8 @@ class NxRoadmap:
         node.status.v      = 'Open'
         node.created.v     = node.modified.v = int(time.time())
         dc.sp.m._(major)._(minor).idx.v.add(self.smiid)
-        self.updateMilestoneTree()
-        self.reloadMilestoneButton()
+        self.updateMsTree()
+        self.updateMsButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -171,14 +171,14 @@ class NxRoadmap:
         node.priority.v    = priority
         node.description.v = diag.text_description.toPlainText()
         node.changed.v     = int(time.time())
-        self.updateMilestoneTree()
-        self.reloadMilestoneButton()
+        self.updateMsTree()
+        self.updateMsButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDeleteMIClicked(self):
         self.deleteMI(self.smiid)
-        self.reloadMilestoneButton()
+        self.updateMsButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -205,13 +205,13 @@ class NxRoadmap:
         self.sminor = minor
         description = dc.sp.m._(major)._(minor).description.v
         dc.ui.roadmap.v.text_description.setPlainText(description)
-        self.reloadMilestoneButton('root')
+        self.updateMsButton('root')
         self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onCloseMinorMilestone(self):
+    def onCloseMinorMs(self):
         self.closeMI(self.smiid)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onCloseMajorMilestone(self):
+    def onCloseMajorMs(self):
         self.closeMI(self.smiid)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMsDescChanged(self):
@@ -225,19 +225,19 @@ class NxRoadmap:
             if dc.sp.mi._(itemid).status.v == 'Open':
                 sumopen += 1
         if sumopen == 1:
-            self.closeMilestone()
+            self.closeMs()
         else:
             self.closeMI(self.smiid)
             self.reloadTable()
-        self.reloadMilestoneButton()
+        self.updateMsButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onReopenMIClicked(self):
         self.reopenMI(self.smiid)
         dc.m.project.v.touchProject()
         self.reloadTable()
-        self.reloadMilestoneButton()
+        self.updateMsButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def updateMilestoneTree(self):
+    def updateMsTree(self):
         for imajor in reversed(list(dc.sp.m.idx.v)):
             # major branch receaves first item
             if imajor > 0 and imajor+1 not in dc.sp.m.idx.v \
@@ -282,9 +282,9 @@ class NxRoadmap:
         major, minor = dc.sp.midx.v[miid]
         del dc.sp.midx.v[miid]
         dc.sp.m._(major)._(minor).idx.v.remove(miid)
-        self.updateMilestoneTree()
+        self.updateMsTree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def closeMilestone(self):
+    def closeMs(self):
         sumopen = 0
         for itemid in dc.sp.m._(self.smajor)._(self.sminor+1).idx.v:
             if dc.sp.mi._(itemid).status.v == 'Open':
@@ -369,7 +369,7 @@ class NxRoadmap:
         self.loadLayout()
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def reloadMilestoneButton(self, targetw='root'):
+    def updateMsButton(self, targetw='root'):
         if targetw == 'root':
             ui = dc.ui.roadmap.v
             ui.gridLayout_3.removeWidget(ui.push_milestone)
