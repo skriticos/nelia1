@@ -87,14 +87,11 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveClicked(self):
         if not dc.r.path.v:
+            t = 'Save nelia1 document'
+            q = 'Nelia Files (*{})'.format(dc.x.extension.v)
             path = QFileDialog.getSaveFileName(
-                dc.ui.main.v,
-                'Save nelia1 document', dc.x.default.path.v,
-                'Nelia Files (*{})'.format(dc.x.extension.v))[0]
-            # dialog aborted?
-            if path == '':
-                return
-            # extension check and optional appending
+                dc.ui.main.v, t, dc.x.default.path.v, q)[0]
+            if path == '': return
             extension_start = len(path) - len(dc.x.extension.v)
             if path.rfind(dc.x.extension.v) != extension_start:
                 path += dc.x.extension.v
