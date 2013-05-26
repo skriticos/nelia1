@@ -72,14 +72,14 @@ class NxRoadmap:
         dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
         dc.ui.roadmap_diag_add.v.line_name.clear()
         dc.ui.roadmap_diag_add.v.text_description.clear()
-        self.updateMsButton('diag_new_edit')
+        self.updateDiagMPushButton()
         dc.ui.roadmap_diag_add.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAddIssueClicked(self):
         dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True)
         dc.ui.roadmap_diag_add.v.line_name.clear()
         dc.ui.roadmap_diag_add.v.text_description.clear()
-        self.updateMsButton('diag_new_edit')
+        self.updateDiagMPushButton()
         dc.ui.roadmap_diag_add.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditMIClicked(self):
@@ -103,6 +103,7 @@ class NxRoadmap:
         if cat == 'Refactor':     diag.radio_refactor.setChecked(True)
         diag.line_name.setText(node.name.v)
         diag.text_description.setPlainText(node.description.v)
+        self.updateDiagMPushButton()
         diag.show()
         diag.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,7 +142,7 @@ class NxRoadmap:
         node.created.v     = node.modified.v = int(time.time())
         dc.sp.m._(major)._(minor).idx.v.add(self.smiid)
         self.updateMsTree()
-        self.updateMsButton()
+        self.updateRootMPushButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -174,7 +175,7 @@ class NxRoadmap:
         node.description.v = diag.text_description.toPlainText()
         node.changed.v     = int(time.time())
         self.updateMsTree()
-        self.updateMsButton()
+        self.updateRootMPushButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -184,7 +185,7 @@ class NxRoadmap:
         del dc.sp.midx.v[self.smiid]
         dc.sp.m._(major)._(minor).idx.v.remove(self.smiid)
         self.updateMsTree()
-        self.updateMsButton()
+        self.updateRootMPushButton()
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -214,7 +215,7 @@ class NxRoadmap:
         self.sminor = minor
         description = dc.sp.m._(major)._(minor).description.v
         dc.ui.roadmap.v.text_description.setPlainText(description)
-        self.updateMsButton('root')
+        self.updateRootMPushButton()
         self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMs(self):
@@ -242,14 +243,14 @@ class NxRoadmap:
             dc.sp.mi._(self.smiid).changed.v = int(time.time())
             dc.m.project.v.touchProject()
             self.reloadTable()
-        self.updateMsButton()
+        self.updateRootMPushButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onReopenMIClicked(self):
         dc.sp.mi._(self.smiid).status.v = 'Open'
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
         dc.m.project.v.touchProject()
         self.reloadTable()
-        self.updateMsButton()
+        self.updateRootMPushButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def updateMsTree(self):
         for imajor in reversed(list(dc.sp.m.idx.v)):
@@ -349,24 +350,23 @@ class NxRoadmap:
         self.loadLayout()
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def updateMsButton(self, targetw='root'):
-        if targetw == 'root':
-            ui = dc.ui.roadmap.v
-            ui.gridLayout_3.removeWidget(ui.push_milestone)
-            ui.push_milestone.hide()
-            ui.push_milestone.close()
-            ui.push_milestone = MPushButton(ui, self.onMsSelectionChanged,
-                                            self.smajor, self.sminor)
-            ui.gridLayout_3.addWidget(ui.push_milestone, 0, 1, 1, 1)
-            ui.label_2.setBuddy(ui.push_milestone)
-        elif targetw == 'diag_new_edit':
-            diags = dc.ui.roadmap_diag_add.v, dc.ui.roadmap_diag_edit.v
-            for d in diags:
-                d.gridLayout_2.removeWidget(d.push_target)
-                d.push_target.close()
-                d.push_target \
-                        = MPushButton(d,None,self.smajor, self.sminor,True)
-                d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
-                d.label_3.setBuddy(d.push_target)
+    def updateRootMPushButton(self):
+        ui = dc.ui.roadmap.v
+        ui.gridLayout_3.removeWidget(ui.push_milestone)
+        ui.push_milestone.hide()
+        ui.push_milestone.close()
+        ui.push_milestone = MPushButton(ui, self.onMsSelectionChanged,
+                                        self.smajor, self.sminor)
+        ui.gridLayout_3.addWidget(ui.push_milestone, 0, 1, 1, 1)
+        ui.label_2.setBuddy(ui.push_milestone)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def updateDiagMPushButton(self):
+        diags = dc.ui.roadmap_diag_add.v, dc.ui.roadmap_diag_edit.v
+        for d in diags:
+            d.gridLayout_2.removeWidget(d.push_target)
+            d.push_target.close()
+            d.push_target = MPushButton(d, None, self.smajor, self.sminor, True)
+            d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
+            d.label_3.setBuddy(d.push_target)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
