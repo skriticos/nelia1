@@ -42,7 +42,9 @@ class NxRoadmap:
         selmod.selectionChanged.connect(self.onItemSelectionChanged)
         win.text_description.textChanged.connect(self.onMsDescChanged)
         self.table.activated.connect(self.onMIActivated)
-        self.hideMIControls()
+        for w in ['label_selected', 'push_edit', 'push_delete', 'push_close',
+                  'push_reopen']:
+            dc.ui.roadmap.v.__dict__[w].hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onShowTab(self):
         if dc.r.roadmap.pid.last.v == dc.spid.v: return
@@ -190,9 +192,12 @@ class NxRoadmap:
         indexes = item_selection.indexes()
         if not indexes:
             if not len(dc.sp.m._(self.smajor)._(self.sminor).idx.v):
-                self.hideMIControls()
+                for w in ['label_selected', 'push_edit', 'push_delete',
+                          'push_close', 'push_reopen']:
+                    dc.ui.roadmap.v.__dict__[w].hide()
             return
-        self.showMIControls()
+        for w in ['label_selected', 'push_edit', 'push_delete']:
+            dc.ui.roadmap.v.__dict__[w].show()
         row = indexes[0].row()
         index = self.model.index(row, 0)
         item  = self.model.itemFromIndex(index)
@@ -321,15 +326,6 @@ class NxRoadmap:
         for f in filters:
             widget = dc.ui.roadmap.v.__dict__['check_{}'.format(f)]
             widget.setChecked(dc.c.roadmap._('show_{}'.format(f)).v)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def hideMIControls(self):
-        for w in ['label_selected', 'push_edit', 'push_delete', 'push_close',
-                  'push_reopen']:
-            dc.ui.roadmap.v.__dict__[w].hide()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def showMIControls(self):
-        for w in ['label_selected', 'push_edit', 'push_delete']:
-            dc.ui.roadmap.v.__dict__[w].show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reloadTable(self):
         if not isinstance(dc.ui.roadmap.v.push_milestone, MPushButton):
