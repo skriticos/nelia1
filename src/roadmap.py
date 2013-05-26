@@ -209,10 +209,12 @@ class NxRoadmap:
         self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMs(self):
-        self.closeMI(self.smiid)
+        dc.sp.mi._(self.smiid).status.v = 'Closed'
+        dc.sp.mi._(self.smiid).changed.v = int(time.time())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMajorMs(self):
-        self.closeMI(self.smiid)
+        dc.sp.mi._(self.smiid).status.v = 'Closed'
+        dc.sp.mi._(self.smiid).changed.v = int(time.time())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMsDescChanged(self):
         if self.init: return
@@ -227,7 +229,9 @@ class NxRoadmap:
         if sumopen == 1:
             self.closeMs()
         else:
-            self.closeMI(self.smiid)
+            dc.sp.mi._(self.smiid).status.v = 'Closed'
+            dc.sp.mi._(self.smiid).changed.v = int(time.time())
+            dc.m.project.v.touchProject()
             self.reloadTable()
         self.updateMsButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -268,10 +272,6 @@ class NxRoadmap:
             elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
                 dc.sp.m._(imajor).idx.v.remove(lminor)
                 del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def closeMI(self, miid):
-        dc.sp.mi._(miid).status.v = 'Closed'
-        dc.sp.mi._(miid).changed.v = int(time.time())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reopenMI(self, miid):
         dc.sp.mi._(miid).status.v = 'Open'
