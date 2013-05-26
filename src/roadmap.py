@@ -23,7 +23,6 @@ class NxRoadmap:
         self.table.setModel(self.model)
         selmod = self.selection_model = self.table.selectionModel()
         self.horizontal_header = self.table.horizontalHeader()
-        # setup callbacks
         win = dc.ui.roadmap.v
         win.push_add_feature.clicked.connect(self.onAddFeatureClicked)
         win.push_add_issue.clicked.connect(self.onAddIssueClicked)
@@ -79,11 +78,9 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onEditMIClicked(self):
         diag = dc.ui.roadmap_diag_edit.v
-        if dc.sp.mi._(self.smiid).itype.v == 'Feature':
-            diag.radio_feature.setChecked(True)
-        if dc.sp.mi._(self.smiid).itype.v == 'Issue':
-            diag.radio_issue.setChecked(True)
         node = dc.sp.mi._(self.smiid)
+        if node.itype.v == 'Feature': diag.radio_feature.setChecked(True)
+        if node.itype.v == 'Issue':   diag.radio_issue.setChecked(True)
         itype, prio, cat = node.itype.v, node.priority.v, node.category.v
         if itype == 'Feature': diag.radio_feature.setChecked(True)
         if itype == 'Issue':   diag.radio_issue.setChecked(True)
@@ -103,9 +100,8 @@ class NxRoadmap:
         diag.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMIActivated(self):
-        if self.smajor > dc.sp.curr.major.v or \
-                (self.smajor == dc.sp.curr.major.v \
-                 and self.sminor > dc.sp.curr.minor.v):
+        cma, cmi = dc.sp.curr.major.v, dc.sp.curr.minor.v
+        if self.smajor > cma or (self.smajor == cma and self.sminor > cmi):
             dc.ui.roadmap_diag_edit.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitNewMI(self):
@@ -229,10 +225,8 @@ class NxRoadmap:
     def onCloseMIClicked(self):
         sumopen = 0
         for itemid in dc.sp.m._(self.smajor)._(self.sminor).idx.v:
-            if dc.sp.mi._(itemid).status.v == 'Open':
-                sumopen += 1
-        if sumopen == 1:
-            self.closeMs()
+            if dc.sp.mi._(itemid).status.v == 'Open': sumopen += 1
+        if sumopen == 1: self.closeMs()
         else:
             dc.sp.mi._(self.smiid).status.v = 'Closed'
             dc.sp.mi._(self.smiid).changed.v = int(time.time())
@@ -282,13 +276,11 @@ class NxRoadmap:
     def closeMs(self):
         sumopen = 0
         for itemid in dc.sp.m._(self.smajor)._(self.sminor+1).idx.v:
-            if dc.sp.mi._(itemid).status.v == 'Open':
-                sumopen += 1
-        if sumopen:
-            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(False)
-        else:
-            dc.ui.roadmap_diag_finalize.v.push_finalize_major.setEnabled(True)
-        dc.ui.roadmap_diag_finalize.v.show()
+            if dc.sp.mi._(itemid).status.v == 'Open': sumopen += 1
+        diag = dc.ui.roadmap_diag_finalize.v
+        if sumopen: diag.push_finalize_major.setEnabled(False)
+        else:       diag.push_finalize_major.setEnabled(True)
+        diag.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.roadmap.header.width.v = list()
