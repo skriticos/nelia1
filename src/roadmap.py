@@ -28,6 +28,7 @@ class NxRoadmap:
         win.push_add_feature.clicked.connect(self.onAddFeatureClicked)
         win.push_add_issue.clicked.connect(self.onAddIssueClicked)
         dc.ui.roadmap_diag_add.v.accepted.connect(self.onSubmitNewMI)
+        dc.ui.roadmap_diag_edit.v.accepted.connect(self.onSubmitEditMI)
         for f in filters:
             widget = win.__dict__['check_{}'.format(f)]
             widget.stateChanged.connect(self.reloadTable)
