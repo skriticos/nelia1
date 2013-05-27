@@ -17,6 +17,7 @@ headers = [
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
     def __init__(self):
+        self.init = True
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(headers)
         self.table = dc.ui.roadmap.v.table
@@ -52,12 +53,11 @@ class NxRoadmap:
         dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
         dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
         dc.ui.roadmap_diag_edit.v.line_project.setText(dc.sp.name.v)
-        self.smajor, self.sminor = dc.sp.curr.major.v, dc.sp.curr.minor.v
+        self.smajor, self.sminor = dc.sp.curr.major.v, dc.sp.curr.minor.v+1
+        description = dc.sp.m._(self.smajor)._(self.sminor).description.v
+        dc.ui.roadmap.v.text_description.setPlainText(description)
         self.updateRootMPushButton()
         self.reloadTable()
-        major = dc.ui.roadmap.v.push_milestone.next_x
-        minor = dc.ui.roadmap.v.push_milestone.next_y
-        self.onMsSelectionChanged(major, minor)
         d = dc.ui.roadmap_diag_add.v
         d.radio_medium.setChecked(True)
         d.radio_feature.setChecked(True)
@@ -212,7 +212,7 @@ class NxRoadmap:
     def onCloseMinorMs(self):
         dc.sp.mi._(self.smiid).status.v = 'Closed'
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
-        if dc.smajor > dc.sp.curr.major.v:
+        if self.smajor > dc.sp.curr.major.v:
             dc.sp.curr.major.v += 1
         dc.sp.curr.minor.v += 1
         self.sminor += 1
