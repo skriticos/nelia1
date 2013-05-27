@@ -212,6 +212,11 @@ class NxRoadmap:
     def onCloseMinorMs(self):
         dc.sp.mi._(self.smiid).status.v = 'Closed'
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
+        dc.sp.curr.minor.v += 1
+        self.sminor += 1
+        self.reloadTable()
+        self.updateRootMPushButton()
+        dc.ui.roadmap_diag_finalize.v.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMajorMs(self):
         dc.sp.mi._(self.smiid).status.v = 'Closed'
@@ -224,9 +229,11 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMIClicked(self):
         sumopen = 0
-        for itemid in dc.sp.m._(self.smajor)._(self.sminor).idx.v:
-            if dc.sp.mi._(itemid).status.v == 'Open': sumopen += 1
-        if sumopen == 1: self.closeMs()
+        ma, mi = self.smajor, self.sminor
+        if ma == dc.sp.curr.major.v and mi == dc.sp.curr.minor.v+1:
+            for itemid in dc.sp.m._(ma)._(mi).idx.v:
+                if dc.sp.mi._(itemid).status.v == 'Open': sumopen += 1
+            if sumopen == 1: self.closeMs()
         else:
             dc.sp.mi._(self.smiid).status.v = 'Closed'
             dc.sp.mi._(self.smiid).changed.v = int(time.time())
