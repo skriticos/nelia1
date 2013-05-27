@@ -63,6 +63,26 @@ class MainWindow():
             dc.m.roadmap.v.loadLayout()
         dc.ui.main.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # TEST
+        dc.m.project.v.onNewProject()
+        dc.sp = dc.s._(1)
+        dc.ui.main.v.tabnavi.setCurrentIndex(2)
+        dc.m.roadmap.v.smajor = 0
+        dc.m.roadmap.v.sminor = 1
+        print ('adding feautre')
+        dc.m.roadmap.v.onAddFeatureClicked()
+        dc.m.roadmap.v.onSubmitNewMI()
+        dc.m.roadmap.v.smiid = 1
+        print ('closing 0.1 (minor branch)')
+        dc.m.roadmap.v.onCloseMinorMs()
+        print ('adding to 0.2')
+        dc.m.roadmap.v.onAddFeatureClicked()
+        dc.m.roadmap.v.onSubmitNewMI()
+        dc.m.roadmap.v.smiid = 2
+
+        from datacore import _dcdump
+        _dcdump(dc.sp, 'sp')
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveShortcutActivated(self):
         if dc.r.changed.v:
             dc.m.project.v.onSaveClicked()

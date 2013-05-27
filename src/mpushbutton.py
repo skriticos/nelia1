@@ -17,6 +17,8 @@ class MPushButton(QPushButton):
         self.setMenu(self.root_menu)
         self.change_callback = change_callback
         Δn = 0
+        if not open_only:
+            print('cmajor, cminor', dc.sp.curr.major.v, dc.sp.curr.minor.v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         for n in dc.sp.m.idx.v: # n == major verions
             Δn = n - x
@@ -97,6 +99,8 @@ class MPushButton(QPushButton):
                 Δnm = '{}{},{}'.format(sign, abs(Δn), abs(Δm))
                 label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(
                     icon,n,m,Δnm,fc,fo+fc,ic,io+ic)
+                if not open_only:
+                    print(label)
                 if sel_x == n and sel_y == m and open_only and Δm > 0:
                     self.setText(label)
                     self.current_text = label
@@ -122,9 +126,12 @@ class MPushButton(QPushButton):
             if open_only and not oo:
                 major_menu.close()
                 continue
-            major_menu.setTitle('{}   v{}.x   f:{}/{}   i:{}/{}'.format(
-                icon, n, mfc, mfo+mfc, mic, mio+mic))
+            title = '{}   v{}.x   f:{}/{}   i:{}/{}'\
+                    .format(icon, n, mfc, mfo+mfc, mic, mio+mic)
+            major_menu.setTitle(title)
+            if not open_only: print ('title:', title)
             self.root_menu.addMenu(major_menu)
+        if not open_only: print()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getVersion(self):
             x, y = self.current_text.split(' ')[3][1:].split('.')

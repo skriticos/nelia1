@@ -13,6 +13,6 @@ timer = PySide.QtCore.QTimer()
 timer.start(500)
 timer.timeout.connect(lambda: None)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sys.exit(app.exec_())
+# sys.exit(app.exec_())
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
