@@ -56,7 +56,7 @@ class MPushButton(QPushButton):
                             + m + len(dc.sp.m._(0).idx.v) - y + 1
                 if x == 1:
                     if n == 0:
-                        Δm = -1 * (y + (len(dc.sp.m._(0).idx.v - m))) - 1
+                        Δm = -1 * (y + (len(dc.sp.m._(0).idx.v) - m)) - 1
                     if n == x:
                         Δm = m - y
                     if n > x:
