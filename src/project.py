@@ -203,7 +203,7 @@ class NxProject:
         dc.sp.nextlid.v     = 1
         dc.sp.nextmiid.v    = 1
         dc.sp.curr.major.v  = 0
-        dc.sp.curr.minor.v  = 0
+        dc.sp.curr.minor.v  = 1
         dc.sp.name.v        = self.diag_new.line_name.text()
         dc.sp.category.v    = self.diag_new.combo_category.currentText()
         dc.sp.status.v      = self.diag_new.combo_status.currentText()

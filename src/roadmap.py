@@ -53,7 +53,7 @@ class NxRoadmap:
         dc.ui.roadmap.v.line_project.setText(dc.sp.name.v)
         dc.ui.roadmap_diag_add.v.line_project.setText(dc.sp.name.v)
         dc.ui.roadmap_diag_edit.v.line_project.setText(dc.sp.name.v)
-        self.smajor, self.sminor = dc.sp.curr.major.v, dc.sp.curr.minor.v+1
+        self.smajor, self.sminor = dc.sp.curr.major.v, dc.sp.curr.minor.v
         description = dc.sp.m._(self.smajor)._(self.sminor).description.v
         dc.ui.roadmap.v.text_description.setPlainText(description)
         self.updateRootMPushButton()
@@ -101,7 +101,7 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMIActivated(self):
         cma, cmi = dc.sp.curr.major.v, dc.sp.curr.minor.v
-        if self.smajor > cma or (self.smajor == cma and self.sminor > cmi):
+        if self.smajor > cma or (self.smajor == cma and self.sminor >= cmi):
             dc.ui.roadmap_diag_edit.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitNewMI(self):
@@ -212,8 +212,6 @@ class NxRoadmap:
     def onCloseMinorMs(self):
         dc.sp.mi._(self.smiid).status.v = 'Closed'
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
-        if self.smajor > dc.sp.curr.major.v:
-            dc.sp.curr.major.v += 1
         dc.sp.curr.minor.v += 1
         self.sminor += 1
         self.reloadTable()
@@ -225,9 +223,10 @@ class NxRoadmap:
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
         x = max(dc.sp.m._(self.smajor).idx.v)
         dc.sp.m._(self.smajor).idx.v.remove(x)
-        dc.sp.curr.minor.v += 1
+        dc.sp.curr.major.v += 1
+        dc.sp.curr.minor.v = 0
         self.sminor = 0
-        self.smajor = dc.sp.curr.major.v + 1
+        self.smajor = dc.sp.curr.major.v
         self.reloadTable()
         self.updateRootMPushButton()
         dc.ui.roadmap_diag_finalize.v.hide()
@@ -240,15 +239,16 @@ class NxRoadmap:
     def onCloseMIClicked(self):
         sumopen = 0
         ma, mi = self.smajor, self.sminor
-        if ma == dc.sp.curr.major.v and mi == dc.sp.curr.minor.v+1:
+        if ma == dc.sp.curr.major.v and mi == dc.sp.curr.minor.v:
             for itemid in dc.sp.m._(ma)._(mi).idx.v:
                 if dc.sp.mi._(itemid).status.v == 'Open': sumopen += 1
-            if sumopen == 1: self.closeMs()
-        else:
-            dc.sp.mi._(self.smiid).status.v = 'Closed'
-            dc.sp.mi._(self.smiid).changed.v = int(time.time())
-            dc.m.project.v.touchProject()
-            self.reloadTable()
+            if sumopen == 1:
+                self.closeMs()
+            else:
+                dc.sp.mi._(self.smiid).status.v = 'Closed'
+                dc.sp.mi._(self.smiid).changed.v = int(time.time())
+                dc.m.project.v.touchProject()
+                self.reloadTable()
         self.updateRootMPushButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onReopenMIClicked(self):
