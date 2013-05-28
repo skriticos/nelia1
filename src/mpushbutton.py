@@ -115,13 +115,21 @@ class MPushButton(QPushButton):
                 major_menu.addAction(action)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             oo = False
-            if Δn > 0:
+            last = max(dc.sp.m._(n).idx.v)
+            laststat = dc.sp.mi._(last).status.v
+            if Δn > 0 and laststat == 'Open':
                 icon = '◇'
                 oo = True
-            if Δn == 0:
+            if Δn > 0 and laststat == 'Closed':
                 icon = '◈'
                 oo = True
-            if Δn < 0:
+            if Δn == 0 and laststat == 'Open':
+                icon = '◈'
+                oo = True
+            if Δn == 0 and laststat == 'Closed':
+                icon = '◆'
+                oo = True
+            if Δn < 0 and laststat == 'Closed':
                 icon = '◆'
             if open_only and not oo:
                 major_menu.close()

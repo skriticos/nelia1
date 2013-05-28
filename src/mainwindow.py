@@ -79,7 +79,14 @@ class MainWindow():
         dc.m.roadmap.v.onAddFeatureClicked()
         dc.m.roadmap.v.onSubmitNewMI()
         dc.m.roadmap.v.smiid = 2
-
+        print ('closing 1.x (major branch)')
+        dc.m.roadmap.v.onCloseMajorMs()
+        print ('adding to 1.0')
+        dc.m.roadmap.v.onAddFeatureClicked()
+        dc.m.roadmap.v.onSubmitNewMI()
+        dc.m.roadmap.v.smiid = 3
+        print ('closing 1.0 (minor branch)')
+        dc.m.roadmap.v.onCloseMinorMs()
         from datacore import _dcdump
         _dcdump(dc.sp, 'sp')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

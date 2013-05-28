@@ -281,7 +281,9 @@ class NxRoadmap:
             if imajor is 0 and lminor is 1 and not dc.sp.m._(0)._(1).idx.v:
                 break
             # last minor branch receaves first item
-            if len(dc.sp.m._(imajor)._(lminor).idx.v):
+            last = max(dc.sp.m._(imajor).idx.v)
+            laststat = dc.sp.mi._(last).status.v
+            if len(dc.sp.m._(imajor)._(lminor).idx.v) and laststat == 'Open':
                 dc.sp.m._(imajor).idx.v.add(lminor+1)
                 dc.sp.m._(imajor)._(lminor+1).description.v = ''
                 dc.sp.m._(imajor)._(lminor+1).idx.v = set()
