@@ -259,38 +259,47 @@ class NxRoadmap:
         self.updateRootMPushButton()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def updateMsTree(self):
-        for imajor in reversed(list(dc.sp.m.idx.v)):
-            # major branch receaves first item
-            if imajor > 0 and imajor+1 not in dc.sp.m.idx.v \
-                          and len(dc.sp.m._(imajor)._(0).idx.v):
-                # add imajor+1.0, imajor.1
-                dc.sp.m.idx.v.add(imajor+1)
-                dc.sp.m._(imajor+1).idx.v = {0}
-                dc.sp.m._(imajor+1)._(0).description.v = ''
-                dc.sp.m._(imajor+1)._(0).idx.v = set()
-                dc.sp.m._(imajor).idx.v.add(1)
-                dc.sp.m._(imajor)._(1).description.v = ''
-                dc.sp.m._(imajor)._(1).idx.v = set()
-                continue
-            # major branch looses last item
-            elif imajor > 1 and not len(dc.sp.m._(imajor-1)._(0).idx.v):
-                del dc.sp.m.__dict__['_{}'.format(imajor)]
-                dc.sp.m.idx.v.remove(imajor)
-                continue
-            lminor = max(dc.sp.m._(imajor).idx.v)
-            if imajor is 0 and lminor is 1 and not dc.sp.m._(0)._(1).idx.v:
-                break
-            # last minor branch receaves first item
-            last = max(dc.sp.m._(imajor).idx.v)
-            laststat = dc.sp.mi._(last).status.v
-            if len(dc.sp.m._(imajor)._(lminor).idx.v) and laststat == 'Open':
-                dc.sp.m._(imajor).idx.v.add(lminor+1)
-                dc.sp.m._(imajor)._(lminor+1).description.v = ''
-                dc.sp.m._(imajor)._(lminor+1).idx.v = set()
-            # previous to last minor branch looses last item
-            elif lminor and not len(dc.sp.m._(imajor)._(lminor-1).idx.v):
-                dc.sp.m._(imajor).idx.v.remove(lminor)
-                del dc.sp.m._(imajor).__dict__['_{}'.format(lminor)]
+        for major in reversed(list(dc.sp.m.idx.v)):
+            major_index = dc.sp.m.idx
+            loop_major = dc.sp.m._(major)
+            if major > 1:
+                previous_major_has_item \
+                        = bool(len(dc.sp.m._(major-1)._(0).idx.v))
+                if not previous_major_has_item:
+                    major_index.v.remove(major)
+                    del dc.sp.m.__dict__['_{}'.format(major)]
+                    continue
+            if major > 0:
+                next_major_exists = major+1 in major_index.v
+                has_item = bool(len(loop_major._(0).idx.v))
+                if has_item and not next_major_exists:
+                    major_index.v.add(major+1)
+                    next_major = dc.sp.m._(major+1)
+                    next_major.idx.v = {0}
+                    next_major._(0).description.v = ''
+                    next_major._(0).idx.v = set()
+                    loop_major.idx.v.add(1)
+                    loop_major._(1).description.v = ''
+                    loop_major._(1).idx.v = set()
+                    continue
+            lastminor = max(loop_major.idx.v)
+            last_minor_has_item = bool(len(loop_major._(lastminor).idx.v))
+            if last_minor_has_item:
+                loop_major.idx.v.add(lastminor+1)
+                loop_major._(lastminor+1).description.v = ''
+                loop_major._(lastminor+1).idx.v = set()
+            if major == 0 and lastminor == 1: continue
+            if lastminor == 0: continue
+            has_multiple_minors = False
+            if major == 0 and lastminor > 1:
+                has_multiple_minors = True
+            if major > 0 and lastminor > 0:
+                has_multiple_minors = True
+            previous_to_last_minor_has_item \
+                    = bool(len(loop_major._(lastminor-1).idx.v))
+            if has_multiple_minors and not previous_to_last_minor_has_item:
+                loop_major.idx.v.remove(lastminor)
+                del loop_major.__dict__['_{}'.format(lastminor)]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def closeMs(self):
         sumopen = 0
