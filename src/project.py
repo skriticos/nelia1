@@ -122,6 +122,8 @@ class NxProject:
         for w in [dc.ui.project.v.text_description]:
             w.setPlainText(dc.sp.description.v)
             w.setEnabled(True)
+        name = dc.sp.name.v
+        dc.ui.main.v.setWindowTitle('Nelia1 - {}'.format(name))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onDescriptionChanged(self):
         if self.init: return
@@ -149,6 +151,8 @@ class NxProject:
         self.model.clear()
         self.model.setHorizontalHeaderLabels(headers)
         dc.ui.project.v.push_open_last.hide()
+        if not dc.s.idx.pid.v:
+            dc.ui.main.v.setWindowTitle('Nelia1')
         for pid in dc.s.idx.pid.v:
             major, minor = dc.s._(pid).curr.major.v, dc.s._(pid).curr.minor.v
             self.model.insertRow(0, [
