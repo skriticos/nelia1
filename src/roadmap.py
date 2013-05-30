@@ -102,7 +102,7 @@ class NxRoadmap:
     def onMIActivated(self):
         cma, cmi = dc.sp.curr.major.v, dc.sp.curr.minor.v
         if self.smajor > cma or (self.smajor == cma and self.sminor >= cmi):
-            dc.ui.roadmap_diag_edit.v.show()
+            self.onEditMIClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSubmitNewMI(self):
         diag = dc.ui.roadmap_diag_add.v
