@@ -1,0 +1,100 @@
+
+-- show logo and name --
+
+Hello. In this video I'll show you the simple project tracker called Nelia1.
+It's purpose is to quickly capture smaller project ideas and track milestones
+with associated features and issues.
+
+-- blend in Nelia1 window --
+
+So, this is the starting window. It displays a list of projects store in the
+current document. The application stores the data in local documents. Each of
+these can contain any number of projects. I'll quickly create two sample
+projects for demonstration.
+
+-- open the new project dialog --
+
+The project information that you can specify in the new project window will help
+you to sort through your projects. The name of the prject could be anything --
+enter a InkBrush -- With the type, status and category dropdown you can specify
+these attributes of your project. The first sample will be a graphics
+application that is in design status. You can set a subjective priority and
+challenge and add a general description.
+
+-- submit project --
+
+Controls are shown based on context. Now that there is a project in the list, it
+can be edited and deleted. Additionally you can now save the document, as it has
+been changed. The project description box shows the description of the currently
+selected project and can be used to edit the description. I'll continue creating
+the second sample appliaction.
+
+-- create second sample --
+
+The headers can be used to sort through the projects. Creation and modification
+date are tracked automatically. It's recommended to sort based on the
+modification date to keep the newest changes on top. The layout of the tables is
+stored in the configuration and will be restored the next time the application
+starts.
+
+-- switch to log tab --
+
+The log tab is a simple, sequential table containing your development log or
+diary. Notice how the currently selected project is displayed in the top line
+and title. This log list belongs to this project only.
+
+-- create two sample log entries --
+-- switch to the roadmap tab --
+
+This is the roadmap tab. It tracks the milestones for the selected project.
+Milestones can contain milestone items called features and issues. There is a
+general milestone description box that belongs to the currently selected
+milestone, right now 0.1. I'll add two issues and a fetaure to show you how
+milestone items work.
+
+-- create a feature --
+
+The first line holds the name of the milestone item. The button below shows the
+target milestone, wich is the currently selected milestone by default (more on
+this later). Type, priority and category of the milestone item are used for
+sorting and filtering through them. Description is to detail the particular
+specifics of the milestone item.
+
+-- submit milestone item --
+
+As you can see, this list behaves similarily to the project list. The selected
+item description box will show you the currently selected milestone. The table
+can be sorted. Additionally this witdet contains a set of filter controls for
+the milestone items that show or hide them.
+
+-- create other two milestone items --
+
+As hinted before, the the items in this list belong to the currently selected
+milestone. This can be changed with the milestone selection control. The
+milestones are automatically maintained by the application. Each time you add a
+milestone item to a milestone that did not have one, a new empty milestone is
+created. Milestone items are closed when they are completed. Once all milestone
+items in a milestone are closed, a dialog will apper asking you if you'd like to
+close a minor or major milestone.
+
+-- close all milestone items --
+
+Closing a minor milestone will make the next minor milestone the active one
+while closing the major milestone will make the first milestone of the next
+major milestone the active one. When switching between projects, the active
+milestone is always selected by default. The active milestone is indicated by
+the white diamond with a black diamond inside. The fully black diamond
+indicatens closed milestones while the fully white ones the future milestones.
+The +0,1 part shows how many major and minor (summarized) milestones the current
+selection is away from the active milestone. Finally the f:x/x and i:x/x labels
+show how many features and issues the milestone has and how many are already
+closed.
+
+-- blend back the logo --
+
+The application was designed with the aim to reduce the overhead as much as
+possible and show what is need, when it is need it helping to navigate
+through the development process.
+
+-- cut --
+
