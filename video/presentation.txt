@@ -1,100 +1,174 @@
-
 -- show logo and name --
 
-Hello. In this video I'll show you the simple project tracker called Nelia1.
-It's purpose is to quickly capture smaller project ideas and track milestones
-with associated features and issues.
+Hello. In this video I'll show you the capabilities and usage of
+Nelia1.  It's a Linux desktop application to simply track your personal
+software-projects. Think of it as a bookkeeping tool for your existing and
+drafted programs. Nelia1 will help you by simply capturing this information
+and displaying it in a form that let's you quickly find what you are looking
+for or just simply browse through your projects.
 
 -- blend in Nelia1 window --
 
-So, this is the starting window. It displays a list of projects store in the
-current document. The application stores the data in local documents. Each of
-these can contain any number of projects. I'll quickly create two sample
-projects for demonstration.
+When you start up the application you see an emtpy document. On the top you
+can see the actions you can perfrom. In the right plane you see a list of
+pojects in this document and on the left plane the description of the currently
+selected project. I'll quickly create two sample projects for demonstration.
 
 -- open the new project dialog --
 
-The project information that you can specify in the new project window will help
-you to sort through your projects. The name of the prject could be anything --
-enter a InkBrush -- With the type, status and category dropdown you can specify
-these attributes of your project. The first sample will be a graphics
-application that is in design status. You can set a subjective priority and
-challenge and add a general description.
+In the new project dialog you specify the details of the entry. These
+will enable you to sort through the project list. Give your new project
+an expressive name, then select the type, status, category, priority and
+difficulty. These are hands on attributes that you can edit as needed. Finally
+add a general description of your project and submit the dialog.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Name: SimpleDraw
+Type: Application
+Category: Graphics
+Status: Spark
+Difficulty: 4
+Priority: 5
+
+Simple sample drawing application. It provides a canvas to draw on and some
+effects to modify the canvas. It provides a brush to modify the canvas at the
+cursor in various geometric shapes. It's special unique feature will be that it
+can a background with happy penguins to each picture seamlessly.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- submit project --
 
-Controls are shown based on context. Now that there is a project in the list, it
-can be edited and deleted. Additionally you can now save the document, as it has
-been changed. The project description box shows the description of the currently
-selected project and can be used to edit the description. I'll continue creating
-the second sample appliaction.
+Now that there is an entry in the list, a set of new controls are available for
+interacting with this entry and to save the now changed document. I'll add a
+second sample application to show you the sorting and switching mechanisms.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Name: Galactic Convergence
+Type: Application
+Category: Game
+Status: Spark
+Difficulty: 9
+Priority: 3
+
+Full featured RTS in a 3D space environment. Manage fleets, planets and space
+stations. Engage in diplomacy, espionage and trade. This is a sample, so why not
+exaggerate a bit. ;)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -- create second sample --
 
-The headers can be used to sort through the projects. Creation and modification
-date are tracked automatically. It's recommended to sort based on the
-modification date to keep the newest changes on top. The layout of the tables is
-stored in the configuration and will be restored the next time the application
-starts.
+You can use the list header to sort through the project entries. Normally you'll
+want to sort them by modification date, so that your active projects are at the
+top, but you can sort through any field you like. If you change the layout, the
+application will remember this the next time you start the application.
 
 -- switch to log tab --
 
-The log tab is a simple, sequential table containing your development log or
-diary. Notice how the currently selected project is displayed in the top line
-and title. This log list belongs to this project only.
+On the log tab you can keep a personal log or diary for the selected
+application. It's straight forward. You set the title and the log message.
+Notice how the currently selected project is displayed in the top line and
+title. This log list belongs to this project only.
 
--- create two sample log entries --
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Title: Starting project
+
+This is the first log entry. A good place to describe more in detail what
+targets you see for your project, what architecture and component layout it will
+use, which data structures are essential and serve as interfaces between
+components. Maybe a short storry on how you come to the idea of this project.
+You get the idea..
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Title: Setting up the environment
+
+I have created the project folder hierarchy, added a build system and set up the
+revision control. Copied the boilerplate for the test cases and the core system
+and added an initial mockup of the user interface. Everything is now set up and
+I can get cracking.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 -- switch to the roadmap tab --
 
-This is the roadmap tab. It tracks the milestones for the selected project.
-Milestones can contain milestone items called features and issues. There is a
-general milestone description box that belongs to the currently selected
-milestone, right now 0.1. I'll add two issues and a fetaure to show you how
-milestone items work.
+Most of the magic happens on the roadmap tab. This keep track of the milestones
+of your project. It sorts you milestone items -- which consist of features and
+isses -- into major and minor milestones. These are maintained automatically, so
+you don't need to bother with that.
 
--- create a feature --
+It has a similar layout than the other two tabs: the available actions are
+presented on the top. The table with the milestone items of the selected
+milestone within the selected project is located on the right. The top
+description box contains the description of the selected milestone and the
+bottom box the description of the selected milestone item in the table.
+I'll add a few milestone items to show you how they work.
 
-The first line holds the name of the milestone item. The button below shows the
-target milestone, wich is the currently selected milestone by default (more on
-this later). Type, priority and category of the milestone item are used for
-sorting and filtering through them. Description is to detail the particular
-specifics of the milestone item.
+-- open feature dialog --
 
--- submit milestone item --
+The name should be -- again -- something expressive. How you determine that is
+up to you. You could for instance just write what ever come to mind, though
+starting with the component the feature belongs to is a good idea too, because
+it makes sorting by name more usefull.
 
-As you can see, this list behaves similarily to the project list. The selected
-item description box will show you the currently selected milestone. The table
-can be sorted. Additionally this witdet contains a set of filter controls for
-the milestone items that show or hide them.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Name: build ~ bootstrap project environment
+Type: Feature
+Priority: High
+Category: Core
 
--- create other two milestone items --
+Copy the boilerplate code for a new project for $PROGRAMMING_LANGUAGE to the
+project folder and adjust the parameters.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Name: mainwindow ~ create main user interface form
+Type: Feature
+Priority: High
+Category: Core
 
-As hinted before, the the items in this list belong to the currently selected
-milestone. This can be changed with the milestone selection control. The
-milestones are automatically maintained by the application. Each time you add a
-milestone item to a milestone that did not have one, a new empty milestone is
-created. Milestone items are closed when they are completed. Once all milestone
-items in a milestone are closed, a dialog will apper asking you if you'd like to
-close a minor or major milestone.
+Use the designer to create an intial version of the main application window with
+$CONTROLS and $WIDGETS. Create source code that loads the main widget and sets
+up the application main loop.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Name: mainwindow, callback ~ add callback to the $BUTTON
+Type: Feature
+Priority: Medium
+Category: Core
 
--- close all milestone items --
+The $BUTTON is doing some fancy stuff. Add an initial implementation.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Name: mainwindow ~ some widget is acting up
+Type: Issue
+Priority: Medium
+Category: Corrective
 
-Closing a minor milestone will make the next minor milestone the active one
-while closing the major milestone will make the first milestone of the next
-major milestone the active one. When switching between projects, the active
-milestone is always selected by default. The active milestone is indicated by
-the white diamond with a black diamond inside. The fully black diamond
-indicatens closed milestones while the fully white ones the future milestones.
-The +0,1 part shows how many major and minor (summarized) milestones the current
-selection is away from the active milestone. Finally the f:x/x and i:x/x labels
-show how many features and issues the milestone has and how many are already
-closed.
+The funny widget in the top right is acting up if the widget is resized.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With the filter controls on the left side of the table you can set which items
+are displayed or hidden in the list. Showing the open items and hiding the
+closed ones is usefull to focus on outstanding tasks. The other filters are
+usefull based on the context that you are interested in.
+
+The big button on the top-left is the milestone selection button. On the face it
+shows you what state the selected milestone is in -- past, present (active) or
+future ones. The next number pair shows you how far away the selected milestone
+is from the active one in terms of major milestones and comibned minor
+milestones. The final two blocks show you how many features and issues are
+assigned to the milestone and how many of them have already been completed. With
+this control you can change the selection and check what milestone items were
+present in closed milestones or plan future milestones in advance.
+
+Once all milestone items in the active milestone are closed, a dialog will
+prompt you to close the milestone. There are two choices available: close minor
+or major milestone. This will affect which milestone will be the next active one
+- the next minor milestone or the next major one. The milestones are generated
+automatically. Once you add an item to an empty milestone, the application will
+create a new empty one after it, so you don't have to worry about that. Just add
+the items, close them and move in the roadmap.
+
+-- move around the roadmap --
 
 -- blend back the logo --
 
-The application was designed with the aim to reduce the overhead as much as
-possible and show what is need, when it is need it helping to navigate
-through the development process.
+The application was designed with the aim to reduce your congnitive overhead
+as much as possible and show what you need, when you need it helping to easily
+navigate through the development process and focus on design and implementation.
 
 -- cut --
 
