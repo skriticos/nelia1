@@ -1,0 +1,36 @@
+*** Recipe Manager
+Manage cooking recipes. Edit the ingredient list and cooking instructions. Add pictures of the cooking process and the resulting dish. Rate your recipes and add improvment suggestions. Revision your recipes and perfect your dishes over time. Calculate nutrition statistics (e.g. calories, vitamins, etc.)
+------------------------------
+*** Starting up.. (log)
+During the cooking of this tasty quinoa fish dish I got the idea for this application. The dish tasted very good, but it could have been improved by some soy sauce over the vegetables. I though it would be awesome to have an application to keep track of this to imrove my own recipies.
+------------------------------
+*** build ~ bootstrap project folder (feature)
+1. setup project folder
+2. initialize local and remote git repository
+3. setup build system
+4. setup test cases
+5. create insertion point (main loop)
+------------------------------
+*** design ~ create a schematic of the core data structures
+1. general recipe (description, pictures)
+2. ingredients (revisioned)
+3. rating (revisioned)
+4. improvement suggestions (revisioned)
+------------------------------
+*** design ~ create user stories
+1. add a new recipe
+2. add improvement suggestion
+3. improve recipe
+------------------------------
+*** ui, prototype ~ interface mockup
+1. recipe overview widget
+2. ingredient edit widget
+3. rating and improvment widget
+------------------------------
+*** Book Organiser
+Application to organize your printed book collection (for frequent readers). Catalouge your books based on autor names, title and genre and location on your various bookshelves. Rate your books and create a whishlist for new books. Create a reading queue of the books that you plan to read soon. Get more information about your books from various internet sites.
+------------------------------
+*** Getting lost between bookshelves..
+I have just completed a very good book that reminded me of another book I bought last. 
+
+
