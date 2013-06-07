@@ -196,53 +196,68 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QWidget" name="widget_6" native="true">
-      <layout class="QGridLayout" name="gridLayout_10">
-       <property name="margin">
-        <number>0</number>
-       </property>
-       <property name="spacing">
-        <number>5</number>
-       </property>
+      <layout class="QGridLayout" name="gridLayout_12">
        <item row="0" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>18</height>
-          </size>
+        <widget class="QSplitter" name="splitter_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="text">
-          <string>Milestone Descriptio&amp;n:</string>
-         </property>
-         <property name="buddy">
-          <cstring>text_description</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPlainTextEdit" name="text_description">
-         <property name="baseSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="plainText">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QPlainTextEdit" name="text_mi_description"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>&amp;Selected Item Description:</string>
-         </property>
-         <property name="buddy">
-          <cstring>text_mi_description</cstring>
-         </property>
+         <widget class="QWidget" name="widget_8" native="true">
+          <layout class="QGridLayout" name="gridLayout_10">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>18</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Milestone Descriptio&amp;n:</string>
+             </property>
+             <property name="buddy">
+              <cstring>text_description</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPlainTextEdit" name="text_description">
+             <property name="baseSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="plainText">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="widget_7" native="true">
+          <layout class="QGridLayout" name="gridLayout_11">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>&amp;Selected Item Description:</string>
+             </property>
+             <property name="buddy">
+              <cstring>text_mi_description</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPlainTextEdit" name="text_mi_description"/>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -671,7 +686,6 @@
   <tabstop>push_edit</tabstop>
   <tabstop>push_delete</tabstop>
   <tabstop>push_close</tabstop>
-  <tabstop>text_description</tabstop>
   <tabstop>table</tabstop>
   <tabstop>check_feature</tabstop>
   <tabstop>check_issue</tabstop>
