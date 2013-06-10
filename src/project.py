@@ -69,7 +69,7 @@ class NxProject:
         if isinstance(result, Exception):
             title, message = 'open failed', 'open failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)
-            dc.r.path.v = None
+            dc.x.path.v = None
             return
         dc.spid.v = 1
         self.reloadTable()
@@ -86,7 +86,7 @@ class NxProject:
         dc.r.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onSaveClicked(self):
-        if not dc.r.path.v:
+        if not dc.x.path.v:
             t = 'Save nelia1 document'
             q = 'Nelia Files (*{})'.format(dc.x.extension.v)
             path = QFileDialog.getSaveFileName(
@@ -95,7 +95,7 @@ class NxProject:
             extension_start = len(path) - len(dc.x.extension.v)
             if path.rfind(dc.x.extension.v) != extension_start:
                 path += dc.x.extension.v
-        else: path = dc.r.path.v
+        else: path = dc.x.path.v
         result = dcsave(path)
         if isinstance(result, Exception):
             title, message = 'Save failed', 'Save failed! ' + str(result)
