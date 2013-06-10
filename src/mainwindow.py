@@ -42,6 +42,7 @@ class MainWindow():
             dc.ui.main.v.__dict__[pname].setLayout(grid)
         dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
         dc.ui.main.v.setGeometry(100,70,1000,600)
+        dcloadconfig()
         dc.m.main.v    = self
         dc.m.project.v = NxProject()
         dc.m.log.v     = NxLog()
@@ -56,7 +57,6 @@ class MainWindow():
             shortcut.activated.connect(target)
         app.aboutToQuit.connect(self.onAboutToQuit)
         signal.signal(signal.SIGTERM, self.onSigTerm)
-        dcloadconfig()
         if dc.x.config.loaded.v:
             dc.m.project.v.loadLayout()
             dc.m.log.v.loadLayout()
