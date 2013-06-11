@@ -40,7 +40,7 @@ class NxRoadmap:
         dfin.push_finalize_major.clicked.connect(self.onCloseMajorMs)
         dfin.push_finalize_minor.clicked.connect(self.onCloseMinorMs)
         selmod.selectionChanged.connect(self.onItemSelectionChanged)
-        win.text_description.textChanged.connect(self.onMsDescChanged)
+        win.text_m_description.textChanged.connect(self.onMsDescChanged)
         self.table.activated.connect(self.onMIActivated)
         for w in ['label_selected', 'push_edit', 'push_delete', 'push_close',
                   'push_reopen']:
@@ -55,7 +55,7 @@ class NxRoadmap:
         dc.ui.roadmap_diag_edit.v.line_project.setText(dc.sp.name.v)
         self.smajor, self.sminor = dc.sp.curr.major.v, dc.sp.curr.minor.v
         description = dc.sp.m._(self.smajor)._(self.sminor).description.v
-        dc.ui.roadmap.v.text_description.setPlainText(description)
+        dc.ui.roadmap.v.text_m_description.setPlainText(description)
         self.updateRootMPushButton()
         self.reloadTable()
         d = dc.ui.roadmap_diag_add.v
@@ -203,14 +203,6 @@ class NxRoadmap:
             dc.ui.roadmap.v.push_close.hide()
             dc.ui.roadmap.v.push_reopen.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onMsSelectionChanged(self, major, minor):
-        self.smajor = major
-        self.sminor = minor
-        description = dc.sp.m._(major)._(minor).description.v
-        dc.ui.roadmap.v.text_description.setPlainText(description)
-        self.updateRootMPushButton()
-        self.reloadTable()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMinorMs(self):
         dc.sp.mi._(self.smiid).status.v = 'Closed'
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
@@ -235,7 +227,7 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMsDescChanged(self):
         if self.init: return
-        description = dc.ui.roadmap.v.text_description.toPlainText()
+        description = dc.ui.roadmap.v.text_m_description.toPlainText()
         dc.sp.m._(self.smajor)._(self.sminor).description.v = description
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMIClicked(self):
@@ -259,6 +251,14 @@ class NxRoadmap:
         dc.m.project.v.touchProject()
         self.reloadTable()
         self.updateRootMPushButton()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onRootMPushButtonChanged(self, major, minor):
+        self.smajor = major
+        self.sminor = minor
+        description = dc.sp.m._(major)._(minor).description.v
+        dc.ui.roadmap.v.text_m_description.setPlainText(description)
+        self.updateRootMPushButton()
+        self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def updateMsTree(self):
         for major in reversed(list(dc.sp.m.idx.v)):
@@ -372,7 +372,8 @@ class NxRoadmap:
         ui.push_milestone.hide()
         ui.push_milestone.close()
         ma, mi = self.smajor, self.sminor
-        ui.push_milestone = MPushButton(ui, self.onMsSelectionChanged, ma, mi)
+        ui.push_milestone = MPushButton(ui, ma, mi)
+        ui.push_milestone.change_signal.connect(self.onRootMPushButtonChanged)
         ui.gridLayout_3.addWidget(ui.push_milestone, 0, 1, 1, 1)
         ui.label_2.setBuddy(ui.push_milestone)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -381,7 +382,7 @@ class NxRoadmap:
         for d in diags:
             d.gridLayout_2.removeWidget(d.push_target)
             d.push_target.close()
-            d.push_target = MPushButton(d, None, self.smajor, self.sminor, True)
+            d.push_target = MPushButton(d, self.smajor, self.sminor, True)
             d.gridLayout_2.addWidget(d.push_target, 1, 1, 1, 1);
             d.label_3.setBuddy(d.push_target)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

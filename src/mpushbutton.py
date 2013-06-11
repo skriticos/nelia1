@@ -7,15 +7,14 @@ import sys
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MPushButton(QPushButton):
-    def __init__(self, parent=None, change_callback=None,
-                 sel_x=None, sel_y=None, open_only=False):
+    change_signal = Signal((int, int))
+    def __init__(self, parent=None, sel_x=None, sel_y=None, open_only=False):
         super().__init__(parent)
         x = dc.sp.curr.major.v
         y = dc.sp.curr.minor.v
         self.setText('        no data        ')
         self.root_menu = QMenu(self)
         self.setMenu(self.root_menu)
-        self.change_callback = change_callback
         Δn = 0
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         for n in dc.sp.m.idx.v: # n == major verions
@@ -107,7 +106,7 @@ class MPushButton(QPushButton):
                     self.setText(label)
                     self.current_text = label
                 action.setText(label)
-                action.triggered.connect(self.selectionChanged)
+                action.triggered.connect(self.onSelectionChanged)
                 major_menu.addAction(action)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             oo = False
@@ -131,13 +130,12 @@ class MPushButton(QPushButton):
             x, y = self.current_text.split(' ')[3][1:].split('.')
             return int(x), int(y)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def selectionChanged(self):
+    def onSelectionChanged(self):
         old_text = self.text()
         self.current_text = self.sender().text()
         if old_text == self.current_text: return
         self.setText(self.current_text)
-        if self.change_callback:
-            x, y = self.getVersion()
-            self.change_callback(x, y)
+        x, y = self.getVersion()
+        self.change_signal.emit(x, y)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
