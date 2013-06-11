@@ -75,7 +75,7 @@ class MainWindow():
         dc.m.log.v.saveLayout()
         dc.m.roadmap.v.saveLayout()
         if dc.r.changed.v:
-            if not dc.r.path.v:
+            if not dc.x.path.v:
                 dc.x.path.v = os.path.join(dc.x.default.path.v,
                        '.{}.tmp.nelia1'.format(str(int(time.time()))))
             dcsave()

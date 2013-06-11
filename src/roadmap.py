@@ -211,6 +211,7 @@ class NxRoadmap:
         self.reloadTable()
         self.updateRootMPushButton()
         dc.ui.roadmap_diag_finalize.v.hide()
+        dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMajorMs(self):
         dc.sp.mi._(self.smiid).status.v = 'Closed'
@@ -224,11 +225,13 @@ class NxRoadmap:
         self.reloadTable()
         self.updateRootMPushButton()
         dc.ui.roadmap_diag_finalize.v.hide()
+        dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onMsDescChanged(self):
         if self.init: return
         description = dc.ui.roadmap.v.text_m_description.toPlainText()
         dc.sp.m._(self.smajor)._(self.sminor).description.v = description
+        dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onCloseMIClicked(self):
         sumopen = 0
@@ -244,6 +247,7 @@ class NxRoadmap:
                 dc.m.project.v.touchProject()
                 self.reloadTable()
         self.updateRootMPushButton()
+        dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onReopenMIClicked(self):
         dc.sp.mi._(self.smiid).status.v = 'Open'
@@ -251,6 +255,7 @@ class NxRoadmap:
         dc.m.project.v.touchProject()
         self.reloadTable()
         self.updateRootMPushButton()
+        dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onRootMPushButtonChanged(self, major, minor):
         self.smajor = major
