@@ -155,9 +155,13 @@ class NxRoadmap:
         major, minor = int(major), int(minor)
         if (major, minor) != dc.sp.midx.v[self.smiid]:
             old_major, old_minor = dc.sp.midx.v[self.smiid]
-            dc.sp.m._(old_major)._(old_minor).idx.v.remove(self.smiid)
-            dc.sp.m._(major)._(minor).idx.v.add(self.smiid)
-            dc.sp.midx.v[self.smiid] = major, minor
+            if len(dc.sp.m._(old_major)._(old_minor).idx.v) != 1:
+                dc.sp.m._(old_major)._(old_minor).idx.v.remove(self.smiid)
+                dc.sp.m._(major)._(minor).idx.v.add(self.smiid)
+                dc.sp.midx.v[self.smiid] = major, minor
+            else:
+                m = 'Can\'t move last milestone item!'
+                QMessageBox.critical(dc.ui.roadmap.v, m, m)
         node = dc.sp.mi._(self.smiid)
         node.itype.v       = itype
         node.name.v        = diag.line_name.text()
