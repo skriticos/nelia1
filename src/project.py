@@ -25,7 +25,6 @@ class NxProject:
         widget.push_open.clicked.connect(self.onOpenClicked)
         widget.push_open_last.clicked.connect(self.onOpenLast)
         widget.push_save.clicked.connect(self.onSaveClicked)
-        widget.push_help.clicked.connect(dc.ui.project_diag_help.v.show)
         self.view = widget.view
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(headers)

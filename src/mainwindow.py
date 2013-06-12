@@ -16,7 +16,6 @@ class MainWindow():
         for name, fname in (
             ('main',                  'forms/mainwindow.ui'),
             ('project',               'forms/project.ui'),
-            ('project_diag_help',     'forms/project_help.ui'),
             ('log',                   'forms/log.ui'),
             ('roadmap',               'forms/roadmap.ui'),
             ('project_diag_new',      'forms/project_diag_new.ui'),
