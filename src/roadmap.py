@@ -199,7 +199,9 @@ class NxRoadmap:
         item  = self.model.itemFromIndex(index)
         self.smiid = int(item.text())
         description = dc.sp.mi._(self.smiid).description.v
+        self.init = True
         dc.ui.roadmap.v.text_mi_description.setPlainText(description)
+        self.init = False
         if dc.sp.mi._(self.smiid).status.v == 'Open':
             dc.ui.roadmap.v.push_close.show()
             dc.ui.roadmap.v.push_reopen.hide()

@@ -119,7 +119,9 @@ class NxProject:
         dc.spid.v = int(self.model.itemFromIndex(index).text())
         dc.sp = dc.s._(dc.spid.v)
         for w in [dc.ui.project.v.text_description]:
+            self.init = True
             w.setPlainText(dc.sp.description.v)
+            self.init = False
             w.setEnabled(True)
         name = dc.sp.name.v
         dc.ui.main.v.setWindowTitle('Nelia1 - {}'.format(name))
@@ -127,6 +129,7 @@ class NxProject:
     def onDescriptionChanged(self):
         if self.init: return
         dc.sp.description.v = dc.ui.project.v.text_description.toPlainText()
+        self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.project.header.width.v = list()
