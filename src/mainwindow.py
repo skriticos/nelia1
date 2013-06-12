@@ -16,7 +16,6 @@ class MainWindow():
         for name, fname in (
             ('main',                  'forms/mainwindow.ui'),
             ('project',               'forms/project.ui'),
-            ('project_diag_help',     'forms/project_help.ui'),
             ('log',                   'forms/log.ui'),
             ('roadmap',               'forms/roadmap.ui'),
             ('project_diag_new',      'forms/project_diag_new.ui'),
@@ -42,6 +41,7 @@ class MainWindow():
             dc.ui.main.v.__dict__[pname].setLayout(grid)
         dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
         dc.ui.main.v.setGeometry(100,70,1000,600)
+        dcloadconfig()
         dc.m.main.v    = self
         dc.m.project.v = NxProject()
         dc.m.log.v     = NxLog()
@@ -56,7 +56,6 @@ class MainWindow():
             shortcut.activated.connect(target)
         app.aboutToQuit.connect(self.onAboutToQuit)
         signal.signal(signal.SIGTERM, self.onSigTerm)
-        dcloadconfig()
         if dc.x.config.loaded.v:
             dc.m.project.v.loadLayout()
             dc.m.log.v.loadLayout()
@@ -75,7 +74,7 @@ class MainWindow():
         dc.m.log.v.saveLayout()
         dc.m.roadmap.v.saveLayout()
         if dc.r.changed.v:
-            if not dc.r.path.v:
+            if not dc.x.path.v:
                 dc.x.path.v = os.path.join(dc.x.default.path.v,
                        '.{}.tmp.nelia1'.format(str(int(time.time()))))
             dcsave()

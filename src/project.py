@@ -25,7 +25,6 @@ class NxProject:
         widget.push_open.clicked.connect(self.onOpenClicked)
         widget.push_open_last.clicked.connect(self.onOpenLast)
         widget.push_save.clicked.connect(self.onSaveClicked)
-        widget.push_help.clicked.connect(dc.ui.project_diag_help.v.show)
         self.view = widget.view
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(headers)
@@ -120,7 +119,9 @@ class NxProject:
         dc.spid.v = int(self.model.itemFromIndex(index).text())
         dc.sp = dc.s._(dc.spid.v)
         for w in [dc.ui.project.v.text_description]:
+            self.init = True
             w.setPlainText(dc.sp.description.v)
+            self.init = False
             w.setEnabled(True)
         name = dc.sp.name.v
         dc.ui.main.v.setWindowTitle('Nelia1 - {}'.format(name))
@@ -128,6 +129,7 @@ class NxProject:
     def onDescriptionChanged(self):
         if self.init: return
         dc.sp.description.v = dc.ui.project.v.text_description.toPlainText()
+        self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def saveLayout(self):
         dc.c.project.header.width.v = list()
