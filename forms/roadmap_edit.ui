@@ -378,12 +378,18 @@
   <tabstop>line_name</tabstop>
   <tabstop>push_target</tabstop>
   <tabstop>radio_feature</tabstop>
-  <tabstop>radio_medium</tabstop>
+  <tabstop>radio_low</tabstop>
+  <tabstop>radio_core</tabstop>
   <tabstop>text_description</tabstop>
   <tabstop>buttonBox</tabstop>
   <tabstop>radio_issue</tabstop>
-  <tabstop>radio_low</tabstop>
+  <tabstop>radio_medium</tabstop>
   <tabstop>radio_high</tabstop>
+  <tabstop>radio_auxiliary</tabstop>
+  <tabstop>radio_security</tabstop>
+  <tabstop>radio_corrective</tabstop>
+  <tabstop>radio_architecture</tabstop>
+  <tabstop>radio_refactor</tabstop>
   <tabstop>line_project</tabstop>
  </tabstops>
  <resources/>
