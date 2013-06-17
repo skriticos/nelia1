@@ -7,25 +7,34 @@ import sys
 from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MPushButton(QPushButton):
+    # signal is emited when the button selection is changed
     change_signal = Signal((int, int))
+    # sel_x, sel_y → the selected version on the face
+    # open_only →  ??
     def __init__(self, parent=None, sel_x=None, sel_y=None, open_only=False):
         super().__init__(parent)
-        x = dc.sp.curr.major.v
-        y = dc.sp.curr.minor.v
-        self.setText('        no data        ')
         self.root_menu = QMenu(self)
         self.setMenu(self.root_menu)
-        Δn = 0
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        for n in dc.sp.m.idx.v: # n == major verions
-            Δn = n - x
-            major_menu = QMenu(self)
-            Δm = 0
-            mfo = mfc = mio = mic = 0 # reset major version feature counters
-            for m in dc.sp.m._(n).idx.v: # m == minor versions
+        # iterate through major versions
+        for loop_major in dc.sp.m.idx.v:
+            loop_major_menu = QMenu(self)
+            # count of major milestone items by type and status
+            # m: major, f: feature, i: issue, c: closed, o: open
+            mfo = mfc = mio = mic = 0
+            # example dc.sp.curr.major.v = 1:
+            #  loop_major 0: Δ_major →  0 - 1 = -1
+            #  loop_major 1: Δ_major →  1 - 1 = 0
+            #  loop_major 2: Δ_major →  2 - 1 = 1
+            Δ_major = loop_major - dc.sp.curr.major.v
+            # iterate through minor versions
+            for loop_minor in dc.sp.m._(loop_major).idx.v:
                 action = QAction(self)
+                # count of minor milestone items by type and status
                 fo = fc = io = ic = 0
-                for miid in dc.sp.m._(n)._(m).idx.v:
+                # iterate through items in minor milestone, count items by type
+                # and status
+                for miid in dc.sp.m._(loop_major)._(loop_minor).idx.v:
                     if dc.sp.mi._(miid).itype.v == 'Feature':
                         if dc.sp.mi._(miid).status.v == 'Open':
                             fo += 1
@@ -36,95 +45,107 @@ class MPushButton(QPushButton):
                             io += 1
                         else:
                             ic += 1
+                # add them to the major milestone counter (looping through)
                 mfo += fo
                 mfc += fc
                 mio += io
                 mic += ic
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                if x == 0 and y == 1:
-                    if n == 0:
-                        Δm = m
-                    if n > 0:
-                        Δm = sum(len(dc.sp.m._(s).idx.v) for s in range(n)) \
-                            + m + 1
-                if x == 0 and y > 1:
-                    if n == 0:
-                        Δm = m - y + 1
-                    if n > 0:
-                        Δm = sum(len(dc.sp.m._(s).idx.v) for s in range(1,n)) \
-                            + m + len(dc.sp.m._(0).idx.v) - y + 2
-                if x == 1:
-                    if n == 0:
-                        Δm = -1 * (y + (len(dc.sp.m._(0).idx.v) - m))
-                    if n == x:
-                        Δm = m - y + 1
-                    if n > x:
-                        Δm = sum(len(dc.sp.m._(s).idx.v) for s in range(x+1,n))\
-                            + m + len(dc.sp.m._(x).idx.v) - y + 1
-                if x > 1:
-                    if n < x:
-                        Δm = -1 * ((len(dc.sp.m._(n).idx.v) - m)
-                            + sum(len(dc.sp.m._(s).idx.v) for s in range(n+1,x))
-                            + y + 1)
-                        if n == 0:
-                            Δm -= 1
-                    if n == x:
-                        Δm = m - y + 1
-                    if n > x:
-                        Δm = sum(len(dc.sp.m._(s).idx.v) for s in range(x+1,n))\
-                            + m + len(dc.sp.m._(x).idx.v) - y + 1
+                # determine minor delta
+                # current = 0.1
+                if dc.sp.curr.major.v == 0 and dc.sp.curr.minor.v == 1:
+                    if loop_major == 0:
+                        Δ_minor = loop_minor
+                    if loop_major > 0:
+                        Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s \
+                                        in range(loop_major)) \
+                                        + loop_minor + 1
+                if dc.sp.curr.major.v == 0 and dc.sp.curr.minor.v > 1:
+                    if loop_major == 0:
+                        Δ_minor = loop_minor - dc.sp.curr.minor.v + 1
+                    if loop_major > 0:
+                        Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in range(1,
+                            loop_major)) \
+                            + m + len(dc.sp.m._(0).idx.v) + 2 \
+                            - dc.sp.curr.minor.v
+                if dc.sp.curr.major.v == 1:
+                    if loop_major == 0:
+                        Δ_minor = -1 * (dc.sp.curr.minor.v \
+                                   + (len(dc.sp.m._(0).idx.v) - loop_minor))
+                    if loop_major == dc.sp.curr.major.v:
+                        Δ_minor = loop_minor - dc.sp.curr.minorv + 1
+                    if loop_major > dc.sp.curr.major.v:
+                        Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in
+                                range(x+1,loop_major))\
+                            + loop_minor + len(dc.sp.m._(x).idx.v) + 1 \
+                            - dc.sp.curr.minorv
+                if dc.sp.curr.major.v > 1:
+                    if loop_major < dc.sp.curr.major.v:
+                        Δ_minor = -1 * ((len(dc.sp.m._(loop_major).idx.v) - loop_minor)
+                            + sum(len(dc.sp.m._(s).idx.v) for s \
+                                    in range(loop_major + 1, dc.sp.curr.major.v))
+                            + dc.sp.curr.minor.v + 1)
+                        if loop_major == 0:
+                            Δ_minor -= 1
+                    if loop_major == dc.sp.curr.major.v:
+                        Δ_minor = loop_minor - dc.sp.curr.minor.v + 1
+                    if loop_major > dc.sp.curr.major.v:
+                        Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in
+                                range(x+1,loop_major))\
+                            + loop_minor + len(dc.sp.m._(x).idx.v) - dc.sp.curr.minor.v \
+                            + 1
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 oo = False
-                if Δm > 1:
+                if Δ_minor > 1:
                     sign = '+'
                     icon = '◇'
                     oo = True
-                if Δm == 1:
+                if Δ_minor == 1:
                     sign = '+'
                     icon = '◈'
                     oo = True
-                    self.next_x = n
-                    self.next_y = m
-                if Δm == 0:
+                    self.next_x = loop_major
+                    self.next_y = loop_minor
+                if Δ_minor == 0:
                     sign = ''
                     icon = '◆'
-                if Δm < 0:
+                if Δ_minor < 0:
                     sign = '-'
                     icon = '◆'
                 if open_only and not oo:
                     continue
-                Δnm = '{}{},{}'.format(sign, abs(Δn), abs(Δm))
+                Δ_majorm = '{}{},{}'.format(sign, abs(Δ_major), abs(Δ_minor))
                 label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(
-                    icon,n,m,Δnm,fc,fo+fc,ic,io+ic)
-                if sel_x == n and sel_y == m and open_only and Δm > 0:
+                    icon,loop_major,loop_minor,Δ_majorm,fc,fo+fc,ic,io+ic)
+                if sel_x == loop_major and sel_y == loop_minor and open_only and Δ_minor > 0:
                     self.setText(label)
                     self.current_text = label
-                elif sel_x == n and sel_y == m and not open_only:
+                elif sel_x == loop_major and sel_y == loop_minor and not open_only:
                     self.setText(label)
                     self.current_text = label
-                elif Δm == 1:
+                elif Δ_minor == 1:
                     self.setText(label)
                     self.current_text = label
                 action.setText(label)
                 action.triggered.connect(self.onSelectionChanged)
-                major_menu.addAction(action)
+                loop_major_menu.addAction(action)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             oo = False
-            if Δn > 0:
+            if Δ_major > 0:
                 icon = '◇'
                 oo = True
-            if Δn == 0:
+            if Δ_major == 0:
                 icon = '◈'
                 oo = True
-            if Δn < 0:
+            if Δ_major < 0:
                 icon = '◆'
             if open_only and not oo:
-                major_menu.close()
+                loop_major_menu.close()
                 continue
             title = '{}   v{}.x   f:{}/{}   i:{}/{}'\
-                    .format(icon, n, mfc, mfo+mfc, mic, mio+mic)
-            major_menu.setTitle(title)
-            self.root_menu.addMenu(major_menu)
+                    .format(icon, loop_major, mfc, mfo+mfc, mic, mio+mic)
+            loop_major_menu.setTitle(title)
+            self.root_menu.addMenu(loop_major_menu)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def getVersion(self):
             x, y = self.current_text.split(' ')[3][1:].split('.')
