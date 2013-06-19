@@ -15,6 +15,8 @@ class MPushButton(QPushButton):
         super().__init__(parent)
         self.root_menu = QMenu(self)
         self.setMenu(self.root_menu)
+        print()
+        print('cmajor, cminor', dc.sp.curr.major.v, dc.sp.curr.minor.v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # iterate through major versions
         for loop_major in dc.sp.m.idx.v:
@@ -53,6 +55,7 @@ class MPushButton(QPushButton):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 # determine minor delta
                 # current = 0.1
+                print('loop_major, loop_minor', loop_major, loop_minor)
                 if dc.sp.curr.major.v == 0 and dc.sp.curr.minor.v == 1:
                     if loop_major == 0:
                         Δ_minor = loop_minor
@@ -73,17 +76,19 @@ class MPushButton(QPushButton):
                         Δ_minor = -1 * (dc.sp.curr.minor.v \
                                    + (len(dc.sp.m._(0).idx.v) - loop_minor))
                     if loop_major == dc.sp.curr.major.v:
-                        Δ_minor = loop_minor - dc.sp.curr.minorv + 1
+                        Δ_minor = loop_minor - dc.sp.curr.minor.v + 1
                     if loop_major > dc.sp.curr.major.v:
                         Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in
-                                range(x+1,loop_major))\
-                            + loop_minor + len(dc.sp.m._(x).idx.v) + 1 \
-                            - dc.sp.curr.minorv
+                                range(dc.sp.curr.major.v + 1, loop_major))\
+                            + loop_minor + 1 \
+                            + len(dc.sp.m._(dc.sp.curr.major.v).idx.v) \
+                            - dc.sp.curr.minor.v
                 if dc.sp.curr.major.v > 1:
                     if loop_major < dc.sp.curr.major.v:
-                        Δ_minor = -1 * ((len(dc.sp.m._(loop_major).idx.v) - loop_minor)
-                            + sum(len(dc.sp.m._(s).idx.v) for s \
-                                    in range(loop_major + 1, dc.sp.curr.major.v))
+                        Δ_minor = -1 * ((len(dc.sp.m._(loop_major).idx.v)
+                                        - loop_minor)
+                            + sum(len(dc.sp.m._(s).idx.v) for s
+                                in range(loop_major + 1, dc.sp.curr.major.v))
                             + dc.sp.curr.minor.v + 1)
                         if loop_major == 0:
                             Δ_minor -= 1
@@ -92,8 +97,9 @@ class MPushButton(QPushButton):
                     if loop_major > dc.sp.curr.major.v:
                         Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in
                                 range(x+1,loop_major))\
-                            + loop_minor + len(dc.sp.m._(x).idx.v) - dc.sp.curr.minor.v \
-                            + 1
+                            + loop_minor + 1\
+                            + len(dc.sp.m._(dc.sp.curr.major.v).idx.v) \
+                            - dc.sp.curr.minor.v
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 oo = False
                 if Δ_minor > 1:
@@ -117,10 +123,12 @@ class MPushButton(QPushButton):
                 Δ_majorm = '{}{},{}'.format(sign, abs(Δ_major), abs(Δ_minor))
                 label = '{}   v{}.{}   {}   f:{}/{}   i:{}/{}'.format(
                     icon,loop_major,loop_minor,Δ_majorm,fc,fo+fc,ic,io+ic)
-                if sel_x == loop_major and sel_y == loop_minor and open_only and Δ_minor > 0:
+                if sel_x == loop_major and sel_y == loop_minor \
+                        and open_only and Δ_minor > 0:
                     self.setText(label)
                     self.current_text = label
-                elif sel_x == loop_major and sel_y == loop_minor and not open_only:
+                elif sel_x == loop_major and sel_y == loop_minor \
+                        and not open_only:
                     self.setText(label)
                     self.current_text = label
                 elif Δ_minor == 1:
