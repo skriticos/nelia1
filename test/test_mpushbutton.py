@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, PySide
 
 sys.path.insert(0, 'src')
 
@@ -9,24 +9,21 @@ import log
 import mpushbutton
 import project
 
+from datacore import _dcdump
+from datacore import dc
+
 print('Testing MPushButton..')
 
-
-#! /usr/bin/env python3
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import sys, PySide, mainwindow
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 app = PySide.QtGui.QApplication(sys.argv)
 mainwindow.MainWindow(sys.argv, app)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# this interrupt is required to make system signal handling working. see
-# MainWindow.onSigTerm
-timer = PySide.QtCore.QTimer()
-timer.start(500)
-timer.timeout.connect(lambda: None)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sys.exit(app.exec_())
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+print('setting up basic application..')
+dc.m.project.v.onNewClicked()
+dc.ui.project_diag_new.v.line_name.setText('test project')
+dc.m.project.v.onNewProject()
+dc.ui.main.v.
+_dcdump(dc.sp, 'sp')
+
+print('switching to roadmap..')
+print('adding feature to 0.1..')
 
