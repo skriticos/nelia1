@@ -133,7 +133,7 @@ class MPushButton(QPushButton):
                     self.current_text = label
                 elif Δ_minor == 1:
                     self.setText(label)
-                    self.current_text = label
+                    self.current_text = labe
                 action.setText(label)
                 action.triggered.connect(self.onSelectionChanged)
                 loop_major_menu.addAction(action)

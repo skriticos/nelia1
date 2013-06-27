@@ -1,0 +1,37 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                           README ~ MILESTONE CONTROL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Aim of this standalone is to trace and fix the problem with the MPushButton not
+properly switching to completed milestones (ignores switches to these versions).
+
+During the setup of this standalone, it became aparent that all milestone
+operations should be consolidated in a unified module. This is partly required
+to clean up the code structure a bit and partly to have a reusable control that
+can be used for followup projects.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This standalone will first create a few placeholder control structures to
+manipulate the milestone (gui) and then fill in the gaps.
+
+Functions:
+1. Add MI
+2. Delete MI
+3. Move MI
+4. Close MI
+5. (chain) Close milestone
+6. Automated test run
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dc.sp.curr.major.v =  0
+dc.sp.curr.minor.v =  1
+dc.sp.nextmiid.v =  1
+dc.sp.m._0.idx.v =  {1}
+dc.sp.m._0._1.description.v =  ''
+dc.sp.m._0._1.idx.v =  set()
+dc.sp.m.idx.v =  {0, 1}
+dc.sp.m._1._0.description.v =  ''
+dc.sp.m._1._0.idx.v =  set()
+dc.sp.m._1.idx.v =  {0}
+dc.sp.midx.v =  {}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MPushButton.change_signal: add description
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
