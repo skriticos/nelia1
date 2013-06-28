@@ -51,6 +51,9 @@ dc.ui.v.xx_move_feature	 .clicked.connect   (on_move_feature)
 dc.ui.v.xx_move_issue	 .clicked.connect   (on_move_issue)
 dc.ui.v.xx_run_sequence	 .clicked.connect   (on_run_sequence)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+milestone_control = MilestoneControl()
+milestone_control.setup_new()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # TODO: load MPBs
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if sys.argv[1] == '--auto':

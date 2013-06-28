@@ -4,8 +4,6 @@
 # This is a very stripped down version of the datacore. As we are doing runtime
 # test only, we removed all the path/save/load/config stuff.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os, pickle, gzip, datetime, PySide
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class _dcNode:
     def __init__(self):
         self.v = None

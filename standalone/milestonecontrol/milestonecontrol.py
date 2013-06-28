@@ -11,7 +11,27 @@ class MilestoneControl(QObject):
     milestone_tree_changed = Signal()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self):
-        super().__init__(self)
+        super().__init__(None)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # create new, empty milestone tree for dc.sp
+    def setup_new(self):
+        if 'm' in dc.sp.__dict__.keys():
+            del dc.sp.m
+        # milestone items
+        dc.sp.m.mi.nextid.v   = 1       # next new milestone id
+        dc.sp.m.mi.index.v    = {}      # miid → (major, minor) index
+        # milestones general
+        dc.sp.m.active.v      = (0, 1)  # active milestone
+        dc.sp.m.selected.v    = (0, 1)  # selected milestone
+        dc.sp.m.index.v       = {0, 1}  # index of major milestones
+        # v0.1
+        dc.sp.m._0.index.v    = {1}     # index of minor milestones
+        dc.sp.m._0._1.index.v = {}      # index miids in milestone
+        dc.sp.m._0._1.info.v  = ''      # milestone description
+        # v1.0
+        dc.sp.m._1.index.v    = {0}     # index of minor milestones
+        dc.sp.m._1._0.index.v = {}      # index miids in milestone
+        dc.sp.m._1._0.info.v  = ''      # milestone description
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # returns: miid of new milestone item
     def add_milestone_item(self,

@@ -13,19 +13,12 @@ This standalone will first create a few placeholder control structures to
 manipulate the milestone (gui) and then fill in the gaps.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TODO:
-1. rename MPushButton →  MilestoneControl
+1. rename MPushButton →  MilestoneControl  ✓
 2. MilestoneControl should set the selected milestone dc.sp.ms.selected (x, y)
 3. move milestone tree update to MilestoneControl
 4. integrate milestone item operations in milestone control
 5. add slot that reacts to milestone item change
 6. test sequence for milestone manipulation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1. Add MI (f, i)
-2. Delete MI
-3. Move MI
-4. Close MI
-5. (chain) Close milestone
-6. Automated test run
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 dc.sp.curr.major.v =  0
 dc.sp.curr.minor.v =  1
@@ -44,7 +37,6 @@ dc.sp.mi._1.category.v =  Core
 dc.sp.mi._1.status.v =  Open
 dc.sp.mi._1.itype.v =  Feature
 dc.sp.mi._1.description.v =  ''
-dc.sp.description.v =  ''
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 dc.ui.v.xx_add_feature
 dc.ui.v.xx_add_issue
@@ -58,7 +50,5 @@ dc.ui.v.xx_move_issue
 dc.ui.v.xx_move_target      # milestone move mpushbutton
 dc.ui.v.xx_run_sequence
 dc.ui.v.xx_selection        # current milestone selection mpushbutton
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-MPushButton.change_signal: add description
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
