@@ -12,6 +12,14 @@ can be used for followup projects.
 This standalone will first create a few placeholder control structures to
 manipulate the milestone (gui) and then fill in the gaps.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TODO:
+1. rename MPushButton →  MilestoneControl
+2. MilestoneControl should set the selected milestone dc.sp.ms.selected (x, y)
+3. move milestone tree update to MilestoneControl
+4. integrate milestone item operations in milestone control
+5. add slot that reacts to milestone item change
+6. test sequence for milestone manipulation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 1. Add MI (f, i)
 2. Delete MI
 3. Move MI
@@ -42,14 +50,14 @@ dc.ui.v.xx_add_feature
 dc.ui.v.xx_add_issue
 dc.ui.v.xx_close_feature
 dc.ui.v.xx_close_issue
-dc.ui.v.xx_debug
+dc.ui.v.xx_debug            # debug output
 dc.ui.v.xx_delete_feature
 dc.ui.v.xx_delete_issue
 dc.ui.v.xx_move_feature
 dc.ui.v.xx_move_issue
-dc.ui.v.xx_move_target
+dc.ui.v.xx_move_target      # milestone move mpushbutton
 dc.ui.v.xx_run_sequence
-dc.ui.v.xx_selection
+dc.ui.v.xx_selection        # current milestone selection mpushbutton
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 MPushButton.change_signal: add description
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
