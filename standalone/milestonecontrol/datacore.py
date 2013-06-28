@@ -36,11 +36,11 @@ class _dcNode:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 dc = _dcNode()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def _dcdump(node=None, path=''):
+def _dcdump(node=None, path='', output=''):
     if not node: node = dc
     if node.v is not None:
         if node.v == '':
-            print('dc.' + path + '.v =  \'\'')
+            output += 'dc.' + path + '.v =  \'\''
         else:
             print('dc.' + path + '.v = ', node.v)
     for x in node.__dict__.keys():

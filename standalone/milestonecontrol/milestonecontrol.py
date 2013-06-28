@@ -1,7 +1,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import sys
+import sys, time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from datacore import *
@@ -33,12 +33,26 @@ class MilestoneControl(QObject):
         dc.sp.m._1._0.index.v = {}      # index miids in milestone
         dc.sp.m._1._0.info.v  = ''      # milestone description
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # returns: miid of new milestone item
     def add_milestone_item(self,
             major, minor,
-            name, description,
+            name, info,
             mi_type, priority, category):
-        pass
+        timestamp = int(time.time())
+        # register new milestone item
+        miid = dc.sp.m.mi.nextid.v
+        dc.sp.m.mi.nextid.v += 1
+        dc.sp.m._(major)._(minor).index.v.add(miid)
+        dc.sp.m.mi.index.v[miid] = (major, minor)
+        # set attributes
+        dc.sp.mi._(miid).mi_type.v = mi_type
+        dc.sp.mi._(miid).status.v = 'open'
+        dc.sp.mi._(miid).name.v = name
+        dc.sp.mi._(miid).info.v = info
+        dc.sp.mi._(miid).priority.v = priority
+        dc.sp.mi._(miid).category.v = category
+        dc.sp.mi._(miid).created.v = timestamp
+        dc.sp.mi._(miid).modified.v = timestamp
+        return miid
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def modify_milestone_item(self,
             miid,
