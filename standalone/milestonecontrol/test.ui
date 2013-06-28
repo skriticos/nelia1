@@ -37,7 +37,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QPushButton" name="testMPushButton">
+       <widget class="QPushButton" name="xx_selection">
         <property name="text">
          <string>replace me</string>
         </property>
@@ -47,9 +47,9 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QPushButton" name="pushAddMi">
+    <widget class="QPushButton" name="xx_add_feature">
      <property name="text">
-      <string>Add MI</string>
+      <string>Add Feature</string>
      </property>
     </widget>
    </item>
@@ -66,7 +66,7 @@
      </property>
     </spacer>
    </item>
-   <item row="1" column="0" rowspan="7">
+   <item row="1" column="0" rowspan="8">
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="margin">
@@ -75,31 +75,31 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Result:</string>
+         <string>Debug:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QPlainTextEdit" name="textResult"/>
+       <widget class="QPlainTextEdit" name="xx_debug"/>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="7" column="1">
+   <item row="8" column="1">
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="margin">
        <number>0</number>
       </property>
       <item row="3" column="0">
-       <widget class="QPushButton" name="pushMoveMi">
+       <widget class="QPushButton" name="xx_move_feature">
         <property name="text">
-         <string>Move MI</string>
+         <string>Move Feature</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QPushButton" name="pushTargetMPB">
+       <widget class="QPushButton" name="xx_move_target">
         <property name="text">
          <string>replace me</string>
         </property>
@@ -112,27 +112,55 @@
         </property>
        </widget>
       </item>
+      <item row="4" column="0">
+       <widget class="QPushButton" name="xx_move_issue">
+        <property name="text">
+         <string>Move Issue</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QPushButton" name="pushRun">
+    <widget class="QPushButton" name="xx_run_sequence">
      <property name="text">
       <string>Run Sequence</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QPushButton" name="pushDeleteMi">
+   <item row="4" column="1">
+    <widget class="QPushButton" name="xx_delete_feature">
      <property name="text">
-      <string>Delete MI</string>
+      <string>Delete Feature</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QPushButton" name="pushCloseMi">
+   <item row="3" column="1">
+    <widget class="QPushButton" name="xx_add_issue">
      <property name="text">
-      <string>Close MI</string>
+      <string>Add Issue</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QPushButton" name="xx_close_feature">
+     <property name="text">
+      <string>Close Feature</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QPushButton" name="xx_delete_issue">
+     <property name="text">
+      <string>Delete Issue</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QPushButton" name="xx_close_issue">
+     <property name="text">
+      <string>Close Issue</string>
      </property>
     </widget>
    </item>
