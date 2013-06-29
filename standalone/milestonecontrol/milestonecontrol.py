@@ -27,11 +27,11 @@ class MilestoneControl(QObject):
         # v0.1
         dc.sp.m._0.index.v    = {1}     # index of minor milestones
         dc.sp.m._0._1.index.v = {}      # index miids in milestone
-        dc.sp.m._0._1.info.v  = ''      # milestone description
+        dc.sp.m._0._1.detail.v  = ''    # milestone description
         # v1.0
         dc.sp.m._1.index.v    = {0}     # index of minor milestones
         dc.sp.m._1._0.index.v = {}      # index miids in milestone
-        dc.sp.m._1._0.info.v  = ''      # milestone description
+        dc.sp.m._1._0.detail.v  = ''    # milestone description
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def add_milestone_item(self,
             major, minor,
