@@ -14,29 +14,16 @@ manipulate the milestone (gui) and then fill in the gaps.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TODO:
 1. rename MPushButton →  MilestoneControl  ✓
-2. MilestoneControl should set the selected milestone dc.sp.ms.selected (x, y)
-3. move milestone tree update to MilestoneControl
-4. integrate milestone item operations in milestone control
+2. MilestoneControl should set the selected milestone dc.sp.m.selected  ✓
+3. implement milestone item methods
+   a, add_milestone_item ✓
+   b, close_milestone_item
+   c, delete_milestone_item
+   d, move_milestone_item
+   e, edit_milestone_item
+4. move milestone tree update to MilestoneControl
 5. add slot that reacts to milestone item change
 6. test sequence for milestone manipulation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-dc.sp.curr.major.v =  0
-dc.sp.curr.minor.v =  1
-dc.sp.nextmiid.v =  2
-dc.sp.m._0._2.description.v =  ''
-dc.sp.m._0._2.idx.v =  set()
-dc.sp.m._0.idx.v =  {1, 2}
-dc.sp.m._0._1.description.v =  ''
-dc.sp.m._0._1.idx.v =  {1}
-dc.sp.m.idx.v =  {0, 1}
-dc.sp.m._1._0.description.v =  ''
-dc.sp.m._1._0.idx.v =  set()
-dc.sp.m._1.idx.v =  {0}
-dc.sp.midx.v =  {1: (0, 1)}
-dc.sp.mi._1.category.v =  Core
-dc.sp.mi._1.status.v =  Open
-dc.sp.mi._1.itype.v =  Feature
-dc.sp.mi._1.description.v =  ''
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 dc.ui.v.xx_add_feature
 dc.ui.v.xx_add_issue
