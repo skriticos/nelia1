@@ -14,6 +14,9 @@ def log(msg):
     dc.ui.v.xx_debug.appendPlainText(msg)
 def on_add_feature():
     log('adding feature')
+    dc.ctrl.v.add_milestone_item(
+        0, 1, 'test', 'test', 'feature', 0, 'none')
+    log(_dcdump())
 def on_add_issue():
     log('adding issue')
 def on_close_feature():
@@ -51,8 +54,8 @@ dc.ui.v.xx_move_feature	 .clicked.connect   (on_move_feature)
 dc.ui.v.xx_move_issue	 .clicked.connect   (on_move_issue)
 dc.ui.v.xx_run_sequence	 .clicked.connect   (on_run_sequence)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-milestone_control = MilestoneControl()
-milestone_control.setup_new()
+dc.ctrl.v = MilestoneControl()
+dc.ctrl.v.setup_new()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # TODO: load MPBs
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

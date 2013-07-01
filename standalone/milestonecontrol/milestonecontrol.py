@@ -26,11 +26,11 @@ class MilestoneControl(QObject):
         dc.sp.m.index.v       = {0, 1}  # index of major milestones
         # v0.1
         dc.sp.m._0.index.v    = {1}     # index of minor milestones
-        dc.sp.m._0._1.index.v = {}      # index miids in milestone
+        dc.sp.m._0._1.index.v = set()   # index miids in milestone
         dc.sp.m._0._1.detail.v  = ''    # milestone description
         # v1.0
         dc.sp.m._1.index.v    = {0}     # index of minor milestones
-        dc.sp.m._1._0.index.v = {}      # index miids in milestone
+        dc.sp.m._1._0.index.v = set()   # index miids in milestone
         dc.sp.m._1._0.detail.v  = ''    # milestone description
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def add_milestone_item(self,
@@ -44,14 +44,14 @@ class MilestoneControl(QObject):
         dc.sp.m._(major)._(minor).index.v.add(miid)
         dc.sp.m.mi.index.v[miid] = (major, minor)
         # set attributes
-        dc.sp.mi._(miid).mi_type.v = mi_type
-        dc.sp.mi._(miid).status.v = 'open'
-        dc.sp.mi._(miid).name.v = name
-        dc.sp.mi._(miid).info.v = info
-        dc.sp.mi._(miid).priority.v = priority
-        dc.sp.mi._(miid).category.v = category
-        dc.sp.mi._(miid).created.v = timestamp
-        dc.sp.mi._(miid).modified.v = timestamp
+        dc.sp.m.mi._(miid).mi_type.v = mi_type
+        dc.sp.m.mi._(miid).status.v = 'open'
+        dc.sp.m.mi._(miid).name.v = name
+        dc.sp.m.mi._(miid).info.v = info
+        dc.sp.m.mi._(miid).priority.v = priority
+        dc.sp.m.mi._(miid).category.v = category
+        dc.sp.m.mi._(miid).created.v = timestamp
+        dc.sp.m.mi._(miid).modified.v = timestamp
         return miid
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def modify_milestone_item(self,
