@@ -19,6 +19,9 @@ def on_add_feature():
     log(_dcdump())
 def on_add_issue():
     log('adding issue')
+    dc.ctrl.v.add_milestone_item(
+        0, 1, 'test', 'test', 'issue', 0, 'none')
+    log(_dcdump())
 def on_close_feature():
     log('closing feature')
 def on_close_issue():
