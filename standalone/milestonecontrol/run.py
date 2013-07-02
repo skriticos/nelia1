@@ -24,8 +24,24 @@ def on_add_issue():
     log(_dcdump())
 def on_close_feature():
     log('closing feature')
+    flist = []
+    for α in dc.sp.m._0._1.index.v:
+        if dc.sp.m.mi._(α).mi_type.v == 'feature' \
+                and dc.sp.m.mi._(α).status.v == 'open':
+            flist.append(α)
+    log('list of feature id\'s in the selected milestone: {}'.format(flist))
+    dc.ctrl.v.close_milestone_item(flist[0])
+    log(_dcdump())
 def on_close_issue():
     log('closing issue')
+    flist = []
+    for α in dc.sp.m._0._1.index.v:
+        if dc.sp.m.mi._(α).mi_type.v == 'issue' \
+                and dc.sp.m.mi._(α).status.v == 'open':
+            flist.append(α)
+    log('list of issue id\'s in the selected milestone: {}'.format(flist))
+    dc.ctrl.v.close_milestone_item(flist[0])
+    log(_dcdump())
 def on_delete_feature():
     log('deleting feature')
 def on_delete_issue():

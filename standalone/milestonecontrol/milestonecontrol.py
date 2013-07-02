@@ -65,7 +65,7 @@ class MilestoneControl(QObject):
         pass
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def close_milestone_item(self, miid):
-        pass
+        dc.sp.m.mi._(miid).status.v = 'closed'
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def reopen_milestone_item(self, miid):
         pass
