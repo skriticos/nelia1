@@ -4,7 +4,7 @@
 import sys, time
 from PySide.QtCore import *
 from PySide.QtGui import *
-from datacore import *
+from datacore import dc
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MilestoneControl(QObject):
     # triggered when milestone tree is changed
@@ -86,35 +86,33 @@ class MilestoneButton(QPushButton):
         super().__init__(parent)
         self.root_menu = QMenu(self)
         self.setMenu(self.root_menu)
-        print()
-        print('cmajor, cminor', dc.sp.curr.major.v, dc.sp.curr.minor.v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # iterate through major versions
-        for loop_major in dc.sp.m.idx.v:
+        for loop_major in dc.sp.m.index.v:
             loop_major_menu = QMenu(self)
             # count of major milestone items by type and status
             # m: major, f: feature, i: issue, c: closed, o: open
             mfo = mfc = mio = mic = 0
-            # example dc.sp.curr.major.v = 1:
+            # example dc.sp.m.active.v[0] = 1:
             #  loop_major 0: Δ_major →  0 - 1 = -1
             #  loop_major 1: Δ_major →  1 - 1 = 0
             #  loop_major 2: Δ_major →  2 - 1 = 1
-            Δ_major = loop_major - dc.sp.curr.major.v
+            Δ_major = loop_major - dc.sp.m.active.v[0]
             # iterate through minor versions
-            for loop_minor in dc.sp.m._(loop_major).idx.v:
+            for loop_minor in dc.sp.m._(loop_major).index.v:
                 action = QAction(self)
                 # count of minor milestone items by type and status
                 fo = fc = io = ic = 0
                 # iterate through items in minor milestone, count items by type
                 # and status
-                for miid in dc.sp.m._(loop_major)._(loop_minor).idx.v:
-                    if dc.sp.mi._(miid).itype.v == 'Feature':
-                        if dc.sp.mi._(miid).status.v == 'Open':
+                for miid in dc.sp.m._(loop_major)._(loop_minor).index.v:
+                    if dc.sp.m.mi._(miid).itype.v == 'Feature':
+                        if dc.sp.m.mi._(miid).status.v == 'Open':
                             fo += 1
                         else:
                             fc += 1
-                    elif dc.sp.mi._(miid).itype.v == 'Issue':
-                        if dc.sp.mi._(miid).status.v == 'Open':
+                    elif dc.sp.m.mi._(miid).itype.v == 'Issue':
+                        if dc.sp.m.mi._(miid).status.v == 'Open':
                             io += 1
                         else:
                             ic += 1
@@ -126,51 +124,50 @@ class MilestoneButton(QPushButton):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 # determine minor delta
                 # current = 0.1
-                print('loop_major, loop_minor', loop_major, loop_minor)
-                if dc.sp.curr.major.v == 0 and dc.sp.curr.minor.v == 1:
+                if dc.sp.m.active.v == (0, 1):
                     if loop_major == 0:
                         Δ_minor = loop_minor
                     if loop_major > 0:
-                        Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s \
+                        Δ_minor = sum(len(dc.sp.m._(s).index.v) for s \
                                         in range(loop_major)) \
                                         + loop_minor + 1
-                if dc.sp.curr.major.v == 0 and dc.sp.curr.minor.v > 1:
+                if dc.sp.m.active.v[0] == 0 and dc.sp.m.active.v[1] > 1:
                     if loop_major == 0:
-                        Δ_minor = loop_minor - dc.sp.curr.minor.v + 1
+                        Δ_minor = loop_minor - dc.sp.m.active.v[1] + 1
                     if loop_major > 0:
-                        Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in range(1,
+                        Δ_minor = sum(len(dc.sp.m._(s).index.v) for s in range(1,
                             loop_major)) \
-                            + m + len(dc.sp.m._(0).idx.v) + 2 \
-                            - dc.sp.curr.minor.v
-                if dc.sp.curr.major.v == 1:
+                            + m + len(dc.sp.m._(0).index.v) + 2 \
+                            - dc.sp.m.active.v[1]
+                if dc.sp.m.active.v[0] == 1:
                     if loop_major == 0:
-                        Δ_minor = -1 * (dc.sp.curr.minor.v \
-                                   + (len(dc.sp.m._(0).idx.v) - loop_minor))
-                    if loop_major == dc.sp.curr.major.v:
-                        Δ_minor = loop_minor - dc.sp.curr.minor.v + 1
-                    if loop_major > dc.sp.curr.major.v:
-                        Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in
-                                range(dc.sp.curr.major.v + 1, loop_major))\
+                        Δ_minor = -1 * (dc.sp.m.active.v[1] \
+                                   + (len(dc.sp.m._(0).index.v) - loop_minor))
+                    if loop_major == dc.sp.m.active.v[0]:
+                        Δ_minor = loop_minor - dc.sp.m.active.v[1] + 1
+                    if loop_major > dc.sp.m.active.v[0]:
+                        Δ_minor = sum(len(dc.sp.m._(s).index.v) for s in
+                                range(dc.sp.m.active.v[0] + 1, loop_major))\
                             + loop_minor + 1 \
-                            + len(dc.sp.m._(dc.sp.curr.major.v).idx.v) \
-                            - dc.sp.curr.minor.v
-                if dc.sp.curr.major.v > 1:
-                    if loop_major < dc.sp.curr.major.v:
-                        Δ_minor = -1 * ((len(dc.sp.m._(loop_major).idx.v)
+                            + len(dc.sp.m._(dc.sp.m.active.v[0]).index.v) \
+                            - dc.sp.m.active.v[1]
+                if dc.sp.m.active.v[0] > 1:
+                    if loop_major < dc.sp.m.active.v[0]:
+                        Δ_minor = -1 * ((len(dc.sp.m._(loop_major).index.v)
                                         - loop_minor)
-                            + sum(len(dc.sp.m._(s).idx.v) for s
-                                in range(loop_major + 1, dc.sp.curr.major.v))
-                            + dc.sp.curr.minor.v + 1)
+                            + sum(len(dc.sp.m._(s).index.v) for s
+                                in range(loop_major + 1, dc.sp.m.active.v[0]))
+                            + dc.sp.m.active.v[1] + 1)
                         if loop_major == 0:
                             Δ_minor -= 1
-                    if loop_major == dc.sp.curr.major.v:
-                        Δ_minor = loop_minor - dc.sp.curr.minor.v + 1
-                    if loop_major > dc.sp.curr.major.v:
-                        Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in
+                    if loop_major == dc.sp.m.active.v[0]:
+                        Δ_minor = loop_minor - dc.sp.m.active.v[1] + 1
+                    if loop_major > dc.sp.m.active.v[0]:
+                        Δ_minor = sum(len(dc.sp.m._(s).index.v) for s in
                                 range(x+1,loop_major))\
                             + loop_minor + 1\
-                            + len(dc.sp.m._(dc.sp.curr.major.v).idx.v) \
-                            - dc.sp.curr.minor.v
+                            + len(dc.sp.m._(dc.sp.m.active.v[0]).index.v) \
+                            - dc.sp.m.active.v[1]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 oo = False
                 if Δ_minor > 1:
@@ -239,35 +236,35 @@ class MilestoneButton(QPushButton):
         self.change_signal.emit(x, y)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def updateMsTree():
-    for major in reversed(list(dc.sp.m.idx.v)):
-        major_index = dc.sp.m.idx
+    for major in reversed(list(dc.sp.m.index.v)):
+        major_index = dc.sp.m.index
         loop_major = dc.sp.m._(major)
         if major > 1:
             previous_major_has_item \
-                    = bool(len(dc.sp.m._(major-1)._(0).idx.v))
+                    = bool(len(dc.sp.m._(major-1)._(0).index.v))
             if not previous_major_has_item:
                 major_index.v.remove(major)
                 del dc.sp.m.__dict__['_{}'.format(major)]
                 continue
         if major > 0:
             next_major_exists = major+1 in major_index.v
-            has_item = bool(len(loop_major._(0).idx.v))
+            has_item = bool(len(loop_major._(0).index.v))
             if has_item and not next_major_exists:
                 major_index.v.add(major+1)
                 next_major = dc.sp.m._(major+1)
-                next_major.idx.v = {0}
+                next_major.index.v = {0}
                 next_major._(0).description.v = ''
-                next_major._(0).idx.v = set()
-                loop_major.idx.v.add(1)
+                next_major._(0).index.v = set()
+                loop_major.index.v.add(1)
                 loop_major._(1).description.v = ''
-                loop_major._(1).idx.v = set()
+                loop_major._(1).index.v = set()
                 continue
-        lastminor = max(loop_major.idx.v)
-        last_minor_has_item = bool(len(loop_major._(lastminor).idx.v))
+        lastminor = max(loop_major.index.v)
+        last_minor_has_item = bool(len(loop_major._(lastminor).index.v))
         if last_minor_has_item:
-            loop_major.idx.v.add(lastminor+1)
+            loop_major.index.v.add(lastminor+1)
             loop_major._(lastminor+1).description.v = ''
-            loop_major._(lastminor+1).idx.v = set()
+            loop_major._(lastminor+1).index.v = set()
         if major == 0 and lastminor == 1: continue
         if lastminor == 0: continue
         has_multiple_minors = False
@@ -276,9 +273,9 @@ def updateMsTree():
         if major > 0 and lastminor > 0:
             has_multiple_minors = True
         previous_to_last_minor_has_item \
-                = bool(len(loop_major._(lastminor-1).idx.v))
+                = bool(len(loop_major._(lastminor-1).index.v))
         if has_multiple_minors and not previous_to_last_minor_has_item:
-            loop_major.idx.v.remove(lastminor)
+            loop_major.index.v.remove(lastminor)
             del loop_major.__dict__['_{}'.format(lastminor)]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

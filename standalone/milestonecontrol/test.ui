@@ -18,11 +18,11 @@
     <widget class="QWidget" name="widget_4" native="true">
      <layout class="QGridLayout" name="gridLayout_7">
       <item row="0" column="0">
-       <widget class="QGroupBox" name="groupBox">
+       <widget class="QGroupBox" name="xx_selection_container">
         <property name="title">
          <string>Milestone Selection</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout_4">
+        <layout class="QGridLayout" name="xx_selection_layout">
          <item row="0" column="0">
           <widget class="QPushButton" name="xx_selection">
            <property name="text">
@@ -285,7 +285,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <widget class="QGroupBox" name="groupBox_5">
+             <widget class="QGroupBox" name="xx_move_target_container">
               <property name="title">
                <string>Target</string>
               </property>

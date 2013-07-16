@@ -12,6 +12,7 @@ app = QApplication(sys.argv)
 def log(msg):
     print(msg)
     dc.ui.v.xx_debug.appendPlainText(msg)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def on_add_feature():
     log('adding feature')
     dc.ctrl.v.add_milestone_item(
@@ -22,6 +23,7 @@ def on_add_issue():
     dc.ctrl.v.add_milestone_item(
         0, 1, 'test', 'test', 'issue', 0, 'none')
     log(_dcdump())
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def on_close_feature():
     log('closing feature')
     flist = []
@@ -42,16 +44,20 @@ def on_close_issue():
     log('list of issue id\'s in the selected milestone: {}'.format(flist))
     dc.ctrl.v.close_milestone_item(flist[0])
     log(_dcdump())
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def on_delete_feature():
     log('deleting feature')
 def on_delete_issue():
     log('deleting issue')
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def on_move_feature():
     log('moving feature')
 def on_move_issue():
     log('moving issue')
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def on_run_sequence():
     log('running sequence')
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def closeMinorMilestone():
     log('closing minor milestone')
 def closeMajorMilestone():
@@ -77,6 +83,11 @@ dc.ctrl.v = MilestoneControl()
 dc.ctrl.v.setup_new()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # TODO: load MPBs
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dc.ui.v.xx_selection_layout.removeWidget(dc.ui.v.xx_selection)
+dc.ui.v.xx_selection.close()
+dc.ui.v.xx_selection = MilestoneButton(dc.ui.v.xx_selection_container, 0, 1)
+dc.ui.v.xx_selection_layout.addWidget(dc.ui.v.xx_selection, 0, 1, 1, 1)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if sys.argv[1] == '--auto':
     print('running automatic mode')
