@@ -30,15 +30,24 @@ def logger(name, *argnames):
     return wrap
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class _dcNode:
-    def __init__(self):
+    def __init__(self, name):
         self.v = None
+        self._name = name
     def __getattr__(self, key):
-        self.__dict__[key] = _dcNode()
+        name = '{}.{}'.format(self._name, key)
+        self.__dict__[key] = _dcNode(name)
         return self.__dict__[key]
+    def __setattr__(self, key, value):
+        self.__dict__[key] = value
+        if 'name' in self.__dict__ and key != 'name':
+            log('DAT  {}.{} = {}'.format(self.__dict__['name'], key, value))
     def _(self, key):
         k = key
-        if isinstance(key, int): k = '_' + str(key)
-        if k not in self.__dict__: self.__dict__[k] = _dcNode()
+        if isinstance(key, int):
+            k = '_' + str(key)
+        name = '{}.{}'.format(self._name, k)
+        if k not in self.__dict__:
+            self.__dict__[k] = _dcNode(name)
         return self.__dict__[k]
     def __serialize__(self, data={}):
         data['_dcNode'] = {}
@@ -54,12 +63,13 @@ class _dcNode:
         for key, value in data.items():
             if key == '_dcNode':
                 for key in value:
-                    n = self.__dict__[key] = _dcNode()
+                    name = '{}.{}'.format(self._name, key)
+                    n = self.__dict__[key] = _dcNode(name)
                     n.__deserialize__(value[key])
             else:
                 self.__dict__[key] = value
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-dc = _dcNode()
+dc = _dcNode('dc')
 # x = internal, c = config, r = run, s = store (document)
 dc.x, dc.c, dc.r, dc.s
 dc.x.path.v = None
