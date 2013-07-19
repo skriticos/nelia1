@@ -11,12 +11,11 @@ class MPushButton(QPushButton):
     change_signal = Signal((int, int))
     # sel_x, sel_y → the selected version on the face
     # open_only →  ??
+    @logger('MPushButton.__init__(self, parent=None, sel_x=None, sel_y=None, open_only=False)')
     def __init__(self, parent=None, sel_x=None, sel_y=None, open_only=False):
         super().__init__(parent)
         self.root_menu = QMenu(self)
         self.setMenu(self.root_menu)
-        print()
-        print('cmajor, cminor', dc.sp.curr.major.v, dc.sp.curr.minor.v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # iterate through major versions
         for loop_major in dc.sp.m.idx.v:
@@ -55,7 +54,6 @@ class MPushButton(QPushButton):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 # determine minor delta
                 # current = 0.1
-                print('loop_major, loop_minor', loop_major, loop_minor)
                 if dc.sp.curr.major.v == 0 and dc.sp.curr.minor.v == 1:
                     if loop_major == 0:
                         Δ_minor = loop_minor
@@ -155,10 +153,12 @@ class MPushButton(QPushButton):
             loop_major_menu.setTitle(title)
             self.root_menu.addMenu(loop_major_menu)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MPushButton.getVersion(self)', 'self')
     def getVersion(self):
             x, y = self.current_text.split(' ')[3][1:].split('.')
             return int(x), int(y)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MPushButton.selectionChanged(self)', 'self')
     def onSelectionChanged(self):
         old_text = self.text()
         self.current_text = self.sender().text()

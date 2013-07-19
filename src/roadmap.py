@@ -10,12 +10,13 @@ from datacore import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 filters = [
     'feature', 'issue', 'open', 'closed', 'low', 'medium', 'high',
-   'core', 'auxiliary', 'security', 'corrective', 'architecture', 'refactor']
+    'core', 'auxiliary', 'security', 'corrective', 'architecture', 'refactor']
 headers = [
     'ID', 'Name', 'Type', 'Status', 'Category', 'Priority',
     'Created', 'Modified']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxRoadmap:
+    @logger('NxRoadmap.__init__(self)', 'self')
     def __init__(self):
         self.init = True
         self.model = QStandardItemModel()
@@ -46,6 +47,7 @@ class NxRoadmap:
                   'push_reopen']:
             dc.ui.roadmap.v.__dict__[w].hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onShowTab(self)', 'self')
     def onShowTab(self):
         if dc.r.roadmap.pid.last.v == dc.spid.v: return
         dc.r.roadmap.pid.last.v = dc.spid.v
@@ -62,6 +64,7 @@ class NxRoadmap:
         d.radio_medium.setChecked(True)
         d.radio_feature.setChecked(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onAddFeatureClicked(self)', 'self')
     def onAddFeatureClicked(self):
         dc.ui.roadmap_diag_add.v.radio_feature.setChecked(True)
         dc.ui.roadmap_diag_add.v.line_name.clear()
@@ -69,6 +72,7 @@ class NxRoadmap:
         self.updateDiagMPushButton()
         dc.ui.roadmap_diag_add.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onAddIssueClicked(self)', 'self')
     def onAddIssueClicked(self):
         dc.ui.roadmap_diag_add.v.radio_issue.setChecked(True)
         dc.ui.roadmap_diag_add.v.line_name.clear()
@@ -76,6 +80,7 @@ class NxRoadmap:
         self.updateDiagMPushButton()
         dc.ui.roadmap_diag_add.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onEditMIClicked(self)', 'self')
     def onEditMIClicked(self):
         diag = dc.ui.roadmap_diag_edit.v
         node = dc.sp.mi._(self.smiid)
@@ -99,11 +104,13 @@ class NxRoadmap:
         diag.show()
         diag.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onMIActivated(self)', 'self')
     def onMIActivated(self):
         cma, cmi = dc.sp.curr.major.v, dc.sp.curr.minor.v
         if self.smajor > cma or (self.smajor == cma and self.sminor >= cmi):
             self.onEditMIClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onSubmitNewMI(self)', 'self')
     def onSubmitNewMI(self):
         diag = dc.ui.roadmap_diag_add.v
         if diag.radio_feature.isChecked(): itype = 'Feature'
@@ -137,6 +144,7 @@ class NxRoadmap:
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onSubmitEditMI(self)', 'self')
     def onSubmitEditMI(self):
         diag = dc.ui.roadmap_diag_edit.v
         if diag.radio_feature.isChecked(): itype = 'Feature'
@@ -174,6 +182,7 @@ class NxRoadmap:
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onDeleteMIClicked(self)', 'self')
     def onDeleteMIClicked(self):
         del dc.sp.mi.__dict__['_{}'.format(self.smiid)]
         major, minor = dc.sp.midx.v[self.smiid]
@@ -184,7 +193,9 @@ class NxRoadmap:
         self.reloadTable()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onItemSelectionChanged(self, item_selection):
+    @logger('NxRoadmap.onItemSelectionChanged(self, item_selection, previous)',
+            'self', 'item_selection', 'previous')
+    def onItemSelectionChanged(self, item_selection, previous):
         indexes = item_selection.indexes()
         if not indexes:
             if not len(dc.sp.m._(self.smajor)._(self.sminor).idx.v):
@@ -209,6 +220,7 @@ class NxRoadmap:
             dc.ui.roadmap.v.push_close.hide()
             dc.ui.roadmap.v.push_reopen.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onCloseMinorMs(self)', 'self')
     def onCloseMinorMs(self):
         dc.sp.mi._(self.smiid).status.v = 'Closed'
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
@@ -219,6 +231,7 @@ class NxRoadmap:
         dc.ui.roadmap_diag_finalize.v.hide()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onCloseMajorMs(self)', 'self')
     def onCloseMajorMs(self):
         dc.sp.mi._(self.smiid).status.v = 'Closed'
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
@@ -233,12 +246,14 @@ class NxRoadmap:
         dc.ui.roadmap_diag_finalize.v.hide()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onMsDescChanged(self)', 'self')
     def onMsDescChanged(self):
         if self.init: return
         description = dc.ui.roadmap.v.text_m_description.toPlainText()
         dc.sp.m._(self.smajor)._(self.sminor).description.v = description
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onCloseMIClicked(self)', 'self')
     def onCloseMIClicked(self):
         sumopen = 0
         ma, mi = self.smajor, self.sminor
@@ -255,6 +270,7 @@ class NxRoadmap:
         self.updateRootMPushButton()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onReopenMIClicked(self)', 'self')
     def onReopenMIClicked(self):
         dc.sp.mi._(self.smiid).status.v = 'Open'
         dc.sp.mi._(self.smiid).changed.v = int(time.time())
@@ -263,6 +279,8 @@ class NxRoadmap:
         self.updateRootMPushButton()
         dc.m.project.v.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.onRootMPushButtonChanged(self, major, minor)',
+            'self', 'major', 'minor')
     def onRootMPushButtonChanged(self, major, minor):
         self.smajor = major
         self.sminor = minor
@@ -271,6 +289,7 @@ class NxRoadmap:
         self.updateRootMPushButton()
         self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.updateMsTree(self)', 'self')
     def updateMsTree(self):
         for major in reversed(list(dc.sp.m.idx.v)):
             major_index = dc.sp.m.idx
@@ -314,6 +333,7 @@ class NxRoadmap:
                 loop_major.idx.v.remove(lastminor)
                 del loop_major.__dict__['_{}'.format(lastminor)]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.closeMs(self)', 'self')
     def closeMs(self):
         sumopen = 0
         for itemid in dc.sp.m._(self.smajor)._(self.sminor+1).idx.v:
@@ -323,6 +343,7 @@ class NxRoadmap:
         else:       diag.push_finalize_major.setEnabled(True)
         diag.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.saveLayout(self)', 'self')
     def saveLayout(self):
         dc.c.roadmap.header.width.v = list()
         for i in range(self.model.columnCount()):
@@ -335,6 +356,7 @@ class NxRoadmap:
             cnode   = dc.c.roadmap._('show_{}'.format(f))
             cnode.v = dc.ui.roadmap.v.__dict__['check_{}'.format(f)].isChecked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.loadLayout(self)', 'self')
     def loadLayout(self):
         for index, width in enumerate(dc.c.roadmap.header.width.v):
             self.table.setColumnWidth(index, width)
@@ -346,6 +368,7 @@ class NxRoadmap:
             widget = dc.ui.roadmap.v.__dict__['check_{}'.format(f)]
             widget.setChecked(dc.c.roadmap._('show_{}'.format(f)).v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.reloadTable(self)', 'self')
     def reloadTable(self):
         if not dc.ui.roadmap.v.isVisible(): return
         self.init = True
@@ -377,6 +400,7 @@ class NxRoadmap:
         self.loadLayout()
         self.table.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.updateRootMPushButton(self)', 'self')
     def updateRootMPushButton(self):
         ui = dc.ui.roadmap.v
         ui.gridLayout_3.removeWidget(ui.push_milestone)
@@ -388,6 +412,7 @@ class NxRoadmap:
         ui.gridLayout_3.addWidget(ui.push_milestone, 0, 1, 1, 1)
         ui.label_2.setBuddy(ui.push_milestone)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxRoadmap.updateDiagMPushButton(self)', 'self')
     def updateDiagMPushButton(self):
         diags = dc.ui.roadmap_diag_add.v, dc.ui.roadmap_diag_edit.v
         for d in diags:

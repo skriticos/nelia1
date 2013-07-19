@@ -1,9 +1,33 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import os, pickle, gzip, datetime, PySide
+import os, pickle, gzip, datetime, PySide, time
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 __APPNAME__ = 'nelia1' # required for config save
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def log(msg):
+    msg = '{:.4f}: {}'.format(time.time(), msg)
+    print(msg)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def logger(name, *argnames):
+    def wrap(func):
+        def wrapped(*args, **kwargs):
+            arglist = ''
+            for i in range(len(argnames)):
+                arglist += '{}:{}, '.format(argnames[i], args[i])
+            if len(arglist):
+                arglist = arglist[:-2]
+            arglist = '({})'.format(arglist)
+            msg = 'CALL {} with args{} and kwargs {}'.format(
+                  name, arglist, kwargs)
+            log(msg)
+            retval = func(*args, **kwargs)
+            if retval:
+                msg = 'RET  {} -> ({})'.format(name, retval)
+                log(msg)
+            return retval
+        return wrapped
+    return wrap
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class _dcNode:
     def __init__(self):
@@ -50,6 +74,7 @@ dc.x.default.path.v = os.path.expanduser('~/Documents')
 dc.s.nextpid.v = 1
 dc.s.idx.pid.v = set()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@logger('dcsave(path=None)')
 def dcsave(path=None):
     if not path and not dc.x.path.v:
         raise ValueError('Storepath not defined')
@@ -60,6 +85,7 @@ def dcsave(path=None):
     dc.c.lastpath.v = dc.x.path.v
     dc.x.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@logger('dcload(path)', 'path')
 def dcload(path):
     with open(path, 'rb') as f: cdat = f.read()
     pdat = gzip.decompress(cdat)
@@ -67,6 +93,7 @@ def dcload(path):
     dc.x.path.v = path
     dc.x.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@logger('dcsaveconfig()')
 def dcsaveconfig():
     os.makedirs(dc.x.config.basepath.v, exist_ok=True)
     pdat = pickle.dumps(dc.c.__serialize__(), 3)
@@ -74,6 +101,7 @@ def dcsaveconfig():
     with open(dc.x.config.filepath.v, 'wb') as f: f.write(cdat)
     return True
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@logger('dcloadconfig()')
 def dcloadconfig():
     if not os.path.exists(dc.x.config.filepath.v): return
     with open(dc.x.config.filepath.v, 'rb') as f: cdat = f.read()
@@ -92,6 +120,7 @@ def _dcdump(node=None, path=''):
         if isinstance(node.__dict__[x], _dcNode):
             _dcdump(node=node.__dict__[x], path=path + bool(path)*'.' + x)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@logger('convert(item)', 'item')
 def convert(item):
     # convert timestamps (int)
     if isinstance(item, int):

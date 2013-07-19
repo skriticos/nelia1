@@ -9,6 +9,7 @@ from datacore import *
 headers = ['ID', 'Created', 'Summary']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
+    @logger('NxLog.__init__(self)', 'self')
     def __init__(self):
         self.view = dc.ui.log.v.table_history
         self.model = QStandardItemModel()
@@ -21,13 +22,16 @@ class NxLog:
         dc.ui.log_diag_new.v.accepted.connect(self.onNewSubmit)
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxLog.onNewEntryClicked(self)', 'self')
     def onNewEntryClicked(self):
         dc.ui.log_diag_new.v.text_detail.clear()
         dc.ui.log_diag_new.v.line_summary.clear()
         dc.ui.log_diag_new.v.show()
         dc.ui.log_diag_new.v.line_summary.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onSelectionChange(self, item_selection):
+    @logger('NxLog.onSelectionChange(self, item_selection, previous)',
+            'self', 'item_selection', 'previous')
+    def onSelectionChange(self, item_selection, previous):
         indexes = item_selection.indexes()
         if not indexes:
             dc.ui.log.v.text_detail.setEnabled(False)
@@ -39,6 +43,7 @@ class NxLog:
         dc.ui.log.v.text_detail.setEnabled(True)
         dc.ui.log.v.text_detail.setPlainText(dc.sp.log._(slogid).detail.v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxLog.saveLayout(self)', 'self')
     def saveLayout(self):
         dc.c.log.header.width.v = list()
         for i in range(self.model.columnCount()):
@@ -48,6 +53,7 @@ class NxLog:
         dc.c.log.sort.column.v = column
         dc.c.log.sort.order.v  = order
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxLog.loadLayout(self)', 'self')
     def loadLayout(self):
         for i,v in enumerate(dc.c.log.header.width.v):
             self.view.setColumnWidth(i, v)
@@ -55,6 +61,7 @@ class NxLog:
             self.horizontal_header.setSortIndicator(
                     dc.c.log.sort.column.v, convert(dc.c.log.sort.order.v))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxLog.reloadTable(self)', 'self')
     def reloadTable(self):
         self.saveLayout()
         self.selection_model.clear()
@@ -76,6 +83,7 @@ class NxLog:
         if dc.sp.nextlid.v > 1: self.view.setFocus()
         else:                   dc.ui.log.v.push_new_entry.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxLog.onShowTab(self)', 'self')
     def onShowTab(self):
         # check if project selection changed
         if dc.r.log.pid.last.v != dc.spid.v:
@@ -85,6 +93,7 @@ class NxLog:
             self.slogid = dc.sp.nextlid.v
             self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('onNewSubmit(self)', 'self')
     def onNewSubmit(self):
         lid = self.slogid = dc.sp.nextlid.v
         dc.sp.log._(lid).created.v = int(time.time())

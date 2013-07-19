@@ -11,6 +11,7 @@ from log     import NxLog
 from roadmap import NxRoadmap
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class MainWindow():
+    @logger('MainWindow.__init__(self, argv, app)', 'argv', 'app')
     def __init__(self, argv, app):
         loader = QtUiTools.QUiLoader()
         for name, fname in (
@@ -62,13 +63,16 @@ class MainWindow():
             dc.m.roadmap.v.loadLayout()
         dc.ui.main.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MainWindow.onSaveShortcutActivated(self)', 'self')
     def onSaveShortcutActivated(self):
         if dc.r.changed.v:
             dc.m.project.v.onSaveClicked()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MainWindow.onSigTerm(self, num, frame)', 'self', 'num', 'frame')
     def onSigTerm(self, num, frame):
         QApplication.quit()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MainWindow.onAboutToQuit(self)', 'self')
     def onAboutToQuit(self):
         dc.m.project.v.saveLayout()
         dc.m.log.v.saveLayout()
@@ -80,6 +84,7 @@ class MainWindow():
             dcsave()
         dcsaveconfig()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MainWindow.onTabForward(self)', 'self')
     def onTabForward(self):
         tab_index = dc.ui.main.v.tabnavi.currentIndex()
         tab_count = dc.ui.main.v.tabnavi.count()
@@ -88,6 +93,7 @@ class MainWindow():
         elif dc.ui.main.v.tabnavi.isTabEnabled(tab_index+1):
             dc.ui.main.v.tabnavi.setCurrentIndex(tab_index+1)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MainWindow.onTabBackward(self)', 'self')
     def onTabBackward(self):
         tab_index = dc.ui.main.v.tabnavi.currentIndex()
         tab_count = dc.ui.main.v.tabnavi.count()
@@ -97,15 +103,18 @@ class MainWindow():
         else:
             dc.ui.main.v.tabnavi.setCurrentIndex(tab_index-1)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MainWindow.enableTabs(self)', 'self')
     def enableTabs(self):
         for i in range(1, dc.ui.main.v.tabnavi.count()):
             dc.ui.main.v.tabnavi.setTabEnabled(i, True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('MainWindow.dissableTabs(self)', 'self')
     def dissableTabs(self):
         for i in range(1, dc.ui.main.v.tabnavi.count()):
             dc.ui.main.v.tabnavi.setTabEnabled(i, False)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def tabChanged(self):
+    @logger('MainWindow.tabChanged(self)', 'self', 'target')
+    def tabChanged(self, target):
         tab_widget = dc.ui.main.v.tabnavi
         cur_tab_name = tab_widget.tabText(tab_widget.currentIndex())
         if cur_tab_name == '&Log':

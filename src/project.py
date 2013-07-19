@@ -12,6 +12,7 @@ headers =  [
     'Challenge', 'Modified', 'Created' ]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
+    @logger('NxProject.__init__(self)', 'self')
     def __init__(self):
         dc.spid.v = 0
         widget = dc.ui.project.v
@@ -39,6 +40,7 @@ class NxProject:
         if dc.c.lastpath.v: widget.push_open_last.show()
         else:               widget.push_open_last.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxLogger.onNewClicked(self)', 'self')
     def onNewClicked(self):
         diag = dc.ui.project_diag_new.v
         diag.line_name.clear()
@@ -51,6 +53,7 @@ class NxProject:
         diag.line_name.setFocus()
         diag.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.onOpenClicked(self)', 'self')
     def onOpenClicked(self):
         if dc.r.changed.v:
             q = 'Discard changes?'
@@ -74,6 +77,7 @@ class NxProject:
         self.reloadTable()
         dc.r.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.onOpenLast(self)', 'self')
     def onOpenLast(self):
         result = dcload(dc.c.lastpath.v)
         if isinstance(result, Exception):
@@ -84,6 +88,7 @@ class NxProject:
         self.reloadTable()
         dc.r.changed.v = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.onSaveClicked(self)', 'self')
     def onSaveClicked(self):
         if not dc.x.path.v:
             t = 'Save nelia1 document'
@@ -103,6 +108,7 @@ class NxProject:
         dc.ui.project.v.push_save.hide()
         self.view.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.touchProject(self)', 'self')
     def touchProject(self):
         timestamp = int(time.time())
         dc.sp.modified.v = timestamp
@@ -111,7 +117,9 @@ class NxProject:
         dc.r.changed.v = True
         dc.ui.project.v.push_save.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onSelectionChanged(self, item_selection):
+    @logger('NxProject.onSelectionChanged(self, item_selection, previous)',
+            'self', 'item_selection', 'previous')
+    def onSelectionChanged(self, item_selection, previous):
         indexes = item_selection.indexes()
         if not indexes: return
         row = indexes[0].row()
@@ -126,11 +134,13 @@ class NxProject:
         name = dc.sp.name.v
         dc.ui.main.v.setWindowTitle('Nelia1 - {}'.format(name))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.onDescriptionChanged(self)', 'self')
     def onDescriptionChanged(self):
         if self.init: return
         dc.sp.description.v = dc.ui.project.v.text_description.toPlainText()
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.saveLayout(self)', 'self')
     def saveLayout(self):
         dc.c.project.header.width.v = list()
         for i in range(self.model.columnCount()):
@@ -140,6 +150,7 @@ class NxProject:
         dc.c.project.sort.column.v = sort
         dc.c.project.sort.order.v  = order
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.loadLayout(self)', 'self')
     def loadLayout(self):
         for i,v in enumerate(dc.c.project.header.width.v):
             self.view.setColumnWidth(i, v)
@@ -147,6 +158,7 @@ class NxProject:
             self.horizontal_header.setSortIndicator(
                 dc.c.project.sort.column.v, convert(dc.c.project.sort.order.v))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.reloadTable(self)', 'self')
     def reloadTable(self):
         self.init = True
         self.saveLayout()
@@ -199,6 +211,7 @@ class NxProject:
             w.push_new.setFocus()
         self.init = False
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.onNewProject(self)', 'self')
     def onNewProject(self):
         timestamp = int(time.time())
         pid = dc.s.nextpid.v
@@ -230,6 +243,7 @@ class NxProject:
         self.reloadTable()
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.showEditProject(self)', 'self')
     def showEditProject(self):
         self.diag_edit.line_name.setText(dc.sp.name.v)
         i = self.diag_edit.combo_ptype.findText(dc.sp.ptype.v)
@@ -244,6 +258,7 @@ class NxProject:
         self.diag_edit.show()
         self.diag_edit.line_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.onEditProject(self)', 'self')
     def onEditProject(self):
         dc.sp.name.v        = self.diag_edit.line_name.text()
         dc.sp.category.v    = self.diag_edit.combo_category.currentText()
@@ -255,6 +270,7 @@ class NxProject:
         self.reloadTable()
         self.touchProject()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.onDeleteProject(self)', 'self')
     def onDeleteProject(self):
         t = 'Delete project?'
         q = 'Sure you want to delete project {}: {}?'\
