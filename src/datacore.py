@@ -39,8 +39,8 @@ class _dcNode:
         return self.__dict__[key]
     def __setattr__(self, key, value):
         self.__dict__[key] = value
-        if 'name' in self.__dict__ and key != 'name':
-            log('DAT  {}.{} = {}'.format(self.__dict__['name'], key, value))
+        if '_name' in self.__dict__ and key != '_name':
+            log('DAT  {}.{} = {}'.format(self.__dict__['_name'], key, value))
     def _(self, key):
         k = key
         if isinstance(key, int):
