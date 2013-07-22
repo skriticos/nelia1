@@ -20,6 +20,10 @@ dct = _dcNode('dct') # test data core
 dct.case.v = 0
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 logTestResult(1, 'CREATE PROJECT', 'SUCCESS')
+diag = dc.ui.project_diag_new.v
+diag.line_name.setText('test project')
+diag.text_description.setPlainText('test project desciption')
+dc.m.project.v.onNewProject()
 
 # create a new project (programatically)
 # create a new project (gui)

@@ -6,6 +6,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 from datacore import *
+from mistctrl import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 headers =  [
     'ID', 'Name', 'Status', 'Type', 'Verson', 'Category', 'Priority',
@@ -214,6 +215,23 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProject.onNewProject(self)', 'self')
     def onNewProject(self):
+        name        = self.diag_new.line_name.text()
+        category    = self.diag_new.combo_category.currentText()
+        status      = self.diag_new.combo_status.currentText()
+        ptype       = self.diag_new.combo_ptype.currentText()
+        priority    = self.diag_new.spin_priority.value()
+        challenge   = self.diag_new.spin_challenge.value()
+        description = self.diag_new.text_description.toPlainText()
+        self.createNewProject(name, category, status, ptype, priority,
+                              challenge, description)
+        self.reloadTable()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @logger('NxProject.createNewProject(self, name, category, status, ptype, '
+             + 'priority, challenge, description)',
+            'self', 'name', 'category', 'status', 'ptype', 'priority',
+            'challenge', 'description')
+    def createNewProject(self, name, category, status, ptype, priority,
+                         challenge, description):
         timestamp = int(time.time())
         pid = dc.s.nextpid.v
         dc.s.idx.pid.v.add(pid)
@@ -221,28 +239,16 @@ class NxProject:
         dc.spid.v = pid
         dc.sp = dc.s._(pid)
         dc.sp.nextlid.v     = 1
-        dc.sp.nextmiid.v    = 1
-        dc.sp.curr.major.v  = 0
-        dc.sp.curr.minor.v  = 1
-        dc.sp.name.v        = self.diag_new.line_name.text()
-        dc.sp.category.v    = self.diag_new.combo_category.currentText()
-        dc.sp.status.v      = self.diag_new.combo_status.currentText()
-        dc.sp.ptype.v       = self.diag_new.combo_ptype.currentText()
-        dc.sp.priority.v    = self.diag_new.spin_priority.value()
-        dc.sp.challenge.v   = self.diag_new.spin_challenge.value()
-        dc.sp.description.v = self.diag_new.text_description.toPlainText()
+        dc.sp.name.v        = name
+        dc.sp.category.v    = category
+        dc.sp.status.v      = status
+        dc.sp.ptype.v       = ptype
+        dc.sp.priority.v    = priority
+        dc.sp.challenge.v   = challenge
+        dc.sp.description.v = description
         dc.sp.created.v     = timestamp
         dc.sp.modified.v    = timestamp
-        dc.sp.midx.v = {} # dict with item id's and position id -> x, y
-        dc.sp.m._(0)._(1).description.v = ''
-        dc.sp.m._(0)._(1).idx.v = set()
-        dc.sp.m._(1)._(0).description.v = ''
-        dc.sp.m._(1)._(0).idx.v = set()
-        dc.sp.m.idx.v = {0, 1}   # major milestone index
-        dc.sp.m._(0).idx.v = {1} # minor milestone index (for 0.x)
-        dc.sp.m._(1).idx.v = {0}
-        self.reloadTable()
-        self.touchProject()
+        mistctrl_new_tree()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProject.showEditProject(self)', 'self')
     def showEditProject(self):
