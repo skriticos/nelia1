@@ -170,13 +170,13 @@ class NxProject:
         if not dc.s.idx.pid.v:
             dc.ui.main.v.setWindowTitle('Nelia1')
         for pid in dc.s.idx.pid.v:
-            major, minor = dc.s._(pid).curr.major.v, dc.s._(pid).curr.minor.v
+            major, minor = dc.s._(pid).m.active.v
             self.model.insertRow(0, [
                 QStandardItem(str(pid).zfill(4)),
                 QStandardItem(dc.s._(pid).name.v),
                 QStandardItem(dc.s._(pid).status.v),
                 QStandardItem(dc.s._(pid).ptype.v),
-                QStandardItem('{}.{}'.format(major,minor)),
+                QStandardItem('{}.{}'.format(major, minor)),
                 QStandardItem(dc.s._(pid).category.v),
                 QStandardItem(str(dc.s._(pid).priority.v)),
                 QStandardItem(str(dc.s._(pid).challenge.v)),
