@@ -36,7 +36,6 @@ class NxProject:
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
         widget.text_description.textChanged.connect(self.onDescriptionChanged)
         self.view.activated.connect(self.showEditProject)
-        self.reloadTable()
         if dc.c.lastpath.v: widget.push_open_last.show()
         else:               widget.push_open_last.hide()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
