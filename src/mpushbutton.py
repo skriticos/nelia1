@@ -67,7 +67,7 @@ class MPushButton(QPushButton):
                     if loop_major > 0:
                         Δ_minor = sum(len(dc.sp.m._(s).idx.v) for s in range(1,
                             loop_major)) \
-                            + m + len(dc.sp.m._(0).idx.v) + 2 \
+                            + loop_major + len(dc.sp.m._(0).idx.v) + 2 \
                             - dc.sp.curr.minor.v
                 if dc.sp.curr.major.v == 1:
                     if loop_major == 0:
