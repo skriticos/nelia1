@@ -267,15 +267,32 @@ class NxProject:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProject.onEditProject(self)', 'self')
     def onEditProject(self):
-        dc.sp.name.v        = self.diag_edit.line_name.text()
-        dc.sp.category.v    = self.diag_edit.combo_category.currentText()
-        dc.sp.status.v      = self.diag_edit.combo_status.currentText()
-        dc.sp.ptype.v       = self.diag_edit.combo_ptype.currentText()
-        dc.sp.priority.v    = self.diag_edit.spin_priority.value()
-        dc.sp.challenge.v   = self.diag_edit.spin_challenge.value()
-        dc.sp.description.v = self.diag_edit.text_description.toPlainText()
-        self.reloadTable()
+        name        = self.diag_edit.line_name.text()
+        category    = self.diag_edit.combo_category.currentText()
+        status      = self.diag_edit.combo_status.currentText()
+        ptype       = self.diag_edit.combo_ptype.currentText()
+        priority    = self.diag_edit.spin_priority.value()
+        challenge   = self.diag_edit.spin_challenge.value()
+        description = self.diag_edit.text_description.toPlainText()
+        self.editProject(name, category, status, ptype, priority, challenge,
+                         description)
         self.touchProject()
+        self.reloadTable()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # this works on dc.sp (selected project)
+    @logger('NxProject.editProject(self, name, category, status, ptype, '
+             + 'priority, challenge, description)',
+            'self', 'name', 'category', 'status', 'ptype', 'priority',
+            'challenge', 'description')
+    def editProject(self, name, category, status, ptype, priority, challenge,
+            description):
+        dc.sp.name.v        = name
+        dc.sp.category.v    = category
+        dc.sp.status.v      = status
+        dc.sp.ptype.v       = ptype
+        dc.sp.priority.v    = priority
+        dc.sp.challenge.v   = challenge
+        dc.sp.description.v = description
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProject.onDeleteProject(self)', 'self')
     def onDeleteProject(self):

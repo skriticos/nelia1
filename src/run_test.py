@@ -39,11 +39,7 @@ assert(dc.s._1.m._0._1.detail.v == '')
 assert(dc.s._1.m._1.index.v == {0})
 assert(dc.s._1.m._1._0.index.v == set())
 assert(dc.s._1.m._1._0.detail.v == '')
-log('****** TEST CASE "CREATE NEW PROJECT" PASSED *****')
-
-# create a new project (programatically)
-# create a new project (gui)
-# ...
+log('****** TEST CASE "CREATE EDIT PROJECT" STARTING *****')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 log('***** TEST RUN MAIN LOOP AND SHUT DOWN *****')
