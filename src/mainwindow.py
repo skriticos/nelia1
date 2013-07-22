@@ -52,7 +52,8 @@ class MainWindow():
         for keys, target in [('Ctrl+w', dc.ui.main.v.close),
                              ('Ctrl+PgUp', self.onTabForward),
                              ('Ctrl+PgDown', self.onTabBackward),
-                             ('Ctrl+s', self.onSaveShortcutActivated)]:
+                             ('Ctrl+s', self.onSaveShortcutActivated),
+                             ('Ctrl+m', self.onAddLogMarker)]:
             shortcut = QShortcut(QKeySequence(keys), dc.ui.main.v)
             shortcut.activated.connect(target)
         app.aboutToQuit.connect(self.onAboutToQuit)
@@ -62,6 +63,9 @@ class MainWindow():
             dc.m.log.v.loadLayout()
             dc.m.roadmap.v.loadLayout()
         dc.ui.main.v.show()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    def onAddLogMarker(self):
+        log('********** MARKER **********')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('MainWindow.onSaveShortcutActivated(self)', 'self')
     def onSaveShortcutActivated(self):
