@@ -58,10 +58,6 @@ class MainWindow():
             shortcut.activated.connect(target)
         app.aboutToQuit.connect(self.onAboutToQuit)
         signal.signal(signal.SIGTERM, self.onSigTerm)
-        if dc.x.config.loaded.v:
-            dc.m.project.v.loadLayout()
-            dc.m.log.v.loadLayout()
-            dc.m.roadmap.v.loadLayout()
         dc.ui.main.v.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAddLogMarker(self):

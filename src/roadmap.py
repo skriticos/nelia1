@@ -30,9 +30,6 @@ class NxRoadmap:
         win.push_add_issue.clicked.connect(self.onAddIssueClicked)
         dc.ui.roadmap_diag_add.v.accepted.connect(self.onSubmitNewMI)
         dc.ui.roadmap_diag_edit.v.accepted.connect(self.onSubmitEditMI)
-        for f in filters:
-            widget = win.__dict__['check_{}'.format(f)]
-            widget.stateChanged.connect(self.reloadTable)
         win.push_delete.clicked.connect(self.onDeleteMIClicked)
         win.push_edit.clicked.connect(self.onEditMIClicked)
         win.push_close.clicked.connect(self.onCloseMIClicked)
@@ -46,6 +43,11 @@ class NxRoadmap:
         for w in ['label_selected', 'push_edit', 'push_delete', 'push_close',
                   'push_reopen']:
             dc.ui.roadmap.v.__dict__[w].hide()
+        if dc.x.config.loaded.v:
+            self.loadLayout()
+        for f in filters:
+            widget = win.__dict__['check_{}'.format(f)]
+            widget.stateChanged.connect(self.reloadTable)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxRoadmap.onShowTab(self)', 'self')
     def onShowTab(self):

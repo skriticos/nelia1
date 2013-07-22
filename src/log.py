@@ -21,6 +21,8 @@ class NxLog:
         dc.ui.log.v.push_new_entry.clicked.connect(self.onNewEntryClicked)
         dc.ui.log_diag_new.v.accepted.connect(self.onNewSubmit)
         self.selection_model.selectionChanged.connect(self.onSelectionChange)
+        if dc.x.config.loaded.v:
+            self.loadLayout()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxLog.onNewEntryClicked(self)', 'self')
     def onNewEntryClicked(self):

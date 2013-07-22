@@ -38,6 +38,8 @@ class NxProject:
         self.view.activated.connect(self.showEditProject)
         if dc.c.lastpath.v: widget.push_open_last.show()
         else:               widget.push_open_last.hide()
+        if dc.x.config.loaded.v:
+            self.loadLayout()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxLogger.onNewClicked(self)', 'self')
     def onNewClicked(self):
