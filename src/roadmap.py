@@ -369,8 +369,9 @@ class NxRoadmap:
             widget.setChecked(dc.c.roadmap._('show_{}'.format(f)).v)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxRoadmap.reloadTable(self)', 'self')
-    def reloadTable(self):
-        if not dc.ui.roadmap.v.isVisible(): return
+    def reloadTable(self, state=None):
+        if not dc.ui.roadmap.v.isVisible():
+            return
         self.init = True
         self.saveLayout()
         self.model.clear()
