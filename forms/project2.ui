@@ -33,7 +33,7 @@
 	background-color:#333333
 }
 QGroupBox{
-	color:white
+	color:lightgray;
 }
 QPushButton{
 	background-color:#AEA79F;
@@ -623,6 +623,9 @@ QPushButton:pressed{
               </sizepolicy>
              </property>
              <layout class="QGridLayout" name="gridLayout_11">
+              <property name="horizontalSpacing">
+               <number>6</number>
+              </property>
               <property name="verticalSpacing">
                <number>0</number>
               </property>
@@ -630,44 +633,6 @@ QPushButton:pressed{
                <number>0</number>
               </property>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_9">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>2</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>In&amp;formation:</string>
-                </property>
-                <property name="buddy">
-                 <cstring>text_project_info</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0" colspan="2">
-               <widget class="QTextEdit" name="text_project_info">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>4</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="autoFormatting">
-                 <set>QTextEdit::AutoAll</set>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
                <widget class="QToolButton" name="btn_info_max">
                 <property name="enabled">
                  <bool>false</bool>
@@ -687,6 +652,51 @@ QPushButton:pressed{
                  <bool>true</bool>
                 </property>
                </widget>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="QTextEdit" name="text_project_info">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>4</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="autoFormatting">
+                 <set>QTextEdit::AutoAll</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="label_6">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Project In&amp;formation</string>
+                </property>
+                <property name="buddy">
+                 <cstring>text_project_info</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </widget>
@@ -709,7 +719,7 @@ QPushButton:pressed{
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>0</number>
+           <number>12</number>
           </property>
           <property name="rightMargin">
            <number>6</number>
@@ -720,19 +730,6 @@ QPushButton:pressed{
           <property name="spacing">
            <number>0</number>
           </property>
-          <item row="0" column="0">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
           <item row="1" column="0" colspan="8">
            <widget class="QTableView" name="tbl_project_list">
             <property name="enabled">
@@ -875,6 +872,19 @@ QPushButton:pressed{
             </property>
            </widget>
           </item>
+          <item row="0" column="7">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </widget>
@@ -895,11 +905,18 @@ QPushButton:pressed{
   <tabstop>btn_show_roadmap</tabstop>
   <tabstop>line_project_name</tabstop>
   <tabstop>cb_project_type</tabstop>
+  <tabstop>cb_project_category</tabstop>
   <tabstop>sb_project_priority</tabstop>
   <tabstop>sb_project_challenge</tabstop>
   <tabstop>text_project_info</tabstop>
   <tabstop>btn_info_max</tabstop>
   <tabstop>tbl_project_list</tabstop>
+  <tabstop>btn_project_sort_modified</tabstop>
+  <tabstop>btn_unimportant</tabstop>
+  <tabstop>btn_important</tabstop>
+  <tabstop>btn_easy</tabstop>
+  <tabstop>btn_challenging</tabstop>
+  <tabstop>btn_hard</tabstop>
  </tabstops>
  <resources/>
  <connections/>
