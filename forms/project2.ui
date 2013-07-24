@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>project_widget</class>
+ <widget class="QWidget" name="project_widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>870</width>
+    <height>588</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>project_widget</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_8">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QWidget" name="action_background" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QWidget#action_background {background-color:#333333}
+QGroupBox{color:white}
+QPushButton{
+	background-color:#AEA79F;
+	color:black;
+	border-color:black;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 4px;
+	min-width: 5em;
+	padding: 4px;}
+QPushButton:focus{
+	outline: none;
+	background-color:#AEA79F;
+	color:black;
+	border-color:#DD4814;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 4px;
+	min-width: 5em;
+	padding: 4px;}
+QPushButton:pressed{
+	outline: none;
+	background-color:#AEA79F;
+	color:black;
+	border-color:red;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 4px;
+	min-width: 5em;
+	padding: 4px;}
+</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <property name="leftMargin">
+       <number>9</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QWidget" name="widget_2" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="groupBox_4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title">
+            <string>Project Actions</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btn_project_delete">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>&amp;Delete</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QPushButton" name="btn_project_new">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="statusTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string/>
+              </property>
+              <property name="accessibleDescription">
+               <string/>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string>&amp;New</string>
+              </property>
+              <property name="autoDefault">
+               <bool>false</bool>
+              </property>
+              <property name="default">
+               <bool>false</bool>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="whatsThis">
+            <string/>
+           </property>
+           <property name="title">
+            <string>Document Actions</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
+            <property name="horizontalSpacing">
+             <number>6</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>3</number>
+            </property>
+            <item row="0" column="5">
+             <widget class="QPushButton" name="btn_doc_save_as">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>Save &amp;As..</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="6">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btn_doc_open">
+              <property name="text">
+               <string>&amp;Open..</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QPushButton" name="btn_doc_new">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>New</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QPushButton" name="btn_doc_open_last">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>Op&amp;en Last</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QGridLayout" name="gridLayout_7">
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QSplitter" name="splitter">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="handleWidth">
+         <number>6</number>
+        </property>
+        <widget class="QGroupBox" name="selected_project_group">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Selected Project</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QWidget" name="widget_3" native="true">
+            <layout class="QGridLayout" name="gridLayout_9">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="pushButton_2">
+               <property name="text">
+                <string>&amp;Roadmap..</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButton">
+               <property name="text">
+                <string>&amp;Logs..</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QSplitter" name="splitter_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <widget class="QWidget" name="widget_4" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetDefaultConstraint</enum>
+              </property>
+              <property name="verticalSpacing">
+               <number>3</number>
+              </property>
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>18</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Na&amp;me:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>line_project_name</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="line_project_name">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>1</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>&amp;Type:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>cb_project_type</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="cb_project_type">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>1</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Application</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Library</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Utility</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Middleware</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Protocol</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Wrapper</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Other</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>&amp;Status:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>cb_project_status</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QComboBox" name="cb_project_status">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>1</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Spark</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Plan</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Design</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Implement</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Test</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Document</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Release</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Iterate</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Maintain</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Decommission</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Dead</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>&amp;Category:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>cb_project_category</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QComboBox" name="cb_project_category">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Development</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Internet</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Accessory</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Media</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Game</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Office</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Education</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Science</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Grapics</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>System</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Costomization</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Configuration</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Automation</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Other</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Priorit&amp;y:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>sb_project_priority</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QSpinBox" name="sb_project_priority">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximum">
+                 <number>9</number>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>C&amp;hallenge:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>sb_project_challenge</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QSpinBox" name="sb_project_challenge">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximum">
+                 <number>9</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="widget_5" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>10</verstretch>
+              </sizepolicy>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_11">
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_9">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>2</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>In&amp;formation:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>text_project_info</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QTextEdit" name="text_project_info">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>4</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="autoFormatting">
+                 <set>QTextEdit::AutoAll</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>3</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Project L&amp;ist</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>6</number>
+          </property>
+          <property name="bottomMargin">
+           <number>6</number>
+          </property>
+          <property name="horizontalSpacing">
+           <number>0</number>
+          </property>
+          <property name="verticalSpacing">
+           <number>3</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QTableView" name="tbl_project_list">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>btn_project_new</tabstop>
+  <tabstop>btn_project_delete</tabstop>
+  <tabstop>btn_doc_open_last</tabstop>
+  <tabstop>btn_doc_open</tabstop>
+  <tabstop>btn_doc_new</tabstop>
+  <tabstop>btn_doc_save_as</tabstop>
+  <tabstop>tbl_project_list</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
