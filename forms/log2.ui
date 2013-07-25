@@ -30,7 +30,7 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QWidget#action_bg_outer {
-	background-color:#333333
+	background-color:#333333;
 }
 QGroupBox{
 	color:lightgray;
@@ -42,8 +42,8 @@ QPushButton{
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 4px;
-	min-width: 5em;
-	padding: 4px;
+	min-width: 3.5em;
+	padding: 3px;
 }
 QPushButton:focus{
 	outline: none;
@@ -53,8 +53,8 @@ QPushButton:focus{
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 4px;
-	min-width: 5em;
-	padding: 4px;
+	min-width: 3.5em;
+	padding: 3px;
 }
 QPushButton:pressed{
 	outline: none;
@@ -64,8 +64,8 @@ QPushButton:pressed{
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 4px;
-	min-width: 5em;
-	padding: 4px;
+	min-width: 3.5em;
+	padding: 3px;
 }</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
@@ -96,6 +96,9 @@ QPushButton:pressed{
          <property name="bottomMargin">
           <number>0</number>
          </property>
+         <property name="horizontalSpacing">
+          <number>0</number>
+         </property>
          <property name="verticalSpacing">
           <number>3</number>
          </property>
@@ -122,6 +125,9 @@ QPushButton:pressed{
             </property>
             <property name="bottomMargin">
              <number>6</number>
+            </property>
+            <property name="spacing">
+             <number>3</number>
             </property>
             <item row="0" column="1">
              <widget class="QPushButton" name="btn_log_delete">
@@ -158,7 +164,7 @@ QPushButton:pressed{
             <string notr="true">color:lightgray;</string>
            </property>
            <property name="text">
-            <string>Project logs:</string>
+            <string>Project logs:   </string>
            </property>
           </widget>
          </item>
@@ -179,6 +185,9 @@ QPushButton:pressed{
             </property>
             <property name="bottomMargin">
              <number>6</number>
+            </property>
+            <property name="spacing">
+             <number>3</number>
             </property>
             <item row="0" column="1">
              <widget class="QPushButton" name="btn_roadmap">
@@ -212,6 +221,12 @@ QPushButton:pressed{
          </item>
          <item row="0" column="1" colspan="2">
           <widget class="QLabel" name="lbl_project_name">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="styleSheet">
             <string notr="true">color:lightgray;</string>
            </property>

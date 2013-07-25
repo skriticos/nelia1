@@ -30,7 +30,7 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QWidget#action_bg_outer {
-	background-color:#333333
+	background-color:#333333;
 }
 QGroupBox{
 	color:lightgray;
@@ -42,8 +42,8 @@ QPushButton{
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 4px;
-	min-width: 5em;
-	padding: 4px;
+	min-width: 3.5em;
+	padding: 3px;
 }
 QPushButton:focus{
 	outline: none;
@@ -53,8 +53,8 @@ QPushButton:focus{
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 4px;
-	min-width: 5em;
-	padding: 4px;
+	min-width: 3.5em;
+	padding: 3px;
 }
 QPushButton:pressed{
 	outline: none;
@@ -64,8 +64,8 @@ QPushButton:pressed{
 	border-style: solid;
 	border-width: 2px;
 	border-radius: 4px;
-	min-width: 5em;
-	padding: 4px;
+	min-width: 3.5em;
+	padding: 3px;
 }</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
@@ -78,7 +78,7 @@ QPushButton:pressed{
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="0" column="0">
+      <item row="0" column="2">
        <widget class="QWidget" name="action_bg_inner" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -99,10 +99,13 @@ QPushButton:pressed{
          <property name="bottomMargin">
           <number>0</number>
          </property>
+         <property name="horizontalSpacing">
+          <number>0</number>
+         </property>
          <property name="verticalSpacing">
           <number>3</number>
          </property>
-         <item row="2" column="0">
+         <item row="2" column="1">
           <widget class="QGroupBox" name="action_project">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -126,7 +129,10 @@ QPushButton:pressed{
             <property name="bottomMargin">
              <number>6</number>
             </property>
-            <property name="spacing">
+            <property name="horizontalSpacing">
+             <number>3</number>
+            </property>
+            <property name="verticalSpacing">
              <number>6</number>
             </property>
             <item row="0" column="1">
@@ -179,7 +185,7 @@ QPushButton:pressed{
            </layout>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="2" column="3">
           <widget class="QGroupBox" name="action_doc">
            <property name="whatsThis">
             <string/>
@@ -200,10 +206,7 @@ QPushButton:pressed{
             <property name="bottomMargin">
              <number>6</number>
             </property>
-            <property name="horizontalSpacing">
-             <number>6</number>
-            </property>
-            <property name="verticalSpacing">
+            <property name="spacing">
              <number>3</number>
             </property>
             <item row="0" column="5">
@@ -259,23 +262,7 @@ QPushButton:pressed{
            </layout>
           </widget>
          </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="QLabel" name="label_7">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">color:lightgray;</string>
-           </property>
-           <property name="text">
-            <string>Project Listing</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="2">
+         <item row="1" column="0" colspan="4">
           <widget class="Line" name="line">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -296,6 +283,66 @@ height:1px;</string>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="4">
+          <widget class="QLabel" name="label_7">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color:lightgray;</string>
+           </property>
+           <property name="text">
+            <string>Project Listing</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Navigation</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
+            <property name="horizontalSpacing">
+             <number>3</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btn_show_roadmap">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>&amp;Roadmap</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QPushButton" name="btn_show_logs">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>&amp;Log</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -351,57 +398,6 @@ height:1px;</string>
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="QWidget" name="selected_navi" native="true">
-            <layout class="QGridLayout" name="gridLayout_9">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>10</number>
-             </property>
-             <item row="0" column="2">
-              <widget class="QPushButton" name="btn_show_roadmap">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>&amp;Roadmap..</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QPushButton" name="btn_show_logs">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>&amp;Logs..</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="1" column="0">
            <widget class="QSplitter" name="splitter_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -683,7 +679,52 @@ height:1px;</string>
               <property name="margin">
                <number>0</number>
               </property>
-              <item row="0" column="0">
+              <item row="0" column="2">
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="0" colspan="4">
+               <widget class="QTextEdit" name="text_project_info">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>4</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="autoFormatting">
+                 <set>QTextEdit::AutoAll</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_6">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Project In&amp;formation</string>
+                </property>
+                <property name="buddy">
+                 <cstring>text_project_info</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
                <widget class="QToolButton" name="btn_info_max">
                 <property name="enabled">
                  <bool>true</bool>
@@ -701,51 +742,6 @@ height:1px;</string>
                 </property>
                 <property name="checkable">
                  <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QLabel" name="label_6">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Project In&amp;formation</string>
-                </property>
-                <property name="buddy">
-                 <cstring>text_project_info</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <spacer name="horizontalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="1" column="0" colspan="3">
-               <widget class="QTextEdit" name="text_project_info">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>4</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="autoFormatting">
-                 <set>QTextEdit::AutoAll</set>
                 </property>
                </widget>
               </item>
@@ -952,15 +948,12 @@ height:1px;</string>
   <tabstop>btn_doc_open</tabstop>
   <tabstop>btn_doc_new</tabstop>
   <tabstop>btn_doc_save_as</tabstop>
-  <tabstop>btn_show_logs</tabstop>
-  <tabstop>btn_show_roadmap</tabstop>
   <tabstop>line_project_name</tabstop>
   <tabstop>cb_project_type</tabstop>
   <tabstop>cb_project_category</tabstop>
   <tabstop>sb_project_priority</tabstop>
   <tabstop>sb_project_challenge</tabstop>
   <tabstop>text_project_info</tabstop>
-  <tabstop>btn_info_max</tabstop>
   <tabstop>tbl_project_list</tabstop>
   <tabstop>btn_project_sort_modified</tabstop>
   <tabstop>btn_unimportant</tabstop>
