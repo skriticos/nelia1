@@ -87,10 +87,22 @@ QPushButton:pressed{
          </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
-         <property name="margin">
+         <property name="leftMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0">
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>3</number>
+         </property>
+         <item row="2" column="0">
           <widget class="QGroupBox" name="action_project">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -167,7 +179,7 @@ QPushButton:pressed{
            </layout>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item row="2" column="1">
           <widget class="QGroupBox" name="action_doc">
            <property name="whatsThis">
             <string/>
@@ -247,6 +259,45 @@ QPushButton:pressed{
            </layout>
           </widget>
          </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label_7">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color:lightgray;</string>
+           </property>
+           <property name="text">
+            <string>Project Listing</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="Line" name="line">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>1</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 1px solid lightgray;
+height:1px;</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -317,7 +368,7 @@ QPushButton:pressed{
              <item row="0" column="2">
               <widget class="QPushButton" name="btn_show_roadmap">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="text">
                 <string>&amp;Roadmap..</string>
@@ -327,7 +378,7 @@ QPushButton:pressed{
              <item row="0" column="1">
               <widget class="QPushButton" name="btn_show_logs">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="text">
                 <string>&amp;Logs..</string>
@@ -375,7 +426,7 @@ QPushButton:pressed{
               <item row="1" column="1">
                <widget class="QComboBox" name="cb_project_type">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -420,94 +471,10 @@ QPushButton:pressed{
                 </item>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_2">
-                <property name="text">
-                 <string>&amp;Type:</string>
-                </property>
-                <property name="buddy">
-                 <cstring>cb_project_type</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>18</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Na&amp;me:</string>
-                </property>
-                <property name="buddy">
-                 <cstring>line_project_name</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="line_project_name">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>1</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>Priorit&amp;y:</string>
-                </property>
-                <property name="buddy">
-                 <cstring>sb_project_priority</cstring>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QSpinBox" name="sb_project_priority">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimum">
-                 <number>0</number>
-                </property>
-                <property name="maximum">
-                 <number>9</number>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="label_5">
-                <property name="text">
-                 <string>C&amp;hallenge:</string>
-                </property>
-                <property name="buddy">
-                 <cstring>sb_project_challenge</cstring>
-                </property>
-               </widget>
-              </item>
               <item row="6" column="1">
                <widget class="QSpinBox" name="sb_project_challenge">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -533,7 +500,7 @@ QPushButton:pressed{
               <item row="2" column="1">
                <widget class="QComboBox" name="cb_project_category">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -613,6 +580,90 @@ QPushButton:pressed{
                 </item>
                </widget>
               </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="line_project_name">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>1</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>&amp;Type:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>cb_project_type</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>18</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Na&amp;me:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>line_project_name</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Priorit&amp;y:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>sb_project_priority</cstring>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QSpinBox" name="sb_project_priority">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>9</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>C&amp;hallenge:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>sb_project_challenge</cstring>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
             <widget class="QWidget" name="project_info" native="true">
@@ -635,7 +686,7 @@ QPushButton:pressed{
               <item row="0" column="0">
                <widget class="QToolButton" name="btn_info_max">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="font">
                  <font>
@@ -650,22 +701,6 @@ QPushButton:pressed{
                 </property>
                 <property name="checkable">
                  <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0" colspan="3">
-               <widget class="QTextEdit" name="text_project_info">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>4</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="autoFormatting">
-                 <set>QTextEdit::AutoAll</set>
                 </property>
                </widget>
               </item>
@@ -697,6 +732,22 @@ QPushButton:pressed{
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="QTextEdit" name="text_project_info">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>4</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="autoFormatting">
+                 <set>QTextEdit::AutoAll</set>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
