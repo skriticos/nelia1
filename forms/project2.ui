@@ -242,7 +242,7 @@ QPushButton:pressed{
                <bool>true</bool>
               </property>
               <property name="text">
-               <string>New</string>
+               <string>Ne&amp;w</string>
               </property>
              </widget>
             </item>

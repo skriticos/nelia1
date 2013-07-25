@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>log_widget</class>
+ <widget class="QWidget" name="log_widget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -76,7 +76,7 @@ QPushButton:pressed{
        <number>0</number>
       </property>
       <item row="0" column="0">
-       <widget class="QWidget" name="widget" native="true">
+       <widget class="QWidget" name="action_bg_inner" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
           <horstretch>0</horstretch>
@@ -99,24 +99,14 @@ QPushButton:pressed{
          <property name="verticalSpacing">
           <number>3</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
+         <item row="2" column="0" colspan="2">
+          <widget class="QGroupBox" name="log_actions">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="styleSheet">
-            <string notr="true">color:lightgray;</string>
-           </property>
-           <property name="text">
-            <string>Project logs: Foo Bar</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBox">
            <property name="title">
             <string>Log Actions</string>
            </property>
@@ -134,21 +124,78 @@ QPushButton:pressed{
              <number>6</number>
             </property>
             <item row="0" column="1">
-             <widget class="QPushButton" name="pushButton_2">
+             <widget class="QPushButton" name="btn_log_delete">
               <property name="text">
-               <string>Delete</string>
+               <string>&amp;Delete</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="btn_log_new">
               <property name="text">
-               <string>New</string>
+               <string>&amp;New</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color:lightgray;</string>
+           </property>
+           <property name="text">
+            <string>Project logs:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Navigation</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_10">
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btn_roadmap">
+              <property name="text">
+               <string>&amp;Roadmap</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QPushButton" name="btn_project_list">
+              <property name="text">
+               <string>&amp;Project List</string>
               </property>
              </widget>
             </item>
             <item row="0" column="2">
-             <spacer name="horizontalSpacer">
+             <spacer name="horizontalSpacer_4">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -163,7 +210,17 @@ QPushButton:pressed{
            </layout>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="0" column="1" colspan="2">
+          <widget class="QLabel" name="lbl_project_name">
+           <property name="styleSheet">
+            <string notr="true">color:lightgray;</string>
+           </property>
+           <property name="text">
+            <string>Project Name</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="3">
           <widget class="Line" name="line">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -193,7 +250,7 @@ height:1px;</string>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QWidget" name="widget_2" native="true">
+    <widget class="QWidget" name="body" native="true">
      <layout class="QGridLayout" name="gridLayout_5">
       <property name="leftMargin">
        <number>9</number>
@@ -215,7 +272,7 @@ height:1px;</string>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <widget class="QGroupBox" name="groupBox_4">
+        <widget class="QGroupBox" name="group_selected">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>1</horstretch>
@@ -242,7 +299,7 @@ height:1px;</string>
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox_2">
+           <widget class="QGroupBox" name="group_meta">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -267,7 +324,7 @@ height:1px;</string>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLabel" name="label_3">
+              <widget class="QLabel" name="lbl_log_type">
                <property name="text">
                 <string>User</string>
                </property>
@@ -287,7 +344,7 @@ height:1px;</string>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLabel" name="label_6">
+              <widget class="QLabel" name="lbl_log_created">
                <property name="text">
                 <string>YYYY-MM-DDTHH:MM</string>
                </property>
@@ -307,25 +364,25 @@ height:1px;</string>
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLabel" name="label_8">
+              <widget class="QLabel" name="lbl_log_modified">
                <property name="text">
                 <string>YYYY-MM-DDTHH:MM</string>
                </property>
               </widget>
              </item>
             </layout>
-            <zorder>label_3</zorder>
+            <zorder>lbl_log_type</zorder>
             <zorder>label_4</zorder>
-            <zorder>label_6</zorder>
+            <zorder>lbl_log_created</zorder>
             <zorder>label_7</zorder>
-            <zorder>label_8</zorder>
+            <zorder>lbl_log_modified</zorder>
             <zorder>label_2</zorder>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QGroupBox" name="groupBox_5">
+           <widget class="QGroupBox" name="group_log_message">
             <property name="title">
-             <string>Log Message</string>
+             <string>Log &amp;Message</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
              <property name="margin">
@@ -348,7 +405,7 @@ height:1px;</string>
               </spacer>
              </item>
              <item row="0" column="1">
-              <widget class="QToolButton" name="toolButton_2">
+              <widget class="QToolButton" name="btn_log_attachment">
                <property name="font">
                 <font>
                  <pointsize>8</pointsize>
@@ -363,7 +420,7 @@ height:1px;</string>
               </widget>
              </item>
              <item row="0" column="2">
-              <widget class="QToolButton" name="toolButton">
+              <widget class="QToolButton" name="btn_log_maximize">
                <property name="font">
                 <font>
                  <pointsize>8</pointsize>
@@ -378,14 +435,14 @@ height:1px;</string>
               </widget>
              </item>
              <item row="1" column="0" colspan="3">
-              <widget class="QTextEdit" name="textEdit"/>
+              <widget class="QTextEdit" name="text_log_message"/>
              </item>
             </layout>
            </widget>
           </item>
          </layout>
         </widget>
-        <widget class="QGroupBox" name="groupBox_3">
+        <widget class="QGroupBox" name="group_log_list">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>2</horstretch>
@@ -393,7 +450,7 @@ height:1px;</string>
           </sizepolicy>
          </property>
          <property name="title">
-          <string>Log List</string>
+          <string>Lo&amp;g List</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_9">
           <property name="leftMargin">
@@ -412,10 +469,10 @@ height:1px;</string>
            <number>0</number>
           </property>
           <item row="1" column="0" colspan="5">
-           <widget class="QTableView" name="tableView"/>
+           <widget class="QTableView" name="tbl_log_list"/>
           </item>
           <item row="0" column="1">
-           <widget class="QToolButton" name="toolButton_4">
+           <widget class="QToolButton" name="btn_log_user">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -446,7 +503,7 @@ height:1px;</string>
            </spacer>
           </item>
           <item row="0" column="3">
-           <widget class="QToolButton" name="toolButton_3">
+           <widget class="QToolButton" name="btn_log_tracking">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -464,7 +521,7 @@ height:1px;</string>
            </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QToolButton" name="toolButton_5">
+           <widget class="QToolButton" name="btn_log_milestone">
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -490,6 +547,19 @@ height:1px;</string>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>btn_log_new</tabstop>
+  <tabstop>btn_log_delete</tabstop>
+  <tabstop>btn_project_list</tabstop>
+  <tabstop>btn_roadmap</tabstop>
+  <tabstop>btn_log_attachment</tabstop>
+  <tabstop>btn_log_maximize</tabstop>
+  <tabstop>text_log_message</tabstop>
+  <tabstop>btn_log_user</tabstop>
+  <tabstop>btn_log_milestone</tabstop>
+  <tabstop>btn_log_tracking</tabstop>
+  <tabstop>tbl_log_list</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
