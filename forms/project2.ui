@@ -782,6 +782,11 @@ height:1px;</string>
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>

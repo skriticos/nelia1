@@ -940,7 +940,13 @@ height:1px;</string>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QTableView" name="tbl_mi_list"/>
+           <widget class="QTableView" name="tbl_mi_list">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
