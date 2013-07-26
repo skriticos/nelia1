@@ -420,21 +420,6 @@ height:1px;</string>
               </spacer>
              </item>
              <item row="0" column="1">
-              <widget class="QToolButton" name="btn_log_attachment">
-               <property name="font">
-                <font>
-                 <pointsize>8</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Attachments..</string>
-               </property>
-               <property name="checkable">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="2">
               <widget class="QToolButton" name="btn_log_maximize">
                <property name="font">
                 <font>
@@ -449,7 +434,7 @@ height:1px;</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="0" colspan="3">
+             <item row="1" column="0" colspan="2">
               <widget class="QTextEdit" name="text_log_message"/>
              </item>
             </layout>
@@ -567,7 +552,6 @@ height:1px;</string>
   <tabstop>btn_log_delete</tabstop>
   <tabstop>btn_project_list</tabstop>
   <tabstop>btn_roadmap</tabstop>
-  <tabstop>btn_log_attachment</tabstop>
   <tabstop>btn_log_maximize</tabstop>
   <tabstop>text_log_message</tabstop>
   <tabstop>btn_log_user</tabstop>
