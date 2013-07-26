@@ -15,21 +15,33 @@ class MainWindow():
     def __init__(self, argv, app):
         loader = QtUiTools.QUiLoader()
         for name, fname in (
-            ('project', 'forms/project2.ui'),
-            ('log',     'forms/log2.ui'),
-            ('roadmap', 'forms/roadmap2.ui')):
+            ('main',                  'forms/mainwindow.ui'),
+            ('project',               'forms/project.ui'),
+            ('log',                   'forms/log.ui'),
+            ('roadmap',               'forms/roadmap.ui'),
+            ('project_diag_new',      'forms/project_diag_new.ui'),
+            ('project_diag_edit',     'forms/project_diag_edit.ui'),
+            ('log_diag_new',          'forms/log_new_entry.ui'),
+            ('roadmap_diag_add',      'forms/roadmap_add.ui'),
+            ('roadmap_diag_edit',     'forms/roadmap_edit.ui'),
+            ('roadmap_diag_finalize', 'forms/roadmap_finalize_milestone.ui')):
             f = QFile(fname)
             f.open(QFile.ReadOnly)
-            dc.ui._(name).v = loader.load(f)
+            obj = dc.ui._(name).v= loader.load(f)
             f.close()
+            if name.find('diag') > 0:
+                obj.setParent(dc.ui.main.v)
+                obj.setWindowFlags(Qt.Dialog)
         loader.deleteLater()
-        dc.ui.main.v = QMainWindow()
-        dc.ui.main.v.setWindowTitle('Nelia1')
+        for cname, pname in (('project', 'tab_project'),
+                             ('log',     'tab_log'),
+                             ('roadmap', 'tab_roadmap')):
+            grid = QGridLayout()
+            grid.addWidget(dc.ui._(cname).v, 0, 0)
+            grid.setContentsMargins(0, 0, 0, 0)
+            dc.ui.main.v.__dict__[pname].setLayout(grid)
         dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
-        dc.ui.main.v.setGeometry(100,100,800,600)
-        dc.ui.main.v.setCentralWidget(dc.ui.project.v)
-        dc.ui.main.v.show()
-        """
+        dc.ui.main.v.setGeometry(100,70,1000,600)
         dcloadconfig()
         dc.m.main.v    = self
         dc.m.project.v = NxProject()
@@ -47,7 +59,6 @@ class MainWindow():
         app.aboutToQuit.connect(self.onAboutToQuit)
         signal.signal(signal.SIGTERM, self.onSigTerm)
         dc.ui.main.v.show()
-        """
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def onAddLogMarker(self):
         log('********** MARKER **********')
