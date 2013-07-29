@@ -97,6 +97,12 @@ QPushButton:disabled{
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
         <layout class="QGridLayout" name="gridLayout_6">
          <property name="leftMargin">
           <number>0</number>
@@ -116,7 +122,62 @@ QPushButton:disabled{
          <property name="verticalSpacing">
           <number>3</number>
          </property>
-         <item row="2" column="1">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color:lightgray;</string>
+           </property>
+           <property name="text">
+            <string>Project Listing:   </string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" colspan="2">
+          <widget class="QLabel" name="line_selected_project">
+           <property name="styleSheet">
+            <string notr="true">color: lightgray</string>
+           </property>
+           <property name="text">
+            <string>None</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="4">
+          <widget class="Line" name="line">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>1</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border: 1px solid lightgray;
+height:1px;</string>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
           <widget class="QGroupBox" name="action_project">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -196,6 +257,50 @@ QPushButton:disabled{
            </layout>
           </widget>
          </item>
+         <item row="2" column="2">
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Navigation</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>6</number>
+            </property>
+            <property name="horizontalSpacing">
+             <number>3</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btn_show_roadmap">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>&amp;Roadmap</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QPushButton" name="btn_show_logs">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>&amp;Log</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
          <item row="2" column="3">
           <widget class="QGroupBox" name="action_doc">
            <property name="whatsThis">
@@ -267,89 +372,6 @@ QPushButton:disabled{
               </property>
               <property name="text">
                <string>Op&amp;en Last</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="4">
-          <widget class="Line" name="line">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>1</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>1</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">border: 1px solid lightgray;
-height:1px;</string>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="4">
-          <widget class="QLabel" name="label_7">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">color:lightgray;</string>
-           </property>
-           <property name="text">
-            <string>Project Listing</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QGroupBox" name="groupBox">
-           <property name="title">
-            <string>Navigation</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_9">
-            <property name="leftMargin">
-             <number>6</number>
-            </property>
-            <property name="topMargin">
-             <number>12</number>
-            </property>
-            <property name="rightMargin">
-             <number>6</number>
-            </property>
-            <property name="bottomMargin">
-             <number>6</number>
-            </property>
-            <property name="horizontalSpacing">
-             <number>3</number>
-            </property>
-            <item row="0" column="1">
-             <widget class="QPushButton" name="btn_show_roadmap">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string>&amp;Roadmap</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="btn_show_logs">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string>&amp;Log</string>
               </property>
              </widget>
             </item>
@@ -795,8 +817,11 @@ height:1px;</string>
             </property>
             <property name="font">
              <font>
-              <pointsize>8</pointsize>
+              <pointsize>11</pointsize>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
             </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>

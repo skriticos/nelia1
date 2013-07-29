@@ -25,7 +25,8 @@ class NxProjectStates:
         'btn_show_roadmap'      : {'visible': True, 'enabled': False},
         'btn_show_logs'         : {'visible': True, 'enabled': False},
         'tbl_project_list'      : {'visible': True, 'enabled': False},
-        'selected_project_group': {'visible': True, 'enabled': False}
+        'selected_project_group': {'visible': True, 'enabled': False},
+        'line_selected_project' : {'text': 'No Project Selected'}
     }
 
     # If the loaded configuration contains the path to a last saved document,
@@ -81,6 +82,9 @@ class NxProjectStates:
             if 'margins' in state:
                 dc.ui.project.v.__dict__[control] \
                         .setContentsMargins(*state['margins'])
+
+            if 'text' in state:
+                dc.ui.project.v.__dict__[control].setText(state['text'])
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Project list table headers
@@ -197,6 +201,24 @@ class NxProject(QObject):
 
         # init milestone control data
         mistctrl_new_tree()
+
+        # add new project to project list
+        dc.x.project.model.v.insertRow(0, [
+            QStandardItem(str(pid).zfill(4)),
+            QStandardItem(dc.s._(pid).name.v),
+            QStandardItem(dc.s._(pid).ptype.v),
+            QStandardItem('{}.{}'.format(*dc.s._(pid).m.active.v)),
+            QStandardItem(dc.s._(pid).category.v),
+            QStandardItem(str(dc.s._(pid).priority.v)),
+            QStandardItem(str(dc.s._(pid).challenge.v)),
+            QStandardItem(convert(dc.s._(pid).modified.v)),
+            QStandardItem(convert(dc.s._(pid).created.v)) ])
+
+        # select new project
+        index = dc.x.project.model.v.index(0, 0)
+        s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+        dc.x.project.selection_model.v.clear()
+        dc.x.project.selection_model.v.select(index, s|r)
 
         # set state
         NxProjectStates.applyStates(NxProjectStates.selected)
