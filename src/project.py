@@ -8,21 +8,6 @@ from PySide import QtUiTools
 from datacore import *
 from mistctrl import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Project list table headers
-class NxProjectList:
-    headers =  [
-        'ID', 'Name', 'Type', 'Verson', 'Category', 'Priority',
-        'Challenge', 'Modified', 'Created' ]
-    def initTable():
-        dc.x.project.view.v = dc.ui.project.v.tbl_project_list
-        dc.x.project.model.v = QStandardItemModel()
-        dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
-        dc.x.project.view.v.setModel(dc.x.project.model.v)
-        dc.x.project.selection_model.v = dc.x.project.view.v.selectionModel()
-        dc.x.project.horizontal_header.v \
-                = dc.x.project.view.v.horizontalHeader()
-        dc.x.project.view.v.setAlternatingRowColors(True)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This class declares states. These states contain a list of widgets and the
 # enabled attribute value.
 class NxProjectStates:
@@ -63,6 +48,39 @@ class NxProjectStates:
     def applyStates(states):
         for control, state in states.items():
             dc.ui.project.v.__dict__[control].setEnabled(state)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Project list table headers
+# This class handles the project list. It provides methods to initialize table
+# and interact with items on it.
+class NxProjectList:
+    # Project list header labels.
+    headers =  [
+        'ID',
+        'Name',
+        'Type',
+        'Verson',
+        'Category',
+        'Priority',
+        'Challenge',
+        'Modified',
+        'Created'
+    ]
+    # This method set's up the project list table. It creates the model and sets
+    # up all necessary attributes. It is called from the NxProject __init__
+    # method. One only.
+    @logger('NxProjectList.initTable()')
+    def initTable():
+        dc.x.project.view.v \
+                = dc.ui.project.v.tbl_project_list
+        dc.x.project.model.v \
+                = QStandardItemModel()
+        dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
+        dc.x.project.view.v.setModel(dc.x.project.model.v)
+        dc.x.project.selection_model.v \
+                = dc.x.project.view.v.selectionModel()
+        dc.x.project.horizontal_header.v \
+                = dc.x.project.view.v.horizontalHeader()
+        dc.x.project.view.v.setAlternatingRowColors(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
     @logger('NxProject.__init__(self)', 'self')
