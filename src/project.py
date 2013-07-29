@@ -8,9 +8,20 @@ from PySide import QtUiTools
 from datacore import *
 from mistctrl import *
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-headers =  [
-    'ID', 'Name', 'Status', 'Type', 'Verson', 'Category', 'Priority',
-    'Challenge', 'Modified', 'Created' ]
+# Project list table headers
+class NxProjectList:
+    headers =  [
+        'ID', 'Name', 'Type', 'Verson', 'Category', 'Priority',
+        'Challenge', 'Modified', 'Created' ]
+    def initTable():
+        dc.x.project.view.v = dc.ui.project.v.tbl_project_list
+        dc.x.project.model.v = QStandardItemModel()
+        dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
+        dc.x.project.view.v.setModel(dc.x.project.model.v)
+        dc.x.project.selection_model.v = dc.x.project.view.v.selectionModel()
+        dc.x.project.horizontal_header.v \
+                = dc.x.project.view.v.horizontalHeader()
+        dc.x.project.view.v.setAlternatingRowColors(True)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This class declares states. These states contain a list of widgets and the
 # enabled attribute value.
@@ -57,6 +68,7 @@ class NxProject:
     @logger('NxProject.__init__(self)', 'self')
     def __init__(self):
         dc.spid.v = 0
+        NxProjectList.initTable()
         """
         widget = dc.ui.project.v
         diag_new = self.diag_new = dc.ui.project_diag_new.v
@@ -69,13 +81,6 @@ class NxProject:
         widget.push_open.clicked.connect(self.onOpenClicked)
         widget.push_open_last.clicked.connect(self.onOpenLast)
         widget.push_save.clicked.connect(self.onSaveClicked)
-        self.view = widget.view
-        self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(headers)
-        self.view.setModel(self.model)
-        self.selection_model = self.view.selectionModel()
-        self.horizontal_header = self.view.horizontalHeader()
-        self.view.setAlternatingRowColors(True)
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
         widget.text_description.textChanged.connect(self.onDescriptionChanged)
         self.view.activated.connect(self.showEditProject)
