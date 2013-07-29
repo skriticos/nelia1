@@ -12,10 +12,52 @@ headers =  [
     'ID', 'Name', 'Status', 'Type', 'Verson', 'Category', 'Priority',
     'Challenge', 'Modified', 'Created' ]
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This class declares states. These states contain a list of widgets and the
+# enabled attribute value.
+class NxProjectStates:
+    # Startup state. Can create new projects and load document.
+    startup = {
+        'btn_doc_new': False,
+        'btn_doc_open': True,
+        'btn_doc_open_last': False,
+        'btn_doc_save_as': False,
+        'btn_project_delete': False,
+        'btn_project_new': True,
+        'btn_show_roadmap': False,
+        'btn_show_logs': False,
+        'selected_project_group': False
+    }
+    # If the loaded configuration contains the path to a last saved document,
+    # enable this control. Sub-state to startup. Is disaled once a project is
+    # selected.
+    last = {
+        'btn_doc_open_last': True
+    }
+    # Once a project is created or a document is loaded (wich implies a selected
+    # project), the project controls are enabled and the document can be saved.
+    selected = {
+        'btn_doc_new': True,
+        'btn_doc_open': True,
+        'btn_doc_open_last': False,
+        'btn_doc_save_as': True,
+        'btn_project_delete': True,
+        'btn_project_new': True,
+        'btn_show_roadmap': True,
+        'btn_show_logs': True,
+        'selected_project_group': True
+    }
+    # This simply goes through the list of controls in the states dictionary and
+    # applies the assigned states on the project widget.
+    @logger('NxProjectStates.applyStates(states)', 'states')
+    def applyStates(states):
+        for control, state in states.items():
+            dc.ui.project.v.__dict__[control].setEnabled(state)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxProject:
     @logger('NxProject.__init__(self)', 'self')
     def __init__(self):
         dc.spid.v = 0
+        """
         widget = dc.ui.project.v
         diag_new = self.diag_new = dc.ui.project_diag_new.v
         diag_edit = self.diag_edit = dc.ui.project_diag_edit.v
@@ -41,6 +83,8 @@ class NxProject:
         else:               widget.push_open_last.hide()
         if dc.x.config.loaded.v:
             self.loadLayout()
+        """
+        NxProjectStates.applyStates(NxProjectStates.startup)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxLogger.onNewClicked(self)', 'self')
     def onNewClicked(self):
