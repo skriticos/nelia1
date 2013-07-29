@@ -85,7 +85,7 @@ dc.x.config.filepath.v = fp
 dc.x.extension.v = '.nelia1'
 dc.x.default.path.v = os.path.expanduser('~/Documents')
 dc.s.nextpid.v = 1
-dc.s.idx.pid.v = set()
+dc.s.index.pid.v = set()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @logger('dcsave(path=None)')
 def dcsave(path=None):

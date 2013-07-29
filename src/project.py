@@ -7,52 +7,88 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 from datacore import *
 from mistctrl import *
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This class declares states. These states contain a list of widgets and the
 # enabled attribute value.
+
 class NxProjectStates:
+
     # Startup state. Can create new projects and load document.
     startup = {
-        'btn_doc_new': False,
-        'btn_doc_open': True,
-        'btn_doc_open_last': False,
-        'btn_doc_save_as': False,
-        'btn_project_delete': False,
-        'btn_project_new': True,
-        'btn_show_roadmap': False,
-        'btn_show_logs': False,
-        'selected_project_group': False
+        'btn_doc_new'           : {'visible': True, 'enabled': False},
+        'btn_doc_open'          : {'visible': True, 'enabled': True},
+        'btn_doc_open_last'     : {'visible': True, 'enabled': False},
+        'btn_doc_save_as'       : {'visible': True, 'enabled': False},
+        'btn_project_delete'    : {'visible': True, 'enabled': False},
+        'btn_project_new'       : {'visible': True, 'enabled': True},
+        'btn_show_roadmap'      : {'visible': True, 'enabled': False},
+        'btn_show_logs'         : {'visible': True, 'enabled': False},
+        'tbl_project_list'      : {'visible': True, 'enabled': False},
+        'selected_project_group': {'visible': True, 'enabled': False}
     }
+
     # If the loaded configuration contains the path to a last saved document,
     # enable this control. Sub-state to startup. Is disaled once a project is
     # selected.
     last = {
-        'btn_doc_open_last': True
+        'btn_doc_open_last'     : {'visible': True, 'enabled': True},
     }
+
     # Once a project is created or a document is loaded (wich implies a selected
     # project), the project controls are enabled and the document can be saved.
     selected = {
-        'btn_doc_new': True,
-        'btn_doc_open': True,
-        'btn_doc_open_last': False,
-        'btn_doc_save_as': True,
-        'btn_project_delete': True,
-        'btn_project_new': True,
-        'btn_show_roadmap': True,
-        'btn_show_logs': True,
-        'selected_project_group': True
+        'btn_doc_new'           : {'visible': True, 'enabled': True},
+        'btn_doc_open'          : {'visible': True, 'enabled': True},
+        'btn_doc_open_last'     : {'visible': True, 'enabled': False},
+        'btn_doc_save_as'       : {'visible': True, 'enabled': True},
+        'btn_project_delete'    : {'visible': True, 'enabled': True},
+        'btn_project_new'       : {'visible': True, 'enabled': True},
+        'btn_show_roadmap'      : {'visible': True, 'enabled': True},
+        'btn_show_logs'         : {'visible': True, 'enabled': True},
+        'tbl_project_list'      : {'visible': True, 'enabled': True},
+        'selected_project_group': {'visible': True, 'enabled': True}
     }
+
+    # maximize / restore state for project description
+    description_normal = {
+        'project_meta': {'visible': True, 'enabled': True},
+        'project_list': {'visible': True, 'enabled': True},
+        'gl_info':      {'margins': (0, 0, 0, 0)}
+    }
+    description_maximized = {
+        'project_meta': {'visible': False, 'enabled': True},
+        'project_list': {'visible': False, 'enabled': True},
+        'gl_info':      {'margins': (0, 0, 15, 0)}
+    }
+
     # This simply goes through the list of controls in the states dictionary and
     # applies the assigned states on the project widget.
-    @logger('NxProjectStates.applyStates(states)', 'states')
-    def applyStates(states):
+
+    @logger('NxProjectStates.applyStates(states, hide=False)', 'states')
+    def applyStates(states, hide=False):
+
+        # loop through controls (widgets)
         for control, state in states.items():
-            dc.ui.project.v.__dict__[control].setEnabled(state)
+
+            # loop through state attributes
+            if 'enabled' in state:
+                dc.ui.project.v.__dict__[control].setEnabled(state['enabled'])
+
+            if 'visible' in state:
+                dc.ui.project.v.__dict__[control].setVisible(state['visible'])
+
+            if 'margins' in state:
+                dc.ui.project.v.__dict__[control] \
+                        .setContentsMargins(*state['margins'])
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Project list table headers
 # This class handles the project list. It provides methods to initialize table
 # and interact with items on it.
+
 class NxProjectList:
+
     # Project list header labels.
     headers =  [
         'ID',
@@ -65,9 +101,11 @@ class NxProjectList:
         'Modified',
         'Created'
     ]
+
     # This method set's up the project list table. It creates the model and sets
     # up all necessary attributes. It is called from the NxProject __init__
     # method. One only.
+
     @logger('NxProjectList.initTable()')
     def initTable():
         dc.x.project.view.v \
@@ -81,12 +119,21 @@ class NxProjectList:
         dc.x.project.horizontal_header.v \
                 = dc.x.project.view.v.horizontalHeader()
         dc.x.project.view.v.setAlternatingRowColors(True)
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-class NxProject:
+class NxProject(QObject):
+
     @logger('NxProject.__init__(self)', 'self')
     def __init__(self):
+
         dc.spid.v = 0
         NxProjectList.initTable()
+
+        # callbacks
+        dc.ui.project.v.btn_project_new.clicked.connect(self.onNewProjectClicked)
+        dc.ui.project.v.btn_info_max.toggled.connect(self.onInfoMaxToggled)
+        NxProjectStates.applyStates(NxProjectStates.startup)
+
         """
         widget = dc.ui.project.v
         diag_new = self.diag_new = dc.ui.project_diag_new.v
@@ -99,6 +146,7 @@ class NxProject:
         widget.push_open.clicked.connect(self.onOpenClicked)
         widget.push_open_last.clicked.connect(self.onOpenLast)
         widget.push_save.clicked.connect(self.onSaveClicked)
+
         self.selection_model.selectionChanged.connect(self.onSelectionChanged)
         widget.text_description.textChanged.connect(self.onDescriptionChanged)
         self.view.activated.connect(self.showEditProject)
@@ -107,7 +155,52 @@ class NxProject:
         if dc.x.config.loaded.v:
             self.loadLayout()
         """
-        NxProjectStates.applyStates(NxProjectStates.startup)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Maximize / restore callback for infox maximization toggle
+
+    @logger('NxProject.onInfoMaxTogled(self, state)', 'self', 'state')
+    def onInfoMaxToggled(self, state):
+        if state:
+            NxProjectStates.applyStates(NxProjectStates.description_maximized)
+        else:
+            NxProjectStates.applyStates(NxProjectStates.description_normal)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Create a new blanko project
+
+    @logger('NxProject.onNewProjectClicked(self)', 'self')
+    def onNewProjectClicked(self):
+
+        # prepare
+        timestamp = int(time.time())
+        pid = dc.s.nextpid.v
+
+        # init project control data
+        dc.s.index.pid.v.add(pid)
+        dc.s.nextpid.v += 1
+        dc.spid.v = pid
+        dc.sp = dc.s._(pid)
+
+        # init project attributes
+        dc.sp.name.v        = ''
+        dc.sp.ptype.v       = dc.ui.project.v.cb_project_type.currentText()
+        dc.sp.category.v    = dc.ui.project.v.cb_project_category.currentText()
+        dc.sp.priority.v    = dc.ui.project.v.sb_project_priority.value()
+        dc.sp.challenge.v   = dc.ui.project.v.sb_project_challenge.value()
+        dc.sp.description.v = ''
+        dc.sp.created.v     = timestamp
+        dc.sp.modified.v    = timestamp
+
+        # init log control data
+        dc.sp.nextlid.v     = 1
+
+        # init milestone control data
+        mistctrl_new_tree()
+
+        # set state
+        NxProjectStates.applyStates(NxProjectStates.selected)
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxLogger.onNewClicked(self)', 'self')
     def onNewClicked(self):
