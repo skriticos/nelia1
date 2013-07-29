@@ -9,6 +9,9 @@ def log(msg):
     msg = '{:.4f}: {}'.format(time.time(), msg)
     print(msg)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def logMarker():
+    log('********** MARKER **********')
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def logger(name, *argnames):
     def wrap(func):
         def wrapped(*args, **kwargs):

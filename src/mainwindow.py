@@ -48,7 +48,7 @@ class MainWindow():
 
         # initialize global shortcuts
         for keys, target in [('Ctrl+w', dc.ui.main.v.close),
-                             ('Ctrl+m', self.onAddLogMarker)]:
+                             ('Ctrl+m', logMarker)]:
             shortcut = QShortcut(QKeySequence(keys), dc.ui.main.v)
             shortcut.activated.connect(target)
 
@@ -73,9 +73,6 @@ class MainWindow():
         signal.signal(signal.SIGTERM, self.onSigTerm)
         dc.ui.main.v.show()
         """
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def onAddLogMarker(self):
-        log('********** MARKER **********')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('MainWindow.onSaveShortcutActivated(self)', 'self')
     def onSaveShortcutActivated(self):
