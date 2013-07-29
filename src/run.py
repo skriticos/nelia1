@@ -5,7 +5,7 @@
 import sys, PySide, mainwindow
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 app = PySide.QtGui.QApplication(sys.argv)
-mainwindow.MainWindow(sys.argv, app)
+mainwindow.MainWindow()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # this interrupt is required to make system signal handling working. see
 # MainWindow.onSigTerm

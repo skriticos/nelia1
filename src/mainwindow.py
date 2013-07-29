@@ -10,9 +10,21 @@ from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The MainWindow is the.. well main window. It packs the project, log and
+# roadmap widget as central widget as needed (initializing them) and handles
+# global callbacks (close).
+# run -> mainwindow -> [project, log, roadmap]
+
 class MainWindow():
-    @logger('MainWindow.__init__(self, argv, app)', 'argv', 'app')
-    def __init__(self, argv, app):
+
+    # Initialize main window. Load child widgets and stuff them into the
+    # datacore. Initialize the GUI. Call child widget controls (project, log,
+    # roadmap). Connect global callbacks (keyboard shortcuts).
+
+    @logger('MainWindow.__init__(self)', 'self')
+    def __init__(self):
+
+        # load ui
         loader = QtUiTools.QUiLoader()
         for name, fname in (
             ('project', 'forms/project2.ui'),
@@ -23,13 +35,26 @@ class MainWindow():
             dc.ui._(name).v = loader.load(f)
             f.close()
         loader.deleteLater()
+
+        # create main window and set project as initial central widget
         dc.ui.main.v = QMainWindow()
         dc.ui.main.v.setWindowTitle('Nelia1')
         dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
         dc.ui.main.v.setGeometry(100,100,800,600)
         dc.ui.main.v.setCentralWidget(dc.ui.project.v)
+
+        # load child widget control classes
         dc.m.project.v = NxProject()
+
+        # initialize global shortcuts
+        for keys, target in [('Ctrl+w', dc.ui.main.v.close),
+                             ('Ctrl+m', self.onAddLogMarker)]:
+            shortcut = QShortcut(QKeySequence(keys), dc.ui.main.v)
+            shortcut.activated.connect(target)
+
+        # show widget and give back control to run to initialize main loop
         dc.ui.main.v.show()
+
         """
         dcloadconfig()
         dc.m.main.v    = self
