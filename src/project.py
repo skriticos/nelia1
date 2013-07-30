@@ -232,6 +232,17 @@ class NxProject(QObject):
             dc.x.project.selection_model.v.selectionChanged \
                     .disconnect(self.onSelectionChanged)
 
+    # Updates the project modification date in the project table and sets the
+    # changed value. This is called by all persistent data operations of the
+    # document.
+
+    @logger('NxProject.touchProject(self)', 'self')
+    def touchProject(self):
+        timestamp = int(time.time())
+        dc.sp.modified.v = timestamp
+        self.setTableValue(NxProjectList.colModified, convert(timestamp))
+        dc.r.changed.v = True
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Read only callbacks (GUI only)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -281,6 +292,7 @@ class NxProject(QObject):
 
         # set title
         dc.ui.main.v.setWindowTitle('Nelia1 - {}'.format(dc.sp.name.v))
+        self.touchProject()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Callbacks for selected project edit fields
@@ -291,33 +303,39 @@ class NxProject(QObject):
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
         self.setTableValue(NxProjectList.colName, name)
+        self.touchProject()
 
     @logger('NxProject.onProjectTypeChanged(self, ptype)', 'self', 'ptype')
     def onProjectTypeChanged(self, ptype):
         dc.sp.ptype.v = ptype
         self.setTableValue(NxProjectList.colType, ptype)
+        self.touchProject()
 
     @logger('NxProject.onProjectCategoryChanged(self, category)',
             'self', 'category')
     def onProjectCategoryChanged(self, category):
         dc.sp.category.v = category
         self.setTableValue(NxProjectList.colCategory, category)
+        self.touchProject()
 
     @logger('NxProject.onProjectPriorityChanged(self, priority)',
             'self', 'priority')
     def onProjectPriorityChanged(self, priority):
         dc.sp.priority.v = priority
         self.setTableValue(NxProjectList.colPritoriy, str(priority))
+        self.touchProject()
 
     @logger('NxProject.onProjectChallengeChanged(self, challenge)',
             'self', 'challenge')
     def onProjectChallengeChanged(self, challenge):
         dc.sp.challenge.v = challenge
         self.setTableValue(NxProjectList.colChallenge, str(challenge))
+        self.touchProject()
 
     @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
     def onProjectDescriptionChanged(self):
         dc.sp.description.v = dc.ui.project.v.text_project_info.toHtml()
+        self.touchProject()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Create a new blanko project
