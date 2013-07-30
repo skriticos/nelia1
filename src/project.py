@@ -1,6 +1,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 import os, datetime, time
 from PySide.QtCore import *
 from PySide.QtGui import *
@@ -9,12 +10,16 @@ from datacore import *
 from mistctrl import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Project GUI state control
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # This class declares states. These states contain a list of widgets and the
 # enabled attribute value.
 
 class NxProjectStates:
 
     # Startup state. Can create new projects and load document.
+
     startup = {
         'btn_doc_new'           : {'visible': True, 'enabled': False},
         'btn_doc_open'          : {'visible': True, 'enabled': True},
@@ -26,18 +31,25 @@ class NxProjectStates:
         'btn_show_logs'         : {'visible': True, 'enabled': False},
         'tbl_project_list'      : {'visible': True, 'enabled': False},
         'selected_project_group': {'visible': True, 'enabled': False},
-        'line_selected_project' : {'text': 'No Project Selected'}
+        'line_selected_project' : {'clear': True},
+        'line_project_name'     : {'clear': True},
+        'cb_project_type'       : {'index': 0},
+        'cb_project_category'   : {'index': 0},
+        'sb_project_priority'   : {'value': 0},
+        'sb_project_challenge'  : {'value': 0}
     }
 
     # If the loaded configuration contains the path to a last saved document,
     # enable this control. Sub-state to startup. Is disaled once a project is
     # selected.
+
     last = {
         'btn_doc_open_last'     : {'visible': True, 'enabled': True},
     }
 
     # Once a project is created or a document is loaded (wich implies a selected
     # project), the project controls are enabled and the document can be saved.
+
     selected = {
         'btn_doc_new'           : {'visible': True, 'enabled': True},
         'btn_doc_open'          : {'visible': True, 'enabled': True},
@@ -52,11 +64,13 @@ class NxProjectStates:
     }
 
     # maximize / restore state for project description
+
     description_normal = {
         'project_meta': {'visible': True, 'enabled': True},
         'project_list': {'visible': True, 'enabled': True},
         'gl_info':      {'margins': (0, 0, 0, 0)}
     }
+
     description_maximized = {
         'project_meta': {'visible': False, 'enabled': True},
         'project_list': {'visible': False, 'enabled': True},
@@ -75,23 +89,40 @@ class NxProjectStates:
             # loop through state attributes
             if 'enabled' in state:
                 dc.ui.project.v.__dict__[control].setEnabled(state['enabled'])
-
             if 'visible' in state:
                 dc.ui.project.v.__dict__[control].setVisible(state['visible'])
-
             if 'margins' in state:
                 dc.ui.project.v.__dict__[control] \
                         .setContentsMargins(*state['margins'])
-
             if 'text' in state:
                 dc.ui.project.v.__dict__[control].setText(state['text'])
+            if 'clear' in state:
+                dc.ui.project.v.__dict__[control].clear()
+            if 'index' in state:
+                dc.ui.project.v.__dict__[control] \
+                        .setCurrentIndex(state['index'])
+            if 'value' in state:
+                dc.ui.project.v.__dict__[control].setValue(state['value'])
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Project list control class
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # Project list table headers
 # This class handles the project list. It provides methods to initialize table
 # and interact with items on it.
 
 class NxProjectList:
+
+    colPid       = 0
+    colName      = 1
+    colType      = 2
+    colVersion   = 3
+    colCategory  = 4
+    colPritoriy  = 5
+    colChallenge = 6
+    colModified  = 7
+    colCreated   = 8
 
     # Project list header labels.
     headers =  [
@@ -125,6 +156,9 @@ class NxProjectList:
         dc.x.project.view.v.setAlternatingRowColors(True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Main project control class
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class NxProject(QObject):
 
     @logger('NxProject.__init__(self)', 'self')
@@ -134,25 +168,14 @@ class NxProject(QObject):
         NxProjectList.initTable()
 
         # callbacks
-        dc.ui.project.v.btn_project_new.clicked.connect(self.onNewProjectClicked)
-        dc.ui.project.v.btn_info_max.toggled.connect(self.onInfoMaxToggled)
+        dc.ui.project.v.btn_project_new.clicked \
+                .connect(self.onNewProjectClicked)
+        dc.ui.project.v.btn_info_max.toggled \
+                .connect(self.onInfoMaxToggled)
         NxProjectStates.applyStates(NxProjectStates.startup)
+        self.setEditCallbackState(True)
 
         """
-        widget = dc.ui.project.v
-        diag_new = self.diag_new = dc.ui.project_diag_new.v
-        diag_edit = self.diag_edit = dc.ui.project_diag_edit.v
-        widget.push_new.clicked.connect (self.onNewClicked)
-        widget.push_edit.clicked.connect(self.showEditProject)
-        diag_new.accepted.connect(self.onNewProject)
-        diag_edit.accepted.connect(self.onEditProject)
-        widget.push_delete.clicked.connect(self.onDeleteProject)
-        widget.push_open.clicked.connect(self.onOpenClicked)
-        widget.push_open_last.clicked.connect(self.onOpenLast)
-        widget.push_save.clicked.connect(self.onSaveClicked)
-
-        self.selection_model.selectionChanged.connect(self.onSelectionChanged)
-        widget.text_description.textChanged.connect(self.onDescriptionChanged)
         self.view.activated.connect(self.showEditProject)
         if dc.c.lastpath.v: widget.push_open_last.show()
         else:               widget.push_open_last.hide()
@@ -161,6 +184,58 @@ class NxProject(QObject):
         """
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Helpers
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # Sets the cell content of the currently selected row in the project table.
+    # Used by the selected project attribute change callbacks.
+
+    @logger('NxProject.setTableValue(self, col, value)', 'self', 'col', 'value')
+    def setTableValue(self, col, value):
+        row = dc.x.project.selection_model.v.currentIndex().row()
+        dc.x.project.model.v.setItem(row, col, QStandardItem(value))
+
+    # Enable / disable the callbacks for the edit controls / selection during
+    # programatic UI updates - mostly to avoid infinite loops and weird state
+    # changes.
+
+    @logger('NxProject.setEditCallbackState(self, state)', 'self', 'state')
+    def setEditCallbackState(self, state):
+        if state:
+            dc.ui.project.v.line_project_name.textChanged \
+                    .connect(self.onProjectNameChanged)
+            dc.ui.project.v.cb_project_type.currentIndexChanged[str] \
+                    .connect(self.onProjectTypeChanged)
+            dc.ui.project.v.cb_project_category.currentIndexChanged[str] \
+                    .connect(self.onProjectCategoryChanged)
+            dc.ui.project.v.sb_project_priority.valueChanged[int] \
+                    .connect(self.onProjectPriorityChanged)
+            dc.ui.project.v.sb_project_challenge.valueChanged[int] \
+                    .connect(self.onProjectChallengeChanged)
+            dc.ui.project.v.text_project_info.textChanged \
+                    .connect(self.onProjectDescriptionChanged)
+            dc.x.project.selection_model.v.selectionChanged \
+                    .connect(self.onSelectionChanged)
+        else:
+            dc.ui.project.v.line_project_name.textChanged \
+                    .disconnect(self.onProjectNameChanged)
+            dc.ui.project.v.cb_project_type.currentIndexChanged[str] \
+                    .disconnect(self.onProjectTypeChanged)
+            dc.ui.project.v.cb_project_category.currentIndexChanged[str] \
+                    .disconnect(self.onProjectCategoryChanged)
+            dc.ui.project.v.sb_project_priority.valueChanged[int] \
+                    .disconnect(self.onProjectPriorityChanged)
+            dc.ui.project.v.sb_project_challenge.valueChanged[int] \
+                    .disconnect(self.onProjectChallengeChanged)
+            dc.ui.project.v.text_project_info.textChanged \
+                    .disconnect(self.onProjectDescriptionChanged)
+            dc.x.project.selection_model.v.selectionChanged \
+                    .disconnect(self.onSelectionChanged)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Read only callbacks (GUI only)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     # Maximize / restore callback for infox maximization toggle
 
     @logger('NxProject.onInfoMaxTogled(self, state)', 'self', 'state')
@@ -169,6 +244,80 @@ class NxProject(QObject):
             NxProjectStates.applyStates(NxProjectStates.description_maximized)
         else:
             NxProjectStates.applyStates(NxProjectStates.description_normal)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Runtime change only callbacks (dc.spid / dc.sp = xx)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # Selected project changed -> update selected project edit controls and
+    # selected project label. Update selected project runtime data.
+
+    @logger('NxProject.onSelectionChanged(self, new, old)',
+            'self', 'new', 'old')
+    def onSelectionChanged(self, new, old):
+
+        # check for valid index
+        indexes = new.indexes()
+        if not indexes:
+            return
+
+        # get selected pid from table model
+        index = indexes[0]
+        dc.spid.v = int(dc.x.project.model.v.itemFromIndex(index).text())
+        dc.sp = dc.s._(dc.spid.v)
+
+        # populate edit fields on selection change
+        self.setEditCallbackState(False)
+        dc.ui.project.v.line_project_name.setText(dc.sp.name.v)
+        dc.ui.project.v.line_selected_project.setText(dc.sp.name.v)
+        dc.ui.project.v.sb_project_priority.setValue(dc.sp.priority.v)
+        dc.ui.project.v.sb_project_challenge.setValue(dc.sp.challenge.v)
+        dc.ui.project.v.cb_project_type.setCurrentIndex(
+                dc.ui.project.v.cb_project_type.findText(dc.sp.ptype.v))
+        dc.ui.project.v.cb_project_category.setCurrentIndex(
+                dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
+        dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
+        self.setEditCallbackState(True)
+
+        # set title
+        dc.ui.main.v.setWindowTitle('Nelia1 - {}'.format(dc.sp.name.v))
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Callbacks for selected project edit fields
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    @logger('NxProject.onProjectNameChanged(self, name)', 'self', 'name')
+    def onProjectNameChanged(self, name):
+        dc.sp.name.v = name
+        dc.ui.project.v.line_selected_project.setText(name)
+        self.setTableValue(NxProjectList.colName, name)
+
+    @logger('NxProject.onProjectTypeChanged(self, ptype)', 'self', 'ptype')
+    def onProjectTypeChanged(self, ptype):
+        dc.sp.ptype.v = ptype
+        self.setTableValue(NxProjectList.colType, ptype)
+
+    @logger('NxProject.onProjectCategoryChanged(self, category)',
+            'self', 'category')
+    def onProjectCategoryChanged(self, category):
+        dc.sp.category.v = category
+        self.setTableValue(NxProjectList.colCategory, category)
+
+    @logger('NxProject.onProjectPriorityChanged(self, priority)',
+            'self', 'priority')
+    def onProjectPriorityChanged(self, priority):
+        dc.sp.priority.v = priority
+        self.setTableValue(NxProjectList.colPritoriy, str(priority))
+
+    @logger('NxProject.onProjectChallengeChanged(self, challenge)',
+            'self', 'challenge')
+    def onProjectChallengeChanged(self, challenge):
+        dc.sp.challenge.v = challenge
+        self.setTableValue(NxProjectList.colChallenge, str(challenge))
+
+    @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
+    def onProjectDescriptionChanged(self):
+        dc.sp.description.v = dc.ui.project.v.text_project_info.toHtml()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Create a new blanko project
@@ -187,7 +336,7 @@ class NxProject(QObject):
         dc.sp = dc.s._(pid)
 
         # init project attributes
-        dc.sp.name.v        = ''
+        dc.sp.name.v        = 'Unnamed'
         dc.sp.ptype.v       = dc.ui.project.v.cb_project_type.currentText()
         dc.sp.category.v    = dc.ui.project.v.cb_project_category.currentText()
         dc.sp.priority.v    = dc.ui.project.v.sb_project_priority.value()
@@ -205,36 +354,40 @@ class NxProject(QObject):
         # add new project to project list
         dc.x.project.model.v.insertRow(0, [
             QStandardItem(str(pid).zfill(4)),
-            QStandardItem(dc.s._(pid).name.v),
-            QStandardItem(dc.s._(pid).ptype.v),
-            QStandardItem('{}.{}'.format(*dc.s._(pid).m.active.v)),
-            QStandardItem(dc.s._(pid).category.v),
-            QStandardItem(str(dc.s._(pid).priority.v)),
-            QStandardItem(str(dc.s._(pid).challenge.v)),
-            QStandardItem(convert(dc.s._(pid).modified.v)),
-            QStandardItem(convert(dc.s._(pid).created.v)) ])
+            QStandardItem(dc.sp.name.v),
+            QStandardItem(dc.sp.ptype.v),
+            QStandardItem('{}.{}'.format(*dc.sp.m.active.v)),
+            QStandardItem(dc.sp.category.v),
+            QStandardItem(str(dc.sp.priority.v)),
+            QStandardItem(str(dc.sp.challenge.v)),
+            QStandardItem(convert(dc.sp.modified.v)),
+            QStandardItem(convert(dc.sp.created.v)) ])
 
         # select new project
         index = dc.x.project.model.v.index(0, 0)
         s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
-        dc.x.project.selection_model.v.clear()
-        dc.x.project.selection_model.v.select(index, s|r)
+        # clear selection without triggering signal
+        dc.x.project.selection_model.v.reset()
+        # NOTE: QItemSelectionModel.select() does not set current index!
+        # dc.x.project.selection_model.v.select(index, s|r)
+        dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
 
         # set state
         NxProjectStates.applyStates(NxProjectStates.selected)
 
+'''
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxLogger.onNewClicked(self)', 'self')
     def onNewClicked(self):
         diag = dc.ui.project_diag_new.v
-        diag.line_name.clear()
+        diag.line_project_name.clear()
         diag.combo_ptype.setCurrentIndex(0)
         diag.combo_status.setCurrentIndex(0)
         diag.combo_category.setCurrentIndex(0)
-        diag.spin_priority.setValue(0)
-        diag.spin_challenge.setValue(0)
+        diag.sb_project_priority.setValue(0)
+        diag.sb_project_challenge.setValue(0)
         diag.text_description.clear()
-        diag.line_name.setFocus()
+        diag.line_project_name.setFocus()
         diag.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProject.onOpenClicked(self)', 'self')
@@ -318,8 +471,8 @@ class NxProject(QObject):
         name = dc.sp.name.v
         dc.ui.main.v.setWindowTitle('Nelia1 - {}'.format(name))
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @logger('NxProject.onDescriptionChanged(self)', 'self')
-    def onDescriptionChanged(self):
+    @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
+    def onProjectDescriptionChanged(self):
         if self.init: return
         dc.sp.description.v = dc.ui.project.v.text_description.toPlainText()
         self.touchProject()
@@ -397,12 +550,12 @@ class NxProject(QObject):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProject.onNewProject(self)', 'self')
     def onNewProject(self):
-        name        = self.diag_new.line_name.text()
+        name        = self.diag_new.line_project_name.text()
         category    = self.diag_new.combo_category.currentText()
         status      = self.diag_new.combo_status.currentText()
         ptype       = self.diag_new.combo_ptype.currentText()
-        priority    = self.diag_new.spin_priority.value()
-        challenge   = self.diag_new.spin_challenge.value()
+        priority    = self.diag_new.sb_project_priority.value()
+        challenge   = self.diag_new.sb_project_challenge.value()
         description = self.diag_new.text_description.toPlainText()
         self.createNewProject(name, category, status, ptype, priority,
                               challenge, description)
@@ -434,27 +587,27 @@ class NxProject(QObject):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProject.showEditProject(self)', 'self')
     def showEditProject(self):
-        self.diag_edit.line_name.setText(dc.sp.name.v)
+        self.diag_edit.line_project_name.setText(dc.sp.name.v)
         i = self.diag_edit.combo_ptype.findText(dc.sp.ptype.v)
         self.diag_edit.combo_ptype.setCurrentIndex(i)
         i = self.diag_edit.combo_status.findText(dc.sp.status.v)
         self.diag_edit.combo_status.setCurrentIndex(i)
         i = self.diag_edit.combo_category.findText(dc.sp.category.v)
         self.diag_edit.combo_category.setCurrentIndex(i)
-        self.diag_edit.spin_priority.setValue(dc.sp.priority.v)
-        self.diag_edit.spin_challenge.setValue(dc.sp.challenge.v)
+        self.diag_edit.sb_project_priority.setValue(dc.sp.priority.v)
+        self.diag_edit.sb_project_challenge.setValue(dc.sp.challenge.v)
         self.diag_edit.text_description.setPlainText(dc.sp.description.v)
         self.diag_edit.show()
-        self.diag_edit.line_name.setFocus()
+        self.diag_edit.line_project_name.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProject.onEditProject(self)', 'self')
     def onEditProject(self):
-        name        = self.diag_edit.line_name.text()
+        name        = self.diag_edit.line_project_name.text()
         category    = self.diag_edit.combo_category.currentText()
         status      = self.diag_edit.combo_status.currentText()
         ptype       = self.diag_edit.combo_ptype.currentText()
-        priority    = self.diag_edit.spin_priority.value()
-        challenge   = self.diag_edit.spin_challenge.value()
+        priority    = self.diag_edit.sb_project_priority.value()
+        challenge   = self.diag_edit.sb_project_challenge.value()
         description = self.diag_edit.text_description.toPlainText()
         self.editProject(name, category, status, ptype, priority, challenge,
                          description)
@@ -490,4 +643,5 @@ class NxProject(QObject):
         dc.r.changed.v = True
         self.reloadTable()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+'''
 

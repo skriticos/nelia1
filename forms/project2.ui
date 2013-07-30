@@ -140,7 +140,7 @@ QPushButton:disabled{
             <string notr="true">color:lightgray;</string>
            </property>
            <property name="text">
-            <string>Project Listing:   </string>
+            <string>Project Listing   </string>
            </property>
           </widget>
          </item>
