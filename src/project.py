@@ -194,8 +194,10 @@ class NxProjectList:
                 dc.c.project.sort.column.v, convert(dc.c.project.sort.order.v))
 
 
-    @logger('NxProjectList.reloadTable()')
-    def reloadTable():
+    # Reloads the project list table.
+    # The toggled attribute is sent by the filter callbacks and is ignored.
+    @logger('NxProjectList.reloadTable(toggled=False)')
+    def reloadTable(toggled=False):
 
         NxProjectList.saveLayout()
 
@@ -205,6 +207,46 @@ class NxProjectList:
 
         # reload table
         for pid in dc.s.index.pid.v:
+
+            priority  = dc.s._(pid).priority.v
+            challenge = dc.s._(pid).challenge.v
+
+            priolist = set()
+            if dc.ui.project.v.btn_prio_low.isChecked():
+                priolist.add(1)
+                priolist.add(2)
+                priolist.add(3)
+            if dc.ui.project.v.btn_prio_medium.isChecked():
+                priolist.add(4)
+                priolist.add(5)
+                priolist.add(6)
+            if dc.ui.project.v.btn_prio_high.isChecked():
+                priolist.add(7)
+                priolist.add(8)
+                priolist.add(9)
+            challengelist = set()
+            if dc.ui.project.v.btn_challenge_low.isChecked():
+                challengelist.add(1)
+                challengelist.add(2)
+                challengelist.add(3)
+            if dc.ui.project.v.btn_challenge_medium.isChecked():
+                challengelist.add(4)
+                challengelist.add(5)
+                challengelist.add(6)
+            if dc.ui.project.v.btn_challenge_hard.isChecked():
+                challengelist.add(7)
+                challengelist.add(8)
+                challengelist.add(9)
+
+            if priority not in priolist:
+                dc.spid.v = 0
+                dc.sp = None
+                continue
+            if challenge not in challengelist:
+                dc.spid.v = 0
+                dc.sp = None
+                continue
+
             major, minor = dc.s._(pid).m.active.v
             dc.x.project.model.v.insertRow(0, [
                 QStandardItem(str(pid).zfill(4)),
@@ -248,6 +290,22 @@ class NxProject(QObject):
                 .connect(self.onNewProjectClicked)
         dc.ui.project.v.btn_info_max.toggled \
                 .connect(self.onInfoMaxToggled)
+        dc.ui.project.v.btn_project_sort_modified.clicked \
+                .connect(self.onSortProjectList)
+
+        # filter callbacks
+        dc.ui.project.v.btn_prio_low.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_prio_medium.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_prio_high.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_low.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_medium.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_hard.toggled \
+                .connect(NxProjectList.reloadTable)
 
         # apply state
         dc.spid.v = 0
@@ -325,7 +383,7 @@ class NxProject(QObject):
 # Read only callbacks (GUI only)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    # Maximize / restore callback for infox maximization toggle
+    # Maximize / restore callback for infox maximization toggle.
 
     @logger('NxProject.onInfoMaxTogled(self, state)', 'self', 'state')
     def onInfoMaxToggled(self, state):
@@ -333,6 +391,15 @@ class NxProject(QObject):
             NxProjectStates.applyStates(NxProjectStates.description_maximized)
         else:
             NxProjectStates.applyStates(NxProjectStates.description_normal)
+
+
+    # Sort by modification date when control is clicked.
+
+    @logger('NxProject.onSortProjectList(self)', 'self')
+    def onSortProjectList(self):
+            dc.x.project.horizontal_header.v.setSortIndicator(
+                    NxProjectList.colModified,
+                    PySide.QtCore.Qt.SortOrder.DescendingOrder)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Runtime change only callbacks (dc.spid / dc.sp = xx)
