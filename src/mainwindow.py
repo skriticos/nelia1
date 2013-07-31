@@ -43,6 +43,9 @@ class MainWindow():
         dc.ui.main.v.setGeometry(100,100,800,600)
         dc.ui.main.v.setCentralWidget(dc.ui.project.v)
 
+        # load configuration
+        dcloadconfig()
+
         # load child widget control classes
         dc.m.project.v = NxProject()
 
@@ -56,7 +59,6 @@ class MainWindow():
         dc.ui.main.v.show()
 
         """
-        dcloadconfig()
         dc.m.main.v    = self
         dc.m.log.v     = NxLog()
         dc.m.roadmap.v = NxRoadmap()
