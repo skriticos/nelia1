@@ -29,7 +29,7 @@ class NxProjectStates:
         'btn_project_new'       : {'visible': True, 'enabled': True},
         'btn_show_roadmap'      : {'visible': True, 'enabled': False},
         'btn_show_logs'         : {'visible': True, 'enabled': False},
-        'tbl_project_list'      : {'visible': True, 'enabled': False},
+        'tbl_project_list'      : {'visible': True, 'enabled': True},
         'selected_project_group': {'visible': True, 'enabled': False},
         'line_selected_project' : {'clear': True},
         'line_project_name'     : {'clear': True},
@@ -37,6 +37,18 @@ class NxProjectStates:
         'cb_project_category'   : {'index': 0},
         'sb_project_priority'   : {'value': 0},
         'sb_project_challenge'  : {'value': 0}
+    }
+
+    # New project state
+
+    new_project = {
+        'line_selected_project' : {'text': 'Unnamed'},
+        'line_project_name'     : {'text': 'Unnamed'},
+        'cb_project_type'       : {'index': 0},
+        'cb_project_category'   : {'index': 0},
+        'sb_project_priority'   : {'value': 0},
+        'sb_project_challenge'  : {'value': 0},
+        'text_project_info'     : {'clear': True}
     }
 
     # If the loaded configuration contains the path to a last saved document,
@@ -76,6 +88,7 @@ class NxProjectStates:
         'project_list': {'visible': False, 'enabled': True},
         'gl_info':      {'margins': (0, 0, 15, 0)}
     }
+
 
     # This simply goes through the list of controls in the states dictionary and
     # applies the assigned states on the project widget.
@@ -137,6 +150,7 @@ class NxProjectList:
         'Created'
     ]
 
+
     # This method set's up the project list table. It creates the model and sets
     # up all necessary attributes. It is called from the NxProject __init__
     # method. One only.
@@ -153,7 +167,72 @@ class NxProjectList:
                 = dc.x.project.view.v.selectionModel()
         dc.x.project.horizontal_header.v \
                 = dc.x.project.view.v.horizontalHeader()
-        dc.x.project.view.v.setAlternatingRowColors(True)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# layout / reload table
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    @logger('NxProjectList.saveLayout(self)')
+    def saveLayout():
+
+        dc.c.project.header.width.v = list()
+        for i in range(dc.x.project.model.v.columnCount()):
+            dc.c.project.header.width.v.append(
+                    dc.x.project.view.v.columnWidth(i))
+        sort  = dc.x.project.horizontal_header.v.sortIndicatorSection()
+        order = dc.x.project.horizontal_header.v.sortIndicatorOrder().__repr__()
+        dc.c.project.sort.column.v = sort
+        dc.c.project.sort.order.v  = order
+
+    @logger('NxProjectList.loadLayout(self)')
+    def loadLayout():
+
+        for i,v in enumerate(dc.c.project.header.width.v):
+            dc.x.project.view.v.setColumnWidth(i, v)
+        if dc.c.project.sort.column.v:
+            dc.x.project.horizontal_header.v.setSortIndicator(
+                dc.c.project.sort.column.v, convert(dc.c.project.sort.order.v))
+
+
+    @logger('NxProjectList.reloadTable()')
+    def reloadTable():
+
+        NxProjectList.saveLayout()
+
+        # clear table
+        dc.x.project.model.v.clear()
+        dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
+
+        # reload table
+        for pid in dc.s.index.pid.v:
+            major, minor = dc.s._(pid).m.active.v
+            dc.x.project.model.v.insertRow(0, [
+                QStandardItem(str(pid).zfill(4)),
+                QStandardItem(dc.s._(pid).name.v),
+                QStandardItem(dc.s._(pid).ptype.v),
+                QStandardItem('{}.{}'.format(major, minor)),
+                QStandardItem(dc.s._(pid).category.v),
+                QStandardItem(str(dc.s._(pid).priority.v)),
+                QStandardItem(str(dc.s._(pid).challenge.v)),
+                QStandardItem(convert(dc.s._(pid).modified.v)),
+                QStandardItem(convert(dc.s._(pid).created.v)) ])
+
+        NxProjectList.loadLayout()
+
+        # set selection
+        dc.x.project.selection_model.v.reset()
+        if dc.spid.v:
+
+            # iterate through table rows
+            for rowcnt in range(dc.x.project.model.v.rowCount()):
+                index = dc.x.project.model.v.index(rowcnt, 0)
+                pid = int(dc.x.project.model.v.data(index))
+
+                # if we have a match, select it and abort
+                if pid == dc.spid.v:
+                    s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+                    dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
+                    break
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Main project control class
@@ -195,6 +274,7 @@ class NxProject(QObject):
         row = dc.x.project.selection_model.v.currentIndex().row()
         dc.x.project.model.v.setItem(row, col, QStandardItem(value))
 
+
     # Enable / disable the callbacks for the edit controls / selection during
     # programatic UI updates - mostly to avoid infinite loops and weird state
     # changes.
@@ -231,6 +311,7 @@ class NxProject(QObject):
                     .disconnect(self.onProjectDescriptionChanged)
             dc.x.project.selection_model.v.selectionChanged \
                     .disconnect(self.onSelectionChanged)
+
 
     # Updates the project modification date in the project table and sets the
     # changed value. This is called by all persistent data operations of the
@@ -300,40 +381,63 @@ class NxProject(QObject):
 
     @logger('NxProject.onProjectNameChanged(self, name)', 'self', 'name')
     def onProjectNameChanged(self, name):
+
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
-        self.setTableValue(NxProjectList.colName, name)
         self.touchProject()
+        # Setting the project cell individually sometimes stops working for no
+        # apparent reason. Reloading the table each time fixes the issue.
+        self.setEditCallbackState(False)
+        NxProjectList.reloadTable()
+        self.setEditCallbackState(True)
+
 
     @logger('NxProject.onProjectTypeChanged(self, ptype)', 'self', 'ptype')
     def onProjectTypeChanged(self, ptype):
+
         dc.sp.ptype.v = ptype
-        self.setTableValue(NxProjectList.colType, ptype)
         self.touchProject()
+        self.setEditCallbackState(False)
+        NxProjectList.reloadTable()
+        self.setEditCallbackState(True)
+
 
     @logger('NxProject.onProjectCategoryChanged(self, category)',
             'self', 'category')
     def onProjectCategoryChanged(self, category):
+
         dc.sp.category.v = category
-        self.setTableValue(NxProjectList.colCategory, category)
         self.touchProject()
+        self.setEditCallbackState(False)
+        NxProjectList.reloadTable()
+        self.setEditCallbackState(True)
+
 
     @logger('NxProject.onProjectPriorityChanged(self, priority)',
             'self', 'priority')
     def onProjectPriorityChanged(self, priority):
+
         dc.sp.priority.v = priority
-        self.setTableValue(NxProjectList.colPritoriy, str(priority))
         self.touchProject()
+        self.setEditCallbackState(False)
+        NxProjectList.reloadTable()
+        self.setEditCallbackState(True)
+
 
     @logger('NxProject.onProjectChallengeChanged(self, challenge)',
             'self', 'challenge')
     def onProjectChallengeChanged(self, challenge):
+
         dc.sp.challenge.v = challenge
-        self.setTableValue(NxProjectList.colChallenge, str(challenge))
         self.touchProject()
+        self.setEditCallbackState(False)
+        NxProjectList.reloadTable()
+        self.setEditCallbackState(True)
+
 
     @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
     def onProjectDescriptionChanged(self):
+
         dc.sp.description.v = dc.ui.project.v.text_project_info.toHtml()
         self.touchProject()
 
@@ -346,6 +450,10 @@ class NxProject(QObject):
         # prepare
         timestamp = int(time.time())
         pid = dc.s.nextpid.v
+
+        # reset states
+        self.setEditCallbackState(False)
+        NxProjectStates.applyStates(NxProjectStates.new_project)
 
         # init project control data
         dc.s.index.pid.v.add(pid)
@@ -369,26 +477,8 @@ class NxProject(QObject):
         # init milestone control data
         mistctrl_new_tree()
 
-        # add new project to project list
-        dc.x.project.model.v.insertRow(0, [
-            QStandardItem(str(pid).zfill(4)),
-            QStandardItem(dc.sp.name.v),
-            QStandardItem(dc.sp.ptype.v),
-            QStandardItem('{}.{}'.format(*dc.sp.m.active.v)),
-            QStandardItem(dc.sp.category.v),
-            QStandardItem(str(dc.sp.priority.v)),
-            QStandardItem(str(dc.sp.challenge.v)),
-            QStandardItem(convert(dc.sp.modified.v)),
-            QStandardItem(convert(dc.sp.created.v)) ])
-
-        # select new project
-        index = dc.x.project.model.v.index(0, 0)
-        s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
-        # clear selection without triggering signal
-        dc.x.project.selection_model.v.reset()
-        # NOTE: QItemSelectionModel.select() does not set current index!
-        # dc.x.project.selection_model.v.select(index, s|r)
-        dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
+        NxProjectList.reloadTable()
+        self.setEditCallbackState(True)
 
         # set state
         NxProjectStates.applyStates(NxProjectStates.selected)

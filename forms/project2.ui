@@ -810,7 +810,52 @@ height:1px;</string>
           <property name="spacing">
            <number>0</number>
           </property>
-          <item row="1" column="0" colspan="8">
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_8">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>   Priority:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_9">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>   Challenge:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="10">
+           <widget class="QToolButton" name="btn_challenge_hard">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Hard 7-9</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="12">
            <widget class="QTableView" name="tbl_project_list">
             <property name="enabled">
              <bool>false</bool>
@@ -826,6 +871,9 @@ height:1px;</string>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
+            <property name="alternatingRowColors">
+             <bool>false</bool>
+            </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>
             </property>
@@ -837,8 +885,8 @@ height:1px;</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="5">
-           <widget class="QToolButton" name="btn_challenging">
+          <item row="0" column="9">
+           <widget class="QToolButton" name="btn_challenge_medium">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -848,70 +896,7 @@ height:1px;</string>
              </font>
             </property>
             <property name="text">
-             <string>Challenging (4-7)</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="6">
-           <widget class="QToolButton" name="btn_hard">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>8</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Hard (7+)</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QToolButton" name="btn_easy">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>8</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Easy (3-)</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QToolButton" name="btn_unimportant">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>8</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Prio. 0-6</string>
+             <string>Medium 4-6</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -922,6 +907,48 @@ height:1px;</string>
            </widget>
           </item>
           <item row="0" column="7">
+           <widget class="QToolButton" name="btn_challenge_low">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Easy 0-3</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QToolButton" name="btn_prio_low">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Low 0-3</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="11">
            <spacer name="horizontalSpacer_3">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -952,8 +979,8 @@ height:1px;</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="3">
-           <widget class="QToolButton" name="btn_important">
+          <item row="0" column="5">
+           <widget class="QToolButton" name="btn_prio_high">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -963,7 +990,25 @@ height:1px;</string>
              </font>
             </property>
             <property name="text">
-             <string>Important (7+)</string>
+             <string>High 7-9</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QToolButton" name="btn_prio_medium">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Medium 4-6</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -997,11 +1042,11 @@ height:1px;</string>
   <tabstop>text_project_info</tabstop>
   <tabstop>tbl_project_list</tabstop>
   <tabstop>btn_project_sort_modified</tabstop>
-  <tabstop>btn_unimportant</tabstop>
-  <tabstop>btn_important</tabstop>
-  <tabstop>btn_easy</tabstop>
-  <tabstop>btn_challenging</tabstop>
-  <tabstop>btn_hard</tabstop>
+  <tabstop>btn_prio_low</tabstop>
+  <tabstop>btn_prio_high</tabstop>
+  <tabstop>btn_challenge_low</tabstop>
+  <tabstop>btn_challenge_medium</tabstop>
+  <tabstop>btn_challenge_hard</tabstop>
  </tabstops>
  <resources/>
  <connections/>
