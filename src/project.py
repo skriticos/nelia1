@@ -117,6 +117,102 @@ class NxProjectStates:
             if 'value' in state:
                 dc.ui.project.v.__dict__[control].setValue(state['value'])
 
+    @logger('NxProjectStates.enableSelectionCallback()')
+    def enableSelectionCallback():
+
+        m = dc.x.project.selection_model.v
+        m.selectionChanged.connect(NxProjectStates.onSelectionChanged)
+
+    @logger('NxProjectStates.disableSelectionCallback()')
+    def disableSelectionCallback():
+
+        m = dc.x.project.selection_model.v
+        m.selectionChanged.disconnect(NxProjectStates.onSelectionChanged)
+
+    @logger('NxProjectStates.enableAllCallbacks()')
+    def enableAllCallbacks():
+
+        # edit callbacks
+        dc.ui.project.v.line_project_name.textChanged \
+                .connect(dc.m.project.v.onProjectNameChanged)
+        dc.ui.project.v.cb_project_type.currentIndexChanged[str] \
+                .connect(dc.m.project.v.onProjectTypeChanged)
+        dc.ui.project.v.cb_project_category.currentIndexChanged[str] \
+                .connect(dc.m.project.v.onProjectCategoryChanged)
+        dc.ui.project.v.sb_project_priority.valueChanged[int] \
+                .connect(dc.m.project.v.onProjectPriorityChanged)
+        dc.ui.project.v.sb_project_challenge.valueChanged[int] \
+                .connect(dc.m.project.v.onProjectChallengeChanged)
+        dc.ui.project.v.text_project_info.textChanged \
+                .connect(dc.m.project.v.onProjectDescriptionChanged)
+
+        # menu callbacks
+        dc.ui.project.v.btn_project_new.clicked \
+                .connect(dc.m.project.v.onNewProjectClicked)
+        dc.ui.project.v.btn_info_max.toggled \
+                .connect(dc.m.project.v.onInfoMaxToggled)
+        dc.ui.project.v.btn_project_sort_modified.clicked \
+                .connect(dc.m.project.v.onSortProjectList)
+
+        # filter callbacks
+        dc.ui.project.v.btn_prio_low.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_prio_medium.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_prio_high.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_low.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_medium.toggled \
+                .connect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_hard.toggled \
+                .connect(NxProjectList.reloadTable)
+
+        # selection callback
+        NxProjectStates.enableSelectionCallback()
+
+    @logger('NxProjectStates.disableAllCallbacks()')
+    def disableAllCallbacks():
+
+        # edit callbacks
+        dc.ui.project.v.line_project_name.textChanged \
+                .disconnect(dc.m.project.v.onProjectNameChanged)
+        dc.ui.project.v.cb_project_type.currentIndexChanged[str] \
+                .disconnect(dc.m.project.v.onProjectTypeChanged)
+        dc.ui.project.v.cb_project_category.currentIndexChanged[str] \
+                .disconnect(dc.m.project.v.onProjectCategoryChanged)
+        dc.ui.project.v.sb_project_priority.valueChanged[int] \
+                .disconnect(dc.m.project.v.onProjectPriorityChanged)
+        dc.ui.project.v.sb_project_challenge.valueChanged[int] \
+                .disconnect(dc.m.project.v.onProjectChallengeChanged)
+        dc.ui.project.v.text_project_info.textChanged \
+                .disconnect(dc.m.project.v.onProjectDescriptionChanged)
+
+        # menu callbacks
+        dc.ui.project.v.btn_project_new.clicked \
+                .disconnect(dc.m.project.v.onNewProjectClicked)
+        dc.ui.project.v.btn_info_max.toggled \
+                .disconnect(dc.m.project.v.onInfoMaxToggled)
+        dc.ui.project.v.btn_project_sort_modified.clicked \
+                .disconnect(dc.m.project.v.onSortProjectList)
+
+        # filter callbacks
+        dc.ui.project.v.btn_prio_low.toggled \
+                .disconnect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_prio_medium.toggled \
+                .disconnect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_prio_high.toggled \
+                .disconnect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_low.toggled \
+                .disconnect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_medium.toggled \
+                .disconnect(NxProjectList.reloadTable)
+        dc.ui.project.v.btn_challenge_hard.toggled \
+                .disconnect(NxProjectList.reloadTable)
+
+        # selection callback
+        NxProjectStates.disableSelectionCallback()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Project list control class
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -202,7 +298,9 @@ class NxProjectList:
         NxProjectList.saveLayout()
 
         # clear table
+        NxProjectStates.disableSelectionCallback()
         dc.x.project.model.v.clear()
+        NxProjectStates.enableSelectionCallback()
         dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
 
         # reload table
@@ -261,20 +359,35 @@ class NxProjectList:
 
         NxProjectList.loadLayout()
 
-        # set selection
         dc.x.project.selection_model.v.reset()
-        if dc.spid.v:
 
-            # iterate through table rows
-            for rowcnt in range(dc.x.project.model.v.rowCount()):
-                index = dc.x.project.model.v.index(rowcnt, 0)
-                pid = int(dc.x.project.model.v.data(index))
+        # we don't select anything if we don't have rows
+        rowcount = dc.x.project.model.v.rowCount()
+        if rowcount <= 0:
+            NxProjectList.applyStates(NxProjectState.startup)
+            return
 
-                # if we have a match, select it and abort
-                if pid == dc.spid.v:
-                    s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
-                    dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
-                    break
+        # we don't have a selected project id (outside the filter or deleted)
+        if not dc.spid.v:
+            index = dc.x.project.model.v.index(0, 0)
+            pid = int(dc.x.project.model.v.data(index))
+            dc.spid.v = pid
+            dc.sp = dc.s._(pid)
+            s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+            dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
+            selection = dc.x.project.view.v.selectionModel().selection()
+
+        # iterate through table rows
+        for rowcnt in range(dc.x.project.model.v.rowCount()):
+            index = dc.x.project.model.v.index(rowcnt, 0)
+            pid = int(dc.x.project.model.v.data(index))
+
+            # if we have a match, select it and abort
+            if pid == dc.spid.v:
+                s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+                dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
+                selection = dc.x.project.view.v.selectionModel().selection()
+                break
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Main project control class
@@ -285,88 +398,22 @@ class NxProject(QObject):
     @logger('NxProject.__init__(self)', 'self')
     def __init__(self):
 
-        # setup callbacks
-        dc.ui.project.v.btn_project_new.clicked \
-                .connect(self.onNewProjectClicked)
-        dc.ui.project.v.btn_info_max.toggled \
-                .connect(self.onInfoMaxToggled)
-        dc.ui.project.v.btn_project_sort_modified.clicked \
-                .connect(self.onSortProjectList)
-
-        # filter callbacks
-        dc.ui.project.v.btn_prio_low.toggled \
-                .connect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_prio_medium.toggled \
-                .connect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_prio_high.toggled \
-                .connect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_challenge_low.toggled \
-                .connect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_challenge_medium.toggled \
-                .connect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_challenge_hard.toggled \
-                .connect(NxProjectList.reloadTable)
+        dc.m.project.v = self
 
         # apply state
         dc.spid.v = 0
         NxProjectList.initTable()
         NxProjectStates.applyStates(NxProjectStates.startup)
-        self.setEditCallbackState(True)
         if dc.x.config.loaded.v:
             NxProjectList.loadLayout()
             if dc.c.lastpath.v:
                 NxProjectStates.applyStates(NxProjectStates.last)
 
+        NxProjectStates.enableAllCallbacks()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Helpers
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    # Sets the cell content of the currently selected row in the project table.
-    # Used by the selected project attribute change callbacks.
-
-    @logger('NxProject.setTableValue(self, col, value)', 'self', 'col', 'value')
-    def setTableValue(self, col, value):
-        row = dc.x.project.selection_model.v.currentIndex().row()
-        dc.x.project.model.v.setItem(row, col, QStandardItem(value))
-
-
-    # Enable / disable the callbacks for the edit controls / selection during
-    # programatic UI updates - mostly to avoid infinite loops and weird state
-    # changes.
-
-    @logger('NxProject.setEditCallbackState(self, state)', 'self', 'state')
-    def setEditCallbackState(self, state):
-        if state:
-            dc.ui.project.v.line_project_name.textChanged \
-                    .connect(self.onProjectNameChanged)
-            dc.ui.project.v.cb_project_type.currentIndexChanged[str] \
-                    .connect(self.onProjectTypeChanged)
-            dc.ui.project.v.cb_project_category.currentIndexChanged[str] \
-                    .connect(self.onProjectCategoryChanged)
-            dc.ui.project.v.sb_project_priority.valueChanged[int] \
-                    .connect(self.onProjectPriorityChanged)
-            dc.ui.project.v.sb_project_challenge.valueChanged[int] \
-                    .connect(self.onProjectChallengeChanged)
-            dc.ui.project.v.text_project_info.textChanged \
-                    .connect(self.onProjectDescriptionChanged)
-            dc.x.project.selection_model.v.selectionChanged \
-                    .connect(self.onSelectionChanged)
-        else:
-            dc.ui.project.v.line_project_name.textChanged \
-                    .disconnect(self.onProjectNameChanged)
-            dc.ui.project.v.cb_project_type.currentIndexChanged[str] \
-                    .disconnect(self.onProjectTypeChanged)
-            dc.ui.project.v.cb_project_category.currentIndexChanged[str] \
-                    .disconnect(self.onProjectCategoryChanged)
-            dc.ui.project.v.sb_project_priority.valueChanged[int] \
-                    .disconnect(self.onProjectPriorityChanged)
-            dc.ui.project.v.sb_project_challenge.valueChanged[int] \
-                    .disconnect(self.onProjectChallengeChanged)
-            dc.ui.project.v.text_project_info.textChanged \
-                    .disconnect(self.onProjectDescriptionChanged)
-            dc.x.project.selection_model.v.selectionChanged \
-                    .disconnect(self.onSelectionChanged)
-
 
     # Updates the project modification date in the project table and sets the
     # changed value. This is called by all persistent data operations of the
@@ -423,7 +470,7 @@ class NxProject(QObject):
         dc.sp = dc.s._(dc.spid.v)
 
         # populate edit fields on selection change
-        self.setEditCallbackState(False)
+        NxProjectStates.disableAllCallbacks()
         dc.ui.project.v.line_project_name.setText(dc.sp.name.v)
         dc.ui.project.v.line_selected_project.setText(dc.sp.name.v)
         dc.ui.project.v.sb_project_priority.setValue(dc.sp.priority.v)
@@ -433,7 +480,7 @@ class NxProject(QObject):
         dc.ui.project.v.cb_project_category.setCurrentIndex(
                 dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
         dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
-        self.setEditCallbackState(True)
+        NxProjectStates.enableAllCallbacks()
 
         # set title
         dc.ui.main.v.setWindowTitle('Nelia1 - {}'.format(dc.sp.name.v))
@@ -451,9 +498,7 @@ class NxProject(QObject):
         self.touchProject()
         # Setting the project cell individually sometimes stops working for no
         # apparent reason. Reloading the table each time fixes the issue.
-        self.setEditCallbackState(False)
         NxProjectList.reloadTable()
-        self.setEditCallbackState(True)
 
 
     @logger('NxProject.onProjectTypeChanged(self, ptype)', 'self', 'ptype')
@@ -461,9 +506,7 @@ class NxProject(QObject):
 
         dc.sp.ptype.v = ptype
         self.touchProject()
-        self.setEditCallbackState(False)
         NxProjectList.reloadTable()
-        self.setEditCallbackState(True)
 
 
     @logger('NxProject.onProjectCategoryChanged(self, category)',
@@ -472,9 +515,7 @@ class NxProject(QObject):
 
         dc.sp.category.v = category
         self.touchProject()
-        self.setEditCallbackState(False)
         NxProjectList.reloadTable()
-        self.setEditCallbackState(True)
 
 
     @logger('NxProject.onProjectPriorityChanged(self, priority)',
@@ -483,9 +524,7 @@ class NxProject(QObject):
 
         dc.sp.priority.v = priority
         self.touchProject()
-        self.setEditCallbackState(False)
         NxProjectList.reloadTable()
-        self.setEditCallbackState(True)
 
 
     @logger('NxProject.onProjectChallengeChanged(self, challenge)',
@@ -494,9 +533,7 @@ class NxProject(QObject):
 
         dc.sp.challenge.v = challenge
         self.touchProject()
-        self.setEditCallbackState(False)
         NxProjectList.reloadTable()
-        self.setEditCallbackState(True)
 
 
     @logger('NxProject.onProjectDescriptionChanged(self)', 'self')

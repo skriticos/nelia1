@@ -47,7 +47,7 @@ class MainWindow():
         dcloadconfig()
 
         # load child widget control classes
-        dc.m.project.v = NxProject()
+        NxProject()
 
         # initialize global shortcuts
         for keys, target in [('Ctrl+w', dc.ui.main.v.close),
