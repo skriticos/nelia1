@@ -1,24 +1,74 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+# This file contains the business end of the project widget. This manages the
+# documents and the projects within the documents.
+#
+# There are a few unility classes in this file that isolate specific tasks:
+#
+#   NxProjectStates
+#
+#       Wouldn't you know it, this manages the project states. This includes the
+#       visible/enabled states of the user controls and everything that's about
+#       callbacks. The applyStates method is interesting here, which goes
+#       through a template of controls and applies the states noted in the
+#       template. en/disable callbacks should be selfexplanatory.
+#
+#   NxProjectList
+#
+#       Manages the project list table. This is a fairly complex part of the
+#       application and hard to isolate. Furthermore it involves a lot of state
+#       changes and is the homeland of bugs and more bugs. At the core is the
+#       reloadTable method. This saves the table layout (column widths,
+#       sorting), clears the table, re-populates the table from the datacore and
+#       re-applies the layout. Yes, it's ugly, but for some reason the callbacks
+#       for editing projects act erratic when manipulating the model cells
+#       directly and redrawing the table on edit seems to work.. Yay, random
+#       PySide bugs! Did I mention there is an unresolved Qt bug which makes it
+#       impossible to style selection background on Ubunut?
+#       Back on topic, I do a disable callbacks on a need basis (e.g. when the
+#       table is cleared) and leave them on most of the time (e.g. when we
+#       select the active project after re-populating)
+#
+#   NxProject
+#
+#       Manages everything that has to do with project properties. Create new
+#       projects, edit project attributes and delete projects.
+#
+#   NxDocument
+#
+#       Manages documents. Create new document, save document and load document
+#       from file.
+#
+# There is not much interaction with other files in this file. The few that are
+# there are: the datacore - which servers as backbone; the mistctrl which is
+# used when creating new projects to initialize roadmap data structures and the
+# roadmap version data structures that are displayed in the project table.
+# Otherwise it's quite isolated in the pull perspective. Other modules depend on
+# this one, as the project selection defines which log/roadmap is dispalyed.
+#
+# The @logger wrapper is implemented in the datacore module. It's used for
+# debugging and basically just prints the method calls and the passed parameters
+# to stdout (and all data changes in dc*)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-import os, datetime, time
+import os
+import datetime
+import time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 from datacore import *
-from mistctrl import *
+import mistctrl                       # milestone control module for new project
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Project GUI state control
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# This class declares states. These states contain a list of widgets and the
-# enabled attribute value.
 
 class NxProjectStates:
 
-    # Startup state. Can create new projects and load document.
+    # Did I mention that the names I come up with are a bit vague sometimes? So
+    # this is the startup state. The state is set on startup.. and on load
+    # documnt.. and on last project delete.
 
     startup = {
         'btn_doc_new'           : {'visible': True, 'enabled': False},
@@ -39,21 +89,9 @@ class NxProjectStates:
         'sb_project_challenge'  : {'value': 0}
     }
 
-    # New project state
-
-    new_project = {
-        'line_selected_project' : {'text': 'Unnamed'},
-        'line_project_name'     : {'text': 'Unnamed'},
-        'cb_project_type'       : {'index': 0},
-        'cb_project_category'   : {'index': 0},
-        'sb_project_priority'   : {'value': 0},
-        'sb_project_challenge'  : {'value': 0},
-        'text_project_info'     : {'clear': True}
-    }
-
     # If the loaded configuration contains the path to a last saved document,
     # enable this control. Sub-state to startup. Is disaled once a project is
-    # selected.
+    # selected. This is a substate of startup.
 
     last = {
         'btn_doc_open_last'     : {'visible': True, 'enabled': True},
@@ -75,7 +113,24 @@ class NxProjectStates:
         'selected_project_group': {'visible': True, 'enabled': True}
     }
 
-    # maximize / restore state for project description
+    # Clean edit widgets when creating new project (make sure to create the
+    # project data structure before applying this) or you'll enjoy a trip to
+    # errorland.
+
+    new_project = {
+        'line_selected_project' : {'text': 'Unnamed'},
+        'line_project_name'     : {'text': 'Unnamed'},
+        'cb_project_type'       : {'index': 0},
+        'cb_project_category'   : {'index': 0},
+        'sb_project_priority'   : {'value': 0},
+        'sb_project_challenge'  : {'value': 0},
+        'text_project_info'     : {'clear': True}
+    }
+
+    # There is a maximize toggle button on top of the selected project
+    # description text box. The following two states switch between normal and
+    # maximized for this widget (by hiding the project list and the edit
+    # widgets)
 
     description_normal = {
         'project_meta': {'visible': True, 'enabled': True},
@@ -89,12 +144,19 @@ class NxProjectStates:
         'gl_info':      {'margins': (0, 0, 15, 0)}
     }
 
+    # So the states that I defined above, this method takes a set and applies
+    # them to the project widgets. The following states are handled:
+    #
+    #   enabled: en/disable widget, bool
+    #   visible: show/hide wiget, bool
+    #   margins: set margins (n,n,n,n)
+    #   text: set text (for input boxes and labels)
+    #   clear: clear widget
+    #   index: set index for comboboxes
+    #   value: set value for spinboxes
 
-    # This simply goes through the list of controls in the states dictionary and
-    # applies the assigned states on the project widget.
-
-    @logger('NxProjectStates.applyStates(states, hide=False)', 'states')
-    def applyStates(states, hide=False):
+    @logger('NxProjectStates.applyStates(states)', 'states')
+    def applyStates(states):
 
         # loop through controls (widgets)
         for control, state in states.items():
@@ -117,6 +179,11 @@ class NxProjectStates:
             if 'value' in state:
                 dc.ui.project.v.__dict__[control].setValue(state['value'])
 
+    # Callbacks! All of them. The en/disable selection callbacks apply to the
+    # selection change in the project list table. This is used in the
+    # reloadTable method when crearing the table. We don't want stray callbacks
+    # messing up things, do we?
+
     @logger('NxProjectStates.enableSelectionCallback()')
     def enableSelectionCallback():
 
@@ -129,8 +196,12 @@ class NxProjectStates:
         m = dc.x.project.selection_model.v
         m.selectionChanged.disconnect(NxProjectStates.onSelectionChanged)
 
-    @logger('NxProjectStates.enableAllCallbacks()')
-    def enableAllCallbacks():
+    # More callbacks! The edit control callbacks are switched off when a new
+    # project is selected in the project table. This is reqired to avoid
+    # infinite loops and gremlins eating the application.
+
+    @logger('NxProjectStates.enableEditCallbacks()')
+    def enableEditCallbacks():
 
         # edit callbacks
         dc.ui.project.v.line_project_name.textChanged \
@@ -145,6 +216,29 @@ class NxProjectStates:
                 .connect(dc.m.project.v.onProjectChallengeChanged)
         dc.ui.project.v.text_project_info.textChanged \
                 .connect(dc.m.project.v.onProjectDescriptionChanged)
+
+    @logger('NxProjectStates.disableEditCallbacks()')
+    def disableEditCallbacks():
+
+        # edit callbacks
+        dc.ui.project.v.line_project_name.textChanged \
+                .disconnect(dc.m.project.v.onProjectNameChanged)
+        dc.ui.project.v.cb_project_type.currentIndexChanged[str] \
+                .disconnect(dc.m.project.v.onProjectTypeChanged)
+        dc.ui.project.v.cb_project_category.currentIndexChanged[str] \
+                .disconnect(dc.m.project.v.onProjectCategoryChanged)
+        dc.ui.project.v.sb_project_priority.valueChanged[int] \
+                .disconnect(dc.m.project.v.onProjectPriorityChanged)
+        dc.ui.project.v.sb_project_challenge.valueChanged[int] \
+                .disconnect(dc.m.project.v.onProjectChallengeChanged)
+        dc.ui.project.v.text_project_info.textChanged \
+                .disconnect(dc.m.project.v.onProjectDescriptionChanged)
+
+    # This one enables all callbacks (including the above ones) and is used at
+    # startup.
+
+    @logger('NxProjectStates.enableAllCallbacks()')
+    def enableAllCallbacks():
 
         # menu callbacks
         dc.ui.project.v.btn_project_new.clicked \
@@ -168,72 +262,46 @@ class NxProjectStates:
         dc.ui.project.v.btn_challenge_hard.toggled \
                 .connect(NxProjectList.reloadTable)
 
-        # selection callback
+        # edit / selection
+        NxProjectStates.enableEditCallbacks()
         NxProjectStates.enableSelectionCallback()
 
-    @logger('NxProjectStates.disableAllCallbacks()')
-    def disableAllCallbacks():
+    # More callbacks! This time, it's the onFoo..() callback slot
+    # implementations.
 
-        # edit callbacks
-        dc.ui.project.v.line_project_name.textChanged \
-                .disconnect(dc.m.project.v.onProjectNameChanged)
-        dc.ui.project.v.cb_project_type.currentIndexChanged[str] \
-                .disconnect(dc.m.project.v.onProjectTypeChanged)
-        dc.ui.project.v.cb_project_category.currentIndexChanged[str] \
-                .disconnect(dc.m.project.v.onProjectCategoryChanged)
-        dc.ui.project.v.sb_project_priority.valueChanged[int] \
-                .disconnect(dc.m.project.v.onProjectPriorityChanged)
-        dc.ui.project.v.sb_project_challenge.valueChanged[int] \
-                .disconnect(dc.m.project.v.onProjectChallengeChanged)
-        dc.ui.project.v.text_project_info.textChanged \
-                .disconnect(dc.m.project.v.onProjectDescriptionChanged)
+    # We begin with the project list table filter callbacks. These update the
+    # filter sets in the datacore and call reloadTable to update the view.
 
-        # menu callbacks
-        dc.ui.project.v.btn_project_new.clicked \
-                .disconnect(dc.m.project.v.onNewProjectClicked)
-        dc.ui.project.v.btn_info_max.toggled \
-                .disconnect(dc.m.project.v.onInfoMaxToggled)
-        dc.ui.project.v.btn_project_sort_modified.clicked \
-                .disconnect(dc.m.project.v.onSortProjectList)
+    @logging('NxProjectStates.onPriorityLowToggled(checked)', 'checked')
+    def onPriorityLowToggled(checked):
+        pass
 
-        # filter callbacks
-        dc.ui.project.v.btn_prio_low.toggled \
-                .disconnect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_prio_medium.toggled \
-                .disconnect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_prio_high.toggled \
-                .disconnect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_challenge_low.toggled \
-                .disconnect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_challenge_medium.toggled \
-                .disconnect(NxProjectList.reloadTable)
-        dc.ui.project.v.btn_challenge_hard.toggled \
-                .disconnect(NxProjectList.reloadTable)
+    @logging('NxProjectStates.onPriorityMediumToggled(checked)', 'checked')
+    def onPriorityMediumToggled(checked):
+        pass
 
-        # selection callback
-        NxProjectStates.disableSelectionCallback()
+    @logging('NxProjectStates.onPriorityHighToggled(checked)', 'checked')
+    def onPriorityHighToggled(checked):
+        pass
+
+    @logging('NxProjectStates.onChallengeLowToggled(checked)', 'checked')
+    def onChallengeLowToggled(checked):
+        pass
+
+    @logging('NxProjectStates.onChallengeMediumToggled(checked)', 'checked')
+    def onChallengeMediumToggled(checked):
+        pass
+
+    @logging('NxProjectStates.onChallengeHighToggled(checked)', 'checked')
+    def onChallengeHighToggled(checked):
+        pass
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Project list control class
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# Project list table headers
-# This class handles the project list. It provides methods to initialize table
-# and interact with items on it.
 
 class NxProjectList:
 
-    colPid       = 0
-    colName      = 1
-    colType      = 2
-    colVersion   = 3
-    colCategory  = 4
-    colPritoriy  = 5
-    colChallenge = 6
-    colModified  = 7
-    colCreated   = 8
+    # Header labels for the project list table.
 
-    # Project list header labels.
     headers =  [
         'ID',
         'Name',
@@ -246,35 +314,38 @@ class NxProjectList:
         'Created'
     ]
 
-
     # This method set's up the project list table. It creates the model and sets
     # up all necessary attributes. It is called from the NxProject __init__
     # method. One only.
 
     @logger('NxProjectList.initTable()')
     def initTable():
-        dc.x.project.view.v \
-                = dc.ui.project.v.tbl_project_list
-        dc.x.project.model.v \
-                = QStandardItemModel()
+
+        dc.x.project.view.v = dc.ui.project.v.tbl_project_list
+        dc.x.project.model.v = QStandardItemModel()
         dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
         dc.x.project.view.v.setModel(dc.x.project.model.v)
-        dc.x.project.selection_model.v \
-                = dc.x.project.view.v.selectionModel()
+        dc.x.project.selection_model.v = dc.x.project.view.v.selectionModel()
         dc.x.project.horizontal_header.v \
                 = dc.x.project.view.v.horizontalHeader()
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# layout / reload table
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # The next two methods save/load the current layout to/from the datacore
+    # configuration section (dc.c.project..). This is not writing the
+    # configuration to the file though, just stores it in datacore so that
+    # dcconfigsave() can do it at exit.
 
     @logger('NxProjectList.saveLayout(self)')
     def saveLayout():
+
+        # save header widths
 
         dc.c.project.header.width.v = list()
         for i in range(dc.x.project.model.v.columnCount()):
             dc.c.project.header.width.v.append(
                     dc.x.project.view.v.columnWidth(i))
+
+        # save sort column / order
+
         sort  = dc.x.project.horizontal_header.v.sortIndicatorSection()
         order = dc.x.project.horizontal_header.v.sortIndicatorOrder().__repr__()
         dc.c.project.sort.column.v = sort
@@ -283,15 +354,19 @@ class NxProjectList:
     @logger('NxProjectList.loadLayout(self)')
     def loadLayout():
 
+        # load header widths
+
         for i,v in enumerate(dc.c.project.header.width.v):
             dc.x.project.view.v.setColumnWidth(i, v)
+
+        # load sorting
+
         if dc.c.project.sort.column.v:
             dc.x.project.horizontal_header.v.setSortIndicator(
                 dc.c.project.sort.column.v, convert(dc.c.project.sort.order.v))
 
 
-    # Reloads the project list table.
-    # The toggled attribute is sent by the filter callbacks and is ignored.
+
     @logger('NxProjectList.reloadTable(toggled=False)')
     def reloadTable(toggled=False):
 
@@ -552,10 +627,6 @@ class NxProject(QObject):
         timestamp = int(time.time())
         pid = dc.s.nextpid.v
 
-        # reset states
-        self.setEditCallbackState(False)
-        NxProjectStates.applyStates(NxProjectStates.new_project)
-
         # init project control data
         dc.s.index.pid.v.add(pid)
         dc.s.nextpid.v += 1
@@ -563,23 +634,17 @@ class NxProject(QObject):
         dc.sp = dc.s._(pid)
 
         # init project attributes
-        dc.sp.name.v        = 'Unnamed'
-        dc.sp.ptype.v       = dc.ui.project.v.cb_project_type.currentText()
-        dc.sp.category.v    = dc.ui.project.v.cb_project_category.currentText()
-        dc.sp.priority.v    = dc.ui.project.v.sb_project_priority.value()
-        dc.sp.challenge.v   = dc.ui.project.v.sb_project_challenge.value()
-        dc.sp.description.v = ''
         dc.sp.created.v     = timestamp
         dc.sp.modified.v    = timestamp
+
+        # reset states
+        NxProjectStates.applyStates(NxProjectStates.new_project)
 
         # init log control data
         dc.sp.nextlid.v     = 1
 
         # init milestone control data
-        mistctrl_new_tree()
-
-        NxProjectList.reloadTable()
-        self.setEditCallbackState(True)
+        mistctrl.mistctrl_new_tree()
 
         # set state
         NxProjectStates.applyStates(NxProjectStates.selected)
