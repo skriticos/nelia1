@@ -265,6 +265,7 @@ class NxProjectStates:
             dc.c.project.filters.priority.v.discard(1)
             dc.c.project.filters.priority.v.discard(2)
             dc.c.project.filters.priority.v.discard(3)
+        NxProjectList.reloadTable()
 
     @logger('NxProjectStates.onPriorityMediumToggled(checked)', 'checked')
     def onPriorityMediumToggled(checked):
@@ -276,6 +277,7 @@ class NxProjectStates:
             dc.c.project.filters.priority.v.discard(4)
             dc.c.project.filters.priority.v.discard(5)
             dc.c.project.filters.priority.v.discard(6)
+        NxProjectList.reloadTable()
 
     @logger('NxProjectStates.onPriorityHighToggled(checked)', 'checked')
     def onPriorityHighToggled(checked):
@@ -287,6 +289,7 @@ class NxProjectStates:
             dc.c.project.filters.priority.v.discard(7)
             dc.c.project.filters.priority.v.discard(8)
             dc.c.project.filters.priority.v.discard(9)
+        NxProjectList.reloadTable()
 
     @logger('NxProjectStates.onChallengeLowToggled(checked)', 'checked')
     def onChallengeLowToggled(checked):
@@ -298,6 +301,7 @@ class NxProjectStates:
             dc.c.project.filters.challenge.v.discard(1)
             dc.c.project.filters.challenge.v.discard(2)
             dc.c.project.filters.challenge.v.discard(3)
+        NxProjectList.reloadTable()
 
     @logger('NxProjectStates.onChallengeMediumToggled(checked)', 'checked')
     def onChallengeMediumToggled(checked):
@@ -309,6 +313,7 @@ class NxProjectStates:
             dc.c.project.filters.challenge.v.discard(4)
             dc.c.project.filters.challenge.v.discard(5)
             dc.c.project.filters.challenge.v.discard(6)
+        NxProjectList.reloadTable()
 
     @logger('NxProjectStates.onChallengeHighToggled(checked)', 'checked')
     def onChallengeHighToggled(checked):
@@ -320,6 +325,7 @@ class NxProjectStates:
             dc.c.project.filters.challenge.v.discard(7)
             dc.c.project.filters.challenge.v.discard(8)
             dc.c.project.filters.challenge.v.discard(9)
+        NxProjectList.reloadTable()
 
     # Maximize / restore callback for infox maximization toggle.
 
@@ -503,7 +509,9 @@ class NxProjectList:
         # we don't select anything if we don't have rows
         rowcount = dc.x.project.model.v.rowCount()
         if rowcount <= 0:
+            NxProjectStates.disableEditCallbacks()
             NxProjectStates.applyStates(NxProjectStates.startup)
+            NxProjectStates.enableEditCallbacks()
             return
 
         # we don't have a selected project id (outside the filter or deleted)
@@ -515,6 +523,7 @@ class NxProjectList:
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
             selection = dc.x.project.view.v.selectionModel().selection()
+            NxProjectStates.applyStates(NxProjectStates.selected)
 
         # iterate through table rows
         for rowcnt in range(dc.x.project.model.v.rowCount()):
