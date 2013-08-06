@@ -85,8 +85,8 @@ class NxProjectStates:
         'line_project_name'     : {'clear': True},
         'cb_project_type'       : {'index': 0},
         'cb_project_category'   : {'index': 0},
-        'sb_project_priority'   : {'value': 0},
-        'sb_project_challenge'  : {'value': 0}
+        'sb_project_priority'   : {'value': 1},
+        'sb_project_challenge'  : {'value': 1}
     }
 
     # If the loaded configuration contains the path to a last saved document,
@@ -116,14 +116,13 @@ class NxProjectStates:
     # Clean edit widgets when creating new project (make sure to create the
     # project data structure before applying this) or you'll enjoy a trip to
     # errorland.
-
     new_project = {
         'line_selected_project' : {'text': 'Unnamed'},
         'line_project_name'     : {'text': 'Unnamed'},
         'cb_project_type'       : {'index': 0},
         'cb_project_category'   : {'index': 0},
-        'sb_project_priority'   : {'value': 0},
-        'sb_project_challenge'  : {'value': 0},
+        'sb_project_priority'   : {'value': 1},
+        'sb_project_challenge'  : {'value': 1},
         'text_project_info'     : {'clear': True}
     }
 
@@ -137,7 +136,6 @@ class NxProjectStates:
         'project_list': {'visible': True, 'enabled': True},
         'gl_info':      {'margins': (0, 0, 0, 0)}
     }
-
     description_maximized = {
         'project_meta': {'visible': False, 'enabled': True},
         'project_list': {'visible': False, 'enabled': True},
@@ -374,7 +372,6 @@ class NxProjectStates:
 class NxProjectList:
 
     # header labels for the project list table
-
     headers =  [
         'ID',
         'Name',
@@ -410,13 +407,11 @@ class NxProjectList:
     def saveLayout():
 
         # save header widths
-
         dc.c.project.header.width.v = list()
         for i in range(dc.x.project.model.v.columnCount()):
             dc.c.project.header.width.v.append(dc.x.project.view.v.columnWidth(i))
 
         # save sort column / order
-
         sort  = dc.x.project.horizontal_header.v.sortIndicatorSection()
         order = dc.x.project.horizontal_header.v.sortIndicatorOrder().__repr__()
         dc.c.project.sort.column.v = sort
@@ -426,17 +421,36 @@ class NxProjectList:
     def loadLayout():
 
         # load header widths
-
         for i,v in enumerate(dc.c.project.header.width.v):
             dc.x.project.view.v.setColumnWidth(i, v)
 
         # load sorting
-
         if dc.c.project.sort.column.v:
             dc.x.project.horizontal_header.v.setSortIndicator(
                 dc.c.project.sort.column.v, convert(dc.c.project.sort.order.v))
 
+    # used in with setTableValue
+    colPid       = 0
+    colName      = 1
+    colType      = 2
+    colVersion   = 3
+    colCategory  = 4
+    colPritoriy  = 5
+    colChallenge = 6
+    colModified  = 7
+    colCreated   = 8
 
+    # This sets a cell value in the currently selected project.
+    # Don't feed this method anything 'non-string' as value, or it will throw
+    # segmentation faults at you!
+
+    @logger('NxProject.setTableValue(col, value)', 'col', 'value')
+    def setTableValue(col, value):
+        row = dc.x.project.selection_model.v.currentIndex().row()
+        if row > -1:
+            dc.x.project.model.v.setItem(row, col, QStandardItem(value))
+        else:
+            log('NO ROW')
 
     @logger('NxProjectList.reloadTable(toggled=False)')
     def reloadTable(toggled=False):
@@ -444,7 +458,6 @@ class NxProjectList:
         NxProjectList.saveLayout()
 
         # clear table
-
         NxProjectStates.disableSelectionCallback()
         dc.x.project.model.v.clear()
         dc.x.project.selection_model.v.reset()
@@ -457,7 +470,6 @@ class NxProjectList:
         for pid in dc.s.index.pid.v:
 
             # skip to next for filtered out entries
-
             if dc.s._(pid).priority.v not in dc.c.project.filters.priority.v:
                 dc.spid.v = 0
                 dc.sp = None
@@ -468,7 +480,6 @@ class NxProjectList:
                 continue
 
             # add pid to table
-
             major, minor = dc.s._(pid).m.active.v
             dc.x.project.model.v.insertRow(0, [
                 QStandardItem(str(pid).zfill(4)),
@@ -531,8 +542,8 @@ class NxProject(QObject):
 
         # These are used in the project states callbacks for the filter buttons
         # and the reloadTable method in the table list.
-        dc.c.project.filters.priority.v = set()
-        dc.c.project.filters.challenge.v = set()
+        dc.c.project.filters.priority.v = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        dc.c.project.filters.challenge.v = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
         # apply state (enable/dissable widgets)
         dc.spid.v = 0
@@ -555,11 +566,10 @@ class NxProject(QObject):
         timestamp = int(time.time())
         dc.sp.modified.v = timestamp
         dc.r.changed.v = True
-        NxProjectList.reloadTable()
+        NxProjectList.setTableValue(NxProjectList.colModified, convert(timestamp))
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Callbacks for selected project edit fields
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # The following callbacks are used when currently selected project
+    # attributes are changed in the left hand pane.
 
     @logger('NxProject.onProjectNameChanged(self, name)', 'self', 'name')
     def onProjectNameChanged(self, name):
@@ -567,18 +577,14 @@ class NxProject(QObject):
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
         self.touchProject()
-        # Setting the project cell individually sometimes stops working for no
-        # apparent reason. Reloading the table each time fixes the issue.
-        NxProjectList.reloadTable()
-
+        NxProjectList.setTableValue(NxProjectList.colName, name)
 
     @logger('NxProject.onProjectTypeChanged(self, ptype)', 'self', 'ptype')
     def onProjectTypeChanged(self, ptype):
 
         dc.sp.ptype.v = ptype
         self.touchProject()
-        NxProjectList.reloadTable()
-
+        NxProjectList.setTableValue(NxProjectList.colType, ptype)
 
     @logger('NxProject.onProjectCategoryChanged(self, category)',
             'self', 'category')
@@ -586,8 +592,7 @@ class NxProject(QObject):
 
         dc.sp.category.v = category
         self.touchProject()
-        NxProjectList.reloadTable()
-
+        NxProjectList.setTableValue(NxProjectList.colCategory, category)
 
     @logger('NxProject.onProjectPriorityChanged(self, priority)',
             'self', 'priority')
@@ -595,8 +600,7 @@ class NxProject(QObject):
 
         dc.sp.priority.v = priority
         self.touchProject()
-        NxProjectList.reloadTable()
-
+        NxProjectList.setTableValue(NxProjectList.colPritoriy, str(priority))
 
     @logger('NxProject.onProjectChallengeChanged(self, challenge)',
             'self', 'challenge')
@@ -604,8 +608,7 @@ class NxProject(QObject):
 
         dc.sp.challenge.v = challenge
         self.touchProject()
-        NxProjectList.reloadTable()
-
+        NxProjectList.setTableValue(NxProjectList.colChallenge, str(challenge))
 
     @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
     def onProjectDescriptionChanged(self):
@@ -615,7 +618,7 @@ class NxProject(QObject):
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    # Create a new blanko project
+    # Create a new project
 
     @logger('NxProject.onNewProjectClicked(self)', 'self')
     def onNewProjectClicked(self):
@@ -630,6 +633,16 @@ class NxProject(QObject):
         dc.spid.v = pid
         dc.sp = dc.s._(pid)
 
+        # init milestone control data
+        mistctrl.mistctrl_new_tree()
+
+        # set priority
+        dc.sp.priority.v  = 1
+        dc.sp.challenge.v = 1
+        dc.sp.name.v = 'Unnamed'
+        dc.sp.ptype.v = 'Application'
+        dc.sp.category.v = 'Development'
+
         # init project attributes
         dc.sp.created.v     = timestamp
         dc.sp.modified.v    = timestamp
@@ -640,11 +653,9 @@ class NxProject(QObject):
         # init log control data
         dc.sp.nextlid.v     = 1
 
-        # init milestone control data
-        mistctrl.mistctrl_new_tree()
-
         # set state
         NxProjectStates.applyStates(NxProjectStates.selected)
+        NxProjectList.reloadTable()
 
 '''
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
