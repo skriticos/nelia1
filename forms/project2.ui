@@ -30,7 +30,7 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QWidget#action_bg_outer {
-	background-color:#333333;
+	background-color:#3f3e3a;
 }
 QGroupBox{
 	color:lightgray;
