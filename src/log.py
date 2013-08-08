@@ -10,6 +10,43 @@ from datacore import *
 
 class NxLogStates:
 
+    description_normal = {
+        'log_meta':       {'visible': True, 'enabled': True},
+        'group_log_list': {'visible': True, 'enabled': True},
+        'gl_info':        {'margins': (0, 0, 0, 0)}
+    }
+    description_maximized = {
+        'log_meta':       {'visible': False, 'enabled': True},
+        'group_log_list': {'visible': False, 'enabled': True},
+        'gl_info':        {'margins': (0, 10, 15, 0)}
+    }
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # copy of NxProjectStates.applyStates
+
+    @logger('NxProjectStates.applyStates(states)', 'states')
+    def applyStates(states):
+
+        # loop through controls (widgets)
+        for control, state in states.items():
+
+            # loop through state attributes
+            pd = dc.ui.log.v.__dict__
+            if 'enabled' in state:
+                pd[control].setEnabled(state['enabled'])
+            if 'visible' in state:
+                pd[control].setVisible(state['visible'])
+            if 'margins' in state:
+                pd[control].setContentsMargins(*state['margins'])
+            if 'text' in state:
+                pd[control].setText(state['text'])
+            if 'clear' in state:
+                pd[control].clear()
+            if 'index' in state:
+                pd[control].setCurrentIndex(state['index'])
+            if 'value' in state:
+                pd[control].setValue(state['value'])
+
     @logger('NxLogStates.enableAllCallbacks()')
     def enableAllCallbacks():
 
@@ -17,6 +54,9 @@ class NxLogStates:
         w = dc.ui.log.v
         w.btn_show_roadmap          .clicked.connect(NxLogStates.onShowRoadmap)
         w.btn_show_project          .clicked.connect(NxLogStates.onShowProject)
+
+        w, s = dc.ui.log.v, NxLogStates
+        w.btn_log_maximize          .toggled.connect(s.onLogMaxToggled)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Called when view changes to log.
@@ -28,6 +68,15 @@ class NxLogStates:
     def onShown():
         log('STUB NxLogStates.onShown()')
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Maximize / restore callback for infox maximization toggle.
+
+    @logger('NxLog.onInfoMaxToggled(state)', 'state')
+    def onLogMaxToggled(state):
+        if state:
+            NxLogStates.applyStates(NxLogStates.description_maximized)
+        else:
+            NxLogStates.applyStates(NxLogStates.description_normal)
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # switch to roadmap or project
 

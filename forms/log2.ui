@@ -308,7 +308,7 @@ height:1px;</string>
          <property name="title">
           <string>Selected Log Entry</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_8">
+         <layout class="QGridLayout" name="gl_info">
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -325,7 +325,7 @@ height:1px;</string>
            <number>0</number>
           </property>
           <item row="0" column="0">
-           <widget class="QGroupBox" name="group_meta">
+           <widget class="QGroupBox" name="log_meta">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -420,10 +420,7 @@ height:1px;</string>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QGroupBox" name="group_log_message">
-            <property name="title">
-             <string>Log &amp;Message</string>
-            </property>
+           <widget class="QWidget" name="group_log_message" native="true">
             <layout class="QGridLayout" name="gridLayout_7">
              <property name="margin">
               <number>0</number>
@@ -431,7 +428,7 @@ height:1px;</string>
              <property name="spacing">
               <number>0</number>
              </property>
-             <item row="0" column="0">
+             <item row="0" column="1">
               <spacer name="horizontalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -444,7 +441,7 @@ height:1px;</string>
                </property>
               </spacer>
              </item>
-             <item row="0" column="1">
+             <item row="0" column="2">
               <widget class="QToolButton" name="btn_log_maximize">
                <property name="font">
                 <font>
@@ -459,7 +456,14 @@ height:1px;</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="0" colspan="2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Log Message:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="3">
               <widget class="QTextEdit" name="text_log_message"/>
              </item>
             </layout>
