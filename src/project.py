@@ -679,6 +679,7 @@ class NxProject(QObject):
         # set state
         NxProjectStates.applyStates(NxProjectStates.selected)
         NxProjectList.reloadTable()
+        dc.ui.project.v.line_project_name.setFocus()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Delete selected project
