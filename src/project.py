@@ -142,6 +142,7 @@ class NxProjectStates:
         'gl_info':      {'margins': (0, 0, 15, 0)}
     }
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # So the states that I defined above, this method takes a set and applies
     # them to the project widgets. The following states are handled:
     #
@@ -176,6 +177,7 @@ class NxProjectStates:
             if 'value' in state:
                 pd[control].setValue(state['value'])
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Callbacks! All of them. The en/disable selection callbacks apply to the
     # selection change in the project list table. This is used in the
     # reloadTable method when crearing the table. We don't want stray callbacks
@@ -193,6 +195,7 @@ class NxProjectStates:
         m = dc.x.project.selection_model.v
         m.selectionChanged.disconnect(NxProjectStates.onSelectionChanged)
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # More callbacks! The edit control callbacks are switched off when a new
     # project is selected in the project table. This is reqired to avoid
     # infinite loops and gremlins eating the application.
@@ -221,6 +224,7 @@ class NxProjectStates:
         w.sb_project_challenge.valueChanged[int]        .disconnect(m.onProjectChallengeChanged)
         w.text_project_info.textChanged                 .disconnect(m.onProjectDescriptionChanged)
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # This one enables all callbacks (including the above ones) and is used at
     # startup.
 
@@ -230,6 +234,7 @@ class NxProjectStates:
         # menu callbacks
         w, m = dc.ui.project.v, dc.m.project.v
         w.btn_project_new           .clicked.connect(m.onNewProjectClicked)
+        w.btn_project_delete        .clicked.connect(m.onDeleteSelectedProject)
 
         # filter callbacks
         w, s = dc.ui.project.v, NxProjectStates
@@ -249,7 +254,8 @@ class NxProjectStates:
         NxProjectStates.enableEditCallbacks()
         NxProjectStates.enableSelectionCallback()
 
-    # More callbacks! This time, it's the onFoo..() callback slot
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Even more callbacks! This time, it's the onFoo..() callback slot
     # implementations.
 
     # We begin with the project list table filter callbacks. These update the
@@ -336,6 +342,7 @@ class NxProjectStates:
         else:
             NxProjectStates.applyStates(NxProjectStates.description_normal)
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Sort by modification date when control is clicked.
 
     @logger('NxProject.onSortProjectList()')
@@ -344,6 +351,7 @@ class NxProjectStates:
                     NxProjectList.colModified,
                     PySide.QtCore.Qt.SortOrder.DescendingOrder)
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Selected project changed -> update selected project edit controls and
     # selected project label. Update selected project runtime data.
 
@@ -404,6 +412,7 @@ class NxProjectList:
         dc.x.project.selection_model.v   = dc.x.project.view.v.selectionModel()
         dc.x.project.horizontal_header.v = dc.x.project.view.v.horizontalHeader()
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # The next two methods save/load the current layout to/from the datacore
     # configuration section (dc.c.project..). This is not writing the
     # configuration to the file though, just stores it in datacore so that
@@ -435,6 +444,7 @@ class NxProjectList:
             dc.x.project.horizontal_header.v.setSortIndicator(
                 dc.c.project.sort.column.v, convert(dc.c.project.sort.order.v))
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # used in with setTableValue
     colPid       = 0
     colName      = 1
@@ -456,8 +466,10 @@ class NxProjectList:
         if row > -1:
             dc.x.project.model.v.setItem(row, col, QStandardItem(value))
         else:
+            # Famous last words: this should never happen
             log('NO ROW')
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('NxProjectList.reloadTable(toggled=False)')
     def reloadTable(toggled=False):
 
@@ -565,6 +577,7 @@ class NxProject(QObject):
 
         NxProjectStates.enableAllCallbacks()
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the
     # changed value. This is called by all persistent data operations of the
     # document.
@@ -577,6 +590,7 @@ class NxProject(QObject):
         dc.r.changed.v = True
         NxProjectList.setTableValue(NxProjectList.colModified, convert(timestamp))
 
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # The following callbacks are used when currently selected project
     # attributes are changed in the left hand pane.
 
@@ -664,6 +678,30 @@ class NxProject(QObject):
 
         # set state
         NxProjectStates.applyStates(NxProjectStates.selected)
+        NxProjectList.reloadTable()
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Delete selected project
+
+    @logger('NxProject.onDeleteSelectedProject(self)', 'self')
+    def onDeleteSelectedProject(self):
+
+        # are you sure? dialog
+        t = 'Delete project?'
+        q = 'Sure you want to delete project {}: {}?'\
+                .format(str(dc.spid.v), dc.sp.name.v)
+        yes, no = QMessageBox.Yes, QMessageBox.No
+        response = QMessageBox.question(dc.ui.project.v, t, q, yes|no)
+        if response == QMessageBox.StandardButton.No:
+            return
+
+        # remove project from index
+        dc.s.index.pid.v.remove(dc.spid.v)
+        del dc.s.__dict__['_{}'.format(dc.spid.v)]
+        dc.spid.v = 0
+
+        # state
+        dc.r.changed.v = True
         NxProjectList.reloadTable()
 
 '''
