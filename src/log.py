@@ -5,12 +5,62 @@ import time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from datacore import *
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class NxLogStates:
+
+    @logger('NxLogStates.enableAllCallbacks()')
+    def enableAllCallbacks():
+
+        # navi callbacks
+        w = dc.ui.log.v
+        w.btn_show_roadmap          .clicked.connect(NxLogStates.onShowRoadmap)
+        w.btn_show_project          .clicked.connect(NxLogStates.onShowProject)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Called when view changes to log.
+    # 1. Check if pid changed since last state --(no)--> return
+    # 2. reload table
+    # 3. set state
+
+    @logger('NxLogStates.onShown()')
+    def onShown():
+        log('STUB NxLogStates.onShown()')
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # switch to roadmap or project
+
+    @logger('NxProjectStates.onShowLogs()')
+    def onShowRoadmap():
+        dc.ui.log.v.setParent(dc.m.mainwindow.v)
+        dc.m.roadmap.states.v.onShown()
+        dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
+
+    @logger('NxProjectStates.onShowProject()')
+    def onShowProject():
+        dc.ui.log.v.setParent(dc.m.mainwindow.v)
+        dc.ui.main.v.setCentralWidget(dc.ui.project.v)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 headers = ['ID', 'Created', 'Summary']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
+
     @logger('NxLog.__init__(self)', 'self')
     def __init__(self):
+
+        dc.m.log.v = self
+        dc.m.log.states.v = NxLogStates
+
+
+        NxLogStates.enableAllCallbacks()
+
+'''
+
+
         self.view = dc.ui.log.v.table_history
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(headers)
@@ -107,4 +157,5 @@ class NxLog:
         self.reloadTable()
         self.view.setFocus()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+'''
 

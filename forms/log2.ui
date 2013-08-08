@@ -201,14 +201,14 @@ QPushButton:disabled{
              <number>3</number>
             </property>
             <item row="0" column="1">
-             <widget class="QPushButton" name="btn_roadmap">
+             <widget class="QPushButton" name="btn_show_roadmap">
               <property name="text">
                <string>&amp;Roadmap</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QPushButton" name="btn_project_list">
+             <widget class="QPushButton" name="btn_show_project">
               <property name="text">
                <string>&amp;Project List</string>
               </property>
@@ -396,6 +396,19 @@ height:1px;</string>
                </property>
               </widget>
              </item>
+             <item row="1" column="2">
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
             </layout>
             <zorder>lbl_log_type</zorder>
             <zorder>label_4</zorder>
@@ -403,6 +416,7 @@ height:1px;</string>
             <zorder>label_7</zorder>
             <zorder>lbl_log_modified</zorder>
             <zorder>label_2</zorder>
+            <zorder>horizontalSpacer</zorder>
            </widget>
           </item>
           <item row="1" column="0">
@@ -567,8 +581,8 @@ height:1px;</string>
  <tabstops>
   <tabstop>btn_log_new</tabstop>
   <tabstop>btn_log_delete</tabstop>
-  <tabstop>btn_project_list</tabstop>
-  <tabstop>btn_roadmap</tabstop>
+  <tabstop>btn_show_project</tabstop>
+  <tabstop>btn_show_roadmap</tabstop>
   <tabstop>btn_log_maximize</tabstop>
   <tabstop>text_log_message</tabstop>
   <tabstop>btn_log_user</tabstop>

@@ -14,8 +14,12 @@ from roadmap import NxRoadmap
 # roadmap widget as central widget as needed (initializing them) and handles
 # global callbacks (close).
 # run -> mainwindow -> [project, log, roadmap]
+#
+# This is also a widget, but only to keep a referece on hidden widgets (e.g.
+# when log is shown, project and roadmap get this widget as parent while log is
+# getting the central widget.
 
-class MainWindow():
+class MainWindow(QWidget):
 
     # Initialize main window. Load child widgets and stuff them into the
     # datacore. Initialize the GUI. Call child widget controls (project, log,
@@ -23,6 +27,10 @@ class MainWindow():
 
     @logger('MainWindow.__init__(self)', 'self')
     def __init__(self):
+
+        super(MainWindow, self).__init__()
+
+        dc.m.mainwindow.v = self
 
         # load ui
         loader = QtUiTools.QUiLoader()
@@ -48,6 +56,8 @@ class MainWindow():
 
         # load child widget control classes
         NxProject()
+        NxLog()
+        NxRoadmap()
 
         # initialize global shortcuts
         for keys, target in [('Ctrl+w', dc.ui.main.v.close),

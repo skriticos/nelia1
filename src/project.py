@@ -236,6 +236,11 @@ class NxProjectStates:
         w.btn_project_new           .clicked.connect(m.onNewProjectClicked)
         w.btn_project_delete        .clicked.connect(m.onDeleteSelectedProject)
 
+        # navi callbacks
+        w, m = dc.ui.project.v, dc.m.project.v
+        w.btn_show_logs             .clicked.connect(NxProjectStates.onShowLogs)
+        w.btn_show_roadmap          .clicked.connect(NxProjectStates.onShowRoadmap)
+
         # filter callbacks
         w, s = dc.ui.project.v, NxProjectStates
         w.btn_prio_low          .toggled.connect(s.onPriorityLowToggled)
@@ -380,6 +385,28 @@ class NxProjectStates:
                 dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
         dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
         NxProjectStates.enableEditCallbacks()
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # switch to log and roadmap views
+    # I have decided to load the project logs / roadmap only when navigating to
+    # these widgets instead of real-time during selection change to avoid
+    # latency with larger entries.
+
+    # we need to keep a Qt reference around for dc.ui.project when setting a
+    # different central widget, otherwise bad things happen. We do this by
+    # setting it's parent as the invisible mainwindow object.
+
+    @logger('NxProjectStates.onShowLogs()')
+    def onShowLogs():
+        dc.ui.project.v.setParent(dc.m.mainwindow.v)
+        dc.m.log.states.v.onShown()
+        dc.ui.main.v.setCentralWidget(dc.ui.log.v)
+
+    @logger('NxProjectStates.onShowRoadmap()')
+    def onShowRoadmap():
+        dc.ui.project.v.setParent(dc.m.mainwindow.v)
+        dc.m.roadmap.states.v.onShown()
+        dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -560,6 +587,8 @@ class NxProject(QObject):
     def __init__(self):
 
         dc.m.project.v = self
+        dc.m.project.states.v = NxProjectStates
+        dc.m.project.table.v = NxProjectList
 
         # These are used in the project states callbacks for the filter buttons
         # and the reloadTable method in the table list.

@@ -7,6 +7,43 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 from mpushbutton import MPushButton
 from datacore import *
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class NxRoadmapStates:
+
+    @logger('NxRoadmapStates.enableAllCallbacks()')
+    def enableAllCallbacks():
+
+        # navi callbacks
+        w = dc.ui.roadmap.v
+        w.btn_show_logs             .clicked.connect(NxRoadmapStates.onShowLogs)
+        w.btn_show_project          .clicked.connect(NxRoadmapStates.onShowProject)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Called when view changes to roadmap.
+    # 1. Check if pid changed since last state --(no)--> return
+    # 2. reload table
+    # 3. set state
+
+    @logger('NxRoadmapStates.onShown()')
+    def onShown():
+        log('STUB NxRoadmapStates.onShown()')
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # switch to log and project views
+
+    @logger('NxProjectStates.onShowLogs()')
+    def onShowLogs():
+        dc.ui.roadmap.v.setParent(dc.m.mainwindow.v)
+        dc.m.log.states.v.onShown()
+        dc.ui.main.v.setCentralWidget(dc.ui.log.v)
+
+    @logger('NxProjectStates.onShowProject()')
+    def onShowProject():
+        dc.ui.roadmap.v.setParent(dc.m.mainwindow.v)
+        dc.ui.main.v.setCentralWidget(dc.ui.project.v)
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 filters = [
     'feature', 'issue', 'open', 'closed', 'low', 'medium', 'high',
@@ -15,9 +52,19 @@ headers = [
     'ID', 'Name', 'Type', 'Status', 'Category', 'Priority',
     'Created', 'Modified']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class NxRoadmap:
+
     @logger('NxRoadmap.__init__(self)', 'self')
     def __init__(self):
+
+        dc.m.roadmap.v = self
+        dc.m.roadmap.states.v = NxRoadmapStates
+
+        NxRoadmapStates.enableAllCallbacks()
+
+'''
+
         self.init = True
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(headers)
@@ -426,3 +473,4 @@ class NxRoadmap:
             d.label_3.setBuddy(d.push_target)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+'''
