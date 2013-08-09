@@ -1,24 +1,23 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-import signal, os, time, PySide
+
+import signal
+import os
+import time
+
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+
 from datacore import *
 from common import *
+
 from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# The MainWindow is the.. well main window. It packs the project, log and
-# roadmap widget as central widget as needed (initializing them) and handles
-# global callbacks (close).
-# run -> mainwindow -> [project, log, roadmap]
-#
-# This is also a widget, but only to keep a referece on hidden widgets (e.g.
-# when log is shown, project and roadmap get this widget as parent while log is
-# getting the central widget.
 
 class MainWindow(QWidget):
 
@@ -34,40 +33,6 @@ class MainWindow(QWidget):
         dc.m.mainwindow.v = self
 
         # load ui
-        loader = QtUiTools.QUiLoader()
-        for name, fname in (
-            ('project', 'forms/project2.ui'),
-            ('log',     'forms/log2.ui'),
-            ('roadmap', 'forms/roadmap2.ui')):
-            f = QFile(fname)
-            f.open(QFile.ReadOnly)
-            dc.ui._(name).v = loader.load(f)
-            f.close()
-        loader.deleteLater()
-
-        # create main window and set project as initial central widget
-        dc.ui.main.v = QMainWindow()
-        dc.ui.main.v.setWindowTitle('Nelia1')
-        dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
-        dc.ui.main.v.setGeometry(100,100,800,600)
-        dc.ui.main.v.setCentralWidget(dc.ui.project.v)
-
-        # load configuration
-        dcloadconfig()
-
-        # load child widget control classes
-        NxProject()
-        NxLog()
-        NxRoadmap()
-
-        # initialize global shortcuts
-        for keys, target in [('Ctrl+w', dc.ui.main.v.close),
-                             ('Ctrl+m', logMarker)]:
-            shortcut = QShortcut(QKeySequence(keys), dc.ui.main.v)
-            shortcut.activated.connect(target)
-
-        # show widget and give back control to run to initialize main loop
-        dc.ui.main.v.show()
 
         """
         dc.m.main.v    = self

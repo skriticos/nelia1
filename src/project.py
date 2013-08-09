@@ -312,21 +312,17 @@ def onSelectionChanged(new, old):
 # switch to log and roadmap views
 # I have decided to load the project logs / roadmap only when navigating to
 # these widgets instead of real-time during selection change to avoid
-# latency with larger entries.
-
-# we need to keep a Qt reference around for dc.ui.project when setting a
-# different central widget, otherwise bad things happen. We do this by
-# setting it's parent as the invisible mainwindow object.
+# latency with larger entries. setParent(None) prevents a segfault.
 
 @logger('onShowLogs()')
 def onShowLogs():
-    dc.ui.project.v.setParent(dc.m.mainwindow.v)
+    dc.ui.project.v.setParent(None)
     dc.m.log.states.v.onShown()
     dc.ui.main.v.setCentralWidget(dc.ui.log.v)
 
 @logger('onShowRoadmap()')
 def onShowRoadmap():
-    dc.ui.project.v.setParent(dc.m.mainwindow.v)
+    dc.ui.project.v.setParent(None)
     dc.m.roadmap.states.v.onShown()
     dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
@@ -484,7 +480,7 @@ class projectlist:
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
             selection = dc.x.project.view.v.selectionModel().selection()
-            applyStates(states.selected)
+            applyStates(states.selected, dc.ui.project.v)
 
         # iterate through table rows
         for rowcnt in range(dc.x.project.model.v.rowCount()):
@@ -500,7 +496,7 @@ class projectlist:
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class NxProject(QObject):
+class NxProject():
 
     # Init class. Not much to see here. Just set some starting values, apply
     # state and enable
