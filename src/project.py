@@ -7,7 +7,7 @@
 #
 # There are a few unility classes in this file that isolate specific tasks:
 #
-#   NxProjectStates
+#   NxProjectCallbacks
 #
 #       Wouldn't you know it, this manages the project states. This includes the
 #       visible/enabled states of the user controls and everything that's about
@@ -59,18 +59,23 @@ import time
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+from common import *
 from datacore import *
 import mistctrl                       # milestone control module for new project
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# We start with the declaration of the widget states.
+# These are applield with the applyStates method from the common module.
+# applyStates(states.startup, dc.ui.project.v)
 
-class NxProjectStates:
+class states: pass
+dc.m.project.states.v = states
 
-    # Did I mention that the names I come up with are a bit vague sometimes? So
-    # this is the startup state. The state is set on startup.. and on load
-    # documnt.. and on last project delete.
+# Did I mention that the names I come up with are a bit vague sometimes? So this
+# is the startup state. The state is set on startup.. and on load documnt.. and
+# on last project delete.
 
-    startup = {
+states.startup = {
         'btn_doc_new'           : {'visible': True, 'enabled': False},
         'btn_doc_open'          : {'visible': True, 'enabled': True},
         'btn_doc_open_last'     : {'visible': True, 'enabled': False},
@@ -89,118 +94,86 @@ class NxProjectStates:
         'sb_project_challenge'  : {'value': 1}
     }
 
-    # If the loaded configuration contains the path to a last saved document,
-    # enable this control. Sub-state to startup. Is disaled once a project is
-    # selected. This is a substate of startup.
+# If the loaded configuration contains the path to a last saved document, enable
+# this control. Sub-state to startup. Is disaled once a project is selected.
+# This is a substate of startup.
 
-    last = {
-        'btn_doc_open_last'     : {'visible': True, 'enabled': True},
-    }
+states.last = {
+    'btn_doc_open_last'     : {'visible': True, 'enabled': True},
+}
 
-    # Once a project is created or a document is loaded (wich implies a selected
-    # project), the project controls are enabled and the document can be saved.
+# Once a project is created or a document is loaded (wich implies a selected
+# project), the project controls are enabled and the document can be saved.
 
-    selected = {
-        'btn_doc_new'           : {'visible': True, 'enabled': True},
-        'btn_doc_open'          : {'visible': True, 'enabled': True},
-        'btn_doc_open_last'     : {'visible': True, 'enabled': False},
-        'btn_doc_save_as'       : {'visible': True, 'enabled': True},
-        'btn_project_delete'    : {'visible': True, 'enabled': True},
-        'btn_project_new'       : {'visible': True, 'enabled': True},
-        'btn_show_roadmap'      : {'visible': True, 'enabled': True},
-        'btn_show_logs'         : {'visible': True, 'enabled': True},
-        'tbl_project_list'      : {'visible': True, 'enabled': True},
-        'selected_project_group': {'visible': True, 'enabled': True}
-    }
+states.selected = {
+    'btn_doc_new'           : {'visible': True, 'enabled': True},
+    'btn_doc_open'          : {'visible': True, 'enabled': True},
+    'btn_doc_open_last'     : {'visible': True, 'enabled': False},
+    'btn_doc_save_as'       : {'visible': True, 'enabled': True},
+    'btn_project_delete'    : {'visible': True, 'enabled': True},
+    'btn_project_new'       : {'visible': True, 'enabled': True},
+    'btn_show_roadmap'      : {'visible': True, 'enabled': True},
+    'btn_show_logs'         : {'visible': True, 'enabled': True},
+    'tbl_project_list'      : {'visible': True, 'enabled': True},
+    'selected_project_group': {'visible': True, 'enabled': True}
+}
 
-    # Clean edit widgets when creating new project (make sure to create the
-    # project data structure before applying this) or you'll enjoy a trip to
-    # errorland.
-    new_project = {
-        'line_selected_project' : {'text': 'Unnamed'},
-        'line_project_name'     : {'text': 'Unnamed'},
-        'cb_project_type'       : {'index': 0},
-        'cb_project_category'   : {'index': 0},
-        'sb_project_priority'   : {'value': 1},
-        'sb_project_challenge'  : {'value': 1},
-        'text_project_info'     : {'clear': True}
-    }
+# Clean edit widgets when creating new project (make sure to create the project
+# data structure before applying this) or you'll enjoy a trip to errorland.
 
-    # There is a maximize toggle button on top of the selected project
-    # description text box. The following two states switch between normal and
-    # maximized for this widget (by hiding the project list and the edit
-    # widgets)
+states.new_project = {
+    'line_selected_project' : {'text': 'Unnamed'},
+    'line_project_name'     : {'text': 'Unnamed'},
+    'cb_project_type'       : {'index': 0},
+    'cb_project_category'   : {'index': 0},
+    'sb_project_priority'   : {'value': 1},
+    'sb_project_challenge'  : {'value': 1},
+    'text_project_info'     : {'clear': True}
+}
 
-    description_normal = {
-        'project_meta': {'visible': True, 'enabled': True},
-        'project_list': {'visible': True, 'enabled': True},
-        'gl_info':      {'margins': (0, 0, 0, 0)}
-    }
-    description_maximized = {
-        'project_meta': {'visible': False, 'enabled': True},
-        'project_list': {'visible': False, 'enabled': True},
-        'gl_info':      {'margins': (0, 0, 15, 0)}
-    }
+# There is a maximize toggle button on top of the selected project description
+# text box. The following two states switch between normal and maximized for
+# this widget (by hiding the project list and the edit widgets)
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # So the states that I defined above, this method takes a set and applies
-    # them to the project widgets. The following states are handled:
-    #
-    #   enabled: en/disable widget, bool
-    #   visible: show/hide wiget, bool
-    #   margins: set margins (n,n,n,n)
-    #   text: set text (for input boxes and labels)
-    #   clear: clear widget
-    #   index: set index for comboboxes
-    #   value: set value for spinboxes
+states.description_normal = {
+    'project_meta': {'visible': True, 'enabled': True},
+    'project_list': {'visible': True, 'enabled': True},
+    'gl_info':      {'margins': (0, 0, 0, 0)}
+}
+states.description_maximized = {
+    'project_meta': {'visible': False, 'enabled': True},
+    'project_list': {'visible': False, 'enabled': True},
+    'gl_info':      {'margins': (0, 0, 15, 0)}
+}
 
-    @logger('NxProjectStates.applyStates(states)', 'states')
-    def applyStates(states):
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Mostly GUI callback declarations and control.
 
-        # loop through controls (widgets)
-        for control, state in states.items():
+class NxProjectCallbacks:
 
-            # loop through state attributes
-            pd = dc.ui.project.v.__dict__
-            if 'enabled' in state:
-                pd[control].setEnabled(state['enabled'])
-            if 'visible' in state:
-                pd[control].setVisible(state['visible'])
-            if 'margins' in state:
-                pd[control].setContentsMargins(*state['margins'])
-            if 'text' in state:
-                pd[control].setText(state['text'])
-            if 'clear' in state:
-                pd[control].clear()
-            if 'index' in state:
-                pd[control].setCurrentIndex(state['index'])
-            if 'value' in state:
-                pd[control].setValue(state['value'])
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Callbacks! All of them. The en/disable selection callbacks apply to the
     # selection change in the project list table. This is used in the
     # reloadTable method when crearing the table. We don't want stray callbacks
     # messing up things, do we?
 
-    @logger('NxProjectStates.enableSelectionCallback()')
+    @logger('NxProjectCallbacks.enableSelectionCallback()')
     def enableSelectionCallback():
 
         m = dc.x.project.selection_model.v
-        m.selectionChanged.connect(NxProjectStates.onSelectionChanged)
+        m.selectionChanged.connect(NxProjectCallbacks.onSelectionChanged)
 
-    @logger('NxProjectStates.disableSelectionCallback()')
+    @logger('NxProjectCallbacks.disableSelectionCallback()')
     def disableSelectionCallback():
 
         m = dc.x.project.selection_model.v
-        m.selectionChanged.disconnect(NxProjectStates.onSelectionChanged)
+        m.selectionChanged.disconnect(NxProjectCallbacks.onSelectionChanged)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # More callbacks! The edit control callbacks are switched off when a new
     # project is selected in the project table. This is reqired to avoid
     # infinite loops and gremlins eating the application.
 
-    @logger('NxProjectStates.enableEditCallbacks()')
+    @logger('NxProjectCallbacks.enableEditCallbacks()')
     def enableEditCallbacks():
 
         # edit callbacks
@@ -212,7 +185,7 @@ class NxProjectStates:
         w.sb_project_challenge.valueChanged[int]        .connect(m.onProjectChallengeChanged)
         w.text_project_info.textChanged                 .connect(m.onProjectDescriptionChanged)
 
-    @logger('NxProjectStates.disableEditCallbacks()')
+    @logger('NxProjectCallbacks.disableEditCallbacks()')
     def disableEditCallbacks():
 
         # edit callbacks
@@ -228,7 +201,7 @@ class NxProjectStates:
     # This one enables all callbacks (including the above ones) and is used at
     # startup.
 
-    @logger('NxProjectStates.enableAllCallbacks()')
+    @logger('NxProjectCallbacks.enableAllCallbacks()')
     def enableAllCallbacks():
 
         # menu callbacks
@@ -238,11 +211,11 @@ class NxProjectStates:
 
         # navi callbacks
         w, m = dc.ui.project.v, dc.m.project.v
-        w.btn_show_logs             .clicked.connect(NxProjectStates.onShowLogs)
-        w.btn_show_roadmap          .clicked.connect(NxProjectStates.onShowRoadmap)
+        w.btn_show_logs             .clicked.connect(NxProjectCallbacks.onShowLogs)
+        w.btn_show_roadmap          .clicked.connect(NxProjectCallbacks.onShowRoadmap)
 
         # filter callbacks
-        w, s = dc.ui.project.v, NxProjectStates
+        w, s = dc.ui.project.v, NxProjectCallbacks
         w.btn_prio_low          .toggled.connect(s.onPriorityLowToggled)
         w.btn_prio_medium       .toggled.connect(s.onPriorityMediumToggled)
         w.btn_prio_high         .toggled.connect(s.onPriorityHighToggled)
@@ -251,13 +224,13 @@ class NxProjectStates:
         w.btn_challenge_hard    .toggled.connect(s.onChallengeHighToggled)
 
         # general gui callbacks
-        w, s = dc.ui.project.v, NxProjectStates
+        w, s = dc.ui.project.v, NxProjectCallbacks
         w.btn_info_max              .toggled.connect(s.onInfoMaxToggled)
         w.btn_project_sort_modified .clicked.connect(s.onSortProjectList)
 
         # edit / selection
-        NxProjectStates.enableEditCallbacks()
-        NxProjectStates.enableSelectionCallback()
+        NxProjectCallbacks.enableEditCallbacks()
+        NxProjectCallbacks.enableSelectionCallback()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Even more callbacks! This time, it's the onFoo..() callback slot
@@ -266,7 +239,7 @@ class NxProjectStates:
     # We begin with the project list table filter callbacks. These update the
     # filter sets in the datacore and call reloadTable to update the view.
 
-    @logger('NxProjectStates.onPriorityLowToggled(checked)', 'checked')
+    @logger('NxProjectCallbacks.onPriorityLowToggled(checked)', 'checked')
     def onPriorityLowToggled(checked):
         if checked:
             dc.c.project.filters.priority.v.add(1)
@@ -278,7 +251,7 @@ class NxProjectStates:
             dc.c.project.filters.priority.v.discard(3)
         NxProjectList.reloadTable()
 
-    @logger('NxProjectStates.onPriorityMediumToggled(checked)', 'checked')
+    @logger('NxProjectCallbacks.onPriorityMediumToggled(checked)', 'checked')
     def onPriorityMediumToggled(checked):
         if checked:
             dc.c.project.filters.priority.v.add(4)
@@ -290,7 +263,7 @@ class NxProjectStates:
             dc.c.project.filters.priority.v.discard(6)
         NxProjectList.reloadTable()
 
-    @logger('NxProjectStates.onPriorityHighToggled(checked)', 'checked')
+    @logger('NxProjectCallbacks.onPriorityHighToggled(checked)', 'checked')
     def onPriorityHighToggled(checked):
         if checked:
             dc.c.project.filters.priority.v.add(7)
@@ -302,7 +275,7 @@ class NxProjectStates:
             dc.c.project.filters.priority.v.discard(9)
         NxProjectList.reloadTable()
 
-    @logger('NxProjectStates.onChallengeLowToggled(checked)', 'checked')
+    @logger('NxProjectCallbacks.onChallengeLowToggled(checked)', 'checked')
     def onChallengeLowToggled(checked):
         if checked:
             dc.c.project.filters.challenge.v.add(1)
@@ -314,7 +287,7 @@ class NxProjectStates:
             dc.c.project.filters.challenge.v.discard(3)
         NxProjectList.reloadTable()
 
-    @logger('NxProjectStates.onChallengeMediumToggled(checked)', 'checked')
+    @logger('NxProjectCallbacks.onChallengeMediumToggled(checked)', 'checked')
     def onChallengeMediumToggled(checked):
         if checked:
             dc.c.project.filters.challenge.v.add(4)
@@ -326,7 +299,7 @@ class NxProjectStates:
             dc.c.project.filters.challenge.v.discard(6)
         NxProjectList.reloadTable()
 
-    @logger('NxProjectStates.onChallengeHighToggled(checked)', 'checked')
+    @logger('NxProjectCallbacks.onChallengeHighToggled(checked)', 'checked')
     def onChallengeHighToggled(checked):
         if checked:
             dc.c.project.filters.challenge.v.add(7)
@@ -343,9 +316,9 @@ class NxProjectStates:
     @logger('NxProject.onInfoMaxToggled(state)', 'state')
     def onInfoMaxToggled(state):
         if state:
-            NxProjectStates.applyStates(NxProjectStates.description_maximized)
+            applyStates(states.description_maximized, dc.ui.project.v)
         else:
-            NxProjectStates.applyStates(NxProjectStates.description_normal)
+            applyStates(states.description_normal, dc.ui.project.v)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Sort by modification date when control is clicked.
@@ -374,7 +347,7 @@ class NxProjectStates:
         dc.sp = dc.s._(dc.spid.v)
 
         # populate edit fields on selection change
-        NxProjectStates.disableEditCallbacks()
+        NxProjectCallbacks.disableEditCallbacks()
         dc.ui.project.v.line_project_name.setText(dc.sp.name.v)
         dc.ui.project.v.line_selected_project.setText(dc.sp.name.v)
         dc.ui.project.v.sb_project_priority.setValue(dc.sp.priority.v)
@@ -384,7 +357,7 @@ class NxProjectStates:
         dc.ui.project.v.cb_project_category.setCurrentIndex(
                 dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
         dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
-        NxProjectStates.enableEditCallbacks()
+        NxProjectCallbacks.enableEditCallbacks()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # switch to log and roadmap views
@@ -396,13 +369,13 @@ class NxProjectStates:
     # different central widget, otherwise bad things happen. We do this by
     # setting it's parent as the invisible mainwindow object.
 
-    @logger('NxProjectStates.onShowLogs()')
+    @logger('NxProjectCallbacks.onShowLogs()')
     def onShowLogs():
         dc.ui.project.v.setParent(dc.m.mainwindow.v)
         dc.m.log.states.v.onShown()
         dc.ui.main.v.setCentralWidget(dc.ui.log.v)
 
-    @logger('NxProjectStates.onShowRoadmap()')
+    @logger('NxProjectCallbacks.onShowRoadmap()')
     def onShowRoadmap():
         dc.ui.project.v.setParent(dc.m.mainwindow.v)
         dc.m.roadmap.states.v.onShown()
@@ -503,10 +476,10 @@ class NxProjectList:
         NxProjectList.saveLayout()
 
         # clear table
-        NxProjectStates.disableSelectionCallback()
+        NxProjectCallbacks.disableSelectionCallback()
         dc.x.project.model.v.clear()
         dc.x.project.selection_model.v.reset()
-        NxProjectStates.enableSelectionCallback()
+        NxProjectCallbacks.enableSelectionCallback()
         dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
 
         # populate table with projects (that are in filter selection)
@@ -548,9 +521,9 @@ class NxProjectList:
         # we don't select anything if we don't have rows
         rowcount = dc.x.project.model.v.rowCount()
         if rowcount <= 0:
-            NxProjectStates.disableEditCallbacks()
-            NxProjectStates.applyStates(NxProjectStates.startup)
-            NxProjectStates.enableEditCallbacks()
+            NxProjectCallbacks.disableEditCallbacks()
+            applyStates(states.startup, dc.ui.project.v)
+            NxProjectCallbacks.enableEditCallbacks()
             return
 
         # we don't have a selected project id (outside the filter or deleted)
@@ -562,7 +535,7 @@ class NxProjectList:
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
             selection = dc.x.project.view.v.selectionModel().selection()
-            NxProjectStates.applyStates(NxProjectStates.selected)
+            applyStates(states.selected)
 
         # iterate through table rows
         for rowcnt in range(dc.x.project.model.v.rowCount()):
@@ -587,7 +560,7 @@ class NxProject(QObject):
     def __init__(self):
 
         dc.m.project.v = self
-        dc.m.project.states.v = NxProjectStates
+        dc.m.project.states.v = NxProjectCallbacks
         dc.m.project.table.v = NxProjectList
 
         # These are used in the project states callbacks for the filter buttons
@@ -598,13 +571,13 @@ class NxProject(QObject):
         # apply state (enable/dissable widgets)
         dc.spid.v = 0
         NxProjectList.initTable()
-        NxProjectStates.applyStates(NxProjectStates.startup)
+        applyStates(states.startup, dc.ui.project.v)
         if dc.x.config.loaded.v:
             NxProjectList.loadLayout()
             if dc.c.lastpath.v:
-                NxProjectStates.applyStates(NxProjectStates.last)
+                applyStates(states.last, dc.ui.project.v)
 
-        NxProjectStates.enableAllCallbacks()
+        NxProjectCallbacks.enableAllCallbacks()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the
@@ -700,13 +673,13 @@ class NxProject(QObject):
         dc.sp.modified.v    = timestamp
 
         # reset states
-        NxProjectStates.applyStates(NxProjectStates.new_project)
+        applyStates(states.new_project, dc.ui.project.v)
 
         # init log control data
         dc.sp.nextlid.v     = 1
 
         # set state
-        NxProjectStates.applyStates(NxProjectStates.selected)
+        applyStates(states.selected, dc.ui.project.v)
         NxProjectList.reloadTable()
         dc.ui.project.v.line_project_name.setFocus()
 

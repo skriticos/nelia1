@@ -7,6 +7,7 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 from mpushbutton import MPushButton
 from datacore import *
+from common import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -6,6 +6,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
 from datacore import *
+from common import *
 from project import NxProject
 from log     import NxLog
 from roadmap import NxRoadmap
