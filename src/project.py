@@ -5,52 +5,11 @@
 # This file contains the business end of the project widget. This manages the
 # documents and the projects within the documents.
 #
-# There are a few unility classes in this file that isolate specific tasks:
-#
-#   NxProjectCallbacks
-#
-#       Wouldn't you know it, this manages the project states. This includes the
-#       visible/enabled states of the user controls and everything that's about
-#       callbacks. The applyStates method is interesting here, which goes
-#       through a template of controls and applies the states noted in the
-#       template. en/disable callbacks should be selfexplanatory.
-#
-#   NxProjectList
-#
-#       Manages the project list table. This is a fairly complex part of the
-#       application and hard to isolate. Furthermore it involves a lot of state
-#       changes and is the homeland of bugs and more bugs. At the core is the
-#       reloadTable method. This saves the table layout (column widths,
-#       sorting), clears the table, re-populates the table from the datacore and
-#       re-applies the layout. Yes, it's ugly, but for some reason the callbacks
-#       for editing projects act erratic when manipulating the model cells
-#       directly and redrawing the table on edit seems to work.. Yay, random
-#       PySide bugs! Did I mention there is an unresolved Qt bug which makes it
-#       impossible to style selection background on Ubunut?
-#       Back on topic, I do a disable callbacks on a need basis (e.g. when the
-#       table is cleared) and leave them on most of the time (e.g. when we
-#       select the active project after re-populating)
-#
-#   NxProject
-#
-#       Manages everything that has to do with project properties. Create new
-#       projects, edit project attributes and delete projects.
-#
-#   NxDocument
-#
-#       Manages documents. Create new document, save document and load document
-#       from file.
-#
-# There is not much interaction with other files in this file. The few that are
-# there are: the datacore - which servers as backbone; the mistctrl which is
-# used when creating new projects to initialize roadmap data structures and the
-# roadmap version data structures that are displayed in the project table.
-# Otherwise it's quite isolated in the pull perspective. Other modules depend on
-# this one, as the project selection defines which log/roadmap is dispalyed.
-#
-# The @logger wrapper is implemented in the datacore module. It's used for
-# debugging and basically just prints the method calls and the passed parameters
-# to stdout (and all data changes in dc*)
+# states
+# callbacks
+# projectlist
+# NxProject
+# NxDocument
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import os
@@ -147,243 +106,233 @@ states.description_maximized = {
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Mostly GUI callback declarations and control.
+# Callbacks! All of them. The en/disable selection callbacks apply to the
+# selection change in the project list table. This is used in the reloadTable
+# method when crearing the table. We don't want stray callbacks messing up
+# things, do we?
 
-class NxProjectCallbacks:
+@logger('enableSelectionCallback()')
+def enableSelectionCallback():
 
-    # Callbacks! All of them. The en/disable selection callbacks apply to the
-    # selection change in the project list table. This is used in the
-    # reloadTable method when crearing the table. We don't want stray callbacks
-    # messing up things, do we?
+    m = dc.x.project.selection_model.v
+    m.selectionChanged.connect(onSelectionChanged)
 
-    @logger('NxProjectCallbacks.enableSelectionCallback()')
-    def enableSelectionCallback():
+@logger('disableSelectionCallback()')
+def disableSelectionCallback():
 
-        m = dc.x.project.selection_model.v
-        m.selectionChanged.connect(NxProjectCallbacks.onSelectionChanged)
+    m = dc.x.project.selection_model.v
+    m.selectionChanged.disconnect(onSelectionChanged)
 
-    @logger('NxProjectCallbacks.disableSelectionCallback()')
-    def disableSelectionCallback():
+# The edit control callbacks are switched off when a new project is selected in
+# the project table. This is reqired to avoid infinite loops and gremlins eating
+# the application.
 
-        m = dc.x.project.selection_model.v
-        m.selectionChanged.disconnect(NxProjectCallbacks.onSelectionChanged)
+@logger('enableEditCallbacks()')
+def enableEditCallbacks():
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # More callbacks! The edit control callbacks are switched off when a new
-    # project is selected in the project table. This is reqired to avoid
-    # infinite loops and gremlins eating the application.
+    # edit callbacks
+    w, m = dc.ui.project.v, dc.m.project.v
+    w.line_project_name.textChanged                 .connect(m.onProjectNameChanged)
+    w.cb_project_type.currentIndexChanged[str]      .connect(m.onProjectTypeChanged)
+    w.cb_project_category.currentIndexChanged[str]  .connect(m.onProjectCategoryChanged)
+    w.sb_project_priority.valueChanged[int]         .connect(m.onProjectPriorityChanged)
+    w.sb_project_challenge.valueChanged[int]        .connect(m.onProjectChallengeChanged)
+    w.text_project_info.textChanged                 .connect(m.onProjectDescriptionChanged)
 
-    @logger('NxProjectCallbacks.enableEditCallbacks()')
-    def enableEditCallbacks():
+@logger('disableEditCallbacks()')
+def disableEditCallbacks():
 
-        # edit callbacks
-        w, m = dc.ui.project.v, dc.m.project.v
-        w.line_project_name.textChanged                 .connect(m.onProjectNameChanged)
-        w.cb_project_type.currentIndexChanged[str]      .connect(m.onProjectTypeChanged)
-        w.cb_project_category.currentIndexChanged[str]  .connect(m.onProjectCategoryChanged)
-        w.sb_project_priority.valueChanged[int]         .connect(m.onProjectPriorityChanged)
-        w.sb_project_challenge.valueChanged[int]        .connect(m.onProjectChallengeChanged)
-        w.text_project_info.textChanged                 .connect(m.onProjectDescriptionChanged)
+    # edit callbacks
+    w, m = dc.ui.project.v, dc.m.project.v
+    w.line_project_name.textChanged                 .disconnect(m.onProjectNameChanged)
+    w.cb_project_type.currentIndexChanged[str]      .disconnect(m.onProjectTypeChanged)
+    w.cb_project_category.currentIndexChanged[str]  .disconnect(m.onProjectCategoryChanged)
+    w.sb_project_priority.valueChanged[int]         .disconnect(m.onProjectPriorityChanged)
+    w.sb_project_challenge.valueChanged[int]        .disconnect(m.onProjectChallengeChanged)
+    w.text_project_info.textChanged                 .disconnect(m.onProjectDescriptionChanged)
 
-    @logger('NxProjectCallbacks.disableEditCallbacks()')
-    def disableEditCallbacks():
+# This one enables all callbacks (including the above ones) and is used at
+# startup.
 
-        # edit callbacks
-        w, m = dc.ui.project.v, dc.m.project.v
-        w.line_project_name.textChanged                 .disconnect(m.onProjectNameChanged)
-        w.cb_project_type.currentIndexChanged[str]      .disconnect(m.onProjectTypeChanged)
-        w.cb_project_category.currentIndexChanged[str]  .disconnect(m.onProjectCategoryChanged)
-        w.sb_project_priority.valueChanged[int]         .disconnect(m.onProjectPriorityChanged)
-        w.sb_project_challenge.valueChanged[int]        .disconnect(m.onProjectChallengeChanged)
-        w.text_project_info.textChanged                 .disconnect(m.onProjectDescriptionChanged)
+@logger('enableAllCallbacks()')
+def enableAllCallbacks():
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # This one enables all callbacks (including the above ones) and is used at
-    # startup.
+    # menu callbacks
+    w, m = dc.ui.project.v, dc.m.project.v
+    w.btn_project_new           .clicked.connect(m.onNewProjectClicked)
+    w.btn_project_delete        .clicked.connect(m.onDeleteSelectedProject)
 
-    @logger('NxProjectCallbacks.enableAllCallbacks()')
-    def enableAllCallbacks():
+    # navi callbacks
+    w = dc.ui.project.v
+    w.btn_show_logs             .clicked.connect(onShowLogs)
+    w.btn_show_roadmap          .clicked.connect(onShowRoadmap)
 
-        # menu callbacks
-        w, m = dc.ui.project.v, dc.m.project.v
-        w.btn_project_new           .clicked.connect(m.onNewProjectClicked)
-        w.btn_project_delete        .clicked.connect(m.onDeleteSelectedProject)
+    # filter callbacks
+    w = dc.ui.project.v
+    w.btn_prio_low          .toggled.connect(onPriorityLowToggled)
+    w.btn_prio_medium       .toggled.connect(onPriorityMediumToggled)
+    w.btn_prio_high         .toggled.connect(onPriorityHighToggled)
+    w.btn_challenge_low     .toggled.connect(onChallengeLowToggled)
+    w.btn_challenge_medium  .toggled.connect(onChallengeMediumToggled)
+    w.btn_challenge_hard    .toggled.connect(onChallengeHighToggled)
 
-        # navi callbacks
-        w, m = dc.ui.project.v, dc.m.project.v
-        w.btn_show_logs             .clicked.connect(NxProjectCallbacks.onShowLogs)
-        w.btn_show_roadmap          .clicked.connect(NxProjectCallbacks.onShowRoadmap)
+    # general gui callbacks
+    w = dc.ui.project.v
+    w.btn_info_max              .toggled.connect(onInfoMaxToggled)
+    w.btn_project_sort_modified .clicked.connect(onSortProjectList)
 
-        # filter callbacks
-        w, s = dc.ui.project.v, NxProjectCallbacks
-        w.btn_prio_low          .toggled.connect(s.onPriorityLowToggled)
-        w.btn_prio_medium       .toggled.connect(s.onPriorityMediumToggled)
-        w.btn_prio_high         .toggled.connect(s.onPriorityHighToggled)
-        w.btn_challenge_low     .toggled.connect(s.onChallengeLowToggled)
-        w.btn_challenge_medium  .toggled.connect(s.onChallengeMediumToggled)
-        w.btn_challenge_hard    .toggled.connect(s.onChallengeHighToggled)
+    # edit / selection
+    enableEditCallbacks()
+    enableSelectionCallback()
 
-        # general gui callbacks
-        w, s = dc.ui.project.v, NxProjectCallbacks
-        w.btn_info_max              .toggled.connect(s.onInfoMaxToggled)
-        w.btn_project_sort_modified .clicked.connect(s.onSortProjectList)
+# Even more callbacks! This time, it's the onFoo..() callback slot
+# implementations.
 
-        # edit / selection
-        NxProjectCallbacks.enableEditCallbacks()
-        NxProjectCallbacks.enableSelectionCallback()
+# We begin with the project list table filter  These update the
+# filter sets in the datacore and call reloadTable to update the view.
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Even more callbacks! This time, it's the onFoo..() callback slot
-    # implementations.
+@logger('onPriorityLowToggled(checked)', 'checked')
+def onPriorityLowToggled(checked):
+    if checked:
+        dc.c.project.filters.priority.v.add(1)
+        dc.c.project.filters.priority.v.add(2)
+        dc.c.project.filters.priority.v.add(3)
+    else:
+        dc.c.project.filters.priority.v.discard(1)
+        dc.c.project.filters.priority.v.discard(2)
+        dc.c.project.filters.priority.v.discard(3)
+    projectlist.reloadTable()
 
-    # We begin with the project list table filter callbacks. These update the
-    # filter sets in the datacore and call reloadTable to update the view.
+@logger('onPriorityMediumToggled(checked)', 'checked')
+def onPriorityMediumToggled(checked):
+    if checked:
+        dc.c.project.filters.priority.v.add(4)
+        dc.c.project.filters.priority.v.add(5)
+        dc.c.project.filters.priority.v.add(6)
+    else:
+        dc.c.project.filters.priority.v.discard(4)
+        dc.c.project.filters.priority.v.discard(5)
+        dc.c.project.filters.priority.v.discard(6)
+    projectlist.reloadTable()
 
-    @logger('NxProjectCallbacks.onPriorityLowToggled(checked)', 'checked')
-    def onPriorityLowToggled(checked):
-        if checked:
-            dc.c.project.filters.priority.v.add(1)
-            dc.c.project.filters.priority.v.add(2)
-            dc.c.project.filters.priority.v.add(3)
-        else:
-            dc.c.project.filters.priority.v.discard(1)
-            dc.c.project.filters.priority.v.discard(2)
-            dc.c.project.filters.priority.v.discard(3)
-        NxProjectList.reloadTable()
+@logger('onPriorityHighToggled(checked)', 'checked')
+def onPriorityHighToggled(checked):
+    if checked:
+        dc.c.project.filters.priority.v.add(7)
+        dc.c.project.filters.priority.v.add(8)
+        dc.c.project.filters.priority.v.add(9)
+    else:
+        dc.c.project.filters.priority.v.discard(7)
+        dc.c.project.filters.priority.v.discard(8)
+        dc.c.project.filters.priority.v.discard(9)
+    projectlist.reloadTable()
 
-    @logger('NxProjectCallbacks.onPriorityMediumToggled(checked)', 'checked')
-    def onPriorityMediumToggled(checked):
-        if checked:
-            dc.c.project.filters.priority.v.add(4)
-            dc.c.project.filters.priority.v.add(5)
-            dc.c.project.filters.priority.v.add(6)
-        else:
-            dc.c.project.filters.priority.v.discard(4)
-            dc.c.project.filters.priority.v.discard(5)
-            dc.c.project.filters.priority.v.discard(6)
-        NxProjectList.reloadTable()
+@logger('onChallengeLowToggled(checked)', 'checked')
+def onChallengeLowToggled(checked):
+    if checked:
+        dc.c.project.filters.challenge.v.add(1)
+        dc.c.project.filters.challenge.v.add(2)
+        dc.c.project.filters.challenge.v.add(3)
+    else:
+        dc.c.project.filters.challenge.v.discard(1)
+        dc.c.project.filters.challenge.v.discard(2)
+        dc.c.project.filters.challenge.v.discard(3)
+    projectlist.reloadTable()
 
-    @logger('NxProjectCallbacks.onPriorityHighToggled(checked)', 'checked')
-    def onPriorityHighToggled(checked):
-        if checked:
-            dc.c.project.filters.priority.v.add(7)
-            dc.c.project.filters.priority.v.add(8)
-            dc.c.project.filters.priority.v.add(9)
-        else:
-            dc.c.project.filters.priority.v.discard(7)
-            dc.c.project.filters.priority.v.discard(8)
-            dc.c.project.filters.priority.v.discard(9)
-        NxProjectList.reloadTable()
+@logger('onChallengeMediumToggled(checked)', 'checked')
+def onChallengeMediumToggled(checked):
+    if checked:
+        dc.c.project.filters.challenge.v.add(4)
+        dc.c.project.filters.challenge.v.add(5)
+        dc.c.project.filters.challenge.v.add(6)
+    else:
+        dc.c.project.filters.challenge.v.discard(4)
+        dc.c.project.filters.challenge.v.discard(5)
+        dc.c.project.filters.challenge.v.discard(6)
+    projectlist.reloadTable()
 
-    @logger('NxProjectCallbacks.onChallengeLowToggled(checked)', 'checked')
-    def onChallengeLowToggled(checked):
-        if checked:
-            dc.c.project.filters.challenge.v.add(1)
-            dc.c.project.filters.challenge.v.add(2)
-            dc.c.project.filters.challenge.v.add(3)
-        else:
-            dc.c.project.filters.challenge.v.discard(1)
-            dc.c.project.filters.challenge.v.discard(2)
-            dc.c.project.filters.challenge.v.discard(3)
-        NxProjectList.reloadTable()
+@logger('onChallengeHighToggled(checked)', 'checked')
+def onChallengeHighToggled(checked):
+    if checked:
+        dc.c.project.filters.challenge.v.add(7)
+        dc.c.project.filters.challenge.v.add(8)
+        dc.c.project.filters.challenge.v.add(9)
+    else:
+        dc.c.project.filters.challenge.v.discard(7)
+        dc.c.project.filters.challenge.v.discard(8)
+        dc.c.project.filters.challenge.v.discard(9)
+    projectlist.reloadTable()
 
-    @logger('NxProjectCallbacks.onChallengeMediumToggled(checked)', 'checked')
-    def onChallengeMediumToggled(checked):
-        if checked:
-            dc.c.project.filters.challenge.v.add(4)
-            dc.c.project.filters.challenge.v.add(5)
-            dc.c.project.filters.challenge.v.add(6)
-        else:
-            dc.c.project.filters.challenge.v.discard(4)
-            dc.c.project.filters.challenge.v.discard(5)
-            dc.c.project.filters.challenge.v.discard(6)
-        NxProjectList.reloadTable()
+# Maximize / restore callback for infox maximization toggle.
 
-    @logger('NxProjectCallbacks.onChallengeHighToggled(checked)', 'checked')
-    def onChallengeHighToggled(checked):
-        if checked:
-            dc.c.project.filters.challenge.v.add(7)
-            dc.c.project.filters.challenge.v.add(8)
-            dc.c.project.filters.challenge.v.add(9)
-        else:
-            dc.c.project.filters.challenge.v.discard(7)
-            dc.c.project.filters.challenge.v.discard(8)
-            dc.c.project.filters.challenge.v.discard(9)
-        NxProjectList.reloadTable()
+@logger('NxProject.onInfoMaxToggled(state)', 'state')
+def onInfoMaxToggled(state):
+    if state:
+        applyStates(states.description_maximized, dc.ui.project.v)
+    else:
+        applyStates(states.description_normal, dc.ui.project.v)
 
-    # Maximize / restore callback for infox maximization toggle.
+# Sort by modification date when control is clicked.
 
-    @logger('NxProject.onInfoMaxToggled(state)', 'state')
-    def onInfoMaxToggled(state):
-        if state:
-            applyStates(states.description_maximized, dc.ui.project.v)
-        else:
-            applyStates(states.description_normal, dc.ui.project.v)
+@logger('NxProject.onSortProjectList()')
+def onSortProjectList():
+        dc.x.project.horizontal_header.v.setSortIndicator(
+                projectlist.colModified,
+                PySide.QtCore.Qt.SortOrder.DescendingOrder)
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Sort by modification date when control is clicked.
+# Selected project changed -> update selected project edit controls and
+# selected project label. Update selected project runtime data.
 
-    @logger('NxProject.onSortProjectList()')
-    def onSortProjectList():
-            dc.x.project.horizontal_header.v.setSortIndicator(
-                    NxProjectList.colModified,
-                    PySide.QtCore.Qt.SortOrder.DescendingOrder)
+@logger('NxProject.onSelectionChanged(new, old)', 'new', 'old')
+def onSelectionChanged(new, old):
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Selected project changed -> update selected project edit controls and
-    # selected project label. Update selected project runtime data.
+    # check for valid index
+    indexes = new.indexes()
+    if not indexes:
+        return
 
-    @logger('NxProject.onSelectionChanged(new, old)', 'new', 'old')
-    def onSelectionChanged(new, old):
+    # get selected pid from table model
+    index = indexes[0]
+    dc.spid.v = int(dc.x.project.model.v.itemFromIndex(index).text())
+    dc.sp = dc.s._(dc.spid.v)
 
-        # check for valid index
-        indexes = new.indexes()
-        if not indexes:
-            return
+    # populate edit fields on selection change
+    disableEditCallbacks()
+    dc.ui.project.v.line_project_name.setText(dc.sp.name.v)
+    dc.ui.project.v.line_selected_project.setText(dc.sp.name.v)
+    dc.ui.project.v.sb_project_priority.setValue(dc.sp.priority.v)
+    dc.ui.project.v.sb_project_challenge.setValue(dc.sp.challenge.v)
+    dc.ui.project.v.cb_project_type.setCurrentIndex(
+            dc.ui.project.v.cb_project_type.findText(dc.sp.ptype.v))
+    dc.ui.project.v.cb_project_category.setCurrentIndex(
+            dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
+    dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
+    enableEditCallbacks()
 
-        # get selected pid from table model
-        index = indexes[0]
-        dc.spid.v = int(dc.x.project.model.v.itemFromIndex(index).text())
-        dc.sp = dc.s._(dc.spid.v)
+# switch to log and roadmap views
+# I have decided to load the project logs / roadmap only when navigating to
+# these widgets instead of real-time during selection change to avoid
+# latency with larger entries.
 
-        # populate edit fields on selection change
-        NxProjectCallbacks.disableEditCallbacks()
-        dc.ui.project.v.line_project_name.setText(dc.sp.name.v)
-        dc.ui.project.v.line_selected_project.setText(dc.sp.name.v)
-        dc.ui.project.v.sb_project_priority.setValue(dc.sp.priority.v)
-        dc.ui.project.v.sb_project_challenge.setValue(dc.sp.challenge.v)
-        dc.ui.project.v.cb_project_type.setCurrentIndex(
-                dc.ui.project.v.cb_project_type.findText(dc.sp.ptype.v))
-        dc.ui.project.v.cb_project_category.setCurrentIndex(
-                dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
-        dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
-        NxProjectCallbacks.enableEditCallbacks()
+# we need to keep a Qt reference around for dc.ui.project when setting a
+# different central widget, otherwise bad things happen. We do this by
+# setting it's parent as the invisible mainwindow object.
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # switch to log and roadmap views
-    # I have decided to load the project logs / roadmap only when navigating to
-    # these widgets instead of real-time during selection change to avoid
-    # latency with larger entries.
+@logger('onShowLogs()')
+def onShowLogs():
+    dc.ui.project.v.setParent(dc.m.mainwindow.v)
+    dc.m.log.states.v.onShown()
+    dc.ui.main.v.setCentralWidget(dc.ui.log.v)
 
-    # we need to keep a Qt reference around for dc.ui.project when setting a
-    # different central widget, otherwise bad things happen. We do this by
-    # setting it's parent as the invisible mainwindow object.
-
-    @logger('NxProjectCallbacks.onShowLogs()')
-    def onShowLogs():
-        dc.ui.project.v.setParent(dc.m.mainwindow.v)
-        dc.m.log.states.v.onShown()
-        dc.ui.main.v.setCentralWidget(dc.ui.log.v)
-
-    @logger('NxProjectCallbacks.onShowRoadmap()')
-    def onShowRoadmap():
-        dc.ui.project.v.setParent(dc.m.mainwindow.v)
-        dc.m.roadmap.states.v.onShown()
-        dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
+@logger('onShowRoadmap()')
+def onShowRoadmap():
+    dc.ui.project.v.setParent(dc.m.mainwindow.v)
+    dc.m.roadmap.states.v.onShown()
+    dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class NxProjectList:
+class projectlist:
 
     # header labels for the project list table
     headers =  [
@@ -402,12 +351,12 @@ class NxProjectList:
     # up all necessary attributes. It is called from the NxProject __init__
     # method. One only.
 
-    @logger('NxProjectList.initTable()')
+    @logger('projectlist.initTable()')
     def initTable():
 
         dc.x.project.view.v = dc.ui.project.v.tbl_project_list
         dc.x.project.model.v = QStandardItemModel()
-        dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
+        dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
         dc.x.project.view.v.setModel(dc.x.project.model.v)
         dc.x.project.selection_model.v   = dc.x.project.view.v.selectionModel()
         dc.x.project.horizontal_header.v = dc.x.project.view.v.horizontalHeader()
@@ -418,7 +367,7 @@ class NxProjectList:
     # configuration to the file though, just stores it in datacore so that
     # dcconfigsave() can do it at exit.
 
-    @logger('NxProjectList.saveLayout(self)')
+    @logger('projectlist.saveLayout(self)')
     def saveLayout():
 
         # save header widths
@@ -432,7 +381,7 @@ class NxProjectList:
         dc.c.project.sort.column.v = sort
         dc.c.project.sort.order.v  = order
 
-    @logger('NxProjectList.loadLayout(self)')
+    @logger('projectlist.loadLayout(self)')
     def loadLayout():
 
         # load header widths
@@ -470,17 +419,17 @@ class NxProjectList:
             log('NO ROW')
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @logger('NxProjectList.reloadTable(toggled=False)')
+    @logger('projectlist.reloadTable(toggled=False)')
     def reloadTable(toggled=False):
 
-        NxProjectList.saveLayout()
+        projectlist.saveLayout()
 
         # clear table
-        NxProjectCallbacks.disableSelectionCallback()
+        disableSelectionCallback()
         dc.x.project.model.v.clear()
         dc.x.project.selection_model.v.reset()
-        NxProjectCallbacks.enableSelectionCallback()
-        dc.x.project.model.v.setHorizontalHeaderLabels(NxProjectList.headers)
+        enableSelectionCallback()
+        dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
 
         # populate table with projects (that are in filter selection)
         # we start off by iterating through all projects
@@ -510,7 +459,7 @@ class NxProjectList:
                 QStandardItem(convert(dc.s._(pid).modified.v)),
                 QStandardItem(convert(dc.s._(pid).created.v)) ])
 
-        NxProjectList.loadLayout()
+        projectlist.loadLayout()
 
         # now we have the table as required, now set the selection This is a bit
         # tricky at times. If we have the selection within the visible with the
@@ -521,9 +470,9 @@ class NxProjectList:
         # we don't select anything if we don't have rows
         rowcount = dc.x.project.model.v.rowCount()
         if rowcount <= 0:
-            NxProjectCallbacks.disableEditCallbacks()
+            disableEditCallbacks()
             applyStates(states.startup, dc.ui.project.v)
-            NxProjectCallbacks.enableEditCallbacks()
+            enableEditCallbacks()
             return
 
         # we don't have a selected project id (outside the filter or deleted)
@@ -554,14 +503,12 @@ class NxProjectList:
 class NxProject(QObject):
 
     # Init class. Not much to see here. Just set some starting values, apply
-    # state and enable callbacks.
+    # state and enable
 
     @logger('NxProject.__init__(self)', 'self')
     def __init__(self):
 
         dc.m.project.v = self
-        dc.m.project.states.v = NxProjectCallbacks
-        dc.m.project.table.v = NxProjectList
 
         # These are used in the project states callbacks for the filter buttons
         # and the reloadTable method in the table list.
@@ -570,14 +517,14 @@ class NxProject(QObject):
 
         # apply state (enable/dissable widgets)
         dc.spid.v = 0
-        NxProjectList.initTable()
+        projectlist.initTable()
         applyStates(states.startup, dc.ui.project.v)
         if dc.x.config.loaded.v:
-            NxProjectList.loadLayout()
+            projectlist.loadLayout()
             if dc.c.lastpath.v:
                 applyStates(states.last, dc.ui.project.v)
 
-        NxProjectCallbacks.enableAllCallbacks()
+        enableAllCallbacks()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the
@@ -590,7 +537,7 @@ class NxProject(QObject):
         timestamp = int(time.time())
         dc.sp.modified.v = timestamp
         dc.r.changed.v = True
-        NxProjectList.setTableValue(NxProjectList.colModified, convert(timestamp))
+        projectlist.setTableValue(projectlist.colModified, convert(timestamp))
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # The following callbacks are used when currently selected project
@@ -602,14 +549,14 @@ class NxProject(QObject):
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
         self.touchProject()
-        NxProjectList.setTableValue(NxProjectList.colName, name)
+        projectlist.setTableValue(projectlist.colName, name)
 
     @logger('NxProject.onProjectTypeChanged(self, ptype)', 'self', 'ptype')
     def onProjectTypeChanged(self, ptype):
 
         dc.sp.ptype.v = ptype
         self.touchProject()
-        NxProjectList.setTableValue(NxProjectList.colType, ptype)
+        projectlist.setTableValue(projectlist.colType, ptype)
 
     @logger('NxProject.onProjectCategoryChanged(self, category)',
             'self', 'category')
@@ -617,7 +564,7 @@ class NxProject(QObject):
 
         dc.sp.category.v = category
         self.touchProject()
-        NxProjectList.setTableValue(NxProjectList.colCategory, category)
+        projectlist.setTableValue(projectlist.colCategory, category)
 
     @logger('NxProject.onProjectPriorityChanged(self, priority)',
             'self', 'priority')
@@ -625,7 +572,7 @@ class NxProject(QObject):
 
         dc.sp.priority.v = priority
         self.touchProject()
-        NxProjectList.setTableValue(NxProjectList.colPritoriy, str(priority))
+        projectlist.setTableValue(projectlist.colPritoriy, str(priority))
 
     @logger('NxProject.onProjectChallengeChanged(self, challenge)',
             'self', 'challenge')
@@ -633,7 +580,7 @@ class NxProject(QObject):
 
         dc.sp.challenge.v = challenge
         self.touchProject()
-        NxProjectList.setTableValue(NxProjectList.colChallenge, str(challenge))
+        projectlist.setTableValue(projectlist.colChallenge, str(challenge))
 
     @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
     def onProjectDescriptionChanged(self):
@@ -680,7 +627,7 @@ class NxProject(QObject):
 
         # set state
         applyStates(states.selected, dc.ui.project.v)
-        NxProjectList.reloadTable()
+        projectlist.reloadTable()
         dc.ui.project.v.line_project_name.setFocus()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -705,7 +652,7 @@ class NxProject(QObject):
 
         # state
         dc.r.changed.v = True
-        NxProjectList.reloadTable()
+        projectlist.reloadTable()
 
 '''
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
