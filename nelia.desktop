@@ -9,29 +9,9 @@ Categories=.devel;
 
 X-Ayatana-Desktop-Shortcuts=Gitk;GitGui;Push;Folder;Terminal;RunTerminal
 
-[Gitk Shortcut Group]
-Name=gitk
-Exec=/home/seth/.devel/app/nelia1/tools/gitk.run
-TargetEnvironment=Unity
-
-[GitGui Shortcut Group]
-Name=git gui
-Exec=/home/seth/.devel/app/nelia1/tools/git-gui.run
-TargetEnvironment=Unity
-
-[Push Shortcut Group]
-Name=git push (pgsw)
-Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/.devel/app/nelia1 -e "bash -c \"git push; read line;\""
-TargetEnvironment=Unity
-
 [Folder Shortcut Group]
 Name=Folder
 Exec=/usr/bin/nautilus /home/seth/.devel/app/nelia1
-TargetEnvironment=Unity
-
-[Terminal Shortcut Group]
-Name=Termanl
-Exec=/usr/bin/gnome-terminal --working-directory=/home/seth/.devel/app/nelia1 --maximize
 TargetEnvironment=Unity
 
 [RunTerminal Shortcut Group]
