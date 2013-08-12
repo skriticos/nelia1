@@ -85,6 +85,6 @@ def convert(item):
         return PySide.QtCore.Qt.SortOrder.DescendingOrder
     if item == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
         return PySide.QtCore.Qt.SortOrder.AscendingOrder
-
+    raise Exception('convert called with invalid item type or value')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -1,7 +1,6 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
 # This file contains the business end of the project widget. This manages the
 # documents and the projects within the documents.
 #
@@ -15,9 +14,11 @@
 import os
 import datetime
 import time
+
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
+
 from common import *
 from datacore import *
 import mistctrl                       # milestone control module for new project
@@ -28,7 +29,6 @@ import mistctrl                       # milestone control module for new project
 # applyStates(states.startup, dc.ui.project.v)
 
 class states: pass
-dc.m.project.states.v = states
 
 # Did I mention that the names I come up with are a bit vague sometimes? So this
 # is the startup state. The state is set on startup.. and on load documnt.. and
