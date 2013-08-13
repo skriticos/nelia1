@@ -10,88 +10,72 @@ from common import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class NxLogStates:
+class states: pass
 
-    description_normal = {
-        'log_meta':       {'visible': True, 'enabled': True},
-        'group_log_list': {'visible': True, 'enabled': True},
-        'gl_info':        {'margins': (0, 0, 0, 0)}
-    }
-    description_maximized = {
-        'log_meta':       {'visible': False, 'enabled': True},
-        'group_log_list': {'visible': False, 'enabled': True},
-        'gl_info':        {'margins': (0, 10, 15, 0)}
-    }
+states.startup = {
+    'lbl_log_type':     {'clear': True},
+    'lbl_log_created':  {'clear': True},
+    'lbl_log_modified': {'clear': True}
+}
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # copy of NxProjectStates.applyStates
+states.description_normal = {
+    'log_meta':       {'visible': True, 'enabled': True},
+    'group_log_list': {'visible': True, 'enabled': True},
+    'gl_info':        {'margins': (0, 0, 0, 0)}
+}
+states.description_maximized = {
+    'log_meta':       {'visible': False, 'enabled': True},
+    'group_log_list': {'visible': False, 'enabled': True},
+    'gl_info':        {'margins': (0, 10, 15, 0)}
+}
 
-    @logger('NxProjectStates.applyStates(states)', 'states')
-    def applyStates(states):
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# copy of NxProjectStates.applyStates
 
-        # loop through controls (widgets)
-        for control, state in states.items():
+@logger('NxLogStates.enableAllCallbacks()')
+def enableAllCallbacks():
 
-            # loop through state attributes
-            pd = dc.ui.log.v.__dict__
-            if 'enabled' in state:
-                pd[control].setEnabled(state['enabled'])
-            if 'visible' in state:
-                pd[control].setVisible(state['visible'])
-            if 'margins' in state:
-                pd[control].setContentsMargins(*state['margins'])
-            if 'text' in state:
-                pd[control].setText(state['text'])
-            if 'clear' in state:
-                pd[control].clear()
-            if 'index' in state:
-                pd[control].setCurrentIndex(state['index'])
-            if 'value' in state:
-                pd[control].setValue(state['value'])
+    # navi callbacks
+    w = dc.ui.log.v
+    w.btn_show_roadmap          .clicked.connect(onShowRoadmap)
+    w.btn_show_project          .clicked.connect(onShowProject)
 
-    @logger('NxLogStates.enableAllCallbacks()')
-    def enableAllCallbacks():
+    w = dc.ui.log.v
+    w.btn_log_maximize          .toggled.connect(onLogMaxToggled)
 
-        # navi callbacks
-        w = dc.ui.log.v
-        w.btn_show_roadmap          .clicked.connect(NxLogStates.onShowRoadmap)
-        w.btn_show_project          .clicked.connect(NxLogStates.onShowProject)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Maximize / restore callback for infox maximization toggle.
 
-        w, s = dc.ui.log.v, NxLogStates
-        w.btn_log_maximize          .toggled.connect(s.onLogMaxToggled)
+@logger('NxLog.onInfoMaxToggled(state)', 'state')
+def onLogMaxToggled(state):
+    if state:
+        applyStates(states.description_maximized, dc.ui.log.v)
+    else:
+        applyStates(states.description_normal, dc.ui.log.v)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# switch to roadmap or project
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Called when view changes to log.
-    # 1. Check if pid changed since last state --(no)--> return
-    # 2. reload table
-    # 3. set state
+@logger('NxProjectStates.onShowLogs()')
+def onShowRoadmap():
+    dc.ui.log.v.setParent(dc.m.mainwindow.v)
+    dc.m.roadmap.states.v.onShown()
+    dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
-    @logger('NxLogStates.onShown()')
-    def onShown():
-        log('STUB NxLogStates.onShown()')
+@logger('NxProjectStates.onShowProject()')
+def onShowProject():
+    dc.ui.log.v.setParent(dc.m.mainwindow.v)
+    dc.ui.main.v.setCentralWidget(dc.ui.project.v)
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Maximize / restore callback for infox maximization toggle.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Called when view changes to log.
+# 1. Check if pid changed since last state --(no)--> return
+# 2. reload table
+# 3. set state
 
-    @logger('NxLog.onInfoMaxToggled(state)', 'state')
-    def onLogMaxToggled(state):
-        if state:
-            NxLogStates.applyStates(NxLogStates.description_maximized)
-        else:
-            NxLogStates.applyStates(NxLogStates.description_normal)
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # switch to roadmap or project
-
-    @logger('NxProjectStates.onShowLogs()')
-    def onShowRoadmap():
-        dc.ui.log.v.setParent(dc.m.mainwindow.v)
-        dc.m.roadmap.states.v.onShown()
-        dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
-
-    @logger('NxProjectStates.onShowProject()')
-    def onShowProject():
-        dc.ui.log.v.setParent(dc.m.mainwindow.v)
-        dc.ui.main.v.setCentralWidget(dc.ui.project.v)
+@logger('NxLogStates.onShown()')
+def onShown():
+    log('STUB NxLogStates.onShown()')
+dc.m.log.onShown.v = onShown
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -104,10 +88,10 @@ class NxLog:
     def __init__(self):
 
         dc.m.log.v = self
-        dc.m.log.states.v = NxLogStates
 
+        applyStates(states.startup, dc.ui.log.v)
+        enableAllCallbacks()
 
-        NxLogStates.enableAllCallbacks()
 
 '''
 

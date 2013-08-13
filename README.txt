@@ -5,9 +5,9 @@ C0 ~ META
 C1 ~ COMMON FUNCTIONS
 C2 ~ DATA EXCHANGE AND STORAGE
 C3 ~ GUI CONTROL MODULES
-C4 ~ PROJECT MODULE
-C5 ~ LOG MODULE
-C6 ~ ROADMAP MODULE
+C4 ~ PROJECT CONTROL MODULE
+C5 ~ LOG CONTROL MODULE
+C6 ~ ROADMAP CONTROL MODULE
 
 
 C0 ~ META
@@ -137,15 +137,19 @@ C3 ~ GUI CONTROL MODULES
       actually doing without all the noise, check the Nx* classes.
 
 
-C4 ~ PROJECT MODULE
+C4 ~ PROJECT CONTROL MODULE
+
+   Cutting all the state and table stuff out really leaves three project related
+   metods: create, edit (this is actually a set of methods), and delete.
+   Additionally there are the document methods (new, save, load).
+
+   NxProject
+   NxDocument
+
+C5 ~ LOG CONTROL MODULE
 
 
-
-
-C5 ~ LOG MODULE
-
-
-C6 ~ ROADMAP MODULE
+C6 ~ ROADMAP CONTROL MODULE
 
 
 

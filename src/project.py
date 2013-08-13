@@ -317,7 +317,7 @@ def onSelectionChanged(new, old):
 @logger('onShowLogs()')
 def onShowLogs():
     dc.ui.project.v.setParent(None)
-    dc.m.log.states.v.onShown()
+    dc.m.log.onShown.v()
     dc.ui.main.v.setCentralWidget(dc.ui.log.v)
 
 @logger('onShowRoadmap()')
