@@ -55,6 +55,7 @@ def enableAllCallbacks():
 
 @logger('NxLog.onInfoMaxToggled(state)', 'state')
 def onLogMaxToggled(state):
+
     if state:
         applyStates(states.description_maximized, dc.ui.log.v)
     else:
@@ -64,12 +65,14 @@ def onLogMaxToggled(state):
 
 @logger('NxProjectStates.onShowLogs()')
 def onShowRoadmap():
+
     dc.ui.log.v.setParent(dc.m.mainwindow.v)
     dc.m.roadmap.states.v.onShown()
     dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
 @logger('NxProjectStates.onShowProject()')
 def onShowProject():
+
     dc.ui.log.v.setParent(dc.m.mainwindow.v)
     dc.ui.main.v.setCentralWidget(dc.ui.project.v)
 
@@ -80,17 +83,43 @@ def onShowProject():
 
 @logger('NxLogStates.onShown()')
 def onShown():
+
     log('STUB NxLogStates.onShown()')
+
 dc.m.log.onShown.v = onShown
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+class loglist:
+
+    headers = [
+        'ID',
+        'Type',
+        'Created',
+        'Summary'
+    ]
+
+    @logger('loglist.initTable()')
+    def initTable():
+
+        dc.x.log.view.v = dc.ui.log.v.tbl_log_list
+        dc.x.log.model.v = QStandardItemModel()
+        dc.x.log.view.v.setModel(dc.x.project.model.v)
+        dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
+        dc.x.log.selection_model.v = dc.x.log.view.v.selectionModel()
+        dc.x.log.horizontal_header.v = dc.x.log.view.v.horizontalHeader()
+
+    # used in with setTableValue
+    colLid       = 0
+    colType      = 1
+    colCreated   = 2
+    colSummary   = 3
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 headers = ['ID', 'Created', 'Summary']
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

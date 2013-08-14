@@ -1,13 +1,16 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
-# Common utility functions
+# Common utility functions that do not reqire datacore. Datacore imporrts this,
+# so not importing datacore here is a hard requirement for the application to
+# work.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import time
 import datetime
 import PySide
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # logging (debugging). dumps all calls during runtime, including data assignment
 # in datacore. set the logger as decorator for all methods
@@ -86,5 +89,6 @@ def convert(item):
     if item == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
         return PySide.QtCore.Qt.SortOrder.AscendingOrder
     raise Exception('convert called with invalid item type or value')
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
