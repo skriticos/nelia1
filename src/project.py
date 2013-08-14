@@ -24,6 +24,8 @@ from datacore import *
 import mistctrl                       # milestone control module for new project
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# STATES
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # We start with the declaration of the widget states.
 # These are applield with the applyStates method from the common module.
 # applyStates(states.startup, dc.ui.project.v)
@@ -106,6 +108,8 @@ states.description_maximized = {
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CALLBACK CONTROL
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Callbacks! All of them. The en/disable selection callbacks apply to the
 # selection change in the project list table. This is used in the reloadTable
 # method when crearing the table. We don't want stray callbacks messing up
@@ -184,6 +188,11 @@ def enableAllCallbacks():
     # edit / selection
     enableEditCallbacks()
     enableSelectionCallback()
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# AUXILIARY CALLBACK IMPLEMENTATIONS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Even more callbacks! This time, it's the onFoo..() callback slot
 # implementations.
@@ -326,6 +335,8 @@ def onShowRoadmap():
     dc.m.roadmap.states.v.onShown()
     dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class projectlist:
@@ -494,6 +505,8 @@ class projectlist:
                 selection = dc.x.project.view.v.selectionModel().selection()
                 break
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class NxProject():

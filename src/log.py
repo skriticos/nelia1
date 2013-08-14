@@ -9,13 +9,16 @@ from datacore import *
 from common import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# STATES
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class states: pass
 
 states.startup = {
     'lbl_log_type':     {'clear': True},
     'lbl_log_created':  {'clear': True},
-    'lbl_log_modified': {'clear': True}
+    'lbl_log_modified': {'clear': True},
+    'btn_log_delete':   {'enabled': False}
 }
 
 states.description_normal = {
@@ -29,8 +32,9 @@ states.description_maximized = {
     'gl_info':        {'margins': (0, 10, 15, 0)}
 }
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# copy of NxProjectStates.applyStates
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CALLBACK CONTROL
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 @logger('NxLogStates.enableAllCallbacks()')
 def enableAllCallbacks():
@@ -43,7 +47,10 @@ def enableAllCallbacks():
     w = dc.ui.log.v
     w.btn_log_maximize          .toggled.connect(onLogMaxToggled)
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# AUXILIARY CALLBACK IMPLEMENTATION
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # Maximize / restore callback for infox maximization toggle.
 
 @logger('NxLog.onInfoMaxToggled(state)', 'state')
@@ -52,7 +59,7 @@ def onLogMaxToggled(state):
         applyStates(states.description_maximized, dc.ui.log.v)
     else:
         applyStates(states.description_normal, dc.ui.log.v)
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # switch to roadmap or project
 
 @logger('NxProjectStates.onShowLogs()')
@@ -66,7 +73,6 @@ def onShowProject():
     dc.ui.log.v.setParent(dc.m.mainwindow.v)
     dc.ui.main.v.setCentralWidget(dc.ui.project.v)
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Called when view changes to log.
 # 1. Check if pid changed since last state --(no)--> return
 # 2. reload table
@@ -77,6 +83,12 @@ def onShown():
     log('STUB NxLogStates.onShown()')
 dc.m.log.onShown.v = onShown
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# UTILITY CLASSES
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
