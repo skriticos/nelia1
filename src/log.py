@@ -3,10 +3,13 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import time
+
 from PySide.QtCore import *
 from PySide.QtGui import *
+
 from datacore import *
 from common import *
+from common2 import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # STATES
@@ -18,7 +21,18 @@ states.startup = {
     'lbl_log_type':     {'clear': True},
     'lbl_log_created':  {'clear': True},
     'lbl_log_modified': {'clear': True},
-    'btn_log_delete':   {'enabled': False}
+    'btn_log_delete':   {'enabled': False},
+    'text_log_message': {'enabled': False},
+    'line_log_summary': {'enabled': False}
+}
+
+states.editlog = {
+    'text_log_message': {'clear': True, 'enabled': True},
+    'line_log_summary': {'clear': True, 'enabled': True}
+}
+states.noeditlogs = {
+    'text_log_message': {'clear': True, 'enabled': False},
+    'line_log_summary': {'clear': True, 'enabled': False}
 }
 
 states.description_normal = {
@@ -36,8 +50,29 @@ states.description_maximized = {
 # CALLBACK CONTROL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-@logger('NxLogStates.enableAllCallbacks()')
+@logger('(log) enableSelectionCallback()')
+def enableSelectionCallback():
+    pass
+
+@logger('(log) disableSelectionCallback()')
+def disableSelectionCallback():
+    pass
+
+@logger('(log) enableEditCallbacks()')
+def enableEditCallbacks():
+    dc.ui.log.v.line_log_summary.textChanged.connect(dc.m.log.v.onSummaryChanged)
+    dc.ui.log.v.text_log_message.textChanged.connect(dc.m.log.v.onDescriptionChanged)
+
+@logger('(log) disableEditCallbacks()')
+def disableEditCallbacks():
+    dc.ui.log.v.line_log_summary.textChanged.disconnect(dc.m.log.v.onSummaryChanged)
+    dc.ui.log.v.text_log_message.textChanged.disconnect(dc.m.log.v.onDescriptionChanged)
+
+@logger('(log) enableAllCallbacks()')
 def enableAllCallbacks():
+
+    w = dc.ui.log.v
+    w.btn_log_new               .clicked.connect(dc.m.log.v.onNewLogClicked)
 
     # navi callbacks
     w = dc.ui.log.v
@@ -84,7 +119,8 @@ def onShowProject():
 @logger('NxLogStates.onShown()')
 def onShown():
 
-    log('STUB NxLogStates.onShown()')
+    dc.ui.log.v.lbl_project_name.setText(dc.sp.name.v)
+    loglist.reloadTable()
 
 dc.m.log.onShown.v = onShown
 
@@ -96,9 +132,10 @@ class loglist:
 
     headers = [
         'ID',
-        'Type',
-        'Created',
         'Summary'
+        'Type',
+        'Modified',
+        'Created'
     ]
 
     @logger('loglist.initTable()')
@@ -106,23 +143,62 @@ class loglist:
 
         dc.x.log.view.v = dc.ui.log.v.tbl_log_list
         dc.x.log.model.v = QStandardItemModel()
-        dc.x.log.view.v.setModel(dc.x.project.model.v)
+        dc.x.log.view.v.setModel(dc.x.log.model.v)
         dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
         dc.x.log.selection_model.v = dc.x.log.view.v.selectionModel()
         dc.x.log.horizontal_header.v = dc.x.log.view.v.horizontalHeader()
 
     # used in with setTableValue
     colLid       = 0
-    colType      = 1
-    colCreated   = 2
-    colSummary   = 3
+    colSummary   = 1
+    colType      = 2
+    colModified  = 3
+    colCreated   = 4
+
+    @logger('loglist.reloadTable()')
+    def reloadTable():
+
+        saveLayout('log')
+
+        # clear table
+        disableSelectionCallback()
+        dc.x.log.model.v.clear()
+        dc.x.log.selection_model.v.reset()
+        enableSelectionCallback()
+        dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
+
+        if not dc.sp.log.index.v:
+            loadLayout('log')
+            return
+
+        for lid in dc.sp.log.index.v:
+
+            if dc.sp.log._(lid).ltype.v not in dc.c.log.filters.v:
+                dc.x.log.slid.v = 0
+                continue
+
+            dc.x.log.model.v.insertRow(0, [
+                QStandardItem(str(lid).zfill(4)),
+                QStandardItem(dc.sp.log._(lid).summary.v),
+                QStandardItem(dc.sp.log._(lid).ltype.v),
+                QStandardItem(convert(dc.sp.log._(lid).modified.v)),
+                QStandardItem(convert(dc.sp.log._(lid).created.v))
+            ])
+
+        loadLayout('log')
+
+    """
+    rowcount = dc.x.log.model.v.rowCount()
+    if rowcount <= 0:
+        disableEditCallbacks()
+        applyStates(states.startup, dc.ui.log.v)
+        return
+    """
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-headers = ['ID', 'Created', 'Summary']
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NxLog:
 
     @logger('NxLog.__init__(self)', 'self')
@@ -130,9 +206,36 @@ class NxLog:
 
         dc.m.log.v = self
 
+        dc.c.log.filters.v = {'User', 'Milestone', 'Track'}
+
         applyStates(states.startup, dc.ui.log.v)
+
+        loglist.initTable()
         enableAllCallbacks()
 
+    @logger('NxLog.onSummaryChanged(self)', 'self')
+    def onSummaryChanged(self):
+        pass
+
+    @logger('NxLog.onDescriptionChanged(self)', 'self')
+    def onDescriptionChanged(self):
+        pass
+
+    @logger('NxLog.onNewLogClicked(self)', 'self')
+    def onNewLogClicked(self):
+
+        timestamp = int(time.time())
+        lid = dc.x.log.slid.v = dc.sp.nextlid.v
+        dc.sp.log.index.v.add(lid)
+        dc.sp.nextlid.v += 1
+
+        dc.sp.log._(lid).created.v     = timestamp
+        dc.sp.log._(lid).modified.v    = timestamp
+        dc.sp.log._(lid).ltype.v       = 'User'
+        dc.sp.log._(lid).summary.v     = ''
+        dc.sp.log._(lid).description.v = ''
+
+        loglist.reloadTable()
 
 '''
 

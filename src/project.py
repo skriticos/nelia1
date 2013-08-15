@@ -435,7 +435,6 @@ class projectlist:
         if rowcount <= 0:
             disableEditCallbacks()
             applyStates(states.startup, dc.ui.project.v)
-            enableEditCallbacks()
             return
 
         # we don't have a selected project id (outside the filter or deleted)
@@ -590,6 +589,7 @@ class NxProject():
 
         # init log control data
         dc.sp.nextlid.v     = 1
+        dc.sp.log.index.v   = set()
 
         # set state
         applyStates(states.selected, dc.ui.project.v)
