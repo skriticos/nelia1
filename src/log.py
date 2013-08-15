@@ -26,13 +26,9 @@ states.startup = {
     'line_log_summary': {'enabled': False}
 }
 
-states.editlog = {
+states.selected = {
     'text_log_message': {'clear': True, 'enabled': True},
     'line_log_summary': {'clear': True, 'enabled': True}
-}
-states.noeditlogs = {
-    'text_log_message': {'clear': True, 'enabled': False},
-    'line_log_summary': {'clear': True, 'enabled': False}
 }
 
 states.description_normal = {
@@ -82,41 +78,67 @@ def enableAllCallbacks():
     w = dc.ui.log.v
     w.btn_log_maximize          .toggled.connect(onLogMaxToggled)
 
+    # filter callbacks
+    dc.ui.log.v.btn_log_user        .toggled.connect(onFilterUserToggled)
+    dc.ui.log.v.btn_log_milestone   .toggled.connect(onFilterMilestoneToggled)
+    dc.ui.log.v.btn_log_tracking    .toggled.connect(onFilterTrackToggled)
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # AUXILIARY CALLBACK IMPLEMENTATION
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Maximize / restore callback for infox maximization toggle.
 
-@logger('NxLog.onInfoMaxToggled(state)', 'state')
+@logger('(log) onInfoMaxToggled(state)', 'state')
 def onLogMaxToggled(state):
-
     if state:
         applyStates(states.description_maximized, dc.ui.log.v)
     else:
         applyStates(states.description_normal, dc.ui.log.v)
 
-# switch to roadmap or project
 
-@logger('NxProjectStates.onShowLogs()')
+### FILTER TOGGLE CALLBACKS ###
+
+@logger('(log) onFilterUserToggled(checked)', 'checked')
+def onFilterUserToggled(checked):
+    if checked:
+        dc.c.log.filters.v.add('User')
+    else:
+        dc.c.log.filters.v.discard('User')
+
+@logger('(log) onFilterMilestoneToggled(checked)', 'checked')
+def onFilterMilestoneToggled(checked):
+    if checked:
+        dc.c.log.filters.v.add('Milestone')
+    else:
+        dc.c.log.filters.v.discard('Milestone')
+
+
+def onFilterTrackToggled(checked):
+    if checked:
+        dc.c.log.filters.v.add('Track')
+    else:
+        dc.c.log.filters.v.discard('Track')
+
+
+### NAVI CALLBACKS ###
+
+@logger('(log) onShowLogs()')
 def onShowRoadmap():
 
     dc.ui.log.v.setParent(dc.m.mainwindow.v)
     dc.m.roadmap.states.v.onShown()
     dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
-@logger('NxProjectStates.onShowProject()')
+@logger('(log) onShowProject()')
 def onShowProject():
 
     dc.ui.log.v.setParent(dc.m.mainwindow.v)
     dc.ui.main.v.setCentralWidget(dc.ui.project.v)
 
 # Called when view changes to log.
-# 1. Check if pid changed since last state --(no)--> return
-# 2. reload table
-# 3. set state
 
-@logger('NxLogStates.onShown()')
+@logger('(log) onShown()')
 def onShown():
 
     dc.ui.log.v.lbl_project_name.setText(dc.sp.name.v)
@@ -132,7 +154,7 @@ class loglist:
 
     headers = [
         'ID',
-        'Summary'
+        'Summary',
         'Type',
         'Modified',
         'Created'
@@ -187,13 +209,42 @@ class loglist:
 
         loadLayout('log')
 
-    """
-    rowcount = dc.x.log.model.v.rowCount()
-    if rowcount <= 0:
-        disableEditCallbacks()
-        applyStates(states.startup, dc.ui.log.v)
-        return
-    """
+        # we don't select anything if we don't have rows
+        rowcount = dc.x.log.model.v.rowCount()
+        if rowcount <= 0:
+
+            disableEditCallbacks()
+            applyStates(states.startup, dc.ui.log.v)
+            return
+
+        # we don't have a selected project id (outside the filter or deleted)
+        if not dc.x.log.slid.v:
+
+            index = dc.x.log.model.v.index(0, 0)
+            lid   = int(dc.x.log.model.v.data(index))
+            dc.x.log.slid.v = lid
+
+            s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+            dc.x.log.selection_model.v.setCurrentIndex(index, s|r)
+            selection = dc.x.log.view.v.selectionModel().selection()
+            applyStates(states.selected, dc.ui.log.v)
+
+            return
+
+        # iterate through table rows
+        for rowcnt in range(dc.x.log.model.v.rowCount()):
+
+            index = dc.x.log.model.v.index(rowcnt, 0)
+            lid = int(dc.x.log.model.v.data(index))
+
+            # if we have a match, select it and abort
+            if lid == dc.x.log.slid.v:
+                s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+                dc.x.log.selection_model.v.setCurrentIndex(index, s|r)
+                selection = dc.x.log.view.v.selectionModel().selection()
+                applyStates(states.selected, dc.ui.log.v)
+                break
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES

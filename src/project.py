@@ -433,23 +433,29 @@ class projectlist:
         # we don't select anything if we don't have rows
         rowcount = dc.x.project.model.v.rowCount()
         if rowcount <= 0:
+
             disableEditCallbacks()
             applyStates(states.startup, dc.ui.project.v)
             return
 
         # we don't have a selected project id (outside the filter or deleted)
         if not dc.spid.v:
+
             index = dc.x.project.model.v.index(0, 0)
             pid = int(dc.x.project.model.v.data(index))
             dc.spid.v = pid
             dc.sp = dc.s._(pid)
+
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
             selection = dc.x.project.view.v.selectionModel().selection()
             applyStates(states.selected, dc.ui.project.v)
 
+            return
+
         # iterate through table rows
         for rowcnt in range(dc.x.project.model.v.rowCount()):
+
             index = dc.x.project.model.v.index(rowcnt, 0)
             pid = int(dc.x.project.model.v.data(index))
 
