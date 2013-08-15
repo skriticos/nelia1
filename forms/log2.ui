@@ -428,42 +428,79 @@ height:1px;</string>
              <property name="spacing">
               <number>0</number>
              </property>
-             <item row="0" column="1">
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
+             <item row="0" column="0" colspan="2">
+              <widget class="QWidget" name="widget" native="true">
+               <property name="minimumSize">
                 <size>
-                 <width>316</width>
-                 <height>20</height>
+                 <width>0</width>
+                 <height>0</height>
                 </size>
                </property>
-              </spacer>
-             </item>
-             <item row="0" column="2">
-              <widget class="QToolButton" name="btn_log_maximize">
-               <property name="font">
-                <font>
-                 <pointsize>8</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Maximize</string>
-               </property>
-               <property name="checkable">
-                <bool>true</bool>
-               </property>
+               <layout class="QGridLayout" name="gridLayout_8">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>6</number>
+                </property>
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_5">
+                  <property name="text">
+                   <string>Summary:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>316</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QToolButton" name="btn_log_maximize">
+                  <property name="font">
+                   <font>
+                    <pointsize>8</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Maximize</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0" colspan="3">
+                 <widget class="QLineEdit" name="line_log_summary"/>
+                </item>
+               </layout>
               </widget>
              </item>
-             <item row="0" column="0">
+             <item row="1" column="0">
               <widget class="QLabel" name="label_3">
                <property name="text">
                 <string>Log Message:</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="0" colspan="3">
+             <item row="2" column="0" colspan="2">
               <widget class="QTextEdit" name="text_log_message"/>
              </item>
             </layout>
@@ -501,8 +538,17 @@ height:1px;</string>
            <widget class="QTableView" name="tbl_log_list">
             <property name="font">
              <font>
-              <pointsize>8</pointsize>
+              <pointsize>11</pointsize>
              </font>
+            </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
             </property>
            </widget>
           </item>
@@ -587,7 +633,6 @@ height:1px;</string>
   <tabstop>btn_log_delete</tabstop>
   <tabstop>btn_show_project</tabstop>
   <tabstop>btn_show_roadmap</tabstop>
-  <tabstop>btn_log_maximize</tabstop>
   <tabstop>text_log_message</tabstop>
   <tabstop>btn_log_user</tabstop>
   <tabstop>btn_log_milestone</tabstop>

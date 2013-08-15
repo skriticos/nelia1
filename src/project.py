@@ -1,7 +1,6 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#
 # This file contains the business end of the project widget. This manages the
 # documents and the projects within the documents.
 #
@@ -15,20 +14,24 @@
 import os
 import datetime
 import time
+
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide import QtUiTools
-from common import *
+
 from datacore import *
+from common import *
+from common2 import *
 import mistctrl                       # milestone control module for new project
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# STATES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # We start with the declaration of the widget states.
 # These are applield with the applyStates method from the common module.
 # applyStates(states.startup, dc.ui.project.v)
 
 class states: pass
-dc.m.project.states.v = states
 
 # Did I mention that the names I come up with are a bit vague sometimes? So this
 # is the startup state. The state is set on startup.. and on load documnt.. and
@@ -105,6 +108,8 @@ states.description_maximized = {
     'gl_info':      {'margins': (0, 0, 15, 0)}
 }
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CALLBACK CONTROL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Callbacks! All of them. The en/disable selection callbacks apply to the
 # selection change in the project list table. This is used in the reloadTable
@@ -184,6 +189,11 @@ def enableAllCallbacks():
     # edit / selection
     enableEditCallbacks()
     enableSelectionCallback()
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# AUXILIARY CALLBACK IMPLEMENTATIONS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Even more callbacks! This time, it's the onFoo..() callback slot
 # implementations.
@@ -317,7 +327,7 @@ def onSelectionChanged(new, old):
 @logger('onShowLogs()')
 def onShowLogs():
     dc.ui.project.v.setParent(None)
-    dc.m.log.states.v.onShown()
+    dc.m.log.onShown.v()
     dc.ui.main.v.setCentralWidget(dc.ui.log.v)
 
 @logger('onShowRoadmap()')
@@ -326,6 +336,8 @@ def onShowRoadmap():
     dc.m.roadmap.states.v.onShown()
     dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class projectlist:
@@ -352,42 +364,10 @@ class projectlist:
 
         dc.x.project.view.v = dc.ui.project.v.tbl_project_list
         dc.x.project.model.v = QStandardItemModel()
-        dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
         dc.x.project.view.v.setModel(dc.x.project.model.v)
+        dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
         dc.x.project.selection_model.v   = dc.x.project.view.v.selectionModel()
         dc.x.project.horizontal_header.v = dc.x.project.view.v.horizontalHeader()
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # The next two methods save/load the current layout to/from the datacore
-    # configuration section (dc.c.project..). This is not writing the
-    # configuration to the file though, just stores it in datacore so that
-    # dcconfigsave() can do it at exit.
-
-    @logger('projectlist.saveLayout(self)')
-    def saveLayout():
-
-        # save header widths
-        dc.c.project.header.width.v = list()
-        for i in range(dc.x.project.model.v.columnCount()):
-            dc.c.project.header.width.v.append(dc.x.project.view.v.columnWidth(i))
-
-        # save sort column / order
-        sort  = dc.x.project.horizontal_header.v.sortIndicatorSection()
-        order = dc.x.project.horizontal_header.v.sortIndicatorOrder().__repr__()
-        dc.c.project.sort.column.v = sort
-        dc.c.project.sort.order.v  = order
-
-    @logger('projectlist.loadLayout(self)')
-    def loadLayout():
-
-        # load header widths
-        for i,v in enumerate(dc.c.project.header.width.v):
-            dc.x.project.view.v.setColumnWidth(i, v)
-
-        # load sorting
-        if dc.c.project.sort.column.v:
-            dc.x.project.horizontal_header.v.setSortIndicator(
-                dc.c.project.sort.column.v, convert(dc.c.project.sort.order.v))
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # used in with setTableValue
@@ -401,24 +381,11 @@ class projectlist:
     colModified  = 7
     colCreated   = 8
 
-    # This sets a cell value in the currently selected project.
-    # Don't feed this method anything 'non-string' as value, or it will throw
-    # segmentation faults at you!
-
-    @logger('NxProject.setTableValue(col, value)', 'col', 'value')
-    def setTableValue(col, value):
-        row = dc.x.project.selection_model.v.currentIndex().row()
-        if row > -1:
-            dc.x.project.model.v.setItem(row, col, QStandardItem(value))
-        else:
-            # Famous last words: this should never happen
-            log('NO ROW')
-
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @logger('projectlist.reloadTable(toggled=False)')
     def reloadTable(toggled=False):
 
-        projectlist.saveLayout()
+        saveLayout('project')
 
         # clear table
         disableSelectionCallback()
@@ -455,7 +422,7 @@ class projectlist:
                 QStandardItem(convert(dc.s._(pid).modified.v)),
                 QStandardItem(convert(dc.s._(pid).created.v)) ])
 
-        projectlist.loadLayout()
+        loadLayout('project')
 
         # now we have the table as required, now set the selection This is a bit
         # tricky at times. If we have the selection within the visible with the
@@ -468,7 +435,6 @@ class projectlist:
         if rowcount <= 0:
             disableEditCallbacks()
             applyStates(states.startup, dc.ui.project.v)
-            enableEditCallbacks()
             return
 
         # we don't have a selected project id (outside the filter or deleted)
@@ -495,6 +461,8 @@ class projectlist:
                 break
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CORE CLASSES
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class NxProject():
 
@@ -516,7 +484,7 @@ class NxProject():
         projectlist.initTable()
         applyStates(states.startup, dc.ui.project.v)
         if dc.x.config.loaded.v:
-            projectlist.loadLayout()
+            loadLayout('project')
             if dc.c.lastpath.v:
                 applyStates(states.last, dc.ui.project.v)
 
@@ -533,7 +501,8 @@ class NxProject():
         timestamp = int(time.time())
         dc.sp.modified.v = timestamp
         dc.r.changed.v = True
-        projectlist.setTableValue(projectlist.colModified, convert(timestamp))
+        setTableValue('project',
+                                  projectlist.colModified, convert(timestamp))
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # The following callbacks are used when currently selected project
@@ -545,14 +514,14 @@ class NxProject():
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
         self.touchProject()
-        projectlist.setTableValue(projectlist.colName, name)
+        setTableValue('project', projectlist.colName, name)
 
     @logger('NxProject.onProjectTypeChanged(self, ptype)', 'self', 'ptype')
     def onProjectTypeChanged(self, ptype):
 
         dc.sp.ptype.v = ptype
         self.touchProject()
-        projectlist.setTableValue(projectlist.colType, ptype)
+        setTableValue('project', projectlist.colType, ptype)
 
     @logger('NxProject.onProjectCategoryChanged(self, category)',
             'self', 'category')
@@ -560,7 +529,7 @@ class NxProject():
 
         dc.sp.category.v = category
         self.touchProject()
-        projectlist.setTableValue(projectlist.colCategory, category)
+        setTableValue('project', projectlist.colCategory, category)
 
     @logger('NxProject.onProjectPriorityChanged(self, priority)',
             'self', 'priority')
@@ -568,7 +537,7 @@ class NxProject():
 
         dc.sp.priority.v = priority
         self.touchProject()
-        projectlist.setTableValue(projectlist.colPritoriy, str(priority))
+        setTableValue('project', projectlist.colPritoriy, str(priority))
 
     @logger('NxProject.onProjectChallengeChanged(self, challenge)',
             'self', 'challenge')
@@ -576,7 +545,7 @@ class NxProject():
 
         dc.sp.challenge.v = challenge
         self.touchProject()
-        projectlist.setTableValue(projectlist.colChallenge, str(challenge))
+        setTableValue('project', projectlist.colChallenge, str(challenge))
 
     @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
     def onProjectDescriptionChanged(self):
@@ -620,6 +589,7 @@ class NxProject():
 
         # init log control data
         dc.sp.nextlid.v     = 1
+        dc.sp.log.index.v   = set()
 
         # set state
         applyStates(states.selected, dc.ui.project.v)
