@@ -56,11 +56,13 @@ def disableSelectionCallback():
 
 @logger('(log) enableEditCallbacks()')
 def enableEditCallbacks():
+
     dc.ui.log.v.line_log_summary.textChanged.connect(dc.m.log.v.onSummaryChanged)
     dc.ui.log.v.text_log_message.textChanged.connect(dc.m.log.v.onDescriptionChanged)
 
 @logger('(log) disableEditCallbacks()')
 def disableEditCallbacks():
+
     dc.ui.log.v.line_log_summary.textChanged.disconnect(dc.m.log.v.onSummaryChanged)
     dc.ui.log.v.text_log_message.textChanged.disconnect(dc.m.log.v.onDescriptionChanged)
 
@@ -82,6 +84,9 @@ def enableAllCallbacks():
     dc.ui.log.v.btn_log_user        .toggled.connect(onFilterUserToggled)
     dc.ui.log.v.btn_log_milestone   .toggled.connect(onFilterMilestoneToggled)
     dc.ui.log.v.btn_log_tracking    .toggled.connect(onFilterTrackToggled)
+
+    # edit callbacks
+    enableEditCallbacks()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # AUXILIARY CALLBACK IMPLEMENTATION
@@ -264,13 +269,31 @@ class NxLog:
         loglist.initTable()
         enableAllCallbacks()
 
-    @logger('NxLog.onSummaryChanged(self)', 'self')
-    def onSummaryChanged(self):
-        pass
+    @logger('NxLog.touchLog(self)', 'self')
+    def touchLog(self):
+
+        timestamp = int(time.time())
+        lid = dc.x.log.slid.v
+        dc.sp.log._(lid).modified.v = timestamp
+        x = convert(timestamp)
+        setTableValue('log', loglist.colModified, x)
+        dc.ui.log.v.lbl_log_modified.setText(x)
+        dc.m.project.v.touchProject()
+
+    @logger('NxLog.onSummaryChanged(self, summary)', 'self', 'summary')
+    def onSummaryChanged(self, summary):
+
+        lid = dc.x.log.slid.v
+        dc.sp.log._(lid).summary.v = summary
+        setTableValue('log', loglist.colSummary, summary)
+        self.touchLog()
 
     @logger('NxLog.onDescriptionChanged(self)', 'self')
     def onDescriptionChanged(self):
-        pass
+
+        lid = dc.x.log.slid.v
+        dc.sp.log._(lid).description.v = dc.ui.log.v.text_log_message.toHtml()
+        self.touchLog()
 
     @logger('NxLog.onNewLogClicked(self)', 'self')
     def onNewLogClicked(self):
@@ -287,6 +310,7 @@ class NxLog:
         dc.sp.log._(lid).description.v = ''
 
         loglist.reloadTable()
+        dc.ui.log.v.line_log_summary.setFocus()
 
 '''
 

@@ -448,6 +448,7 @@ class projectlist:
 
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
+            # note: this triggers onSelectionChanged
             selection = dc.x.project.view.v.selectionModel().selection()
             applyStates(states.selected, dc.ui.project.v)
 
@@ -461,8 +462,10 @@ class projectlist:
 
             # if we have a match, select it and abort
             if pid == dc.spid.v:
+
                 s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
                 dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
+                # note: this triggers onSelectionChanged
                 selection = dc.x.project.view.v.selectionModel().selection()
                 break
 
@@ -507,8 +510,7 @@ class NxProject():
         timestamp = int(time.time())
         dc.sp.modified.v = timestamp
         dc.r.changed.v = True
-        setTableValue('project',
-                                  projectlist.colModified, convert(timestamp))
+        setTableValue('project', projectlist.colModified, convert(timestamp))
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # The following callbacks are used when currently selected project

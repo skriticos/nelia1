@@ -1,7 +1,8 @@
-
-
-
-* create new log entry (data tree)
-* update log table
 * integrate project actions into log creation (new)
+* log selection change
+* cleanup and tag
+* roadmap ..
+* config save and load
+* document new, save, load, load last
+* exit handler
 
