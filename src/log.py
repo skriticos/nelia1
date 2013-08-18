@@ -118,6 +118,7 @@ def onFilterUserToggled(checked):
         dc.c.log.filters.v.add('User')
     else:
         dc.c.log.filters.v.discard('User')
+    loglist.reloadTable()
 
 @logger('(log) onFilterMilestoneToggled(checked)', 'checked')
 def onFilterMilestoneToggled(checked):
@@ -126,6 +127,7 @@ def onFilterMilestoneToggled(checked):
         dc.c.log.filters.v.add('Milestone')
     else:
         dc.c.log.filters.v.discard('Milestone')
+    loglist.reloadTable()
 
 @logger('(log) onFilterTrackToggled(checked', 'checked')
 def onFilterTrackToggled(checked):
@@ -134,6 +136,7 @@ def onFilterTrackToggled(checked):
         dc.c.log.filters.v.add('Track')
     else:
         dc.c.log.filters.v.discard('Track')
+    loglist.reloadTable()
 
 @logger('(log) onSelectionChange(new, old)', 'new', 'old')
 def onSelectionChanged(new, old):
@@ -150,8 +153,8 @@ def onSelectionChanged(new, old):
     # populate edit fields on selection change
     disableEditCallbacks()
     dc.ui.log.v.lbl_log_type.setText(dc.sp.log._(lid).ltype.v)
-    dc.ui.log.v.lbl_log_created.setText(str(dc.sp.log._(lid).created.v))
-    dc.ui.log.v.lbl_log_modified.setText(str(dc.sp.log._(lid).modified.v))
+    dc.ui.log.v.lbl_log_created.setText(convert(dc.sp.log._(lid).created.v))
+    dc.ui.log.v.lbl_log_modified.setText(convert(dc.sp.log._(lid).modified.v))
     dc.ui.log.v.line_log_summary.setText(dc.sp.log._(lid).summary.v)
     dc.ui.log.v.text_log_message.setText(dc.sp.log._(lid).description.v)
     enableEditCallbacks()
@@ -249,7 +252,6 @@ class loglist:
         rowcount = dc.x.log.model.v.rowCount()
         if rowcount <= 0:
 
-            disableEditCallbacks()
             applyStates(states.startup, dc.ui.log.v)
             return
 

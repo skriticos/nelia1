@@ -501,7 +501,11 @@ height:1px;</string>
               </widget>
              </item>
              <item row="2" column="0" colspan="2">
-              <widget class="QTextEdit" name="text_log_message"/>
+              <widget class="QTextEdit" name="text_log_message">
+               <property name="autoFormatting">
+                <set>QTextEdit::AutoBulletList</set>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
