@@ -1,4 +1,3 @@
-* delete log
 * integrate project actions into log creation (new)
 * cleanup and tag
 * roadmap ..
