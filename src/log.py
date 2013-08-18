@@ -48,11 +48,16 @@ states.description_maximized = {
 
 @logger('(log) enableSelectionCallback()')
 def enableSelectionCallback():
-    pass
+
+    m = dc.x.log.selection_model.v
+    m.selectionChanged.connect(onSelectionChanged)
 
 @logger('(log) disableSelectionCallback()')
 def disableSelectionCallback():
-    pass
+
+    return
+    m = dc.x.log.selection_model.v
+    m.selectionChanged.disconnect(onSelectionChanged)
 
 @logger('(log) enableEditCallbacks()')
 def enableEditCallbacks():
@@ -87,6 +92,7 @@ def enableAllCallbacks():
 
     # edit callbacks
     enableEditCallbacks()
+    enableSelectionCallback()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # AUXILIARY CALLBACK IMPLEMENTATION
@@ -96,6 +102,7 @@ def enableAllCallbacks():
 
 @logger('(log) onInfoMaxToggled(state)', 'state')
 def onLogMaxToggled(state):
+
     if state:
         applyStates(states.description_maximized, dc.ui.log.v)
     else:
@@ -106,6 +113,7 @@ def onLogMaxToggled(state):
 
 @logger('(log) onFilterUserToggled(checked)', 'checked')
 def onFilterUserToggled(checked):
+
     if checked:
         dc.c.log.filters.v.add('User')
     else:
@@ -113,17 +121,40 @@ def onFilterUserToggled(checked):
 
 @logger('(log) onFilterMilestoneToggled(checked)', 'checked')
 def onFilterMilestoneToggled(checked):
+
     if checked:
         dc.c.log.filters.v.add('Milestone')
     else:
         dc.c.log.filters.v.discard('Milestone')
 
-
+@logger('(log) onFilterTrackToggled(checked', 'checked')
 def onFilterTrackToggled(checked):
+
     if checked:
         dc.c.log.filters.v.add('Track')
     else:
         dc.c.log.filters.v.discard('Track')
+
+@logger('(log) onSelectionChange(new, old)', 'new', 'old')
+def onSelectionChanged(new, old):
+
+    # check for valid index
+    indexes = new.indexes()
+    if not indexes:
+        return
+
+    # get selected lid from table model
+    index = indexes[0]
+    lid = dc.x.log.slid.v = int(dc.x.log.model.v.itemFromIndex(index).text())
+
+    # populate edit fields on selection change
+    disableEditCallbacks()
+    dc.ui.log.v.lbl_log_type.setText(dc.sp.log._(lid).ltype.v)
+    dc.ui.log.v.lbl_log_created.setText(str(dc.sp.log._(lid).created.v))
+    dc.ui.log.v.lbl_log_modified.setText(str(dc.sp.log._(lid).modified.v))
+    dc.ui.log.v.line_log_summary.setText(dc.sp.log._(lid).summary.v)
+    dc.ui.log.v.text_log_message.setText(dc.sp.log._(lid).description.v)
+    enableEditCallbacks()
 
 
 ### NAVI CALLBACKS ###
@@ -261,11 +292,8 @@ class NxLog:
     def __init__(self):
 
         dc.m.log.v = self
-
         dc.c.log.filters.v = {'User', 'Milestone', 'Track'}
-
         applyStates(states.startup, dc.ui.log.v)
-
         loglist.initTable()
         enableAllCallbacks()
 

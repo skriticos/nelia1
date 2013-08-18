@@ -1,5 +1,5 @@
+* delete log
 * integrate project actions into log creation (new)
-* log selection change
 * cleanup and tag
 * roadmap ..
 * config save and load
