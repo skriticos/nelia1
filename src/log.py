@@ -336,19 +336,7 @@ class NxLog:
     @logger('NxLog.onNewLogClicked(self)', 'self')
     def onNewLogClicked(self):
 
-        timestamp = int(time.time())
-        lid = dc.x.log.slid.v = dc.sp.nextlid.v
-        dc.sp.log.index.v.add(lid)
-        dc.sp.nextlid.v += 1
-
-        dc.sp.log._(lid).created.v     = timestamp
-        dc.sp.log._(lid).modified.v    = timestamp
-        dc.sp.log._(lid).ltype.v       = 'User'
-        dc.sp.log._(lid).summary.v     = ''
-        dc.sp.log._(lid).description.v = ''
-
-        loglist.reloadTable()
-        dc.m.project.v.touchProject()
+        self.addAutoLog('User', '', '')
         dc.ui.log.v.line_log_summary.setFocus()
 
     @logger('NxLog.onDeleteLogClicked(self)', 'self')
@@ -371,6 +359,34 @@ class NxLog:
         dc.x.log.slid.v = 0
 
         # state
+        loglist.reloadTable()
+        dc.m.project.v.touchProject()
+
+    # addAutoLog is the programatic interface to add log messages to the log
+    # module. It is used by this class for user log creation as well as the
+    # other gui control classes (project, roadmap) to add log messages.
+    #
+    # usage: dc.m.log.v.addAutoLog('Track', 'Project created',
+    #                              'Project foo has been created')
+    #
+    # logtype can be 'User', 'Track' or 'Milestone'
+
+    @logger('NxLog.addAutoLog(self, logtype, summary, message)',
+            'self', 'logtype', 'summary', 'message')
+    def addAutoLog(self, logtype, summary, message):
+
+        timestamp = int(time.time())
+
+        lid = dc.x.log.slid.v = dc.sp.nextlid.v
+        dc.sp.log.index.v.add(lid)
+        dc.sp.nextlid.v += 1
+
+        dc.sp.log._(lid).created.v     = timestamp
+        dc.sp.log._(lid).modified.v    = timestamp
+        dc.sp.log._(lid).ltype.v       = logtype
+        dc.sp.log._(lid).summary.v     = summary
+        dc.sp.log._(lid).description.v = message
+
         loglist.reloadTable()
         dc.m.project.v.touchProject()
 

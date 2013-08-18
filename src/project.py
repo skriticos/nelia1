@@ -599,6 +599,9 @@ class NxProject():
         dc.sp.nextlid.v     = 1
         dc.sp.log.index.v   = set()
 
+        dc.m.log.v.addAutoLog('Track', 'Project created',
+                              'Project has been created')
+
         # set state
         applyStates(states.selected, dc.ui.project.v)
         projectlist.reloadTable()
