@@ -1,0 +1,7 @@
+
+
+
+* create new log entry (data tree)
+* update log table
+* integrate project actions into log creation (new)
+
