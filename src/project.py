@@ -308,6 +308,7 @@ def onSelectionChanged(new, old):
 
     # populate edit fields on selection change
     disableEditCallbacks()
+    dc.auto.v = True
     dc.ui.project.v.line_project_name.setText(dc.sp.name.v)
     dc.ui.project.v.line_selected_project.setText(dc.sp.name.v)
     dc.ui.project.v.sb_project_priority.setValue(dc.sp.priority.v)
@@ -317,6 +318,7 @@ def onSelectionChanged(new, old):
     dc.ui.project.v.cb_project_category.setCurrentIndex(
             dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
     dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
+    dc.auto.v = False
     enableEditCallbacks()
 
 # switch to log and roadmap views
@@ -470,6 +472,26 @@ class projectlist:
                 break
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EVENT FILTERS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# handle focus out event for project name widget
+
+class EfNameFocusOut(QObject):
+
+    def eventFilter(self, obj, event):
+
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.project.changeflag.name.v:
+                dc.m.log.v.addAutoLog('Track', 'Name changed',
+                        'Project name changed to {}'.format(dc.sp.name.v))
+            dc.x.project.changeflag.name.v = False
+
+        return QObject.eventFilter(self, obj, event)
+
+ef_name_focus_out = EfNameFocusOut()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -499,6 +521,9 @@ class NxProject():
 
         enableAllCallbacks()
 
+        dc.x.project.changeflag.name.v = False
+        dc.ui.project.v.line_project_name.installEventFilter(ef_name_focus_out)
+
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the
     # changed value. This is called by all persistent data operations of the
@@ -521,6 +546,8 @@ class NxProject():
 
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
+        if dc.auto.v:
+            dc.x.project.changeflag.name.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colName, name)
 

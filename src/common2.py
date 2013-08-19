@@ -61,4 +61,40 @@ def setTableValue(module, col, value):
         log('NO ROW SELECTED')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Applies a suite of states to widgets.
+#
+#   enabled: en/disable widget, bool
+#   visible: show/hide wiget, bool
+#   margins: set margins (n,n,n,n)
+#   text: set text (for input boxes and labels)
+#   clear: clear widget
+#   index: set index for comboboxes
+#   value: set value for spinboxes
+
+@logger('applyStates(states, widget)', 'states', 'widget')
+def applyStates(states, widget):
+
+    dc.auto.v = True
+    # loop through controls (widgets)
+    for control, state in states.items():
+
+        # loop through state attributes
+        pd = widget.__dict__
+        if 'enabled' in state:
+            pd[control].setEnabled(state['enabled'])
+        if 'visible' in state:
+            pd[control].setVisible(state['visible'])
+        if 'margins' in state:
+            pd[control].setContentsMargins(*state['margins'])
+        if 'text' in state:
+            pd[control].setText(state['text'])
+        if 'clear' in state:
+            pd[control].clear()
+        if 'index' in state:
+            pd[control].setCurrentIndex(state['index'])
+        if 'value' in state:
+            pd[control].setValue(state['value'])
+    dc.auto.v = False
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
