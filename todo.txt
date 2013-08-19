@@ -1,4 +1,8 @@
-* integrate project actions into log creation (new)
+* integrate project actions into log creation (new) .. add type / prio / challange changes too log
+  integrating name, type, prio and challange change will be tricky. We don't
+  want to have a new entry for each change callback, as users will scroll
+  through the list. Instead we want to set a change marker with the edit
+  callbacks and then a focus lost callback to create the event.
 * cleanup and tag
 * roadmap ..
 * config save and load

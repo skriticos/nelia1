@@ -231,6 +231,7 @@ class loglist:
 
         if not dc.sp.log.index.v:
             loadLayout('log')
+            applyStates(states.startup, dc.ui.log.v)
             return
 
         for lid in dc.sp.log.index.v:
