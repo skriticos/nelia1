@@ -1,10 +1,28 @@
-* integrate project actions into log creation (new) .. add type / prio / challange changes too log
-  integrating name, type, prio and challange change will be tricky. We don't
-  want to have a new entry for each change callback, as users will scroll
-  through the list. Instead we want to set a change marker with the edit
-  callbacks and then a focus lost callback to create the event.
-* cleanup and tag
 * roadmap ..
+
+    INFRASTRUCTURE
+
+    .. states
+    .. callbacks
+    .. calback control
+    .. utility classes
+    .. event filters
+    .. milestone logs
+    .. updateTable
+    .. selectionChange
+    .. touchRoadmap
+
+    CORE COMPONENTS
+
+    * skeleton
+    * init milestone module
+    * init milestone ui
+    * create milestone item
+    * edit milestone item
+    * delete milestone item
+    * change milestone selection
+    * finalize milestone
+
 * config save and load
 * document new, save, load, load last
 * exit handler

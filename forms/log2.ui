@@ -665,9 +665,13 @@ height:1px;</string>
   <tabstop>btn_log_delete</tabstop>
   <tabstop>btn_show_project</tabstop>
   <tabstop>btn_show_roadmap</tabstop>
+  <tabstop>line_log_summary</tabstop>
   <tabstop>text_log_message</tabstop>
-  <tabstop>btn_log_tracking</tabstop>
+  <tabstop>btn_log_maximize</tabstop>
   <tabstop>tbl_log_list</tabstop>
+  <tabstop>btn_log_user</tabstop>
+  <tabstop>btn_log_milestone</tabstop>
+  <tabstop>btn_log_tracking</tabstop>
  </tabstops>
  <resources/>
  <connections/>

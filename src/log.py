@@ -32,6 +32,16 @@ states.selected = {
     'btn_log_delete' :  {'enabled': True}
 }
 
+states.user = {
+    'text_log_message': {'enabled': True},
+    'line_log_summary': {'enabled': True}
+}
+
+states.nonuser = {
+    'text_log_message': {'enabled': False},
+    'line_log_summary': {'enabled': False}
+}
+
 states.description_normal = {
     'log_meta':       {'visible': True, 'enabled': True},
     'group_log_list': {'visible': True, 'enabled': True},
@@ -158,6 +168,12 @@ def onSelectionChanged(new, old):
     dc.ui.log.v.lbl_log_modified.setText(convert(dc.sp.log._(lid).modified.v))
     dc.ui.log.v.line_log_summary.setText(dc.sp.log._(lid).summary.v)
     dc.ui.log.v.text_log_message.setText(dc.sp.log._(lid).description.v)
+
+    if dc.sp.log._(lid).ltype.v == 'User':
+        applyStates(states.user, dc.ui.log.v)
+    else:
+        applyStates(states.nonuser, dc.ui.log.v)
+
     enableEditCallbacks()
 
 
@@ -292,7 +308,6 @@ class loglist:
                 selection = dc.x.log.view.v.selectionModel().selection()
                 break
 
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -392,3 +407,4 @@ class NxLog:
         dc.m.project.v.touchProject()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
