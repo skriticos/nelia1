@@ -183,7 +183,7 @@ def onSelectionChanged(new, old):
 def onShowRoadmap():
 
     dc.ui.log.v.setParent(dc.m.mainwindow.v)
-    dc.m.roadmap.states.v.onShown()
+    dc.m.roadmap.cbaux.v.onShow()
     dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
 @logger('(log) onShowProject()')

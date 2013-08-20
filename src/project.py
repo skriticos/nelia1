@@ -329,7 +329,7 @@ def onShowLogs():
 @logger('onShowRoadmap()')
 def onShowRoadmap():
     dc.ui.project.v.setParent(None)
-    dc.m.roadmap.states.v.onShown()
+    dc.m.roadmap.cbaux.v.onShow()
     dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

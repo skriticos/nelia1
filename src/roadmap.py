@@ -1,6 +1,132 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This file contains the roadmap module core. It manages the roadmap widget
+# controls, milestone item display and changes.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+import os
+import datetime
+import time
+
+from PySide.QtCore import *
+from PySide.QtGui import *
+from PySide import QtUiTools
+
+from datacore import *
+from common import *
+from common2 import *
+
+# might want to bring these two modules into this source file?
+import mistctrl                       # milestone control module for new project
+import mistnavi                       # milestone navigation button
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# STATES
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class states: pass
+
+states.startup = {
+    'btn_mi_delete': {'enabled': False},
+    'btn_mi_close':  {'enabled': False},
+    'box_selected_milestone': {'enabled': False}
+}
+
+dc.m.roadmap.states.v = states
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CALLBACK CONTROL
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Functions to enable / disable callback groups.
+# External example: dc.m.roadmap.cbctrl.v.initCallbacks()
+# Internal example: initCallbacks() or CbCtrl.initCallbacks()
+
+class CbCtrl: pass
+
+@logger('(roadmap) initCallbacks()')
+def initCallbacks():
+
+    # loads allways on callbacks
+    dc.ui.roadmap.v.btn_show_project.clicked.connect(onShowProject)
+    dc.ui.roadmap.v.btn_show_logs.clicked.connect(onShowLogs)
+
+CbCtrl.initCallbacks = initCallbacks
+
+dc.m.roadmap.cbctrl.v = CbCtrl
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# AUXILIARY CALLBACK IMPLEMENTATIONS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Auxiliary callback functions
+# External example: dc.m.roadmap.cbaux.v.onShow()
+# Internal example: onShow() or CbAux.onShow()
+
+class CbAux: pass
+
+@logger('(roadmap) onShowLogs()')
+def onShowLogs():
+    dc.ui.roadmap.v.setParent(None)
+    dc.m.log.onShown.v()
+    dc.ui.main.v.setCentralWidget(dc.ui.log.v)
+
+@logger('(roadmap) onShowProject()')
+def onShowProject():
+
+    dc.ui.roadmap.v.setParent(None)
+    dc.ui.log.v.setParent(dc.m.mainwindow.v)
+    dc.ui.main.v.setCentralWidget(dc.ui.project.v)
+
+@logger('(roadmap) onShow()')
+def onShow():
+
+    dc.ui.roadmap.v.lbl_project_name.setText(dc.sp.name.v)
+
+CbAux.onShow        = onShow
+CbAux.onShowLogs    = onShowLogs
+CbAux.onShowProject = onShowProject
+
+dc.m.roadmap.cbaux.v = CbAux
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# UTILITY CLASSES
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+'''
+--> description
+
+class *
+
+dc.m.roadmap.uc.*.v = *
+'''
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EVENT FILTERS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+'''
+class Ef*(FocusOut)|*
+
+dc.m.roadmap.ef.*.v = Ef*()
+'''
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# CORE CLASSES
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class NxRoadmap:
+
+    @logger('NxRoadmap(self)', 'self')
+    def __init__(self):
+
+        dc.m.roadmap.v = self
+        applyStates(states.startup, dc.ui.roadmap.v)
+        initCallbacks()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+"""
 import os, time, gzip, pickle, datetime
 from PySide.QtCore import *
 from PySide.QtGui import *
@@ -475,3 +601,4 @@ class NxRoadmap:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 '''
+"""

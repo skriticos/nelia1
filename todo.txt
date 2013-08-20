@@ -14,9 +14,9 @@
 
     CORE COMPONENTS
 
-    * skeleton
-    * init milestone module
-    * init milestone ui
+    * skeleton                          [done]
+    * init roadmap module               [done]
+    * init roadmap ui                   [done]
     * create milestone item
     * edit milestone item
     * delete milestone item
