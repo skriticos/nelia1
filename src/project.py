@@ -469,24 +469,55 @@ class projectlist:
 # EVENT FILTERS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# handle focus out event for project name widget
-
 class EfNameFocusOut(QObject):
-
     def eventFilter(self, obj, event):
-
         if event.type() == QEvent.Type.FocusOut:
-
-            print(dc.x.project.changeflag.name.v)
-
             if dc.x.project.changeflag.name.v:
                 dc.m.log.v.addAutoLog('Track', 'Name changed',
                         'Project name changed to {}'.format(dc.sp.name.v))
             dc.x.project.changeflag.name.v = False
-
         return QObject.eventFilter(self, obj, event)
-
 ef_name_focus_out = EfNameFocusOut()
+
+class EfCategoryFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.project.changeflag.category.v:
+                dc.m.log.v.addAutoLog('Track', 'Category changed',
+                        'Project category changed to {}'.format(dc.sp.category.v))
+            dc.x.project.changeflag.category.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_category_focus_out = EfCategoryFocusOut()
+
+class EfTypeFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.project.changeflag.ptype.v:
+                dc.m.log.v.addAutoLog('Track', 'Type changed',
+                        'Project type changed to {}'.format(dc.sp.ptype.v))
+            dc.x.project.changeflag.ptype.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_type_focus_out = EfTypeFocusOut()
+
+class EfPriorityFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.project.changeflag.priority.v:
+                dc.m.log.v.addAutoLog('Track', 'Priority changed',
+                        'Project priority changed to {}'.format(dc.sp.priority.v))
+            dc.x.project.changeflag.priority.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_priority_focus_out = EfPriorityFocusOut()
+
+class EfChallengeFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.project.changeflag.challenge.v:
+                dc.m.log.v.addAutoLog('Track', 'Challenge changed',
+                        'Project challenge changed to {}'.format(dc.sp.challenge.v))
+            dc.x.project.changeflag.challenge.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_challenge_focus_out = EfChallengeFocusOut()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
@@ -519,7 +550,15 @@ class NxProject():
         enableAllCallbacks()
 
         dc.x.project.changeflag.name.v = False
+        dc.x.project.changeflag.ptype.v = False
+        dc.x.project.changeflag.category.v = False
+        dc.x.project.changeflag.priority.v = False
+        dc.x.project.changeflag.challenge.v = False
         dc.ui.project.v.line_project_name.installEventFilter(ef_name_focus_out)
+        dc.ui.project.v.cb_project_type.installEventFilter(ef_type_focus_out)
+        dc.ui.project.v.cb_project_category.installEventFilter(ef_category_focus_out)
+        dc.ui.project.v.sb_project_priority.installEventFilter(ef_priority_focus_out)
+        dc.ui.project.v.sb_project_challenge.installEventFilter(ef_challenge_focus_out)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the
@@ -552,6 +591,8 @@ class NxProject():
     def onProjectTypeChanged(self, ptype):
 
         dc.sp.ptype.v = ptype
+        if not dc.auto.v:
+            dc.x.project.changeflag.ptype.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colType, ptype)
 
@@ -560,6 +601,8 @@ class NxProject():
     def onProjectCategoryChanged(self, category):
 
         dc.sp.category.v = category
+        if not dc.auto.v:
+            dc.x.project.changeflag.category.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colCategory, category)
 
@@ -568,6 +611,8 @@ class NxProject():
     def onProjectPriorityChanged(self, priority):
 
         dc.sp.priority.v = priority
+        if not dc.auto.v:
+            dc.x.project.changeflag.priority.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colPritoriy, str(priority))
 
@@ -576,6 +621,8 @@ class NxProject():
     def onProjectChallengeChanged(self, challenge):
 
         dc.sp.challenge.v = challenge
+        if not dc.auto.v:
+            dc.x.project.changeflag.challenge.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colChallenge, str(challenge))
 
