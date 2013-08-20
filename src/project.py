@@ -3,12 +3,6 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # This file contains the business end of the project widget. This manages the
 # documents and the projects within the documents.
-#
-# states
-# callbacks
-# projectlist
-# NxProject
-# NxDocument
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import os
@@ -22,6 +16,7 @@ from PySide import QtUiTools
 from datacore import *
 from common import *
 from common2 import *
+
 import mistctrl                       # milestone control module for new project
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,8 +79,8 @@ states.selected = {
 # data structure before applying this) or you'll enjoy a trip to errorland.
 
 states.new_project = {
-    'line_selected_project' : {'text': 'Unnamed'},
-    'line_project_name'     : {'text': 'Unnamed'},
+    'line_selected_project' : {'text': ''},
+    'line_project_name'     : {'text': ''},
     'cb_project_type'       : {'index': 0},
     'cb_project_category'   : {'index': 0},
     'sb_project_priority'   : {'value': 1},
@@ -111,10 +106,10 @@ states.description_maximized = {
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CALLBACK CONTROL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Callbacks! All of them. The en/disable selection callbacks apply to the
-# selection change in the project list table. This is used in the reloadTable
-# method when crearing the table. We don't want stray callbacks messing up
-# things, do we?
+
+# The en/disable selection callbacks apply to the selection change in the
+# project list table. This is used in the reloadTable method when crearing the
+# table. We don't want stray callbacks messing up things, do we?
 
 @logger('enableSelectionCallback()')
 def enableSelectionCallback():
@@ -189,7 +184,6 @@ def enableAllCallbacks():
     # edit / selection
     enableEditCallbacks()
     enableSelectionCallback()
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # AUXILIARY CALLBACK IMPLEMENTATIONS
@@ -482,6 +476,9 @@ class EfNameFocusOut(QObject):
     def eventFilter(self, obj, event):
 
         if event.type() == QEvent.Type.FocusOut:
+
+            print(dc.x.project.changeflag.name.v)
+
             if dc.x.project.changeflag.name.v:
                 dc.m.log.v.addAutoLog('Track', 'Name changed',
                         'Project name changed to {}'.format(dc.sp.name.v))
@@ -546,7 +543,7 @@ class NxProject():
 
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
-        if dc.auto.v:
+        if not dc.auto.v:
             dc.x.project.changeflag.name.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colName, name)
@@ -588,8 +585,6 @@ class NxProject():
         dc.sp.description.v = dc.ui.project.v.text_project_info.toHtml()
         self.touchProject()
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
     # Create a new project
 
     @logger('NxProject.onNewProjectClicked(self)', 'self')
@@ -611,7 +606,7 @@ class NxProject():
         # set priority
         dc.sp.priority.v  = 1
         dc.sp.challenge.v = 1
-        dc.sp.name.v = 'Unnamed'
+        dc.sp.name.v = ''
         dc.sp.ptype.v = 'Application'
         dc.sp.category.v = 'Development'
 
@@ -633,8 +628,8 @@ class NxProject():
         applyStates(states.selected, dc.ui.project.v)
         projectlist.reloadTable()
         dc.ui.project.v.line_project_name.setFocus()
+        dc.x.project.changeflag.name.v = True
 
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Delete selected project
 
     @logger('NxProject.onDeleteSelectedProject(self)', 'self')
