@@ -21,6 +21,6 @@ def mistctrl_new_tree():
     # v1.0
     dc.sp.m._1.index.v    = {0}     # index of minor milestones
     dc.sp.m._1._0.index.v = set()   # index miids in milestone
-    dc.sp.m._1._0.detail.v  = ''    # milestone description
+    dc.sp.m._1._0.description.v  = ''    # milestone description
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

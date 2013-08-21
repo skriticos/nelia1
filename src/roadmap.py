@@ -33,6 +33,12 @@ states.startup = {
     'box_selected_milestone': {'enabled': False}
 }
 
+states.selected = {
+    'btn_mi_delete': {'enabled': True},
+    'btn_mi_close': {'enabled': True},
+    'box_selected_milestone': {'enabled': True}
+}
+
 dc.m.roadmap.states.v = states
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,8 +56,23 @@ def initCallbacks():
     # loads allways on callbacks
     dc.ui.roadmap.v.btn_show_project.clicked.connect(onShowProject)
     dc.ui.roadmap.v.btn_show_logs.clicked.connect(onShowLogs)
+    dc.ui.roadmap.v.btn_mi_new.clicked.connect(dc.m.roadmap.v.onNewMilestoneItem)
 
-CbCtrl.initCallbacks = initCallbacks
+    enableSelectionCallback()
+
+@logger('(roadmap) enableSelectionCallback()')
+def enableSelectionCallback():
+
+    dc.x.roadmap.selection_model.v.selectionChanged.connect(onSelectionChanged)
+
+@logger('(roadmap) disableSelectionCallback()')
+def disableSelectionCallback():
+
+    dc.x.roadmap.selection_model.v.selectionChanged.disconnect(onSelectionChanged)
+
+CbCtrl.initCallbacks            = initCallbacks
+CbCtrl.enableSelectionCallback  = enableSelectionCallback
+CbCtrl.disableSelectionCallback = disableSelectionCallback
 
 dc.m.roadmap.cbctrl.v = CbCtrl
 
@@ -63,6 +84,40 @@ dc.m.roadmap.cbctrl.v = CbCtrl
 # Internal example: onShow() or CbAux.onShow()
 
 class CbAux: pass
+
+@logger('(roadmap) onSelectionChanged()')
+def onSelectionChanged(new, old):
+
+    auto_prev = dc.auto.v
+    dc.auto.v = True
+
+    # check for valid index
+    indexes = new.indexes()
+    if indexes:
+
+        # get selected lid from table model
+
+        index = indexes[0]
+        miid = dc.x.roadmap.smiid.v \
+             = int(dc.x.roadmap.model.v.itemFromIndex(index).text())
+
+        # populate edit fields on selection change
+
+        disableEditCallbacks()
+
+        ui = dc.ui.roadmap.v
+        ui.line_mi_name.setText(dc.sp.m.mi._(miid).name.v)
+        ui.cb_mi_type.setCurrentIndex(
+                ui.cb_mi_type.findText(dc.sp.m.mi._(miid).mtype.v))
+        ui.cb_mi_priority.setCurrentIndex(
+                ui.cb_mi_priority.findText(dc.sp.m.mi._(miid).priority.v))
+        ui.cb_mi_category.setCurrentIndex(
+                ui.cb_mi_category.findText(dc.sp.m.mi._(miid).category.v))
+        ui.txt_mi_description.setText(dc.sp.m.mi._(miid).description.v)
+
+        enableEditCallbacks()
+
+    dc.auto.v = auto_prev
 
 @logger('(roadmap) onShowLogs()')
 def onShowLogs():
@@ -82,9 +137,10 @@ def onShow():
 
     dc.ui.roadmap.v.lbl_project_name.setText(dc.sp.name.v)
 
-CbAux.onShow        = onShow
-CbAux.onShowLogs    = onShowLogs
-CbAux.onShowProject = onShowProject
+CbAux.onSelectionChanged    = onSelectionChanged
+CbAux.onShow                = onShow
+CbAux.onShowLogs            = onShowLogs
+CbAux.onShowProject         = onShowProject
 
 dc.m.roadmap.cbaux.v = CbAux
 
@@ -92,13 +148,76 @@ dc.m.roadmap.cbaux.v = CbAux
 # UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-'''
---> description
+class milist: pass
 
-class *
+milist.headers = [
+    'ID',
+    'Name',
+    'Status',
+    'Type',
+    'Priority',
+    'Category',
+    'Modified',
+    'Created'
+]
 
-dc.m.roadmap.uc.*.v = *
-'''
+milist.colId        = 0
+milist.colName      = 1
+milist.colStatus    = 2
+milist.colType      = 3
+milist.colPriority  = 4
+milist.colCategory  = 5
+milist.colModified  = 6
+milist.colCreated   = 7
+
+@logger('milist.initTable()')
+def initTable():
+
+    view = dc.x.roadmap.view.v = dc.ui.roadmap.v.tbl_mi_list
+    model = dc.x.roadmap.model.v = QStandardItemModel()
+    view.setModel(model)
+    model.setHorizontalHeaderLabels(milist.headers)
+    dc.x.roadmap.selection_model.v = view.selectionModel()
+    dc.x.roadmap.horizontal_header.v = view.horizontalHeader()
+
+@logger('milist.reloadTable()')
+def reloadTable():
+
+    saveLayout('roadmap')
+
+    disableSelectionCallback()
+    dc.x.roadmap.model.v.clear()
+    dc.x.roadmap.selection_model.v.reset()
+    dc.x.roadmap.model.v.setHorizontalHeaderLabels(milist.headers)
+    enableSelectionCallback()
+
+    major, minor = dc.sp.m.active.v
+    for miid in dc.sp.m._(major)._(minor).index.v:
+
+        # check for filter status
+
+        # STUB
+
+        # add row to table
+        dc.x.roadmap.model.v.insertRow(0, [
+            QStandardItem(str(miid).zfill(4)),
+            QStandardItem(dc.sp.m.mi._(miid).name.v),
+            QStandardItem(dc.sp.m.mi._(miid).status.v),
+            QStandardItem(dc.sp.m.mi._(miid).mtype.v),
+            QStandardItem(dc.sp.m.mi._(miid).priority.v),
+            QStandardItem(dc.sp.m.mi._(miid).category.v),
+            QStandardItem(convert(dc.sp.m.mi._(miid).modified.v)),
+            QStandardItem(convert(dc.sp.m.mi._(miid).created.v))
+        ])
+
+    loadLayout('roadmap')
+
+    # select active milestone item
+
+    # STUB
+
+milist.initTable = initTable
+milist.reloadTable = reloadTable
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # EVENT FILTERS
@@ -116,12 +235,56 @@ dc.m.roadmap.ef.*.v = Ef*()
 
 class NxRoadmap:
 
-    @logger('NxRoadmap(self)', 'self')
+    @logger('NxRoadmap.__init__(self)', 'self')
     def __init__(self):
 
         dc.m.roadmap.v = self
         applyStates(states.startup, dc.ui.roadmap.v)
+        milist.initTable()
         initCallbacks()
+
+    @logger('NxRoadmap.onNewMilestoneItem(self)', 'self')
+    def onNewMilestoneItem(self):
+
+        timestamp = int(time.time())
+
+        # get location and mark new milestone item as selected
+
+        dc.x.roadmap.smiid.v = miid = dc.sp.m.mi.nextid.v
+        dc.sp.m.mi.nextid.v += 1
+
+        major, minor = dc.sp.m.selected.v
+
+        # register new item
+
+        dc.sp.m._(major)._(minor).index.v.add(miid)
+        dc.sp.m.mi.index.v[miid] = (major, minor)
+
+        # assign new milestone item values
+
+        dc.sp.m.mi._(miid).name.v = ''
+        dc.sp.m.mi._(miid).status.v = 'Open'
+        dc.sp.m.mi._(miid).mtype.v = 'Feature'
+        dc.sp.m.mi._(miid).priority.v = 'Medium'
+        dc.sp.m.mi._(miid).category.v = 'Core'
+        dc.sp.m.mi._(miid).description.v = ''
+        dc.sp.m.mi._(miid).created.v = timestamp
+        dc.sp.m.mi._(miid).modified.v = timestamp
+
+        # log entry
+
+        dc.m.log.v.addAutoLog('Milestone', 'Milestone item created',
+                              'A new milestone item has been created')
+
+        # update view
+
+        milist.reloadTable()
+
+        # STUB -> update milestone navi button
+
+        applyStates(states.selected, dc.ui.roadmap.v)
+        dc.m.project.v.touchProject()
+        dc.ui.roadmap.v.line_mi_name.setFocus()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

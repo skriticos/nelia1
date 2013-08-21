@@ -15,6 +15,7 @@ from PySide.QtGui import *
 from PySide import QtUiTools
 
 from datacore import *
+from datacore import _dcdump
 from common import *
 
 from project import NxProject
@@ -55,7 +56,8 @@ if __name__ == '__main__':
 
     # initialize global shortcuts
     for keys, target in [('Ctrl+w', dc.ui.main.v.close),
-                         ('Ctrl+m', logMarker)]:
+                         ('Ctrl+m', logMarker),
+                         ('Ctrl+d', _dcdump)]:
         shortcut = QShortcut(QKeySequence(keys), dc.ui.main.v)
         shortcut.activated.connect(target)
 

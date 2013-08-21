@@ -17,7 +17,9 @@
     * skeleton                          [done]
     * init roadmap module               [done]
     * init roadmap ui                   [done]
-    * create milestone item
+    * create milestone item             [done]
+    * filter callbacks
+    * selection on reload table
     * edit milestone item
     * delete milestone item
     * change milestone selection
