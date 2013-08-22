@@ -73,6 +73,7 @@ def initCallbacks():
     dc.ui.roadmap.v.btn_filter_refactor.toggled.connect(onFilterRefactorToggled)
 
     enableSelectionCallback()
+    enableEditCallbacks()
 
 @logger('(roadmap) enableSelectionCallback()')
 def enableSelectionCallback():
@@ -87,12 +88,16 @@ def disableSelectionCallback():
 @logger('(roadmap) enableEditCallbacks()')
 def enableEditCallbacks():
 
-    pass
+    dc.ui.roadmap.v.line_mi_name.textChanged.connect(dc.m.roadmap.v.onNameChanged)
+    dc.ui.roadmap.v.cb_mi_priority.currentIndexChanged[str].connect(dc.m.roadmap.v.onPriorityChanged)
+    dc.ui.roadmap.v.cb_mi_category.currentIndexChanged[str].connect(dc.m.roadmap.v.onCategoryChanged)
 
 @logger('(roadmap) disableEditCallbacks()')
 def disableEditCallbacks():
 
-    pass
+    dc.ui.roadmap.v.line_mi_name.textChanged.disconnect(dc.m.roadmap.v.onNameChanged)
+    dc.ui.roadmap.v.cb_mi_priority.currentIndexChanged[str].connect(dc.m.roadmap.v.onPriorityChanged)
+    dc.ui.roadmap.v.cb_mi_category.currentIndexChanged[str].connect(dc.m.roadmap.v.onCategoryChanged)
 
 CbCtrl.initCallbacks            = initCallbacks
 CbCtrl.enableSelectionCallback  = enableSelectionCallback
@@ -452,6 +457,49 @@ class NxRoadmap:
                 'Auxiliary', 'Security', 'Corrective', 'Architecture',
                 'Refactor'
             }
+
+    @logger('NxRoadmap.touchRoadmap(self)', 'self')
+    def touchRoadmap(self):
+
+        timestamp = int(time.time())
+        smiid = dc.x.roadmap.smiid.v
+        dc.sp.m.mi._(smiid).modified.v = timestamp
+        x = convert(timestamp)
+        setTableValue('roadmap', milist.colModified, x)
+        dc.m.project.v.touchProject()
+
+    @logger('NxRoadmap.onNameChanged(self, name)', 'self', 'name')
+    def onNameChanged(self, name):
+
+        smiid = dc.x.roadmap.smiid.v
+        dc.sp.m.mi._(smiid).name.v = name
+        setTableValue('roadmap', milist.colName, name)
+        self.touchRoadmap()
+
+        if not dc.auto.v:
+            dc.x.roadmap.changeflag.name.v = True
+
+    @logger('NxRoadmap.onPriorityChanged(self, priority)', 'self', 'priority')
+    def onPriorityChanged(self, priority):
+
+        smiid = dc.x.roadmap.smiid.v
+        dc.sp.m.mi._(smiid).priority.v = priority
+        setTableValue('roadmap', milist.colPriority, priority)
+        self.touchRoadmap()
+
+        if not dc.auto.v:
+            dc.x.roadmap.changeflag.priority.v = True
+
+    @logger('NxRoadmap.onCategoryChanged(self, category)', 'self', 'category')
+    def onCategoryChanged(self, category):
+
+        smiid = dc.x.roadmap.smiid.v
+        dc.sp.m.mi._(smiid).category.v = category
+        setTableValue('roadmap', milist.colCategory, category)
+        self.touchRoadmap()
+
+        if not dc.auto.v:
+            dc.x.roadmap.changeflag.category.v = True
 
     @logger('NxRoadmap.onNewMilestoneItem(self)', 'self')
     def onNewMilestoneItem(self):

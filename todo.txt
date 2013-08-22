@@ -22,7 +22,7 @@
     * selection on reload table         [done]
     * milestone button
     * edit milestone item
-      * change aux attributes
+      * change aux attributes           [done]
       * change type
       * change status
     * delete milestone item
