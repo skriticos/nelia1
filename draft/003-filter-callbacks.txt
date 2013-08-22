@@ -153,12 +153,22 @@ CbAux.onFilterRefactorToggled       = onFilterRefactorToggled
 
 @reloadTable
 
-if (dc.sp.m.mi._(miid).mtype.v not in dc.c.roadmap.filters.v) or
-   (dc.sp.m.mi._(miid).status.v not in dc.c.roadmap.filters.v) or
-   (dc.sp.m.mi._(miid).priority.v not in dc.c.roadmap.filters.v) or
+if (dc.sp.m.mi._(miid).mtype.v not in dc.c.roadmap.filters.v) or \
+   (dc.sp.m.mi._(miid).status.v not in dc.c.roadmap.filters.v) or \
+   (dc.sp.m.mi._(miid).priority.v not in dc.c.roadmap.filters.v) or \
    (dc.sp.m.mi._(miid).category.v not in dc.c.roadmap.filters.v):
 
     dc.x.roadmap.smiid.v = 0
     continue
+
+..
+
+if not dc.c.roadmap.filters.v:
+    dc.c.roadmap.filters.v = {
+        'Feature', 'Issue', 'Open', 'Low', 'Medium', 'High', 'Core',
+        'Auxiliary', 'Security', 'Corrective', 'Architecture', 'Refactor'
+    }
+
+
 
 

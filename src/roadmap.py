@@ -58,6 +58,20 @@ def initCallbacks():
     dc.ui.roadmap.v.btn_show_logs.clicked.connect(onShowLogs)
     dc.ui.roadmap.v.btn_mi_new.clicked.connect(dc.m.roadmap.v.onNewMilestoneItem)
 
+    dc.ui.roadmap.v.btn_filter_feature.toggled.connect(onFilterFeatureToggled)
+    dc.ui.roadmap.v.btn_filter_issue.toggled.connect(onFilterIssueToggled)
+    dc.ui.roadmap.v.btn_filter_open.toggled.connect(onFilterOpenToggled)
+    dc.ui.roadmap.v.btn_filter_closed.toggled.connect(onFilterClosedToggled)
+    dc.ui.roadmap.v.btn_filter_low.toggled.connect(onFilterLowToggled)
+    dc.ui.roadmap.v.btn_filter_medium.toggled.connect(onFilterMediumToggled)
+    dc.ui.roadmap.v.btn_filter_high.toggled.connect(onFilterHighToggled)
+    dc.ui.roadmap.v.btn_filter_core.toggled.connect(onFilterCoreToggled)
+    dc.ui.roadmap.v.btn_filter_auxiliary.toggled.connect(onFilterAuxiliaryToggled)
+    dc.ui.roadmap.v.btn_filter_security.toggled.connect(onFilterSecurityToggled)
+    dc.ui.roadmap.v.btn_filter_corrective.toggled.connect(onFilterCorrectiveToggled)
+    dc.ui.roadmap.v.btn_filter_architecture.toggled.connect(onFilterArchitectureToggled)
+    dc.ui.roadmap.v.btn_filter_refactor.toggled.connect(onFilterRefactorToggled)
+
     enableSelectionCallback()
 
 @logger('(roadmap) enableSelectionCallback()')
@@ -84,6 +98,123 @@ dc.m.roadmap.cbctrl.v = CbCtrl
 # Internal example: onShow() or CbAux.onShow()
 
 class CbAux: pass
+
+@logger('(roadmap) onFilterFeatureToggled(checked)', 'checked')
+def onFilterFeatureToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Feature')
+    else:
+        dc.c.roadmap.filters.v.discard('Feature')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterIssueToggled(checked)', 'checked')
+def onFilterIssueToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Issue')
+    else:
+        dc.c.roadmap.filters.v.discard('Issue')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterOpenToggled(checked)', 'checked')
+def onFilterOpenToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Open')
+    else:
+        dc.c.roadmap.filters.v.discard('Open')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterClosedToggled(checked)', 'checked')
+def onFilterClosedToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Closed')
+    else:
+        dc.c.roadmap.filters.v.discard('Closed')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterLowToggled(checked)', 'checked')
+def onFilterLowToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Low')
+    else:
+        dc.c.roadmap.filters.v.discard('Low')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterMediumToggled(checked)', 'checked')
+def onFilterMediumToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Medium')
+    else:
+        dc.c.roadmap.filters.v.discard('Medium')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterHighToggled(checked)', 'checked')
+def onFilterHighToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('High')
+    else:
+        dc.c.roadmap.filters.v.discard('High')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterCoreToggled(checked)', 'checked')
+def onFilterCoreToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Core')
+    else:
+        dc.c.roadmap.filters.v.discard('Core')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterAuxiliaryToggled(checked)', 'checked')
+def onFilterAuxiliaryToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Auxiliary')
+    else:
+        dc.c.roadmap.filters.v.discard('Auxiliary')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterSecurityToggled(checked)', 'checked')
+def onFilterSecurityToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Security')
+    else:
+        dc.c.roadmap.filters.v.discard('Security')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterCorrectiveToggled(checked)', 'checked')
+def onFilterCorrectiveToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Corrective')
+    else:
+        dc.c.roadmap.filters.v.discard('Corrective')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterArchitectureToggled(checked)', 'checked')
+def onFilterArchitectureToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Architecture')
+    else:
+        dc.c.roadmap.filters.v.discard('Architecture')
+    milist.reloadTable()
+
+@logger('(roadmap) onFilterRefactorToggled(checked)', 'checked')
+def onFilterRefactorToggled(checked):
+
+    if checked:
+        dc.c.roadmap.filters.v.add('Refactor')
+    else:
+        dc.c.roadmap.filters.v.discard('Refactor')
+    milist.reloadTable()
 
 @logger('(roadmap) onSelectionChanged()')
 def onSelectionChanged(new, old):
@@ -142,6 +273,20 @@ CbAux.onShow                = onShow
 CbAux.onShowLogs            = onShowLogs
 CbAux.onShowProject         = onShowProject
 
+CbAux.onFilterFeatureToggled        = onFilterFeatureToggled
+CbAux.onFilterIssueToggled          = onFilterIssueToggled
+CbAux.onFilterOpenToggled           = onFilterOpenToggled
+CbAux.onFilterClosedToggled         = onFilterClosedToggled
+CbAux.onFilterLowToggled            = onFilterLowToggled
+CbAux.onFilterMediumToggled         = onFilterMediumToggled
+CbAux.onFilterHighToggled           = onFilterHighToggled
+CbAux.onFilterCoreToggled           = onFilterCoreToggled
+CbAux.onFilterAuxiliaryToggled      = onFilterAuxiliaryToggled
+CbAux.onFilterSecurityToggled       = onFilterSecurityToggled
+CbAux.onFilterCorrectiveToggled     = onFilterCorrectiveToggled
+CbAux.onFilterArchitectureToggled   = onFilterArchitectureToggled
+CbAux.onFilterRefactorToggled       = onFilterRefactorToggled
+
 dc.m.roadmap.cbaux.v = CbAux
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -196,7 +341,13 @@ def reloadTable():
 
         # check for filter status
 
-        # STUB
+        if (dc.sp.m.mi._(miid).mtype.v not in dc.c.roadmap.filters.v) or \
+           (dc.sp.m.mi._(miid).status.v not in dc.c.roadmap.filters.v) or \
+           (dc.sp.m.mi._(miid).priority.v not in dc.c.roadmap.filters.v) or \
+           (dc.sp.m.mi._(miid).category.v not in dc.c.roadmap.filters.v):
+
+            dc.x.roadmap.smiid.v = 0
+            continue
 
         # add row to table
         dc.x.roadmap.model.v.insertRow(0, [
@@ -242,6 +393,13 @@ class NxRoadmap:
         applyStates(states.startup, dc.ui.roadmap.v)
         milist.initTable()
         initCallbacks()
+
+        if not dc.c.roadmap.filters.v:
+            dc.c.roadmap.filters.v = {
+                'Feature', 'Issue', 'Open', 'Low', 'Medium', 'High', 'Core',
+                'Auxiliary', 'Security', 'Corrective', 'Architecture',
+                'Refactor'
+            }
 
     @logger('NxRoadmap.onNewMilestoneItem(self)', 'self')
     def onNewMilestoneItem(self):
