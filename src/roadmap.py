@@ -493,7 +493,7 @@ class NxRoadmap:
         # STUB -> update milestone navi button
 
         applyStates(states.selected, dc.ui.roadmap.v)
-        dc.m.project.v.touchProject()
+        self.touchRoadmap()
         dc.ui.roadmap.v.line_mi_name.setFocus()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

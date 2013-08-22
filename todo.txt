@@ -20,8 +20,9 @@
     * create milestone item             [done]
     * filter callbacks                  [done]
     * selection on reload table         [done]
+    * milestone button
     * edit milestone item
-      * change priority / category
+      * change aux attributes
       * change type
       * change status
     * delete milestone item
