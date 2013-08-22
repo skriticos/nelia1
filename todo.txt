@@ -19,7 +19,7 @@
     * init roadmap ui                   [done]
     * create milestone item             [done]
     * filter callbacks                  [done]
-    * selection on reload table
+    * selection on reload table         [done]
     * edit milestone item
       * change priority / category
       * change type

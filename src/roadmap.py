@@ -84,9 +84,21 @@ def disableSelectionCallback():
 
     dc.x.roadmap.selection_model.v.selectionChanged.disconnect(onSelectionChanged)
 
+@logger('(roadmap) enableEditCallbacks()')
+def enableEditCallbacks():
+
+    pass
+
+@logger('(roadmap) disableEditCallbacks()')
+def disableEditCallbacks():
+
+    pass
+
 CbCtrl.initCallbacks            = initCallbacks
 CbCtrl.enableSelectionCallback  = enableSelectionCallback
 CbCtrl.disableSelectionCallback = disableSelectionCallback
+CbCtrl.enableEditCallbacks      = enableEditCallbacks
+CbCtrl.disableEditCallbacks     = disableEditCallbacks
 
 dc.m.roadmap.cbctrl.v = CbCtrl
 
@@ -365,7 +377,47 @@ def reloadTable():
 
     # select active milestone item
 
-    # STUB
+    # we don't select anything if we don't have rows
+    rowcount = dc.x.roadmap.model.v.rowCount()
+    if rowcount <= 0:
+
+        applyStates(states.startup, dc.ui.roadmap.v)
+        return
+
+    # we don't have a selected milestone item id (outside the filter or deleted)
+    if not dc.x.roadmap.smiid.v:
+
+        index = dc.x.roadmap.model.v.index(0, 0)
+        lid   = int(dc.x.roadmap.model.v.data(index))
+        dc.x.roadmap.smiid.v = lid
+
+        disableEditCallbacks()
+        applyStates(states.selected, dc.ui.roadmap.v)
+        enableEditCallbacks()
+
+        s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+        dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
+        selection = dc.x.roadmap.view.v.selectionModel().selection()
+
+        return
+
+    # iterate through table rows
+    for rowcnt in range(dc.x.roadmap.model.v.rowCount()):
+
+        index = dc.x.roadmap.model.v.index(rowcnt, 0)
+        lid = int(dc.x.roadmap.model.v.data(index))
+
+        # if we have a match, select it and abort
+        if lid == dc.x.roadmap.smiid.v:
+
+            disableEditCallbacks()
+            applyStates(states.selected, dc.ui.roadmap.v)
+            enableEditCallbacks()
+
+            s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+            dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
+            selection = dc.x.roadmap.view.v.selectionModel().selection()
+            break
 
 milist.initTable = initTable
 milist.reloadTable = reloadTable
