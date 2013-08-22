@@ -273,7 +273,7 @@ class loglist:
             applyStates(states.startup, dc.ui.log.v)
             return
 
-        # we don't have a selected project id (outside the filter or deleted)
+        # we don't have a selected log id (outside the filter or deleted)
         if not dc.x.log.slid.v:
 
             index = dc.x.log.model.v.index(0, 0)

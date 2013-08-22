@@ -21,6 +21,9 @@
     * filter callbacks                  [done]
     * selection on reload table
     * edit milestone item
+      * change priority / category
+      * change type
+      * change status
     * delete milestone item
     * change milestone selection
     * finalize milestone
