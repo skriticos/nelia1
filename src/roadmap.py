@@ -91,6 +91,7 @@ def enableEditCallbacks():
     dc.ui.roadmap.v.line_mi_name.textChanged.connect(dc.m.roadmap.v.onNameChanged)
     dc.ui.roadmap.v.cb_mi_priority.currentIndexChanged[str].connect(dc.m.roadmap.v.onPriorityChanged)
     dc.ui.roadmap.v.cb_mi_category.currentIndexChanged[str].connect(dc.m.roadmap.v.onCategoryChanged)
+    dc.ui.roadmap.v.cb_mi_type.currentIndexChanged[str].connect(dc.m.roadmap.v.onTypeChanged)
 
 @logger('(roadmap) disableEditCallbacks()')
 def disableEditCallbacks():
@@ -98,6 +99,7 @@ def disableEditCallbacks():
     dc.ui.roadmap.v.line_mi_name.textChanged.disconnect(dc.m.roadmap.v.onNameChanged)
     dc.ui.roadmap.v.cb_mi_priority.currentIndexChanged[str].connect(dc.m.roadmap.v.onPriorityChanged)
     dc.ui.roadmap.v.cb_mi_category.currentIndexChanged[str].connect(dc.m.roadmap.v.onCategoryChanged)
+    dc.ui.roadmap.v.cb_mi_type.currentIndexChanged[str].disconnect(dc.m.roadmap.v.onTypeChanged)
 
 CbCtrl.initCallbacks            = initCallbacks
 CbCtrl.enableSelectionCallback  = enableSelectionCallback
@@ -500,6 +502,19 @@ class NxRoadmap:
 
         if not dc.auto.v:
             dc.x.roadmap.changeflag.category.v = True
+
+    @logger('NxRodamap.onTypeChange(self, v\mtype)', 'self', 'mtype')
+    def onTypeChanged(self, mtype):
+
+        smiid = dc.x.roadmap.smiid.v
+        dc.sp.m.mi._(smiid).mtype.v = mtype
+        setTableValue('roadmap', milist.colType, mtype)
+        self.touchRoadmap()
+
+        if not dc.auto.v:
+            dc.x.roadmap.changeflag.mtype.v = True
+
+        # STUB: notify mistctrl about milestone tree change
 
     @logger('NxRoadmap.onNewMilestoneItem(self)', 'self')
     def onNewMilestoneItem(self):

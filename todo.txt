@@ -20,14 +20,28 @@
     * create milestone item             [done]
     * filter callbacks                  [done]
     * selection on reload table         [done]
-    * milestone button
     * edit milestone item
       * change aux attributes           [done]
       * change type
       * change status
     * delete milestone item
-    * change milestone selection
-    * finalize milestone
+    * change milestone selection        [depends mistnavi]
+    * finalize milestone                [depends mistnavi]
+
+* mistnavi ..
+
+    INFRASTRUCTURE
+
+    .. callbacks
+    .. calback control
+    .. utility classes
+    .. core classes
+
+    * skeleton
+    * init mistnavi
+    * roadmap tree menu
+    * update mistnavi
+    * selection changed
 
 * config save and load
 * document new, save, load, load last
