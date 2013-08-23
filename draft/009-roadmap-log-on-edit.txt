@@ -1,0 +1,85 @@
+.. event filters
+
+class EfNameFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.name.v:
+                logMiEvent('name changed', 'name changed to {}'.format(
+                           dc.sp.m.mi._(dc.x.roadmap.smiid).name.v))
+            dc.x.roadmap.changeflag.name.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_name_focus_out = EfNameFocusOut()
+
+class EfTypeFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.mtype.v:
+                logMiEvent('type changed', 'type changed to {}'.format(
+                           dc.sp.m.mi._(dc.x.roadmap.smiid).mtype.v))
+            dc.x.roadmap.changeflag.mtype.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_type_focus_out = EfTypeFocusOut()
+
+class EfPriorityFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.priority.v:
+                logMiEvent('priority changed', 'priority changed to {}'.format(
+                           dc.sp.m.mi._(dc.x.roadmap.smiid).priority.v))
+            dc.x.roadmap.changeflag.priority.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_priority_focus_out = EfPriorityFocusOut()
+
+class EfCategoryFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.category.v:
+                logMiEvent('category changed', 'category changed to {}'.format(
+                           dc.sp.m.mi._(dc.x.roadmap.smiid).category.v))
+            dc.x.roadmap.changeflag.category.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_category_focus_out = EfCategoryFocusOut()
+
+..
+
+util:
+
+def logMiEvent(summary, detail):
+
+    smiid = dc.x.roadmap.smiid.v
+    name = dc.sp.m.mi._(smiid).name.v
+    major = dc.sp.m.selected.v[0]
+    minor = dc.sp.m.selected.v[1]
+
+    dc.m.log.addAutoLog('Milestone',
+                        'Milestone item {} {}'.format(smiid, summary),
+                        'Milestone item {} - "{}": {}'.format(smiid, name, detail))
+
+.. __init__
+
+dc.x.roadmap.changeflag.name.v = False
+dc.x.roadmap.changeflag.mtype.v = False
+dc.x.roadmap.changeflag.priority.v = False
+dc.x.roadmap.changeflag.category.v = False
+dc.ui.roadmap.v.line_mi_name.installEventFilter(ef_name_focus_out)
+dc.ui.roadmap.v.cb_mi_type.installEventFilter(ef_type_focus_out)
+dc.ui.roadmap.v.cb_mi_priority.installEventFilter(ef_priority_focus_out)
+dc.ui.roadmap.v.cb_mi_category.installEventFilter(ef_category_focus_out)
+
+.. onNewMilestoneItem
+
+logMiEvent('created', 'item created')
+
+.. onMiClosed
+
+logMiEvent('closed', 'item has been closed')
+
+.. onMiReopened
+
+logMiEvent('reopened', 'item has been reopned')
+
+.. onDeleteMilestoneItem
+
+logMiEvent('deleted', 'item has been deleted')
+
+
