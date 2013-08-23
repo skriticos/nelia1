@@ -23,7 +23,7 @@
     * edit milestone item
       * change aux attributes           [done]
       * change type                     [done]
-      * change status
+      * change status                   [done]
     * delete milestone item
     * add log entry for new/edit/delete
     * change milestone selection        [depends mistnavi]

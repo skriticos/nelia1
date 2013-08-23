@@ -30,6 +30,7 @@ class states: pass
 states.startup = {
     'btn_mi_delete': {'enabled': False},
     'btn_mi_close':  {'enabled': False},
+    'btn_mi_reopen': {'enabled': False},
     'box_selected_milestone': {'enabled': False}
 }
 
@@ -37,6 +38,16 @@ states.selected = {
     'btn_mi_delete': {'enabled': True},
     'btn_mi_close': {'enabled': True},
     'box_selected_milestone': {'enabled': True}
+}
+
+states.miopen = {
+    'btn_mi_close' : {'enabled': True},
+    'btn_mi_reopen': {'enabled': False}
+}
+
+states.miclosed = {
+    'btn_mi_close' : {'enabled': False},
+    'btn_mi_reopen': {'enabled': True}
 }
 
 dc.m.roadmap.states.v = states
@@ -57,6 +68,8 @@ def initCallbacks():
     dc.ui.roadmap.v.btn_show_project.clicked.connect(onShowProject)
     dc.ui.roadmap.v.btn_show_logs.clicked.connect(onShowLogs)
     dc.ui.roadmap.v.btn_mi_new.clicked.connect(dc.m.roadmap.v.onNewMilestoneItem)
+    dc.ui.roadmap.v.btn_mi_close.clicked.connect(dc.m.roadmap.v.onMiClosed)
+    dc.ui.roadmap.v.btn_mi_reopen.clicked.connect(dc.m.roadmap.v.onMiReopen)
 
     dc.ui.roadmap.v.btn_filter_feature.toggled.connect(onFilterFeatureToggled)
     dc.ui.roadmap.v.btn_filter_issue.toggled.connect(onFilterIssueToggled)
@@ -266,6 +279,11 @@ def onSelectionChanged(new, old):
         ui.txt_mi_description.setText(dc.sp.m.mi._(smiid).description.v)
 
         enableEditCallbacks()
+
+        if dc.sp.m.mi._(smiid).status.v == 'Open':
+            applyStates(states.miopen, dc.ui.roadmap.v)
+        else:
+            applyStates(states.miclosed, dc.ui.roadmap.v)
 
     dc.auto.v = auto_prev
 
@@ -558,6 +576,36 @@ class NxRoadmap:
         applyStates(states.selected, dc.ui.roadmap.v)
         self.touchRoadmap()
         dc.ui.roadmap.v.line_mi_name.setFocus()
+
+    @logger('NxRoadmap.onMiClosed(self)', 'self')
+    def onMiClosed(self):
+
+        smiid = dc.x.roadmap.smiid.v
+        dc.sp.m.mi._(smiid).status.v = 'Closed'
+        setTableValue('roadmap', milist.colStatus, 'Closed')
+        self.touchRoadmap()
+        milist.reloadTable()
+
+        dc.m.log.v.addAutoLog('Milestone', 'Milestone item {} closed'.format(smiid),
+                              'Milestone item {} - "{}" has been closed in milestone v{}.{}.'.format(
+                              smiid, dc.sp.m.mi._(smiid).name.v, dc.sp.m.selected.v[0], dc.sp.m.selected.v[1]))
+
+        # STUB: update mistnavi
+
+    @logger('NxRoadmap.onMiReopen(self)', 'self')
+    def onMiReopen(self):
+
+        smiid = dc.x.roadmap.smiid.v
+        dc.sp.m.mi._(smiid).status.v = 'Open'
+        setTableValue('roadmap', milist.colStatus, 'Open')
+        self.touchRoadmap()
+        milist.reloadTable()
+
+        dc.m.log.v.addAutoLog('Milestone', 'Milestone item {} reopened'.format(smiid),
+                              'Milestone item {} - "{}" has been reopened in milestone v{}.{}.'.format(
+                              smiid, dc.sp.m.mi._(smiid).name.v, dc.sp.m.selected.v[0], dc.sp.m.selected.v[1]))
+
+        # STUB: update mistnavi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
