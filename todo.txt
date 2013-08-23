@@ -22,10 +22,12 @@
     * selection on reload table         [done]
     * edit milestone item
       * change aux attributes           [done]
-      * change type
+      * change type                     [done]
       * change status
     * delete milestone item
+    * add log entry for new/edit/delete
     * change milestone selection        [depends mistnavi]
+    * move milestone item
     * finalize milestone                [depends mistnavi]
 
 * mistnavi ..

@@ -248,7 +248,7 @@ def onSelectionChanged(new, old):
         # get selected lid from table model
 
         index = indexes[0]
-        miid = dc.x.roadmap.smiid.v \
+        smiid = dc.x.roadmap.smiid.v \
              = int(dc.x.roadmap.model.v.itemFromIndex(index).text())
 
         # populate edit fields on selection change
@@ -256,14 +256,14 @@ def onSelectionChanged(new, old):
         disableEditCallbacks()
 
         ui = dc.ui.roadmap.v
-        ui.line_mi_name.setText(dc.sp.m.mi._(miid).name.v)
+        ui.line_mi_name.setText(dc.sp.m.mi._(smiid).name.v)
         ui.cb_mi_type.setCurrentIndex(
-                ui.cb_mi_type.findText(dc.sp.m.mi._(miid).mtype.v))
+                ui.cb_mi_type.findText(dc.sp.m.mi._(smiid).mtype.v))
         ui.cb_mi_priority.setCurrentIndex(
-                ui.cb_mi_priority.findText(dc.sp.m.mi._(miid).priority.v))
+                ui.cb_mi_priority.findText(dc.sp.m.mi._(smiid).priority.v))
         ui.cb_mi_category.setCurrentIndex(
-                ui.cb_mi_category.findText(dc.sp.m.mi._(miid).category.v))
-        ui.txt_mi_description.setText(dc.sp.m.mi._(miid).description.v)
+                ui.cb_mi_category.findText(dc.sp.m.mi._(smiid).category.v))
+        ui.txt_mi_description.setText(dc.sp.m.mi._(smiid).description.v)
 
         enableEditCallbacks()
 

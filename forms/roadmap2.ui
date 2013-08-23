@@ -251,7 +251,7 @@ QPushButton:disabled{
               </property>
              </widget>
             </item>
-            <item row="0" column="3">
+            <item row="0" column="4">
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -268,6 +268,13 @@ QPushButton:disabled{
              <widget class="QPushButton" name="btn_mi_new">
               <property name="text">
                <string>&amp;New</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QPushButton" name="btn_mi_reopen">
+              <property name="text">
+               <string>Reopen</string>
               </property>
              </widget>
             </item>
@@ -650,33 +657,21 @@ height:1px;</string>
           </item>
          </layout>
         </widget>
-        <widget class="QGroupBox" name="group_log_list">
+        <widget class="QWidget" name="group_log_list" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>2</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="title">
-          <string>Milestone Item List</string>
-         </property>
          <layout class="QGridLayout" name="gridLayout_13">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>12</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
+          <property name="margin">
            <number>0</number>
           </property>
           <property name="spacing">
            <number>0</number>
           </property>
-          <item row="0" column="0">
+          <item row="1" column="0">
            <widget class="QWidget" name="widget" native="true">
             <layout class="QGridLayout" name="gridLayout_12">
              <property name="margin">
@@ -984,7 +979,7 @@ height:1px;</string>
             </layout>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QTableView" name="tbl_mi_list">
             <property name="font">
              <font>
@@ -1002,6 +997,37 @@ height:1px;</string>
             </property>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>28</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Milestone &amp;Item List</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+            <property name="buddy">
+             <cstring>tbl_mi_list</cstring>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </widget>
@@ -1011,6 +1037,37 @@ height:1px;</string>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>btn_milestone_button</tabstop>
+  <tabstop>btn_show_project</tabstop>
+  <tabstop>btn_show_logs</tabstop>
+  <tabstop>btn_mi_new</tabstop>
+  <tabstop>btn_mi_delete</tabstop>
+  <tabstop>btn_mi_close</tabstop>
+  <tabstop>btn_mi_reopen</tabstop>
+  <tabstop>text_milestone_description</tabstop>
+  <tabstop>btn_milestone_maximize</tabstop>
+  <tabstop>line_mi_name</tabstop>
+  <tabstop>cb_mi_type</tabstop>
+  <tabstop>cb_mi_priority</tabstop>
+  <tabstop>cb_mi_category</tabstop>
+  <tabstop>txt_mi_description</tabstop>
+  <tabstop>btn_mi_desc_minimize</tabstop>
+  <tabstop>tbl_mi_list</tabstop>
+  <tabstop>btn_filter_feature</tabstop>
+  <tabstop>btn_filter_issue</tabstop>
+  <tabstop>btn_filter_open</tabstop>
+  <tabstop>btn_filter_closed</tabstop>
+  <tabstop>btn_filter_low</tabstop>
+  <tabstop>btn_filter_medium</tabstop>
+  <tabstop>btn_filter_high</tabstop>
+  <tabstop>btn_filter_core</tabstop>
+  <tabstop>btn_filter_auxiliary</tabstop>
+  <tabstop>btn_filter_security</tabstop>
+  <tabstop>btn_filter_corrective</tabstop>
+  <tabstop>btn_filter_architecture</tabstop>
+  <tabstop>btn_filter_refactor</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
