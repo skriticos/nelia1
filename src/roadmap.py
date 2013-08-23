@@ -70,6 +70,7 @@ def initCallbacks():
     dc.ui.roadmap.v.btn_mi_new.clicked.connect(dc.m.roadmap.v.onNewMilestoneItem)
     dc.ui.roadmap.v.btn_mi_close.clicked.connect(dc.m.roadmap.v.onMiClosed)
     dc.ui.roadmap.v.btn_mi_reopen.clicked.connect(dc.m.roadmap.v.onMiReopen)
+    dc.ui.roadmap.v.btn_mi_delete.clicked.connect(dc.m.roadmap.v.onDeleteMilestoneItem)
 
     dc.ui.roadmap.v.btn_filter_feature.toggled.connect(onFilterFeatureToggled)
     dc.ui.roadmap.v.btn_filter_issue.toggled.connect(onFilterIssueToggled)
@@ -604,6 +605,24 @@ class NxRoadmap:
         dc.m.log.v.addAutoLog('Milestone', 'Milestone item {} reopened'.format(smiid),
                               'Milestone item {} - "{}" has been reopened in milestone v{}.{}.'.format(
                               smiid, dc.sp.m.mi._(smiid).name.v, dc.sp.m.selected.v[0], dc.sp.m.selected.v[1]))
+
+        # STUB: update mistnavi
+
+    @logger('NxRoadmap.onDeleteMilestoneItem(self)', 'self')
+    def onDeleteMilestoneItem(self):
+
+        smiid = dc.x.roadmap.smiid.v
+
+        dc.m.log.v.addAutoLog('Milestone', 'Milestone item {} deleted'.format(smiid),
+                              'Milestone item {} - "{}" has been deleted in milestone v{}.{}.'.format(
+                              smiid, dc.sp.m.mi._(smiid).name.v, dc.sp.m.selected.v[0], dc.sp.m.selected.v[1]))
+
+        major, minor = dc.sp.m.selected.v
+        dc.sp.m._(major)._(minor).index.v.discard(smiid)
+        del dc.sp.m.mi.__dict__['_{}'.format(smiid)]
+        dc.m.project.v.touchProject()
+        dc.x.roadmap.smiid.v = 0
+        milist.reloadTable()
 
         # STUB: update mistnavi
 
