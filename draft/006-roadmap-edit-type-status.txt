@@ -1,0 +1,20 @@
+
+dc.ui.roadmap.v.cb_mi_type.currentIndexChanged[str].connect(dc.m.roadmap.v.onTypeChanged)
+
+dc.ui.roadmap.v.cb_mi_type.currentIndexChanged[str].disconnect(dc.m.roadmap.v.onTypeChanged)
+
+.. NxRoadmap
+
+@logger('NxRodamap.onTypeChange(self, type)', 'self', 'type')
+def onTypeChange(self, type):
+
+    smiid = dc.x.roadmap.smiid.v
+    dc.sp.m.mi._(smiid).mtype.v = mtype
+    setTableValue('roadmap', milist.colType, mtype)
+    self.touchRoadmap()
+
+    if not dc.auto.v:
+        dc.x.roadmap.changeflag.mtype.v = True
+
+    # STUB: notify mistctrl about milestone tree change
+
