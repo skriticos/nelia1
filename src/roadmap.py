@@ -53,6 +53,32 @@ states.miclosed = {
 dc.m.roadmap.states.v = states
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# UTILITY FUNCTIONS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class FnAux: pass
+
+@logger('(roadmap) logMiEvent(summary, detail)', 'summary', 'detail')
+def logMiEvent(summary, detail):
+
+    smiid = dc.x.roadmap.smiid.v
+    name = dc.sp.m.mi._(smiid).name.v
+    major = dc.sp.m.selected.v[0]
+    minor = dc.sp.m.selected.v[1]
+
+    if summary == 'created':
+        dc.m.log.v.addAutoLog('Milestone',
+                              'Milestone item {} {}'.format(smiid, summary),
+                              'Milestone item {}: {}'.format(smiid, detail))
+    else:
+        dc.m.log.v.addAutoLog('Milestone',
+                              'Milestone item {} {}'.format(smiid, summary),
+                              'Milestone item {} - "{}": {}'.format(smiid, name, detail))
+
+FnAux.logMiEvent = logMiEvent
+dc.m.roadmap.fnaux.v = FnAux
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CALLBACK CONTROL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Functions to enable / disable callback groups.
@@ -452,11 +478,45 @@ milist.reloadTable = reloadTable
 # EVENT FILTERS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-'''
-class Ef*(FocusOut)|*
+class EfNameFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.name.v:
+                logMiEvent('name changed', 'name changed to {}'.format(
+                           dc.sp.m.mi._(dc.x.roadmap.smiid.v).name.v))
+            dc.x.roadmap.changeflag.name.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_name_focus_out = EfNameFocusOut()
 
-dc.m.roadmap.ef.*.v = Ef*()
-'''
+class EfTypeFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.mtype.v:
+                logMiEvent('type changed', 'type changed to {}'.format(
+                           dc.sp.m.mi._(dc.x.roadmap.smiid.v).mtype.v))
+            dc.x.roadmap.changeflag.mtype.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_type_focus_out = EfTypeFocusOut()
+
+class EfPriorityFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.priority.v:
+                logMiEvent('priority changed', 'priority changed to {}'.format(
+                           dc.sp.m.mi._(dc.x.roadmap.smiid.v).priority.v))
+            dc.x.roadmap.changeflag.priority.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_priority_focus_out = EfPriorityFocusOut()
+
+class EfCategoryFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.category.v:
+                logMiEvent('category changed', 'category changed to {}'.format(
+                           dc.sp.m.mi._(dc.x.roadmap.smiid.v).category.v))
+            dc.x.roadmap.changeflag.category.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_category_focus_out = EfCategoryFocusOut()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
@@ -478,6 +538,15 @@ class NxRoadmap:
                 'Auxiliary', 'Security', 'Corrective', 'Architecture',
                 'Refactor'
             }
+
+        dc.x.roadmap.changeflag.name.v = False
+        dc.x.roadmap.changeflag.mtype.v = False
+        dc.x.roadmap.changeflag.priority.v = False
+        dc.x.roadmap.changeflag.category.v = False
+        dc.ui.roadmap.v.line_mi_name.installEventFilter(ef_name_focus_out)
+        dc.ui.roadmap.v.cb_mi_type.installEventFilter(ef_type_focus_out)
+        dc.ui.roadmap.v.cb_mi_priority.installEventFilter(ef_priority_focus_out)
+        dc.ui.roadmap.v.cb_mi_category.installEventFilter(ef_category_focus_out)
 
     @logger('NxRoadmap.touchRoadmap(self)', 'self')
     def touchRoadmap(self):
@@ -565,8 +634,7 @@ class NxRoadmap:
 
         # log entry
 
-        dc.m.log.v.addAutoLog('Milestone', 'Milestone item created',
-                              'A new milestone item has been created')
+        logMiEvent('created', 'item created')
 
         # update view
 
@@ -587,9 +655,7 @@ class NxRoadmap:
         self.touchRoadmap()
         milist.reloadTable()
 
-        dc.m.log.v.addAutoLog('Milestone', 'Milestone item {} closed'.format(smiid),
-                              'Milestone item {} - "{}" has been closed in milestone v{}.{}.'.format(
-                              smiid, dc.sp.m.mi._(smiid).name.v, dc.sp.m.selected.v[0], dc.sp.m.selected.v[1]))
+        logMiEvent('closed', 'item has been closed')
 
         # STUB: update mistnavi
 
@@ -602,9 +668,7 @@ class NxRoadmap:
         self.touchRoadmap()
         milist.reloadTable()
 
-        dc.m.log.v.addAutoLog('Milestone', 'Milestone item {} reopened'.format(smiid),
-                              'Milestone item {} - "{}" has been reopened in milestone v{}.{}.'.format(
-                              smiid, dc.sp.m.mi._(smiid).name.v, dc.sp.m.selected.v[0], dc.sp.m.selected.v[1]))
+        logMiEvent('reopened', 'item has been reopned')
 
         # STUB: update mistnavi
 
@@ -613,9 +677,7 @@ class NxRoadmap:
 
         smiid = dc.x.roadmap.smiid.v
 
-        dc.m.log.v.addAutoLog('Milestone', 'Milestone item {} deleted'.format(smiid),
-                              'Milestone item {} - "{}" has been deleted in milestone v{}.{}.'.format(
-                              smiid, dc.sp.m.mi._(smiid).name.v, dc.sp.m.selected.v[0], dc.sp.m.selected.v[1]))
+        logMiEvent('deleted', 'item has been deleted')
 
         major, minor = dc.sp.m.selected.v
         dc.sp.m._(major)._(minor).index.v.discard(smiid)

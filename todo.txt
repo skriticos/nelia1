@@ -14,21 +14,23 @@
 
     CORE COMPONENTS
 
-    * skeleton                          [done]
-    * init roadmap module               [done]
-    * init roadmap ui                   [done]
-    * create milestone item             [done]
-    * filter callbacks                  [done]
-    * selection on reload table         [done]
+    * skeleton                                                  [done]
+    * init roadmap module                                       [done]
+    * init roadmap ui                                           [done]
+    * create milestone item                                     [done]
+    * filter callbacks                                          [done]
+    * selection on reload table                                 [done]
     * edit milestone item
-      * change aux attributes           [done]
-      * change type                     [done]
-      * change status                   [done]
-    * delete milestone item             [done]
-    * add log entry for new/edit/delete
-    * change milestone selection        [depends mistnavi]
-    * move milestone item
-    * finalize milestone                [depends mistnavi]
+      * change aux attributes                                   [done]
+      * change type                                             [done]
+      * change status                                           [done]
+    * delete milestone item                                     [done]
+    * add log entry for new/edit/delete                         [done]
+    * milestone and milestone item description maximization
+    * milestone description edit
+    * change milestone selection                                [depends mistnavi]
+    * move milestone item                                       [depends mistnavi]
+    * finalize milestone                                        [depends mistnavi]
 
 * mistnavi ..
 
