@@ -1,0 +1,74 @@
+CONTROLS
+
+milestone description
+
+ - btn_milestone_maximize
+ - dc.ui.roadmap.v.btn_milestone_maximize
+
+milestone item description
+
+ - btn_mi_desc_minimize
+ - dc.ui.roadmap.v.btn_mi_desc_minimize
+
+ - group_milestone_description
+
+general minimize
+
+ - group_log_list
+ - group_edit_attr
+
+
+states.milestone_description_maximized = {
+    'group_log_list': {'visible': False},
+    'group_selected_milestone': {'visible': False},
+    'text_milestone_description': {'focused': None}
+}
+
+states.selected_milestone_item_description_maximized = {
+    'group_log_list': {'visible': False},
+    'group_milestone_description': {'visible': False},
+    'group_edit_attr': {'visible': False},
+    'txt_mi_description': {'focused': None}
+}
+
+states.all_unmaximized = {
+    'group_log_list': {'visible': True},
+    'group_selected_milestone': {'visible': True}
+    'group_milestone_description': {'visible': True},
+    'group_edit_attr': {'visible': True},
+    'tbl_mi_list': {'focused': None}
+}
+
+..
+
+dc.ui.roadmap.v.btn_milestone_maximize.clicked.connect(onMaximizeMilestoneDescription)
+dc.ui.roadmap.v.btn_mi_desc_minimize.clicked.connect(onMaximizeMilestoneItemDescription)
+
+..
+
+@logger('(roadmap) onMaximizeMilestoneDescription(setMaximized)', 'setMaximized')
+def onMaximizeMilestoneDescription(setMaximized):
+
+    if setMaximized:
+        applyStates(states.milestone_description_maximized)
+    else:
+        applyStates(states.all_unmaximized)
+
+@logger('(roadmap) onMaximizeMilestoneItemDescription(setMaximized)', 'setMaximized')
+def onMaximizeMilestoneItemDescription(setMaximized):
+
+    if setMaximized:
+        applyStates(states.selected_milestone_item_description_maximized)
+    else:
+        applyStates(states.all_unmaximized)
+
+..
+
+common2.applyStates
+
+if 'focused' in state:
+        pd[control].setFocus()
+
+
+
+
