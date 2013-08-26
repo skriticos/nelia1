@@ -28,6 +28,7 @@
     * add log entry for new/edit/delete                         [done]
     * milestone and milestone item description maximization     [done]
     * milestone description edit
+    * milestone item description edit
     * change milestone selection                                [depends mistnavi]
     * move milestone item                                       [depends mistnavi]
     * finalize milestone                                        [depends mistnavi]

@@ -1,0 +1,38 @@
+text_milestone_description
+
+..
+
+dc.ui.roadmap.v.text_milestone_description.textChanged.connect(
+    dc.m.roadmap.v.onMilestoneDescriptionChanged)
+
+..
+
+dc.ui.roadmap.v.text_milestone_description.textChanged.disconnect(
+    dc.m.roadmap.v.onMilestoneDescriptionChanged)
+
+.. on focus lost -> save edit
+
+class EfMilestoneDescriptionFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.milestone_description.v:
+                description = dc.ui.roadmap.v.text_milestone_description.toHtml()
+                dc.sp.m._(major)._(minor).description.v = description
+                logMiEvent('milestone description changed',
+                        'milestone description changed to {}'.format(description)
+            dc.x.roadmap.changeflag.milestone_description.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_name_focus_out = EfMilestoneDescriptionFocusOut()
+
+..
+
+@logger('NxRoadmap.onMilestoneDescriptionChanged(self)', 'self')
+def onMilestoneDescriptionChanged(self):
+
+    self.touchRoadmap()
+
+    if not dc.auto.v:
+        dc.x.roadmap.changeflag.milestone_description.v = True
+
+..
+
