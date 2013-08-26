@@ -27,8 +27,9 @@
     * delete milestone item                                     [done]
     * add log entry for new/edit/delete                         [done]
     * milestone and milestone item description maximization     [done]
-    * milestone description edit
+    * milestone description edit                                [done]
     * milestone item description edit
+    * load current milestone onShow
     * change milestone selection                                [depends mistnavi]
     * move milestone item                                       [depends mistnavi]
     * finalize milestone                                        [depends mistnavi]

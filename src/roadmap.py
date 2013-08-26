@@ -156,6 +156,8 @@ def enableEditCallbacks():
     dc.ui.roadmap.v.cb_mi_priority.currentIndexChanged[str].connect(dc.m.roadmap.v.onPriorityChanged)
     dc.ui.roadmap.v.cb_mi_category.currentIndexChanged[str].connect(dc.m.roadmap.v.onCategoryChanged)
     dc.ui.roadmap.v.cb_mi_type.currentIndexChanged[str].connect(dc.m.roadmap.v.onTypeChanged)
+    dc.ui.roadmap.v.text_milestone_description.textChanged.connect(
+        dc.m.roadmap.v.onMilestoneDescriptionChanged)
 
 @logger('(roadmap) disableEditCallbacks()')
 def disableEditCallbacks():
@@ -164,6 +166,8 @@ def disableEditCallbacks():
     dc.ui.roadmap.v.cb_mi_priority.currentIndexChanged[str].connect(dc.m.roadmap.v.onPriorityChanged)
     dc.ui.roadmap.v.cb_mi_category.currentIndexChanged[str].connect(dc.m.roadmap.v.onCategoryChanged)
     dc.ui.roadmap.v.cb_mi_type.currentIndexChanged[str].disconnect(dc.m.roadmap.v.onTypeChanged)
+    dc.ui.roadmap.v.text_milestone_description.textChanged.disconnect(
+        dc.m.roadmap.v.onMilestoneDescriptionChanged)
 
 CbCtrl.initCallbacks            = initCallbacks
 CbCtrl.enableSelectionCallback  = enableSelectionCallback
@@ -561,6 +565,17 @@ class EfCategoryFocusOut(QObject):
         return QObject.eventFilter(self, obj, event)
 ef_category_focus_out = EfCategoryFocusOut()
 
+class EfMilestoneDescriptionFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.milestone_description.v:
+                description = dc.ui.roadmap.v.text_milestone_description.toHtml()
+                major, minor = dc.sp.m.selected.v
+                dc.sp.m._(major)._(minor).description.v = description
+            dc.x.roadmap.changeflag.milestone_description.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_milestone_desription_focus_out = EfMilestoneDescriptionFocusOut()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -586,10 +601,22 @@ class NxRoadmap:
         dc.x.roadmap.changeflag.mtype.v = False
         dc.x.roadmap.changeflag.priority.v = False
         dc.x.roadmap.changeflag.category.v = False
+        dc.x.roadmap.changeflag.milestone_description.v = False
+
         dc.ui.roadmap.v.line_mi_name.installEventFilter(ef_name_focus_out)
         dc.ui.roadmap.v.cb_mi_type.installEventFilter(ef_type_focus_out)
         dc.ui.roadmap.v.cb_mi_priority.installEventFilter(ef_priority_focus_out)
         dc.ui.roadmap.v.cb_mi_category.installEventFilter(ef_category_focus_out)
+        dc.ui.roadmap.v.text_milestone_description.installEventFilter(
+            ef_milestone_desription_focus_out)
+
+    @logger('NxRoadmap.onMilestoneDescriptionChanged(self)', 'self')
+    def onMilestoneDescriptionChanged(self):
+
+        self.touchRoadmap()
+
+        if not dc.auto.v:
+            dc.x.roadmap.changeflag.milestone_description.v = True
 
     @logger('NxRoadmap.touchRoadmap(self)', 'self')
     def touchRoadmap(self):
