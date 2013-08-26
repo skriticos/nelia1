@@ -94,6 +94,8 @@ def applyStates(states, widget):
             pd[control].setCurrentIndex(state['index'])
         if 'value' in state:
             pd[control].setValue(state['value'])
+        if 'focused' in state:
+            pd[control].setFocus()
     dc.auto.v = False
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

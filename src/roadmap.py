@@ -31,13 +31,13 @@ states.startup = {
     'btn_mi_delete': {'enabled': False},
     'btn_mi_close':  {'enabled': False},
     'btn_mi_reopen': {'enabled': False},
-    'box_selected_milestone': {'enabled': False}
+    'group_selected_milestone': {'enabled': False}
 }
 
 states.selected = {
     'btn_mi_delete': {'enabled': True},
     'btn_mi_close': {'enabled': True},
-    'box_selected_milestone': {'enabled': True}
+    'group_selected_milestone': {'enabled': True}
 }
 
 states.miopen = {
@@ -48,6 +48,27 @@ states.miopen = {
 states.miclosed = {
     'btn_mi_close' : {'enabled': False},
     'btn_mi_reopen': {'enabled': True}
+}
+
+states.milestone_description_maximized = {
+    'group_log_list': {'visible': False},
+    'group_selected_milestone': {'visible': False},
+    'text_milestone_description': {'focused': None}
+}
+
+states.selected_milestone_item_description_maximized = {
+    'group_log_list': {'visible': False},
+    'group_milestone_description': {'visible': False},
+    'group_edit_attr': {'visible': False},
+    'txt_mi_description': {'focused': None}
+}
+
+states.all_unmaximized = {
+    'group_log_list': {'visible': True},
+    'group_selected_milestone': {'visible': True},
+    'group_milestone_description': {'visible': True},
+    'group_edit_attr': {'visible': True},
+    'tbl_mi_list': {'focused': None}
 }
 
 dc.m.roadmap.states.v = states
@@ -111,6 +132,9 @@ def initCallbacks():
     dc.ui.roadmap.v.btn_filter_corrective.toggled.connect(onFilterCorrectiveToggled)
     dc.ui.roadmap.v.btn_filter_architecture.toggled.connect(onFilterArchitectureToggled)
     dc.ui.roadmap.v.btn_filter_refactor.toggled.connect(onFilterRefactorToggled)
+
+    dc.ui.roadmap.v.btn_milestone_maximize.toggled.connect(onMaximizeMilestoneDescription)
+    dc.ui.roadmap.v.btn_mi_desc_minimize.toggled.connect(onMaximizeMilestoneItemDescription)
 
     enableSelectionCallback()
     enableEditCallbacks()
@@ -275,6 +299,22 @@ def onFilterRefactorToggled(checked):
         dc.c.roadmap.filters.v.discard('Refactor')
     milist.reloadTable()
 
+@logger('(roadmap) onMaximizeMilestoneDescription(setMaximized)', 'setMaximized')
+def onMaximizeMilestoneDescription(setMaximized):
+
+    if setMaximized:
+        applyStates(states.milestone_description_maximized, dc.ui.roadmap.v)
+    else:
+        applyStates(states.all_unmaximized, dc.ui.roadmap.v)
+
+@logger('(roadmap) onMaximizeMilestoneItemDescription(setMaximized)', 'setMaximized')
+def onMaximizeMilestoneItemDescription(setMaximized):
+
+    if setMaximized:
+        applyStates(states.selected_milestone_item_description_maximized, dc.ui.roadmap.v)
+    else:
+        applyStates(states.all_unmaximized, dc.ui.roadmap.v)
+
 @logger('(roadmap) onSelectionChanged()')
 def onSelectionChanged(new, old):
 
@@ -350,6 +390,9 @@ CbAux.onFilterSecurityToggled       = onFilterSecurityToggled
 CbAux.onFilterCorrectiveToggled     = onFilterCorrectiveToggled
 CbAux.onFilterArchitectureToggled   = onFilterArchitectureToggled
 CbAux.onFilterRefactorToggled       = onFilterRefactorToggled
+
+CbAux.onMaximizeMilestoneDescription = onMaximizeMilestoneDescription
+CbAux.onMaximizeMilestoneItemDescription = onMaximizeMilestoneItemDescription
 
 dc.m.roadmap.cbaux.v = CbAux
 
