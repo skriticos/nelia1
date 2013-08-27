@@ -519,6 +519,16 @@ class EfChallengeFocusOut(QObject):
         return QObject.eventFilter(self, obj, event)
 ef_challenge_focus_out = EfChallengeFocusOut()
 
+class EfProjectDescriptionFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.project.changeflag.project_description.v:
+                description = dc.ui.project.v.text_project_info.toHtml()
+                dc.sp.description.v = description
+            dc.x.project.changeflag.project_description.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_project_deisription_focus_out = EfProjectDescriptionFocusOut()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -554,11 +564,13 @@ class NxProject():
         dc.x.project.changeflag.category.v = False
         dc.x.project.changeflag.priority.v = False
         dc.x.project.changeflag.challenge.v = False
+        dc.x.project.changeflag.project_description.v = False
         dc.ui.project.v.line_project_name.installEventFilter(ef_name_focus_out)
         dc.ui.project.v.cb_project_type.installEventFilter(ef_type_focus_out)
         dc.ui.project.v.cb_project_category.installEventFilter(ef_category_focus_out)
         dc.ui.project.v.sb_project_priority.installEventFilter(ef_priority_focus_out)
         dc.ui.project.v.sb_project_challenge.installEventFilter(ef_challenge_focus_out)
+        dc.ui.project.v.text_project_info.installEventFilter(ef_project_deisription_focus_out)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the
@@ -629,8 +641,10 @@ class NxProject():
     @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
     def onProjectDescriptionChanged(self):
 
-        dc.sp.description.v = dc.ui.project.v.text_project_info.toHtml()
         self.touchProject()
+
+        if not dc.auto.v:
+            dc.x.project.changeflag.project_description.v = True
 
     # Create a new project
 

@@ -309,6 +309,21 @@ class loglist:
                 break
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EVENT FILTERS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class EfLogDescriptionFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.log.changeflag.log_description.v:
+                slid = dc.x.log.slid.v
+                description = dc.ui.log.v.text_log_message.toHtml()
+                dc.sp.log._(slid).description.v = description
+            dc.x.log.changeflag.log_description.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_log_desription_focus_out = EfLogDescriptionFocusOut()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -322,6 +337,9 @@ class NxLog:
         applyStates(states.startup, dc.ui.log.v)
         loglist.initTable()
         enableAllCallbacks()
+
+        dc.x.log.changeflag.log_description.v = False
+        dc.ui.log.v.text_log_message.installEventFilter(ef_log_desription_focus_out)
 
     @logger('NxLog.touchLog(self)', 'self')
     def touchLog(self):
@@ -345,9 +363,10 @@ class NxLog:
     @logger('NxLog.onDescriptionChanged(self)', 'self')
     def onDescriptionChanged(self):
 
-        lid = dc.x.log.slid.v
-        dc.sp.log._(lid).description.v = dc.ui.log.v.text_log_message.toHtml()
         self.touchLog()
+
+        if not dc.auto.v:
+            dc.x.log.changeflag.log_description.v = True
 
     @logger('NxLog.onNewLogClicked(self)', 'self')
     def onNewLogClicked(self):

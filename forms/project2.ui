@@ -762,6 +762,9 @@ height:1px;</string>
                 <property name="autoFormatting">
                  <set>QTextEdit::AutoAll</set>
                 </property>
+                <property name="tabChangesFocus">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="0" column="3">
