@@ -159,17 +159,17 @@ def onSelectionChanged(new, old):
 
     # get selected lid from table model
     index = indexes[0]
-    lid = dc.x.log.slid.v = int(dc.x.log.model.v.itemFromIndex(index).text())
+    slid = dc.x.log.slid.v = int(dc.x.log.model.v.itemFromIndex(index).text())
 
     # populate edit fields on selection change
     disableEditCallbacks()
-    dc.ui.log.v.lbl_log_type.setText(dc.sp.log._(lid).ltype.v)
-    dc.ui.log.v.lbl_log_created.setText(convert(dc.sp.log._(lid).created.v))
-    dc.ui.log.v.lbl_log_modified.setText(convert(dc.sp.log._(lid).modified.v))
-    dc.ui.log.v.line_log_summary.setText(dc.sp.log._(lid).summary.v)
-    dc.ui.log.v.text_log_message.setText(dc.sp.log._(lid).description.v)
+    dc.ui.log.v.lbl_log_type.setText(dc.sp.log._(slid).ltype.v)
+    dc.ui.log.v.lbl_log_created.setText(convert(dc.sp.log._(slid).created.v))
+    dc.ui.log.v.lbl_log_modified.setText(convert(dc.sp.log._(slid).modified.v))
+    dc.ui.log.v.line_log_summary.setText(dc.sp.log._(slid).summary.v)
+    dc.ui.log.v.text_log_message.setText(dc.sp.log._(slid).description.v)
 
-    if dc.sp.log._(lid).ltype.v == 'User':
+    if dc.sp.log._(slid).ltype.v == 'User':
         applyStates(states.user, dc.ui.log.v)
     else:
         applyStates(states.nonuser, dc.ui.log.v)
