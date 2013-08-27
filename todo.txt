@@ -30,6 +30,7 @@
     * milestone description edit                                [done]
     * milestone item description edit                           [done]
     * onShow, load current milestone                            [done]
+
     * change milestone selection                                [depends mistnavi]
     * move milestone item                                       [depends mistnavi]
     * finalize milestone                                        [depends mistnavi]
