@@ -397,7 +397,7 @@ height:1px;</string>
               <item row="0" column="1">
                <widget class="QLabel" name="label_7">
                 <property name="text">
-                 <string>Description:</string>
+                 <string>Des&amp;cription:</string>
                 </property>
                 <property name="buddy">
                  <cstring>text_milestone_description</cstring>
@@ -405,7 +405,14 @@ height:1px;</string>
                </widget>
               </item>
               <item row="1" column="0" colspan="4">
-               <widget class="QTextEdit" name="text_milestone_description"/>
+               <widget class="QTextEdit" name="text_milestone_description">
+                <property name="autoFormatting">
+                 <set>QTextEdit::AutoAll</set>
+                </property>
+                <property name="tabChangesFocus">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item row="0" column="3">
                <widget class="QToolButton" name="btn_milestone_maximize">
@@ -479,7 +486,14 @@ height:1px;</string>
                </widget>
               </item>
               <item row="2" column="0" colspan="4">
-               <widget class="QTextEdit" name="txt_mi_description"/>
+               <widget class="QTextEdit" name="txt_mi_description">
+                <property name="autoFormatting">
+                 <set>QTextEdit::AutoAll</set>
+                </property>
+                <property name="tabChangesFocus">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
               <item row="0" column="0" colspan="4">
                <widget class="QWidget" name="group_edit_attr" native="true">
@@ -644,7 +658,7 @@ height:1px;</string>
               <item row="1" column="0">
                <widget class="QLabel" name="label_6">
                 <property name="text">
-                 <string>Description:</string>
+                 <string>Desc&amp;ription:</string>
                 </property>
                 <property name="buddy">
                  <cstring>txt_mi_description</cstring>

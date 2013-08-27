@@ -29,7 +29,7 @@
     * milestone and milestone item description maximization     [done]
     * milestone description edit                                [done]
     * milestone item description edit                           [done]
-    * load current milestone onShow
+    * onShow, load current milestone                            [done]
     * change milestone selection                                [depends mistnavi]
     * move milestone item                                       [depends mistnavi]
     * finalize milestone                                        [depends mistnavi]

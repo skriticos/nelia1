@@ -379,6 +379,17 @@ def onShowProject():
 def onShow():
 
     dc.ui.roadmap.v.lbl_project_name.setText(dc.sp.name.v)
+    if dc.x.rpid.v != dc.spid.v:
+        dc.x.rpid.v = dc.spid.v
+
+        major, minor = dc.sp.m.selected.v
+        dc.auto.v = True
+        dc.ui.roadmap.v.text_milestone_description.setText(
+            dc.sp.m._(major)._(minor).description.v)
+        dc.auto.v = False
+
+        dc.m.roadmap.milist.v.reloadTable()
+
 
 CbAux.onSelectionChanged    = onSelectionChanged
 CbAux.onShow                = onShow
@@ -524,6 +535,7 @@ def reloadTable():
 
 milist.initTable = initTable
 milist.reloadTable = reloadTable
+dc.m.roadmap.milist.v = milist
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # EVENT FILTERS
