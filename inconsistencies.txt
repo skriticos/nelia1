@@ -3,5 +3,4 @@
 * dc.m.<mod>.<cbaux>.v.onShow() inconsistent in project / log
 * setting central widget should be done in local onShow instead of remote module
 * add onShow to project
-* all description changes should be stored on lose focus only
 

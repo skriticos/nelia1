@@ -26,7 +26,7 @@ from roadmap import NxRoadmap
 
 if __name__ == '__main__':
 
-    app = QApplication(sys.argv)
+    dc.x.app.v = app = QApplication(sys.argv)
 
     loader = QtUiTools.QUiLoader()
     for name, fname in (
@@ -64,8 +64,7 @@ if __name__ == '__main__':
     # show widget and give back control to run to initialize main loop
     dc.ui.main.v.show()
 
-    # this interrupt is required to make system signal handling working. see
-    # MainWindow.onSigTerm
+    # this interrupt is required to make system signal handling working
     timer = QTimer()
     timer.start(500)
     timer.timeout.connect(lambda: None)

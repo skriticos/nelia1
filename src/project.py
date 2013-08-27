@@ -59,6 +59,11 @@ states.last = {
     'btn_doc_open_last'     : {'visible': True, 'enabled': True},
 }
 
+
+states.nolast = {
+    'btn_doc_open_last'     : {'visible': True, 'enabled': False}
+}
+
 # Once a project is created or a document is loaded (wich implies a selected
 # project), the project controls are enabled and the document can be saved.
 
@@ -465,6 +470,8 @@ class projectlist:
                 selection = dc.x.project.view.v.selectionModel().selection()
                 break
 
+dc.m.project.projectlist.v = projectlist
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # EVENT FILTERS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -584,6 +591,7 @@ class NxProject():
         dc.sp.modified.v = timestamp
         dc.r.changed.v = True
         setTableValue('project', projectlist.colModified, convert(timestamp))
+        applyStates(states.nolast, dc.ui.project.v)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # The following callbacks are used when currently selected project

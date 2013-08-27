@@ -1,0 +1,203 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Having documents is nice. Being able to save and load them is even better.
+Reintroducing new, save, save as, load, load last and save on exit.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                 DOCUMENT CLASS
+
+class NxDocument:
+
+    def __init__(self):
+
+        dc.m.document.v = self
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                     SHARED
+
+.. NxDocument ..
+
+@logger('NxDocument.reset(self)', 'self')
+def reset(self):
+
+    del dc.__dict__['s']
+
+    dc.spid.v = 0
+    applyStates(states.startup, dc.ui.project.v)
+    dc.m.project.projectlist.v.reloadTable()
+
+    dc.x.lpid.v = 0
+    dc.x.rpid.v = 0
+    dc.x.path.v = None
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                  NEW DOCUMENT
+
+.. enableAllCallbacks() ..
+
+dc.ui.roadmap.v.btn_doc_new.clicked.connect(dc.m.document.v.onNewDocumentClicked)
+
+.. NxDocument ..
+
+@logger('NxDocument.onNewDocumentClicked(self)', 'self')
+def onNewDocumentClicked(self):
+
+    self.reset()
+    applyStates(self.nolast, dc.ui.project.v)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                    SAVE AS
+
+
+states.saved = {
+    'btn_doc_save':     {'enabled': False},
+    'tbl_project_list': {'focused': None}
+}
+
+states.changed = {
+    'btn_doc_save':     {'enabled': True}
+}
+
+.. enableAllCallbacks ..
+
+dc.ui.project.v.btn_doc_save_as.connect(dc.m.document.v.onSaveAsClicked)
+
+.. NxDocument ..
+
+@logger('NxDocument.onSaveAsClicked(self)', 'self')
+def onSaveAsClicked(self):
+
+    t = 'Save nelia1 document'
+    q = 'Nelia Files (*{})'.format(dc.x.extension.v)
+    path = QFileDialog.getSaveFileName(dc.ui.main.v, t, dc.x.default.path.v, q)[0]
+    if path == '':
+        return
+    extension_start = len(path) - len(dc.x.extension.v)
+    if path.rfind(dc.x.extension.v) != extension_start:
+        path += dc.x.extension.v
+    result = dcsave(path)
+    if isinstance(result, Exception):
+        title, message = 'Save failed', 'Save failed! ' + str(result)
+        QMessageBox.critical(dc.ui.main.v, title, message)
+        return
+    cd.x.path.v = path
+    applyStates(states.saved, dc.ui.project.v)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                      SAVE
+
+.. enableAllCallbacks ..
+
+dc.ui.project.v.btn_doc_save.connect(dc.m.document.v.onSaveClicked)
+
+.. NxDocument ..
+
+@logger('NxDocument.onSaveClicked(self)', 'self')
+def onSaveClicked(self):
+
+    result = dcsave(dc.x.path.v)
+    if isinstance(result, Exception):
+        title, message = 'Save failed', 'Save failed! ' + str(result)
+        QMessageBox.critical(dc.ui.main.v, title, message)
+        return
+    applyStates(states.saved, dc.ui.project.v)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                      OPEN
+
+.. enableAllCallbacks ..
+
+dc.ui.project.v.btn_doc_open.clicked.connect(dc.m.document.v.onOpenClicked)
+
+.. NxDocument ..
+
+@logger('NxDocument.onOpenClicked(self)', 'self')
+def onOpenClicked(self):
+
+    if dc.r.changed.v:
+        q = 'Discard changes?'
+        m = 'Opening a file will discard your changes. ' \
+            + 'Do you want to proceed?'
+        yes, no = QMessageBox.Yes, QMessageBox.No
+        response = QMessageBox.question(dc.ui.main.v, q, m, yes|no)
+        if response == QMessageBox.StandardButton.No: return
+    title  = 'Open nelia1 document'
+    select = 'Nelia Files (*{})'.format(dc.x.extension.v)
+    path = QFileDialog.getOpenFileName(
+        dc.ui.project.v, title, dc.x.default.path.v, select)[0]
+    if not path:
+        return
+    result = dcload(path)
+    if isinstance(result, Exception):
+        title, message = 'open failed', 'open failed! ' + str(result)
+        QMessageBox.critical(dc.ui.main.v, title, message)
+        dc.x.path.v = None
+        return
+    applyStates(states.saved, dc.ui.project.v)
+    applyStates(self.nolast, dc.ui.project.v)
+    self.reloadTable()
+    dc.r.changed.v = False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                           SAVE CONFIGURATION ON EXIT
+
+
+.. NxDocument.__init__() ..
+
+dc.x.app.v.aboutToQuit.connect(dc.m.document.v.onAboutToQuit)
+signal.signal(signal.SIGTERM, self.onSigTerm)
+
+.. NxDocument ..
+
+@logger('NxDocument.onSigTerm(self, num, frame)', 'self', 'num', 'frame')
+def onSigTerm(self, num, frame):
+
+    QApplication.quit()
+
+@logger('NxDocument.onAboutToQuit(self)', 'self')
+onAboutToQuit(self):
+
+    if dc.r.changed.v:
+        if not dc.x.path.v:
+            dc.x.path.v = os.path.join(dc.x.default.path.v,
+                   '.{}.tmp.nelia1'.format(str(int(time.time()))))
+        dcsave()
+    dcsaveconfig()
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                   LOAD LAST
+
+.. enableAllCallbacks ..
+
+dc.ui.project.v.btn_doc_open_last.clicked.connect(dc.m.document.v.onOpenLastClicked)
+
+.. NxDocument ..
+
+@logger('NxDocument.onOpenLastClicked(self)', 'self')
+def onOpenLastClicked(self):
+
+    result = dcload(dc.c.lastpath.v)
+    if isinstance(result, Exception):
+        title, message = 'Open failed', 'Open failed! ' + str(result)
+        QMessageBox.critical(dc.ui.main.v, title, message)
+        return
+    applyStates(states.saved, dc.ui.project.v)
+    applyStates(self.nolast, dc.ui.project.v)
+    self.reloadTable()
+    dc.r.changed.v = False
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
+
+
+

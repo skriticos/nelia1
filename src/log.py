@@ -197,8 +197,11 @@ def onShowProject():
 @logger('(log) onShown()')
 def onShown():
 
-    dc.ui.log.v.lbl_project_name.setText(dc.sp.name.v)
-    loglist.reloadTable()
+    if dc.x.lpid.v != dc.spid.v:
+        dc.x.lpid.v = dc.spid.v
+
+        dc.ui.log.v.lbl_project_name.setText(dc.sp.name.v)
+        loglist.reloadTable()
 
 dc.m.log.onShown.v = onShown
 
