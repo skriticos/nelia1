@@ -36,6 +36,7 @@ states.startup = {
         'btn_doc_new'           : {'visible': True, 'enabled': False},
         'btn_doc_open'          : {'visible': True, 'enabled': True},
         'btn_doc_open_last'     : {'visible': True, 'enabled': False},
+        'btn_doc_save'          : {'visible': True, 'enabled': False},
         'btn_doc_save_as'       : {'visible': True, 'enabled': False},
         'btn_project_delete'    : {'visible': True, 'enabled': False},
         'btn_project_new'       : {'visible': True, 'enabled': True},
@@ -69,15 +70,27 @@ states.nolast = {
 
 states.selected = {
     'btn_doc_new'           : {'visible': True, 'enabled': True},
+    'btn_doc_save_as'       : {'visible': True, 'enabled': False},
+    'btn_doc_save'          : {'visible': True, 'enabled': False},
     'btn_doc_open'          : {'visible': True, 'enabled': True},
     'btn_doc_open_last'     : {'visible': True, 'enabled': False},
-    'btn_doc_save_as'       : {'visible': True, 'enabled': True},
     'btn_project_delete'    : {'visible': True, 'enabled': True},
     'btn_project_new'       : {'visible': True, 'enabled': True},
     'btn_show_roadmap'      : {'visible': True, 'enabled': True},
     'btn_show_logs'         : {'visible': True, 'enabled': True},
     'tbl_project_list'      : {'visible': True, 'enabled': True},
     'selected_project_group': {'visible': True, 'enabled': True}
+}
+
+states.changed = {
+    'btn_doc_save_as'       : {'visible': True, 'enabled': True},
+    'btn_doc_save'          : {'visible': True, 'enabled': True}
+}
+
+states.unchanged = {
+    'btn_doc_save_as'       : {'visible': True, 'enabled': False},
+    'btn_doc_save'          : {'visible': True, 'enabled': False},
+    'tbl_project_list'      : {'focused': None}
 }
 
 # Clean edit widgets when creating new project (make sure to create the project
@@ -166,7 +179,9 @@ def enableAllCallbacks():
     w, m = dc.ui.project.v, dc.m.project.v
     w.btn_project_new           .clicked.connect(m.onNewProjectClicked)
     w.btn_project_delete        .clicked.connect(m.onDeleteSelectedProject)
-    w.btn_doc_new.clicked.connect(dc.m.document.v.onNewDocumentClicked)
+    w.btn_doc_new       .clicked.connect(dc.m.document.v.onNewDocumentClicked)
+    w.btn_doc_save_as   .clicked.connect(dc.m.document.v.onSaveAsClicked)
+    w.btn_doc_open      .clicked.connect(dc.m.document.v.onOpenClicked)
 
     # navi callbacks
     w = dc.ui.project.v
@@ -592,6 +607,7 @@ class NxProject():
         dc.r.changed.v = True
         setTableValue('project', projectlist.colModified, convert(timestamp))
         applyStates(states.nolast, dc.ui.project.v)
+        applyStates(states.changed, dc.ui.project.v)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # The following callbacks are used when currently selected project
@@ -695,6 +711,7 @@ class NxProject():
 
         # set state
         applyStates(states.selected, dc.ui.project.v)
+        applyStates(states.changed, dc.ui.project.v)
         projectlist.reloadTable()
         dc.ui.project.v.line_project_name.setFocus()
         dc.x.project.changeflag.name.v = True
@@ -766,6 +783,53 @@ class NxDocument:
         applyStates(states.nolast, dc.ui.project.v)
         dc.m.project.projectlist.v.reloadTable()
         dc.auto.v = False
+
+    @logger('NxDocument.onSaveAsClicked(self)', 'self')
+    def onSaveAsClicked(self):
+
+        t = 'Save nelia1 document'
+        q = 'Nelia Files (*{})'.format(dc.x.extension.v)
+        path = QFileDialog.getSaveFileName(dc.ui.main.v, t, dc.x.default.path.v, q)[0]
+        if path == '':
+            return
+        extension_start = len(path) - len(dc.x.extension.v)
+        if path.rfind(dc.x.extension.v) != extension_start:
+            path += dc.x.extension.v
+        result = dcsave(path)
+        if isinstance(result, Exception):
+            title, message = 'Save failed', 'Save failed! ' + str(result)
+            QMessageBox.critical(dc.ui.main.v, title, message)
+            return
+        dc.x.path.v = path
+        dc.r.changed.v = False
+        applyStates(states.unchanged, dc.ui.project.v)
+
+    @logger('NxDocument.onOpenClicked(self)', 'self')
+    def onOpenClicked(self):
+
+        if dc.r.changed.v:
+            q = 'Discard changes?'
+            m = 'Opening a file will discard your changes. ' \
+                + 'Do you want to proceed?'
+            yes, no = QMessageBox.Yes, QMessageBox.No
+            response = QMessageBox.question(dc.ui.main.v, q, m, yes|no)
+            if response == QMessageBox.StandardButton.No: return
+        title  = 'Open nelia1 document'
+        select = 'Nelia Files (*{})'.format(dc.x.extension.v)
+        path = QFileDialog.getOpenFileName(
+            dc.ui.project.v, title, dc.x.default.path.v, select)[0]
+        if not path:
+            return
+        result = dcload(path)
+        if isinstance(result, Exception):
+            title, message = 'open failed', 'open failed! ' + str(result)
+            QMessageBox.critical(dc.ui.main.v, title, message)
+            dc.x.path.v = None
+            return
+        applyStates(states.unchanged, dc.ui.project.v)
+        applyStates(states.nolast, dc.ui.project.v)
+        dc.m.project.projectlist.v.reloadTable()
+        dc.r.changed.v = False
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
