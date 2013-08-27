@@ -8,6 +8,7 @@
 import os
 import datetime
 import time
+import signal
 
 from PySide.QtCore import *
 from PySide.QtGui import *
@@ -179,9 +180,12 @@ def enableAllCallbacks():
     w, m = dc.ui.project.v, dc.m.project.v
     w.btn_project_new           .clicked.connect(m.onNewProjectClicked)
     w.btn_project_delete        .clicked.connect(m.onDeleteSelectedProject)
+
     w.btn_doc_new       .clicked.connect(dc.m.document.v.onNewDocumentClicked)
     w.btn_doc_save_as   .clicked.connect(dc.m.document.v.onSaveAsClicked)
     w.btn_doc_open      .clicked.connect(dc.m.document.v.onOpenClicked)
+    w.btn_doc_open_last .clicked.connect(dc.m.document.v.onOpenLastClicked)
+    w.btn_doc_save      .clicked.connect(dc.m.document.v.onSaveClicked)
 
     # navi callbacks
     w = dc.ui.project.v
@@ -749,6 +753,24 @@ class NxDocument:
         dc.m.document.v = self
         self.reset()
 
+        dc.x.app.v.aboutToQuit.connect(dc.m.document.v.onAboutToQuit)
+        signal.signal(signal.SIGTERM, self.onSigTerm)
+
+    @logger('NxDocument.onSigTerm(self, num, frame)', 'self', 'num', 'frame')
+    def onSigTerm(self, num, frame):
+
+        QApplication.quit()
+
+    @logger('NxDocument.onAboutToQuit(self)', 'self')
+    def onAboutToQuit(self):
+
+        if dc.r.changed.v:
+            if not dc.x.path.v:
+                dc.x.path.v = os.path.join(dc.x.default.path.v,
+                       '.{}.tmp.nelia1'.format(str(int(time.time()))))
+            dcsave()
+        dcsaveconfig()
+
     @logger('NxDocument.reset(self)', 'self')
     def reset(self):
 
@@ -804,6 +826,17 @@ class NxDocument:
         dc.r.changed.v = False
         applyStates(states.unchanged, dc.ui.project.v)
 
+    @logger('NxDocument.onSaveClicked(self)', 'self')
+    def onSaveClicked(self):
+
+        result = dcsave(dc.x.path.v)
+        if isinstance(result, Exception):
+            title, message = 'Save failed', 'Save failed! ' + str(result)
+            QMessageBox.critical(dc.ui.main.v, title, message)
+            return
+        dc.r.changed.v = False
+        applyStates(states.unchanged, dc.ui.project.v)
+
     @logger('NxDocument.onOpenClicked(self)', 'self')
     def onOpenClicked(self):
 
@@ -825,6 +858,19 @@ class NxDocument:
             title, message = 'open failed', 'open failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)
             dc.x.path.v = None
+            return
+        applyStates(states.unchanged, dc.ui.project.v)
+        applyStates(states.nolast, dc.ui.project.v)
+        dc.m.project.projectlist.v.reloadTable()
+        dc.r.changed.v = False
+
+    @logger('NxDocument.onOpenLastClicked(self)', 'self')
+    def onOpenLastClicked(self):
+
+        result = dcload(dc.c.lastpath.v)
+        if isinstance(result, Exception):
+            title, message = 'Open failed', 'Open failed! ' + str(result)
+            QMessageBox.critical(dc.ui.main.v, title, message)
             return
         applyStates(states.unchanged, dc.ui.project.v)
         applyStates(states.nolast, dc.ui.project.v)

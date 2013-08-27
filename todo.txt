@@ -1,50 +1,10 @@
-* cleanup mainwindow
-
 * roadmap ..
-
-    INFRASTRUCTURE
-
-    .. states
-    .. callbacks
-    .. calback control
-    .. utility classes
-    .. event filters
-    .. milestone logs
-    .. updateTable
-    .. selectionChange
-    .. touchRoadmap
-
-    CORE COMPONENTS
-
-    * skeleton                                                  [done]
-    * init roadmap module                                       [done]
-    * init roadmap ui                                           [done]
-    * create milestone item                                     [done]
-    * filter callbacks                                          [done]
-    * selection on reload table                                 [done]
-    * edit milestone item
-      * change aux attributes                                   [done]
-      * change type                                             [done]
-      * change status                                           [done]
-    * delete milestone item                                     [done]
-    * add log entry for new/edit/delete                         [done]
-    * milestone and milestone item description maximization     [done]
-    * milestone description edit                                [done]
-    * milestone item description edit                           [done]
-    * onShow, load current milestone                            [done]
 
     * change milestone selection                                [depends mistnavi]
     * move milestone item                                       [depends mistnavi]
     * finalize milestone                                        [depends mistnavi]
 
 * mistnavi ..
-
-    INFRASTRUCTURE
-
-    .. callbacks
-    .. calback control
-    .. utility classes
-    .. core classes
 
     * skeleton
     * init mistnavi
@@ -53,6 +13,6 @@
     * selection changed
 
 * config save and load
-* document new, save, load, load last
-* exit handler
+  * save / load config                                          [done]
+  * apply previous layout on init instead of override
 
