@@ -158,6 +158,8 @@ def enableEditCallbacks():
     dc.ui.roadmap.v.cb_mi_type.currentIndexChanged[str].connect(dc.m.roadmap.v.onTypeChanged)
     dc.ui.roadmap.v.text_milestone_description.textChanged.connect(
         dc.m.roadmap.v.onMilestoneDescriptionChanged)
+    dc.ui.roadmap.v.txt_mi_description.textChanged.connect(
+        dc.m.roadmap.v.onMilestoneItemDestriptionChanged)
 
 @logger('(roadmap) disableEditCallbacks()')
 def disableEditCallbacks():
@@ -168,6 +170,8 @@ def disableEditCallbacks():
     dc.ui.roadmap.v.cb_mi_type.currentIndexChanged[str].disconnect(dc.m.roadmap.v.onTypeChanged)
     dc.ui.roadmap.v.text_milestone_description.textChanged.disconnect(
         dc.m.roadmap.v.onMilestoneDescriptionChanged)
+    dc.ui.roadmap.v.txt_mi_description.textChanged.disconnect(
+        dc.m.roadmap.v.onMilestoneItemDestriptionChanged)
 
 CbCtrl.initCallbacks            = initCallbacks
 CbCtrl.enableSelectionCallback  = enableSelectionCallback
@@ -576,6 +580,17 @@ class EfMilestoneDescriptionFocusOut(QObject):
         return QObject.eventFilter(self, obj, event)
 ef_milestone_desription_focus_out = EfMilestoneDescriptionFocusOut()
 
+class EfMilestoneItemDescriptionFocusOut(QObject):
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.FocusOut:
+            if dc.x.roadmap.changeflag.milestone_item_description.v:
+                description = dc.ui.roadmap.v.txt_mi_description.toHtml()
+                smiid = dc.x.roadmap.smiid.v
+                dc.sp.m.mi._(smiid).description.v = description
+            dc.x.roadmap.changeflag.milestone_item_description.v = False
+        return QObject.eventFilter(self, obj, event)
+ef_milestone_item_desription_focus_out = EfMilestoneItemDescriptionFocusOut()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CORE CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -602,6 +617,7 @@ class NxRoadmap:
         dc.x.roadmap.changeflag.priority.v = False
         dc.x.roadmap.changeflag.category.v = False
         dc.x.roadmap.changeflag.milestone_description.v = False
+        dc.x.roadmap.changeflag.milestone_item_description.v = False
 
         dc.ui.roadmap.v.line_mi_name.installEventFilter(ef_name_focus_out)
         dc.ui.roadmap.v.cb_mi_type.installEventFilter(ef_type_focus_out)
@@ -609,6 +625,8 @@ class NxRoadmap:
         dc.ui.roadmap.v.cb_mi_category.installEventFilter(ef_category_focus_out)
         dc.ui.roadmap.v.text_milestone_description.installEventFilter(
             ef_milestone_desription_focus_out)
+        dc.ui.roadmap.v.txt_mi_description.installEventFilter(
+            ef_milestone_item_desription_focus_out)
 
     @logger('NxRoadmap.onMilestoneDescriptionChanged(self)', 'self')
     def onMilestoneDescriptionChanged(self):
@@ -673,6 +691,14 @@ class NxRoadmap:
             dc.x.roadmap.changeflag.mtype.v = True
 
         # STUB: notify mistctrl about milestone tree change
+
+    @logger('NxRoadmap.onMilestoneItemDestriptionChanged(self)', 'self')
+    def onMilestoneItemDestriptionChanged(self):
+
+            self.touchRoadmap()
+
+            if not dc.auto.v:
+                dc.x.roadmap.changeflag.milestone_item_description.v = True
 
     @logger('NxRoadmap.onNewMilestoneItem(self)', 'self')
     def onNewMilestoneItem(self):
