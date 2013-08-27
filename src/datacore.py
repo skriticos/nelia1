@@ -86,17 +86,11 @@ class _dcNode:
 dc = _dcNode('dc')
 dc.x, dc.c, dc.r, dc.s
 
-# some initial values for datacore (application specific)
-dc.x.path.v = None
-dc.x.appname.v = 'nelia1'
 dc.c.lastpath.v = None
+dc.x.appname.v = 'nelia1'
 dc.x.home.v = os.path.expanduser('~')
 dc.x.config.basepath.v = os.path.join(dc.x.home.v, '.config', dc.x.appname.v)
 dc.x.config.filepath.v = os.path.join(dc.x.config.basepath.v, '{}.config'.format(dc.x.appname.v))
-dc.x.extension.v = '.nelia1'
-dc.x.default.path.v = os.path.expanduser('~/Documents')
-dc.s.nextpid.v = 1
-dc.s.index.pid.v = set()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The following four methods save/load an applicaiton document or the

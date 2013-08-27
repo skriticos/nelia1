@@ -18,7 +18,7 @@ from datacore import *
 from datacore import _dcdump
 from common import *
 
-from project import NxProject
+from project import NxProject, NxDocument
 from log     import NxLog
 from roadmap import NxRoadmap
 
@@ -50,6 +50,7 @@ if __name__ == '__main__':
     dcloadconfig()
 
     # load child widget control classes
+    NxDocument()
     NxProject()
     NxLog()
     NxRoadmap()

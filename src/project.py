@@ -166,6 +166,7 @@ def enableAllCallbacks():
     w, m = dc.ui.project.v, dc.m.project.v
     w.btn_project_new           .clicked.connect(m.onNewProjectClicked)
     w.btn_project_delete        .clicked.connect(m.onDeleteSelectedProject)
+    w.btn_doc_new.clicked.connect(dc.m.document.v.onNewDocumentClicked)
 
     # navi callbacks
     w = dc.ui.project.v
@@ -435,7 +436,6 @@ class projectlist:
         rowcount = dc.x.project.model.v.rowCount()
         if rowcount <= 0:
 
-            disableEditCallbacks()
             applyStates(states.startup, dc.ui.project.v)
             return
 
@@ -722,76 +722,50 @@ class NxProject():
         dc.r.changed.v = True
         projectlist.reloadTable()
 
-'''
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @logger('NxProject.onOpenClicked(self)', 'self')
-    def onOpenClicked(self):
+
+class NxDocument:
+
+    @logger('NxDocument.__init__(self)', 'self')
+    def __init__(self):
+
+        dc.m.document.v = self
+        self.reset()
+
+    @logger('NxDocument.reset(self)', 'self')
+    def reset(self):
+
+        del dc.__dict__['s']
+
+        # some initial values for datacore (application specific)
+        dc.x.path.v = None
+        dc.x.extension.v = '.nelia1'
+        dc.x.default.path.v = os.path.expanduser('~/Documents')
+        dc.s.nextpid.v = 1
+        dc.s.index.pid.v = set()
+
+        dc.spid.v = 0
+
+        dc.x.lpid.v = 0
+        dc.x.rpid.v = 0
+
+    @logger('NxDocument.onNewDocumentClicked(self)', 'self')
+    def onNewDocumentClicked(self):
+
         if dc.r.changed.v:
             q = 'Discard changes?'
-            m = 'Opening a file will discard your changes. ' \
+            m = 'Creating a new document will discard your changes. ' \
                 + 'Do you want to proceed?'
             yes, no = QMessageBox.Yes, QMessageBox.No
             response = QMessageBox.question(dc.ui.main.v, q, m, yes|no)
-            if response == QMessageBox.StandardButton.No: return
-        title  = 'Open nelia1 document'
-        select = 'Nelia Files (*{})'.format(dc.x.extension.v)
-        path = QFileDialog.getOpenFileName(
-            dc.ui.main.v, title, dc.x.default.path.v, select)[0]
-        if not path: return False
-        result = dcload(path)
-        if isinstance(result, Exception):
-            title, message = 'open failed', 'open failed! ' + str(result)
-            QMessageBox.critical(dc.ui.main.v, title, message)
-            dc.x.path.v = None
-            return
-        dc.spid.v = 1
-        self.reloadTable()
-        dc.r.changed.v = False
+            if response == QMessageBox.StandardButton.No:
+                return
+        dc.auto.v = True
+        self.reset()
+        applyStates(states.startup, dc.ui.project.v)
+        applyStates(states.nolast, dc.ui.project.v)
+        dc.m.project.projectlist.v.reloadTable()
+        dc.auto.v = False
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @logger('NxProject.onOpenLast(self)', 'self')
-    def onOpenLast(self):
-        result = dcload(dc.c.lastpath.v)
-        if isinstance(result, Exception):
-            title, message = 'Open failed', 'Open failed! ' + str(result)
-            QMessageBox.critical(dc.ui.main.v, title, message)
-            return
-        dc.spid.v = 1
-        self.reloadTable()
-        dc.r.changed.v = False
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @logger('NxProject.onSaveClicked(self)', 'self')
-    def onSaveClicked(self):
-        if not dc.x.path.v:
-            t = 'Save nelia1 document'
-            q = 'Nelia Files (*{})'.format(dc.x.extension.v)
-            path = QFileDialog.getSaveFileName(
-                dc.ui.main.v, t, dc.x.default.path.v, q)[0]
-            if path == '': return
-            extension_start = len(path) - len(dc.x.extension.v)
-            if path.rfind(dc.x.extension.v) != extension_start:
-                path += dc.x.extension.v
-        else: path = dc.x.path.v
-        result = dcsave(path)
-        if isinstance(result, Exception):
-            title, message = 'Save failed', 'Save failed! ' + str(result)
-            QMessageBox.critical(dc.ui.main.v, title, message)
-            return
-        dc.ui.project.v.push_save.hide()
-        self.view.setFocus()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @logger('NxProject.onDeleteProject(self)', 'self')
-    def onDeleteProject(self):
-        t = 'Delete project?'
-        q = 'Sure you want to delete project {}: {}?'\
-                .format(str(dc.spid.v), dc.sp.name.v)
-        yes, no = QMessageBox.Yes, QMessageBox.No
-        response = QMessageBox.question(dc.ui.project.v, t, q, yes|no)
-        if response == QMessageBox.StandardButton.No: return
-        dc.s.idx.pid.v.remove(dc.spid.v)
-        del dc.s.__dict__['_{}'.format(dc.spid.v)]
-        dc.spid.v = 0
-        dc.r.changed.v = True
-        self.reloadTable()
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-'''
 
