@@ -229,6 +229,20 @@ class loglist:
         dc.x.log.selection_model.v = dc.x.log.view.v.selectionModel()
         dc.x.log.horizontal_header.v = dc.x.log.view.v.horizontalHeader()
 
+        # if a canfiguration is loaded, we set up the widget
+        if dc.c.log.header.width.v:
+
+            # restore table sorting and headers
+            loadLayout('log')
+
+            # restore filter control states
+            if 'User' in dc.c.log.filters.v:
+                dc.ui.log.v.btn_log_user.setChecked(True)
+            if 'Track' in dc.c.log.filters.v:
+                dc.ui.log.v.btn_log_tracking.setChecked(True)
+            if 'Milestone' in dc.c.log.filters.v:
+                dc.ui.log.v.btn_log_milestone.setChecked(True)
+
     # used in with setTableValue
     colLid       = 0
     colSummary   = 1
@@ -336,7 +350,8 @@ class NxLog:
     def __init__(self):
 
         dc.m.log.v = self
-        dc.c.log.filters.v = {'User', 'Milestone', 'Track'}
+        if not isinstance(dc.c.log.filters.v, set):
+            dc.c.log.filters.v = {'User', 'Milestone', 'Track'}
         applyStates(states.startup, dc.ui.log.v)
         loglist.initTable()
         enableAllCallbacks()

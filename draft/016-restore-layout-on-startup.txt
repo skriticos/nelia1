@@ -36,7 +36,26 @@ dc.c.project.filters.x.discard(y) -> dc.c.project.filters.x -= {y,y}
 
 == LOG ==
 
-TBD
+.. loglist.initTable() ..
+
+# if a canfiguration is loaded, we set up the widget
+if dc.c.log.header.width.v:
+
+    # restore table sorting and headers
+    loadLayout('log')
+
+    # restore filter control states
+    if 'User' in dc.c.log.filters.v:
+        dc.ui.log.v.btn_log_user.setChecked(True)
+    if 'Track' in dc.c.log.filters.v:
+        dc.ui.log.v.btn_log_tracking.setChecked(True)
+    if 'Milestone' in dc.c.log.filters.v:
+        dc.ui.log.v.btn_log_milestone.setChecked(True)
+
+.. NxLog.__init__() ..
+
+if not isinstance(dc.c.log.filters.v, set):
+    dc.c.log.filters.v = {'User', 'Milestone', 'Track'}
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
