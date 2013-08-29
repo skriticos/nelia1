@@ -1,0 +1,49 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When the application starts up, the configuration is loaded. The table layout
+and filter configuration needs to be applied before the first layout is saved.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+                                 == PROJECT ==
+
+.. projectlist.initTable() ..
+
+# if a configuration is loaded, we set up the widget
+if dc.c.project.header.width.v:
+
+    # restore table sorting and headers widths
+    loadLayout('project')
+
+    # restore filter control states
+    if 1 in dc.c.project.filters.priority.v:
+        dc.ui.project.v.btn_prio_low.setChecked(True)
+    if 4 in dc.c.project.filters.priority.v:
+        dc.ui.project.v.btn_prio_medium.setChecked(True)
+    if 7 in dc.c.project.filters.priority.v:
+        dc.ui.project.v.btn_prio_high.setChecked(True)
+    if 1 in dc.c.project.filters.challenge.v:
+        dc.ui.project.v.btn_challenge_low.setChecked(True)
+    if 4 in dc.c.project.filters.challenge.v:
+        dc.ui.project.v.btn_challenge_medium.setChecked(True)
+    if 7 in dc.c.project.filters.challenge.v:
+        dc.ui.project.v.btn_challenge_hard.setChecked(True)
+
+*** REFACTOR FILTER CALLBACKS ***
+
+dc.c.project.filters.x.add(y) -> dc.c.project.filters.x |= {y,y}
+dc.c.project.filters.x.discard(y) -> dc.c.project.filters.x -= {y,y}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+== LOG ==
+
+TBD
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+== ROADMAP ==
+
+TBD
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
