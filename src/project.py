@@ -222,74 +222,62 @@ def enableAllCallbacks():
 
 @logger('onPriorityLowToggled(checked)', 'checked')
 def onPriorityLowToggled(checked):
+
     if checked:
-        dc.c.project.filters.priority.v.add(1)
-        dc.c.project.filters.priority.v.add(2)
-        dc.c.project.filters.priority.v.add(3)
+        dc.c.project.filters.priority.v |= {1, 2, 3}
     else:
-        dc.c.project.filters.priority.v.discard(1)
-        dc.c.project.filters.priority.v.discard(2)
-        dc.c.project.filters.priority.v.discard(3)
+        dc.c.project.filters.priority.v -= {1, 2, 3}
+
     projectlist.reloadTable()
 
 @logger('onPriorityMediumToggled(checked)', 'checked')
 def onPriorityMediumToggled(checked):
+
     if checked:
-        dc.c.project.filters.priority.v.add(4)
-        dc.c.project.filters.priority.v.add(5)
-        dc.c.project.filters.priority.v.add(6)
+        dc.c.project.filters.priority.v |= {4, 5, 6}
     else:
-        dc.c.project.filters.priority.v.discard(4)
-        dc.c.project.filters.priority.v.discard(5)
-        dc.c.project.filters.priority.v.discard(6)
+        dc.c.project.filters.priority.v -= {4, 5, 6}
+
     projectlist.reloadTable()
 
 @logger('onPriorityHighToggled(checked)', 'checked')
 def onPriorityHighToggled(checked):
+
     if checked:
-        dc.c.project.filters.priority.v.add(7)
-        dc.c.project.filters.priority.v.add(8)
-        dc.c.project.filters.priority.v.add(9)
+        dc.c.project.filters.priority.v |= {7, 8, 9}
     else:
-        dc.c.project.filters.priority.v.discard(7)
-        dc.c.project.filters.priority.v.discard(8)
-        dc.c.project.filters.priority.v.discard(9)
+        dc.c.project.filters.priority.v -= {7, 8, 9}
+
     projectlist.reloadTable()
 
 @logger('onChallengeLowToggled(checked)', 'checked')
 def onChallengeLowToggled(checked):
+
     if checked:
-        dc.c.project.filters.challenge.v.add(1)
-        dc.c.project.filters.challenge.v.add(2)
-        dc.c.project.filters.challenge.v.add(3)
+        dc.c.project.filters.challenge.v |= {1, 2, 3}
     else:
-        dc.c.project.filters.challenge.v.discard(1)
-        dc.c.project.filters.challenge.v.discard(2)
-        dc.c.project.filters.challenge.v.discard(3)
+        dc.c.project.filters.challenge.v -= {1, 2, 3}
+
     projectlist.reloadTable()
 
 @logger('onChallengeMediumToggled(checked)', 'checked')
 def onChallengeMediumToggled(checked):
+
     if checked:
-        dc.c.project.filters.challenge.v.add(4)
-        dc.c.project.filters.challenge.v.add(5)
-        dc.c.project.filters.challenge.v.add(6)
+        dc.c.project.filters.challenge.v |= {4, 5, 6}
     else:
-        dc.c.project.filters.challenge.v.discard(4)
-        dc.c.project.filters.challenge.v.discard(5)
-        dc.c.project.filters.challenge.v.discard(6)
+        dc.c.project.filters.challenge.v -= {4, 5, 6}
+
     projectlist.reloadTable()
 
 @logger('onChallengeHighToggled(checked)', 'checked')
 def onChallengeHighToggled(checked):
+
     if checked:
-        dc.c.project.filters.challenge.v.add(7)
-        dc.c.project.filters.challenge.v.add(8)
-        dc.c.project.filters.challenge.v.add(9)
+        dc.c.project.filters.challenge.v |= {7, 8, 9}
     else:
-        dc.c.project.filters.challenge.v.discard(7)
-        dc.c.project.filters.challenge.v.discard(8)
-        dc.c.project.filters.challenge.v.discard(9)
+        dc.c.project.filters.challenge.v -= {7, 8, 9}
+
     projectlist.reloadTable()
 
 # Maximize / restore callback for infox maximization toggle.
@@ -389,6 +377,26 @@ class projectlist:
         dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
         dc.x.project.selection_model.v   = dc.x.project.view.v.selectionModel()
         dc.x.project.horizontal_header.v = dc.x.project.view.v.horizontalHeader()
+
+        # if a configuration is loaded, we set up the widget
+        if dc.c.project.header.width.v:
+
+            # restore table sorting and headers widths
+            loadLayout('project')
+
+            # restore filter control states
+            if 1 in dc.c.project.filters.priority.v:
+                dc.ui.project.v.btn_prio_low.setChecked(True)
+            if 4 in dc.c.project.filters.priority.v:
+                dc.ui.project.v.btn_prio_medium.setChecked(True)
+            if 7 in dc.c.project.filters.priority.v:
+                dc.ui.project.v.btn_prio_high.setChecked(True)
+            if 1 in dc.c.project.filters.challenge.v:
+                dc.ui.project.v.btn_challenge_low.setChecked(True)
+            if 4 in dc.c.project.filters.challenge.v:
+                dc.ui.project.v.btn_challenge_medium.setChecked(True)
+            if 7 in dc.c.project.filters.challenge.v:
+                dc.ui.project.v.btn_challenge_hard.setChecked(True)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # used in with setTableValue
@@ -571,8 +579,9 @@ class NxProject():
 
         # These are used in the project states callbacks for the filter buttons
         # and the reloadTable method in the table list.
-        dc.c.project.filters.priority.v = {1, 2, 3, 4, 5, 6, 7, 8, 9}
-        dc.c.project.filters.challenge.v = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        if not isinstance(dc.c.project.filters.priority.v, set):
+            dc.c.project.filters.priority.v = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+            dc.c.project.filters.challenge.v = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
         # apply state (enable/dissable widgets)
         dc.spid.v = 0

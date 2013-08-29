@@ -874,7 +874,7 @@ height:1px;</string>
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -925,7 +925,7 @@ height:1px;</string>
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -946,7 +946,7 @@ height:1px;</string>
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -967,7 +967,7 @@ height:1px;</string>
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -1019,7 +1019,7 @@ height:1px;</string>
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -1037,7 +1037,7 @@ height:1px;</string>
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
