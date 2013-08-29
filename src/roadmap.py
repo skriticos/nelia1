@@ -451,6 +451,39 @@ def initTable():
     dc.x.roadmap.selection_model.v = view.selectionModel()
     dc.x.roadmap.horizontal_header.v = view.horizontalHeader()
 
+    # if a canfiguration is loaded, we set up the widget
+    if dc.c.roadmap.header.width.v:
+
+        # restore table sorting and headers
+        loadLayout('roadmap')
+
+        if 'Feature' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_feature.setChecked(True)
+        if 'Issue' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_issue.setChecked(True)
+        if 'Open' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_open.setChecked(True)
+        if 'Closed' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_closed.setChecked(True)
+        if 'Low' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_low.setChecked(True)
+        if 'Medium' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_medium.setChecked(True)
+        if 'High' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_high.setChecked(True)
+        if 'Core' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_core.setChecked(True)
+        if 'Auxiliary' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_auxiliary.setChecked(True)
+        if 'Security' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_security.setChecked(True)
+        if 'Corrective' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_corrective.setChecked(True)
+        if 'Architecture' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_architecture.setChecked(True)
+        if 'Refactor' in dc.c.roadmap.filters.v:
+            dc.ui.roadmap.v.btn_filter_refactor.setChecked(True)
+
 @logger('milist.reloadTable()')
 def reloadTable():
 
@@ -617,7 +650,7 @@ class NxRoadmap:
         milist.initTable()
         initCallbacks()
 
-        if not dc.c.roadmap.filters.v:
+        if not isinstance(dc.c.roadmap.filters.v, set):
             dc.c.roadmap.filters.v = {
                 'Feature', 'Issue', 'Open', 'Low', 'Medium', 'High', 'Core',
                 'Auxiliary', 'Security', 'Corrective', 'Architecture',
