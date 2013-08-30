@@ -6,11 +6,10 @@
 
 * mistnavi ..
 
-    * skeleton
-    * init mistnavi
     * roadmap tree menu
     * update mistnavi
     * selection changed
 
 * project add f:x/x i:x/x to version
+* add sum of all features/issues to project selection overview
 

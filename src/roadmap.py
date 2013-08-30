@@ -17,9 +17,8 @@ from datacore import *
 from common import *
 from common2 import *
 
-# might want to bring these two modules into this source file?
 import mistctrl                       # milestone control module for new project
-import mistnavi                       # milestone navigation button
+from mistnavi import MilestoneButton
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # STATES
@@ -136,6 +135,8 @@ def initCallbacks():
     dc.ui.roadmap.v.btn_milestone_maximize.toggled.connect(onMaximizeMilestoneDescription)
     dc.ui.roadmap.v.btn_mi_desc_minimize.toggled.connect(onMaximizeMilestoneItemDescription)
 
+    dc.ui.roadmap.v.btn_milestone_button.selectionChanged.connect(onMilestoneSelectionChanged)
+
     enableSelectionCallback()
     enableEditCallbacks()
 
@@ -189,6 +190,11 @@ dc.m.roadmap.cbctrl.v = CbCtrl
 # Internal example: onShow() or CbAux.onShow()
 
 class CbAux: pass
+
+@logger('roadmap) onMilestoneSelectionChanged()')
+def onMilestoneSelectionChanged():
+
+    milist.reloadTable()
 
 @logger('(roadmap) onFilterFeatureToggled(checked)', 'checked')
 def onFilterFeatureToggled(checked):
@@ -389,6 +395,7 @@ def onShow():
         dc.auto.v = False
 
         dc.m.roadmap.milist.v.reloadTable()
+        dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
 
 
 CbAux.onSelectionChanged    = onSelectionChanged
@@ -648,6 +655,12 @@ class NxRoadmap:
         dc.m.roadmap.v = self
         applyStates(states.startup, dc.ui.roadmap.v)
         milist.initTable()
+
+        dc.ui.roadmap.v.btn_milestone_button.close()
+        btn = dc.ui.roadmap.v.btn_milestone_button \
+            = MilestoneButton(dc.ui.roadmap.v.box_milestone_selection)
+        dc.ui.roadmap.v.layout_mi_select.addWidget(btn, 0, 1, 1, 1)
+
         initCallbacks()
 
         if not isinstance(dc.c.roadmap.filters.v, set):

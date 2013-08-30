@@ -152,7 +152,7 @@ QPushButton:disabled{
           </widget>
          </item>
          <item row="2" column="0" colspan="2">
-          <widget class="QGroupBox" name="log_actions">
+          <widget class="QGroupBox" name="box_milestone_selection">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -160,9 +160,9 @@ QPushButton:disabled{
             </sizepolicy>
            </property>
            <property name="title">
-            <string>Milestone Selection</string>
+            <string>Milestone &amp;Selection</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout">
+           <layout class="QGridLayout" name="layout_mi_select">
             <property name="leftMargin">
              <number>6</number>
             </property>
