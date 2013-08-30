@@ -1078,9 +1078,12 @@ height:1px;</string>
  <tabstops>
   <tabstop>btn_project_new</tabstop>
   <tabstop>btn_project_delete</tabstop>
+  <tabstop>btn_show_roadmap</tabstop>
+  <tabstop>btn_show_logs</tabstop>
   <tabstop>btn_doc_open_last</tabstop>
   <tabstop>btn_doc_open</tabstop>
   <tabstop>btn_doc_new</tabstop>
+  <tabstop>btn_doc_save</tabstop>
   <tabstop>btn_doc_save_as</tabstop>
   <tabstop>line_project_name</tabstop>
   <tabstop>cb_project_type</tabstop>
@@ -1088,9 +1091,11 @@ height:1px;</string>
   <tabstop>sb_project_priority</tabstop>
   <tabstop>sb_project_challenge</tabstop>
   <tabstop>text_project_info</tabstop>
+  <tabstop>btn_info_max</tabstop>
   <tabstop>tbl_project_list</tabstop>
   <tabstop>btn_project_sort_modified</tabstop>
   <tabstop>btn_prio_low</tabstop>
+  <tabstop>btn_prio_medium</tabstop>
   <tabstop>btn_prio_high</tabstop>
   <tabstop>btn_challenge_low</tabstop>
   <tabstop>btn_challenge_medium</tabstop>

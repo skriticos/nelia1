@@ -12,7 +12,5 @@
     * update mistnavi
     * selection changed
 
-* config save and load
-  * save / load config                                          [done]
-  * apply previous layout on init instead of override
+* project add f:x/x i:x/x to version
 
