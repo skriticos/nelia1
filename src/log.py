@@ -209,93 +209,112 @@ dc.m.log.onShown.v = onShown
 # UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class loglist:
+class loglist: pass
 
-    headers = [
-        'ID',
-        'Summary',
-        'Type',
-        'Modified',
-        'Created'
-    ]
+loglist.headers = [
+    'ID',
+    'Summary',
+    'Type',
+    'Modified',
+    'Created'
+]
 
-    @logger('loglist.initTable()')
-    def initTable():
+@logger('loglist.initTable()')
+def initTable():
 
-        dc.x.log.view.v = dc.ui.log.v.tbl_log_list
-        dc.x.log.model.v = QStandardItemModel()
-        dc.x.log.view.v.setModel(dc.x.log.model.v)
-        dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
-        dc.x.log.selection_model.v = dc.x.log.view.v.selectionModel()
-        dc.x.log.horizontal_header.v = dc.x.log.view.v.horizontalHeader()
+    dc.x.log.view.v = dc.ui.log.v.tbl_log_list
+    dc.x.log.model.v = QStandardItemModel()
+    dc.x.log.view.v.setModel(dc.x.log.model.v)
+    dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
+    dc.x.log.selection_model.v = dc.x.log.view.v.selectionModel()
+    dc.x.log.horizontal_header.v = dc.x.log.view.v.horizontalHeader()
 
-        # if a canfiguration is loaded, we set up the widget
-        if dc.c.log.header.width.v:
+    # if a canfiguration is loaded, we set up the widget
+    if dc.c.log.header.width.v:
 
-            # restore table sorting and headers
-            loadLayout('log')
-
-            # restore filter control states
-            if 'User' in dc.c.log.filters.v:
-                dc.ui.log.v.btn_log_user.setChecked(True)
-            if 'Track' in dc.c.log.filters.v:
-                dc.ui.log.v.btn_log_tracking.setChecked(True)
-            if 'Milestone' in dc.c.log.filters.v:
-                dc.ui.log.v.btn_log_milestone.setChecked(True)
-
-    # used in with setTableValue
-    colLid       = 0
-    colSummary   = 1
-    colType      = 2
-    colModified  = 3
-    colCreated   = 4
-
-    @logger('loglist.reloadTable()')
-    def reloadTable():
-
-        saveLayout('log')
-
-        # clear table
-        disableSelectionCallback()
-        dc.x.log.model.v.clear()
-        dc.x.log.selection_model.v.reset()
-        enableSelectionCallback()
-        dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
-
-        if not dc.sp.log.index.v:
-            loadLayout('log')
-            applyStates(states.startup, dc.ui.log.v)
-            return
-
-        for lid in dc.sp.log.index.v:
-
-            if dc.sp.log._(lid).ltype.v not in dc.c.log.filters.v:
-                dc.x.log.slid.v = 0
-                continue
-
-            dc.x.log.model.v.insertRow(0, [
-                QStandardItem(str(lid).zfill(4)),
-                QStandardItem(dc.sp.log._(lid).summary.v),
-                QStandardItem(dc.sp.log._(lid).ltype.v),
-                QStandardItem(convert(dc.sp.log._(lid).modified.v)),
-                QStandardItem(convert(dc.sp.log._(lid).created.v))
-            ])
-
+        # restore table sorting and headers
         loadLayout('log')
 
-        # we don't select anything if we don't have rows
-        rowcount = dc.x.log.model.v.rowCount()
-        if rowcount <= 0:
+        # restore filter control states
+        if 'User' in dc.c.log.filters.v:
+            dc.ui.log.v.btn_log_user.setChecked(True)
+        if 'Track' in dc.c.log.filters.v:
+            dc.ui.log.v.btn_log_tracking.setChecked(True)
+        if 'Milestone' in dc.c.log.filters.v:
+            dc.ui.log.v.btn_log_milestone.setChecked(True)
 
-            applyStates(states.startup, dc.ui.log.v)
-            return
+# used in with setTableValue
+loglist.colLid       = 0
+loglist.colSummary   = 1
+loglist.colType      = 2
+loglist.colModified  = 3
+loglist.colCreated   = 4
 
-        # we don't have a selected log id (outside the filter or deleted)
-        if not dc.x.log.slid.v:
+@logger('loglist.reloadTable()')
+def reloadTable():
 
-            index = dc.x.log.model.v.index(0, 0)
-            lid   = int(dc.x.log.model.v.data(index))
-            dc.x.log.slid.v = lid
+    saveLayout('log')
+
+    # clear table
+    disableSelectionCallback()
+    dc.x.log.model.v.clear()
+    dc.x.log.selection_model.v.reset()
+    enableSelectionCallback()
+    dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
+
+    if not dc.sp.log.index.v:
+        loadLayout('log')
+        applyStates(states.startup, dc.ui.log.v)
+        return
+
+    for lid in dc.sp.log.index.v:
+
+        if dc.sp.log._(lid).ltype.v not in dc.c.log.filters.v:
+            dc.x.log.slid.v = 0
+            continue
+
+        dc.x.log.model.v.insertRow(0, [
+            QStandardItem(str(lid).zfill(4)),
+            QStandardItem(dc.sp.log._(lid).summary.v),
+            QStandardItem(dc.sp.log._(lid).ltype.v),
+            QStandardItem(convert(dc.sp.log._(lid).modified.v)),
+            QStandardItem(convert(dc.sp.log._(lid).created.v))
+        ])
+
+    loadLayout('log')
+
+    # we don't select anything if we don't have rows
+    rowcount = dc.x.log.model.v.rowCount()
+    if rowcount <= 0:
+
+        applyStates(states.startup, dc.ui.log.v)
+        return
+
+    # we don't have a selected log id (outside the filter or deleted)
+    if not dc.x.log.slid.v:
+
+        index = dc.x.log.model.v.index(0, 0)
+        lid   = int(dc.x.log.model.v.data(index))
+        dc.x.log.slid.v = lid
+
+        disableEditCallbacks()
+        applyStates(states.selected, dc.ui.log.v)
+        enableEditCallbacks()
+
+        s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+        dc.x.log.selection_model.v.setCurrentIndex(index, s|r)
+        selection = dc.x.log.view.v.selectionModel().selection()
+
+        return
+
+    # iterate through table rows
+    for rowcnt in range(dc.x.log.model.v.rowCount()):
+
+        index = dc.x.log.model.v.index(rowcnt, 0)
+        lid = int(dc.x.log.model.v.data(index))
+
+        # if we have a match, select it and abort
+        if lid == dc.x.log.slid.v:
 
             disableEditCallbacks()
             applyStates(states.selected, dc.ui.log.v)
@@ -304,26 +323,11 @@ class loglist:
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.log.selection_model.v.setCurrentIndex(index, s|r)
             selection = dc.x.log.view.v.selectionModel().selection()
+            break
 
-            return
-
-        # iterate through table rows
-        for rowcnt in range(dc.x.log.model.v.rowCount()):
-
-            index = dc.x.log.model.v.index(rowcnt, 0)
-            lid = int(dc.x.log.model.v.data(index))
-
-            # if we have a match, select it and abort
-            if lid == dc.x.log.slid.v:
-
-                disableEditCallbacks()
-                applyStates(states.selected, dc.ui.log.v)
-                enableEditCallbacks()
-
-                s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
-                dc.x.log.selection_model.v.setCurrentIndex(index, s|r)
-                selection = dc.x.log.view.v.selectionModel().selection()
-                break
+loglist.initTable = initTable
+loglist.reloadTable = reloadTable
+dc.m.log.loglist.v = loglist
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # EVENT FILTERS

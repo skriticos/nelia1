@@ -349,154 +349,156 @@ def onShowRoadmap():
 # UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class projectlist:
+class projectlist: pass
 
-    # header labels for the project list table
-    headers =  [
-        'ID',
-        'Name',
-        'Type',
-        'Verson',
-        'Category',
-        'Priority',
-        'Challenge',
-        'Modified',
-        'Created'
-    ]
+# header labels for the project list table
+projectlist.headers =  [
+    'ID',
+    'Name',
+    'Type',
+    'Verson',
+    'Category',
+    'Priority',
+    'Challenge',
+    'Modified',
+    'Created'
+]
 
-    # This method set's up the project list table. It creates the model and sets
-    # up all necessary attributes. It is called from the NxProject __init__
-    # method. One only.
+# This method set's up the project list table. It creates the model and sets
+# up all necessary attributes. It is called from the NxProject __init__
+# method. One only.
 
-    @logger('projectlist.initTable()')
-    def initTable():
+@logger('projectlist.initTable()')
+def initTable():
 
-        dc.x.project.view.v = dc.ui.project.v.tbl_project_list
-        dc.x.project.model.v = QStandardItemModel()
-        dc.x.project.view.v.setModel(dc.x.project.model.v)
-        dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
-        dc.x.project.selection_model.v   = dc.x.project.view.v.selectionModel()
-        dc.x.project.horizontal_header.v = dc.x.project.view.v.horizontalHeader()
+    dc.x.project.view.v = dc.ui.project.v.tbl_project_list
+    dc.x.project.model.v = QStandardItemModel()
+    dc.x.project.view.v.setModel(dc.x.project.model.v)
+    dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
+    dc.x.project.selection_model.v   = dc.x.project.view.v.selectionModel()
+    dc.x.project.horizontal_header.v = dc.x.project.view.v.horizontalHeader()
 
-        # if a configuration is loaded, we set up the widget
-        if dc.c.project.header.width.v:
+    # if a configuration is loaded, we set up the widget
+    if dc.c.project.header.width.v:
 
-            # restore table sorting and headers widths
-            loadLayout('project')
-
-            # restore filter control states
-            if 1 in dc.c.project.filters.priority.v:
-                dc.ui.project.v.btn_prio_low.setChecked(True)
-            if 4 in dc.c.project.filters.priority.v:
-                dc.ui.project.v.btn_prio_medium.setChecked(True)
-            if 7 in dc.c.project.filters.priority.v:
-                dc.ui.project.v.btn_prio_high.setChecked(True)
-            if 1 in dc.c.project.filters.challenge.v:
-                dc.ui.project.v.btn_challenge_low.setChecked(True)
-            if 4 in dc.c.project.filters.challenge.v:
-                dc.ui.project.v.btn_challenge_medium.setChecked(True)
-            if 7 in dc.c.project.filters.challenge.v:
-                dc.ui.project.v.btn_challenge_hard.setChecked(True)
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # used in with setTableValue
-    colPid       = 0
-    colName      = 1
-    colType      = 2
-    colVersion   = 3
-    colCategory  = 4
-    colPritoriy  = 5
-    colChallenge = 6
-    colModified  = 7
-    colCreated   = 8
-
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    @logger('projectlist.reloadTable(toggled=False)')
-    def reloadTable(toggled=False):
-
-        saveLayout('project')
-
-        # clear table
-        disableSelectionCallback()
-        dc.x.project.model.v.clear()
-        dc.x.project.selection_model.v.reset()
-        enableSelectionCallback()
-        dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
-
-        # populate table with projects (that are in filter selection)
-        # we start off by iterating through all projects
-
-        for pid in dc.s.index.pid.v:
-
-            # skip to next for filtered out entries
-            if dc.s._(pid).priority.v not in dc.c.project.filters.priority.v:
-                dc.spid.v = 0
-                dc.sp = None
-                continue
-            if dc.s._(pid).challenge.v not in dc.c.project.filters.challenge.v:
-                dc.spid.v = 0
-                dc.sp = None
-                continue
-
-            # add pid to table
-            major, minor = dc.s._(pid).m.active.v
-            dc.x.project.model.v.insertRow(0, [
-                QStandardItem(str(pid).zfill(4)),
-                QStandardItem(dc.s._(pid).name.v),
-                QStandardItem(dc.s._(pid).ptype.v),
-                QStandardItem('{}.{}'.format(major, minor)),
-                QStandardItem(dc.s._(pid).category.v),
-                QStandardItem(str(dc.s._(pid).priority.v)),
-                QStandardItem(str(dc.s._(pid).challenge.v)),
-                QStandardItem(convert(dc.s._(pid).modified.v)),
-                QStandardItem(convert(dc.s._(pid).created.v)) ])
-
+        # restore table sorting and headers widths
         loadLayout('project')
 
-        # now we have the table as required, now set the selection This is a bit
-        # tricky at times. If we have the selection within the visible with the
-        # current filter settings, then we just search and select that line.
-        # Otherwise we select the first line and have to set the selection data
-        # too (dc.spid.v / dc.sp).
+        # restore filter control states
+        if 1 in dc.c.project.filters.priority.v:
+            dc.ui.project.v.btn_prio_low.setChecked(True)
+        if 4 in dc.c.project.filters.priority.v:
+            dc.ui.project.v.btn_prio_medium.setChecked(True)
+        if 7 in dc.c.project.filters.priority.v:
+            dc.ui.project.v.btn_prio_high.setChecked(True)
+        if 1 in dc.c.project.filters.challenge.v:
+            dc.ui.project.v.btn_challenge_low.setChecked(True)
+        if 4 in dc.c.project.filters.challenge.v:
+            dc.ui.project.v.btn_challenge_medium.setChecked(True)
+        if 7 in dc.c.project.filters.challenge.v:
+            dc.ui.project.v.btn_challenge_hard.setChecked(True)
 
-        # we don't select anything if we don't have rows
-        rowcount = dc.x.project.model.v.rowCount()
-        if rowcount <= 0:
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# used in with setTableValue
+projectlist.colPid       = 0
+projectlist.colName      = 1
+projectlist.colType      = 2
+projectlist.colVersion   = 3
+projectlist.colCategory  = 4
+projectlist.colPritoriy  = 5
+projectlist.colChallenge = 6
+projectlist.colModified  = 7
+projectlist.colCreated   = 8
 
-            applyStates(states.startup, dc.ui.project.v)
-            return
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@logger('projectlist.reloadTable(toggled=False)')
+def reloadTable(toggled=False):
 
-        # we don't have a selected project id (outside the filter or deleted)
-        if not dc.spid.v:
+    saveLayout('project')
 
-            index = dc.x.project.model.v.index(0, 0)
-            pid = int(dc.x.project.model.v.data(index))
-            dc.spid.v = pid
-            dc.sp = dc.s._(pid)
+    # clear table
+    disableSelectionCallback()
+    dc.x.project.model.v.clear()
+    dc.x.project.selection_model.v.reset()
+    enableSelectionCallback()
+    dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
+
+    # populate table with projects (that are in filter selection)
+    # we start off by iterating through all projects
+
+    for pid in dc.s.index.pid.v:
+
+        # skip to next for filtered out entries
+        if dc.s._(pid).priority.v not in dc.c.project.filters.priority.v:
+            dc.spid.v = 0
+            dc.sp = None
+            continue
+        if dc.s._(pid).challenge.v not in dc.c.project.filters.challenge.v:
+            dc.spid.v = 0
+            dc.sp = None
+            continue
+
+        # add pid to table
+        major, minor = dc.s._(pid).m.active.v
+        dc.x.project.model.v.insertRow(0, [
+            QStandardItem(str(pid).zfill(4)),
+            QStandardItem(dc.s._(pid).name.v),
+            QStandardItem(dc.s._(pid).ptype.v),
+            QStandardItem('{}.{}'.format(major, minor)),
+            QStandardItem(dc.s._(pid).category.v),
+            QStandardItem(str(dc.s._(pid).priority.v)),
+            QStandardItem(str(dc.s._(pid).challenge.v)),
+            QStandardItem(convert(dc.s._(pid).modified.v)),
+            QStandardItem(convert(dc.s._(pid).created.v)) ])
+
+    loadLayout('project')
+
+    # now we have the table as required, now set the selection This is a bit
+    # tricky at times. If we have the selection within the visible with the
+    # current filter settings, then we just search and select that line.
+    # Otherwise we select the first line and have to set the selection data
+    # too (dc.spid.v / dc.sp).
+
+    # we don't select anything if we don't have rows
+    rowcount = dc.x.project.model.v.rowCount()
+    if rowcount <= 0:
+
+        applyStates(states.startup, dc.ui.project.v)
+        return
+
+    # we don't have a selected project id (outside the filter or deleted)
+    if not dc.spid.v:
+
+        index = dc.x.project.model.v.index(0, 0)
+        pid = int(dc.x.project.model.v.data(index))
+        dc.spid.v = pid
+        dc.sp = dc.s._(pid)
+
+        s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+        dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
+        # note: this triggers onSelectionChanged
+        selection = dc.x.project.view.v.selectionModel().selection()
+        applyStates(states.selected, dc.ui.project.v)
+
+        return
+
+    # iterate through table rows
+    for rowcnt in range(dc.x.project.model.v.rowCount()):
+
+        index = dc.x.project.model.v.index(rowcnt, 0)
+        pid = int(dc.x.project.model.v.data(index))
+
+        # if we have a match, select it and abort
+        if pid == dc.spid.v:
 
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
             # note: this triggers onSelectionChanged
             selection = dc.x.project.view.v.selectionModel().selection()
-            applyStates(states.selected, dc.ui.project.v)
+            break
 
-            return
-
-        # iterate through table rows
-        for rowcnt in range(dc.x.project.model.v.rowCount()):
-
-            index = dc.x.project.model.v.index(rowcnt, 0)
-            pid = int(dc.x.project.model.v.data(index))
-
-            # if we have a match, select it and abort
-            if pid == dc.spid.v:
-
-                s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
-                dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
-                # note: this triggers onSelectionChanged
-                selection = dc.x.project.view.v.selectionModel().selection()
-                break
-
+projectlist.initTable = initTable
+projectlist.reloadTable = reloadTable
 dc.m.project.projectlist.v = projectlist
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
