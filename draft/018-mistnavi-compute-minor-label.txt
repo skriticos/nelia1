@@ -1,0 +1,100 @@
+
+!! THIS WILL NEED A DEDICATED TEST !!
+
+
+def _testComputeMinorLabelItems():
+
+0.x
+    0.1 [0/1, 0/1] (a)
+    0.2 [0/1, 0/1]
+1.x
+    1.0 [0/1, 0/1]
+    1.1 [0/3, 0/3] (s) -> '◇  v1.1  +1:3  f:0/3  i:0/3'
+
+for miid in dc.sp.m._(major)._(minor).index.v:
+
+    if dc.sp.m.mi._(miid).mtype == 'Feature':
+        out.total_features += 1
+
+        if dc.sp.m.mi._(miid).status.v == 'Open':
+            out.open_features += 1
+
+    if dc.sp.m.mi._(miid).mtype == 'Issue':
+        out.total_issues += 1
+
+        if dc.sp.m.mi._(miid).status.v == 'Open':
+            out.open_issues += 1
+
+    amajor, aminor = dc.sp.m.active.v
+
+    if major > amajor:
+        out.diamond = '◆'
+        out.delta_sign = '-'
+        out.delta_major = amajor - major
+
+        inCurrent = aminor
+        inBetween = 0
+        for x in range(major+1, amajor):
+            inBetween += len(dc.sp.m._(x).index.v)
+
+        #     0.1 0.2 0.3 0.4   len(0) -> 3  0.2   len(0) - 2 = 1
+        # 1.0 1.1 1.2 1.3 1.4   len(1) -> 4  0.2   len(1) - 2 = 2
+
+        inMajor = len(dc.sp.m._(major).index.v) - minor
+        if major == 0:
+            inMajor += 1
+
+        out.delta_minor = inCurrent + inBetween + inMajor
+
+    elif major < amajor:
+        out.diamond = '◇'
+        out.delta_sign = '+'
+        out.delta_major = major - amajor
+
+        #     0.1 0.2 0.3 0.4   len(0) -> 3  0.2   3 - 2 = 1
+        # 1.0 1.1 1.2 1.3 1.4   len(1) -> 4  0.2   4 - 2 = 2
+
+        inCurrent = len(dc.sp.m._(amajor).index.v) - aminor
+        if amajor == 0:
+            inCurrent += 1
+
+        inBetween = 0
+        for x in range(amajor+1, major):
+            inBetween += len(dc.sp.m._(x).index.v)
+        inMajor = minor
+
+        out.delta_minor = inCurrent + inBetween + inMajor
+
+    else:
+
+        out.delta_major = 0
+
+        if minor > aminor:
+            out.diamond = '◆'
+            out.delta_sign = '-'
+            out.delta_minor = aminor - minor
+
+        elif minor < aminor:
+            out.diamond = '◇'
+            out.delta_sign = '+'
+            out.delta_minor = 0
+
+        else:
+            out.diamond = '◈'
+            out.delta_sign = '+'
+            out.delta_minor = minor - aminor
+
+    out.label = '{}  v{}.{}  {}{}:{}   f:{}/{}  i:{}/{}'.format(
+                    out.diamond,
+                    major,
+                    minor,
+                    out.delta_sign,
+                    out.delta_major,
+                    out.delta_minor,
+                    out.open_features,
+                    out.total_features,
+                    out.open_issues,
+                    out.total_issues)
+
+    return out
+
