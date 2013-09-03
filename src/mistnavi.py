@@ -138,7 +138,7 @@ def computeMinorLabelItems(major, minor):
                     out.delta_minor,
                     out.total_features - out.open_features,
                     out.total_features,
-                    out.open_issues,
+                    out.total_issues - out.open_issues,
                     out.total_issues)
 
     return out
@@ -147,7 +147,51 @@ def computeMinorLabelItems(major, minor):
 def computeMajorLabelItems(major):
 
     out = LabelComputation()
-    out.delta_minor = 'x'
+
+    minors = dc.sp.m._(major).index.v
+    for minor in minors:
+
+        for miid in dc.sp.m._(major)._(minor).index.v:
+
+            if dc.sp.m.mi._(miid).mtype.v == 'Feature':
+                out.total_features += 1
+
+                if dc.sp.m.mi._(miid).status.v == 'Open':
+                    out.open_features += 1
+
+            if dc.sp.m.mi._(miid).mtype.v == 'Issue':
+                out.total_issues += 1
+
+                if dc.sp.m.mi._(miid).status.v == 'Open':
+                    out.open_issues += 1
+
+    amajor, aminor = dc.sp.m.active.v
+
+    if major < amajor:
+        out.diamond = '◆'
+        out.delta_sign = '-'
+        out.delta_major = amajor - major
+
+    elif major > amajor:
+        out.diamond = '◇'
+        out.delta_sign = '+'
+        out.delta_major = major - amajor
+
+    else:
+        out.diamond = '◈'
+        out.delta_sign = '+'
+        out.delta_major = 0
+
+    # compose label
+    out.label = '{}  v{}  {}{}  f:{}/{}  i:{}/{}'.format(
+                    out.diamond,
+                    major,
+                    out.delta_sign,
+                    out.delta_major,
+                    out.total_features - out.open_features,
+                    out.total_features,
+                    out.total_issues - out.open_issues,
+                    out.total_issues)
 
     return out
 
