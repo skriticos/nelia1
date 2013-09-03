@@ -7,6 +7,9 @@
 * mistnavi ..
 
     * roadmap tree menu
+      * compute major/minor labels                              [done]
+      * build roadmap tree menu
+      * update a single major milestone in the tree
     * update mistnavi
     * selection changed
 
