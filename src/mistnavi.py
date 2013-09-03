@@ -58,6 +58,89 @@ def computeMinorLabelItems(major, minor):
 
     out = LabelComputation()
 
+    # compute feature / issue count
+    for miid in dc.sp.m._(major)._(minor).index.v:
+
+        if dc.sp.m.mi._(miid).mtype.v == 'Feature':
+            out.total_features += 1
+
+            if dc.sp.m.mi._(miid).status.v == 'Open':
+                out.open_features += 1
+
+        if dc.sp.m.mi._(miid).mtype.v == 'Issue':
+            out.total_issues += 1
+
+            if dc.sp.m.mi._(miid).status.v == 'Open':
+                out.open_issues += 1
+
+    amajor, aminor = dc.sp.m.active.v
+
+    # compute diamond and delta
+
+    # different major version than active
+    if major < amajor:
+        out.diamond = '◆'
+        out.delta_sign = '-'
+        out.delta_major = amajor - major
+
+        inActive = aminor
+        inBetween = 0
+        for x in range(major+1, amajor):
+            inBetween += len(dc.sp.m._(x).index.v)
+
+        inCalc = len(dc.sp.m._(major).index.v) - minor
+        if major == 0:
+            inCalc += 1
+
+        out.delta_minor = inActive + inBetween + inCalc
+
+    elif major > amajor:
+        out.diamond = '◇'
+        out.delta_sign = '+'
+        out.delta_major = major - amajor
+
+        inActive = len(dc.sp.m._(amajor).index.v) - aminor
+        if amajor == 0:
+            inActive += 1
+
+        inBetween = 0
+        for x in range(amajor+1, major):
+            inBetween += len(dc.sp.m._(x).index.v)
+        inCalc = minor
+
+        out.delta_minor = inActive + inBetween + inCalc
+
+    # same major verson as active
+    else:
+
+        out.delta_major = 0
+
+        if minor < aminor:
+            out.diamond = '◆'
+            out.delta_sign = '-'
+            out.delta_minor = aminor - minor
+        elif minor > aminor:
+            out.diamond = '◇'
+            out.delta_sign = '+'
+            out.delta_minor = minor - aminor
+        else:
+            out.diamond = '◈'
+            out.delta_sign = '+'
+            out.delta_minor = 0
+
+    # compose label
+    out.label = '{}  v{}.{}  {}{}:{}   f:{}/{}  i:{}/{}'.format(
+                    out.diamond,
+                    major,
+                    minor,
+                    out.delta_sign,
+                    out.delta_major,
+                    out.delta_minor,
+                    out.total_features - out.open_features,
+                    out.total_features,
+                    out.open_issues,
+                    out.total_issues)
+
     return out
 
 @logger('(mistnavi) computeMajorLabelItems(major)', 'major')
