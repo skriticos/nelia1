@@ -192,7 +192,7 @@ dc.m.roadmap.cbctrl.v = CbCtrl
 class CbAux: pass
 
 @logger('roadmap) onMilestoneSelectionChanged()')
-def onMilestoneSelectionChanged():
+def onMilestoneSelectionChanged(x):
 
     milist.reloadTable()
 
@@ -396,7 +396,7 @@ def onShow():
 
         dc.m.roadmap.milist.v.reloadTable()
         dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
-
+        dc.ui.roadmap.v.btn_milestone_button.onSelectionChanged()
 
 CbAux.onSelectionChanged    = onSelectionChanged
 CbAux.onShow                = onShow
