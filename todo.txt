@@ -8,9 +8,12 @@
 
     * roadmap tree menu
       * compute major/minor labels                              [done]
-      * build roadmap tree menu
+      * build roadmap tree menu                                 [done]
       * update a single major milestone in the tree
     * update mistnavi
+      * on new
+      * on change type / status
+      * on delete
     * selection changed
 
 * project add f:x/x i:x/x to version

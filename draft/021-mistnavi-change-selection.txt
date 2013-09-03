@@ -1,0 +1,29 @@
+
+* change dc.sp.m.selected.v
+* change label
+* change milestone description
+* reload table
+
+.. updateMenuTree ..
+
+action.triggered.connect(self.onSelectionChanged)
+action.setToolTip('{}.{}'.format(major, minor))
+
+.. onSelectionChanged ..
+
+text = self.sender().text()
+major, minor = self.sender.toolTip().split('.')
+self.setText(text)
+dc.sp.m.selected.v = (major, minor)
+
+.. (roadmap) onMilestoneSelectionChanged ..
+
+(move from onShow)
+
+dc.auto.v = True
+dc.ui.roadmap.v.text_milestone_description.setText(
+    dc.sp.m._(major)._(minor).description.v)
+dc.auto.v = False
+dc.m.roadmap.milist.v.reloadTable()
+
+..
