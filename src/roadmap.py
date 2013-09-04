@@ -191,10 +191,16 @@ dc.m.roadmap.cbctrl.v = CbCtrl
 
 class CbAux: pass
 
-@logger('roadmap) onMilestoneSelectionChanged()')
+@logger('(roadmap) onMilestoneSelectionChanged()')
 def onMilestoneSelectionChanged(x):
 
-    milist.reloadTable()
+    major, minor = dc.sp.m.selected.v
+    dc.auto.v = True
+    dc.ui.roadmap.v.text_milestone_description.setHtml(
+        dc.sp.m._(major)._(minor).description.v)
+    dc.auto.v = False
+
+    dc.m.roadmap.milist.v.reloadTable()
 
 @logger('(roadmap) onFilterFeatureToggled(checked)', 'checked')
 def onFilterFeatureToggled(checked):
@@ -388,15 +394,8 @@ def onShow():
     if dc.x.rpid.v != dc.spid.v:
         dc.x.rpid.v = dc.spid.v
 
-        major, minor = dc.sp.m.selected.v
-        dc.auto.v = True
-        dc.ui.roadmap.v.text_milestone_description.setText(
-            dc.sp.m._(major)._(minor).description.v)
-        dc.auto.v = False
-
-        dc.m.roadmap.milist.v.reloadTable()
         dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
-        dc.ui.roadmap.v.btn_milestone_button.onSelectionChanged()
+        onMilestoneSelectionChanged('')
 
 CbAux.onSelectionChanged    = onSelectionChanged
 CbAux.onShow                = onShow
@@ -502,7 +501,7 @@ def reloadTable():
     dc.x.roadmap.model.v.setHorizontalHeaderLabels(milist.headers)
     enableSelectionCallback()
 
-    major, minor = dc.sp.m.active.v
+    major, minor = dc.sp.m.selected.v
     for miid in dc.sp.m._(major)._(minor).index.v:
 
         # check for filter status

@@ -29,8 +29,6 @@ from datacore import *
 from common import *
 from common2 import *
 
-import mistctrl                       # milestone control module for new project
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                                   UTILITY
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -210,42 +208,52 @@ class MilestoneButton(QPushButton):
     selectionChanged = Signal(str)
 
     @logger('MilestoneButton.__init__(self, parent=None)', 'self')
-    def __init__(self, parent=None, smajor=0, sminor=1):
+    def __init__(self, parent=None):
 
         super().__init__(parent)
 
         self.root_menu = QMenu(self)
         self.setMenu(self.root_menu)
 
-    # update only one milestone entry (on milestone item cont / status change)
-    @logger('MilestoneButton.updateMajorMilestone(self, major)', 'self', 'major')
-    def updateMajorMilestone(self, major):
+    @logger('MilestoneButton.onSelectionChanged(self)', 'self', 'major', 'minor', 'label')
+    def onSelectionChanged(self, major, minor, label):
 
-        pass
+        self.setText(label)
+        dc.sp.m.selected.v = (major, minor)
+
+        self.selectionChanged.emit(self.text())
 
     @logger('MilestoneButton.updateMenuTree(self)', 'self')
     def updateMenuTree(self):
 
+        self.root_menu.clear()
+
         for major in dc.sp.m.index.v:
 
-            loop_major_menu = QMenu(self.root_menu)
+            loop_major_menu = QMenu(self)
             loop_major_menu.setTitle(computeMajorLabelItems(major).label)
             self.root_menu.addMenu(loop_major_menu)
             dc.ui.roadmap.menu._(major).v = loop_major_menu
 
             for minor in dc.sp.m._(major).index.v:
 
-                action = QAction(loop_major_menu)
-                action.setText(computeMinorLabelItems(major, minor).label)
+                action = QAction(self)
+                label = computeMinorLabelItems(major, minor).label
+                action.setText(label)
+                # a new context has to be created for the variables in a loop to
+                # make this work, see http://stackoverflow.com/questions/2295290
+                action.triggered.connect(
+                    lambda major=major, minor=minor, label=label:
+                    self.onSelectionChanged(major, minor, label))
                 loop_major_menu.addAction(action)
-
-    @logger('MilestoneButton.onSelectionChanged(self)', 'self')
-    def onSelectionChanged(self):
 
         smajor, sminor = dc.sp.m.selected.v
         self.setText(computeMinorLabelItems(smajor, sminor).label)
 
-        self.selectionChanged.emit(self.text())
+    @logger('MilestoneButton.updateMajorMilestone(self, major)', 'self', 'major')
+    def updateMajorMilestone(self, major):
+
+        pass
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

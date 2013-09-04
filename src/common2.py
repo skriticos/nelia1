@@ -74,6 +74,7 @@ def setTableValue(module, col, value):
 @logger('applyStates(states, widget)', 'states', 'widget')
 def applyStates(states, widget):
 
+    autoprev = dc.auto.v
     dc.auto.v = True
     # loop through controls (widgets)
     for control, state in states.items():
@@ -96,7 +97,7 @@ def applyStates(states, widget):
             pd[control].setValue(state['value'])
         if 'focused' in state:
             pd[control].setFocus()
-    dc.auto.v = False
+    dc.auto.v = autoprev
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
