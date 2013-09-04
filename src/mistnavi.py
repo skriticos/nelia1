@@ -231,21 +231,10 @@ class MilestoneButton(QPushButton):
         for major in dc.sp.m.index.v:
 
             loop_major_menu = QMenu(self)
-            loop_major_menu.setTitle(computeMajorLabelItems(major).label)
             self.root_menu.addMenu(loop_major_menu)
             dc.ui.roadmap.menu._(major).v = loop_major_menu
 
-            for minor in dc.sp.m._(major).index.v:
-
-                action = QAction(self)
-                label = computeMinorLabelItems(major, minor).label
-                action.setText(label)
-                # a new context has to be created for the variables in a loop to
-                # make this work, see http://stackoverflow.com/questions/2295290
-                action.triggered.connect(
-                    lambda major=major, minor=minor, label=label:
-                    self.onSelectionChanged(major, minor, label))
-                loop_major_menu.addAction(action)
+            self.updateMajorMilestone(major)
 
         smajor, sminor = dc.sp.m.selected.v
         self.setText(computeMinorLabelItems(smajor, sminor).label)
@@ -253,7 +242,25 @@ class MilestoneButton(QPushButton):
     @logger('MilestoneButton.updateMajorMilestone(self, major)', 'self', 'major')
     def updateMajorMilestone(self, major):
 
-        pass
+        for minor in dc.sp.m._(major).index.v:
+
+            loop_major_menu = dc.ui.roadmap.menu._(major).v
+
+            loop_major_menu.clear()
+            loop_major_menu.setTitle(computeMajorLabelItems(major).label)
+
+            action = QAction(self)
+            label = computeMinorLabelItems(major, minor).label
+            action.setText(label)
+            # a new context has to be created for the variables in a loop to
+            # make this work, see http://stackoverflow.com/questions/2295290
+            action.triggered.connect(
+                lambda major=major, minor=minor, label=label:
+                self.onSelectionChanged(major, minor, label))
+            loop_major_menu.addAction(action)
+
+        smajor, sminor = dc.sp.m.selected.v
+        self.setText(computeMinorLabelItems(smajor, sminor).label)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

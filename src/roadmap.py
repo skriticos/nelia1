@@ -744,6 +744,10 @@ class NxRoadmap:
         setTableValue('roadmap', milist.colType, mtype)
         self.touchRoadmap()
 
+        # update milestone navi button
+        major, minor = dc.sp.m.selected.v
+        dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
+
         if not dc.auto.v:
             dc.x.roadmap.changeflag.mtype.v = True
 
@@ -793,7 +797,8 @@ class NxRoadmap:
 
         milist.reloadTable()
 
-        # STUB -> update milestone navi button
+        # update milestone navi button
+        dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
 
         applyStates(states.selected, dc.ui.roadmap.v)
         self.touchRoadmap()
@@ -810,7 +815,9 @@ class NxRoadmap:
 
         logMiEvent('closed', 'item has been closed')
 
-        # STUB: update mistnavi
+        # update milestone navi button
+        major, minor = dc.sp.m.selected.v
+        dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
 
     @logger('NxRoadmap.onMiReopen(self)', 'self')
     def onMiReopen(self):
@@ -823,7 +830,9 @@ class NxRoadmap:
 
         logMiEvent('reopened', 'item has been reopned')
 
-        # STUB: update mistnavi
+        # update milestone navi button
+        major, minor = dc.sp.m.selected.v
+        dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
 
     @logger('NxRoadmap.onDeleteMilestoneItem(self)', 'self')
     def onDeleteMilestoneItem(self):
@@ -839,7 +848,9 @@ class NxRoadmap:
         dc.x.roadmap.smiid.v = 0
         milist.reloadTable()
 
-        # STUB: update mistnavi
+        # update milestone navi button
+        major, minor = dc.sp.m.selected.v
+        dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

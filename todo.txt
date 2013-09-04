@@ -1,20 +1,8 @@
 * roadmap ..
 
-    * change milestone selection                                [depends mistnavi]
-    * move milestone item                                       [depends mistnavi]
-    * finalize milestone                                        [depends mistnavi]
-
-* mistnavi ..
-
-    * roadmap tree menu
-      * compute major/minor labels                              [done]
-      * build roadmap tree menu                                 [done]
-      * update a single major milestone in the tree
-    * update mistnavi
-      * on new
-      * on change type / status
-      * on delete
-    * selection changed
+    * adjust states - don't edit closed items
+    * finalize milestone                                        [depends mistnavi, mistctrl]
+    * adjust states - don't edit finalized milestones
 
 * project add f:x/x i:x/x to version
 * add sum of all features/issues to project selection overview
