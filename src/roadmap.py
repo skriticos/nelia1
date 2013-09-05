@@ -39,16 +39,6 @@ states.selected = {
     'group_selected_milestone': {'enabled': True}
 }
 
-states.miopen = {
-    'btn_mi_close' : {'enabled': True},
-    'btn_mi_reopen': {'enabled': False}
-}
-
-states.miclosed = {
-    'btn_mi_close' : {'enabled': False},
-    'btn_mi_reopen': {'enabled': True}
-}
-
 states.milestone_description_maximized = {
     'group_log_list': {'visible': False},
     'group_selected_milestone': {'visible': False},
@@ -68,6 +58,45 @@ states.all_unmaximized = {
     'group_milestone_description': {'visible': True},
     'group_edit_attr': {'visible': True},
     'tbl_mi_list': {'focused': None}
+}
+
+states.finalized = {
+    'btn_mi_new': {'enabled': False},
+    'btn_mi_delete': {'enabled': False},
+    'btn_mi_close': {'enabled': False},
+    'btn_mi_reopen': {'enabled': False},
+    'line_mi_name': {'isreadonly': True},
+    'cb_mi_type': {'enabled': False},
+    'cb_mi_priority': {'enabled': False},
+    'cb_mi_category': {'enabled': False},
+    'text_milestone_description': {'isreadonly': True},
+    'txt_mi_description': {'isreadonly': True}
+}
+
+states.closed = {
+    'btn_mi_new': {'enabled': False},
+    'btn_mi_delete': {'enabled': False},
+    'btn_mi_close': {'enabled': False},
+    'btn_mi_reopen': {'enabled': True},
+    'line_mi_name': {'isreadonly': True},
+    'cb_mi_type': {'enabled': False},
+    'cb_mi_priority': {'enabled': False},
+    'cb_mi_category': {'enabled': False},
+    'text_milestone_description': {'isreadonly': True},
+    'txt_mi_description': {'isreadonly': True}
+}
+
+states._open = {
+    'btn_mi_new': {'enabled': True},
+    'btn_mi_delete': {'enabled': True},
+    'btn_mi_close': {'enabled': True},
+    'btn_mi_reopen': {'enabled': False},
+    'line_mi_name': {'isreadonly': False},
+    'cb_mi_type': {'enabled': True},
+    'cb_mi_priority': {'enabled': True},
+    'cb_mi_category': {'enabled': True},
+    'text_milestone_description': {'isreadonly': False},
+    'txt_mi_description': {'isreadonly': False}
 }
 
 dc.m.roadmap.states.v = states
@@ -367,10 +396,19 @@ def onSelectionChanged(new, old):
 
         enableEditCallbacks()
 
-        if dc.sp.m.mi._(smiid).status.v == 'Open':
-            applyStates(states.miopen, dc.ui.roadmap.v)
+        smajor, sminor = dc.sp.m.selected.v
+        amajor, aminor = dc.sp.m.active.v
+
+        if smajor < amajor or (smajor == amajor and sminor < aminor):
+
+            applyStates(states.finalized, dc.ui.roadmap.v)
+
+        elif dc.sp.m.mi._(smiid).status.v == 'Closed':
+
+            applyStates(states.closed, dc.ui.roadmap.v)
+
         else:
-            applyStates(states.miclosed, dc.ui.roadmap.v)
+            applyStates(states._open, dc.ui.roadmap.v)
 
     dc.auto.v = auto_prev
 
@@ -541,8 +579,7 @@ def reloadTable():
     if not dc.x.roadmap.smiid.v:
 
         index = dc.x.roadmap.model.v.index(0, 0)
-        lid   = int(dc.x.roadmap.model.v.data(index))
-        dc.x.roadmap.smiid.v = lid
+        smiid = dc.x.roadmap.smiid.v = int(dc.x.roadmap.model.v.data(index))
 
         disableEditCallbacks()
         applyStates(states.selected, dc.ui.roadmap.v)
@@ -552,16 +589,21 @@ def reloadTable():
         dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
         selection = dc.x.roadmap.view.v.selectionModel().selection()
 
+        smajor, sminor = dc.sp.m.selected.v
+        amajor, aminor = dc.sp.m.active.v
+
         return
 
     # iterate through table rows
     for rowcnt in range(dc.x.roadmap.model.v.rowCount()):
 
         index = dc.x.roadmap.model.v.index(rowcnt, 0)
-        lid = int(dc.x.roadmap.model.v.data(index))
+        miid = int(dc.x.roadmap.model.v.data(index))
 
         # if we have a match, select it and abort
-        if lid == dc.x.roadmap.smiid.v:
+        if miid == dc.x.roadmap.smiid.v:
+
+            smiid = miid
 
             disableEditCallbacks()
             applyStates(states.selected, dc.ui.roadmap.v)
@@ -570,6 +612,10 @@ def reloadTable():
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
             selection = dc.x.roadmap.view.v.selectionModel().selection()
+
+            smajor, sminor = dc.sp.m.selected.v
+            amajor, aminor = dc.sp.m.active.v
+
             break
 
 milist.initTable = initTable

@@ -356,7 +356,7 @@ projectlist.headers =  [
     'ID',
     'Name',
     'Type',
-    'Verson',
+    'Version',
     'Category',
     'Priority',
     'Challenge',
