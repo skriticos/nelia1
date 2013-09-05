@@ -19,6 +19,7 @@ from common import *
 from common2 import *
 
 import mistctrl                       # milestone control module for new project
+import mistnavi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # STATES
@@ -214,6 +215,8 @@ def enableAllCallbacks():
 # AUXILIARY CALLBACK IMPLEMENTATIONS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+class util: pass
+
 # Even more callbacks! This time, it's the onFoo..() callback slot
 # implementations.
 
@@ -345,6 +348,16 @@ def onShowRoadmap():
     dc.m.roadmap.cbaux.v.onShow()
     dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
 
+@logger('(project) onShow()')
+def onShow():
+
+    projectlist.reloadTable()
+    dc.ui.project.v.tbl_project_list.setFocus()
+
+util.onShow = onShow
+
+dc.m.project.util.v = util
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -440,11 +453,12 @@ def reloadTable(toggled=False):
 
         # add pid to table
         major, minor = dc.s._(pid).m.active.v
+        version = mistnavi.computeMinorLabelItems(major, minor).shortlabel
         dc.x.project.model.v.insertRow(0, [
             QStandardItem(str(pid).zfill(4)),
             QStandardItem(dc.s._(pid).name.v),
             QStandardItem(dc.s._(pid).ptype.v),
-            QStandardItem('{}.{}'.format(major, minor)),
+            QStandardItem(version),
             QStandardItem(dc.s._(pid).category.v),
             QStandardItem(str(dc.s._(pid).priority.v)),
             QStandardItem(str(dc.s._(pid).challenge.v)),

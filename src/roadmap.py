@@ -424,6 +424,7 @@ def onShowProject():
     dc.ui.roadmap.v.setParent(None)
     dc.ui.log.v.setParent(dc.m.mainwindow.v)
     dc.ui.main.v.setCentralWidget(dc.ui.project.v)
+    dc.m.project.util.v.onShow()
 
 @logger('(roadmap) onShow()')
 def onShow():

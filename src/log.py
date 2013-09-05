@@ -191,6 +191,7 @@ def onShowProject():
 
     dc.ui.log.v.setParent(dc.m.mainwindow.v)
     dc.ui.main.v.setCentralWidget(dc.ui.project.v)
+    dc.m.project.util.v.onShow()
 
 # Called when view changes to log.
 

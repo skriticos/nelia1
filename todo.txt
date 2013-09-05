@@ -1,9 +1,7 @@
 * roadmap ..
 
     * finalize milestone                                        [depends mistnavi, mistctrl]
-    * adjust states - don't edit finalized milestones
 
-* fix table layout / open last on startup
-* project add f:x/x i:x/x to version
+* check/fix table layout / open last on startup
 * add sum of all features/issues to project selection overview
 

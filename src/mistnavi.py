@@ -50,6 +50,7 @@ class LabelComputation:
         self.delta_major = 0
         self.delta_minor = 0
         self.delta_sign = '+'
+        self.shortlabel = ''
 
 @logger('(mistnavi) computeMinorLabelItems(major, minor)', 'major', 'minor')
 def computeMinorLabelItems(major, minor):
@@ -134,6 +135,14 @@ def computeMinorLabelItems(major, minor):
                     out.delta_sign,
                     out.delta_major,
                     out.delta_minor,
+                    out.total_features - out.open_features,
+                    out.total_features,
+                    out.total_issues - out.open_issues,
+                    out.total_issues)
+
+    out.shortlabel = 'v{}.{} f:{}/{} i:{}/{}'.format(
+                    major,
+                    minor,
                     out.total_features - out.open_features,
                     out.total_features,
                     out.total_issues - out.open_issues,
