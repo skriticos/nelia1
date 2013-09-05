@@ -1,7 +1,0 @@
-
-* callback ctrl / aux callbacks differently structured, roadmap is master
-* dc.m.<mod>.<cbaux>.v.onShow() inconsistent in project / log
-* setting central widget should be done in local onShow instead of remote module
-* add onShow to project
-* milist methods are indented different as projectlist / loglist
-
