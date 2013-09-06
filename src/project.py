@@ -315,6 +315,7 @@ def onSelectionChanged(new, old):
     index = indexes[0]
     dc.spid.v = int(dc.x.project.model.v.itemFromIndex(index).text())
     dc.sp = dc.s._(dc.spid.v)
+    dc.s.spid.v = dc.spid.v
 
     # populate edit fields on selection change
     disableEditCallbacks()
@@ -330,6 +331,8 @@ def onSelectionChanged(new, old):
     dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
     dc.auto.v = False
     enableEditCallbacks()
+
+    applyStates(states.selected, dc.ui.project.v)
 
 # switch to log and roadmap views
 # I have decided to load the project logs / roadmap only when navigating to
@@ -453,7 +456,7 @@ def reloadTable(toggled=False):
 
         # add pid to table
         major, minor = dc.s._(pid).m.active.v
-        version = mistnavi.computeMinorLabelItems(major, minor).shortlabel
+        version = mistnavi.computeMinorLabelItems(pid, major, minor).shortlabel
         dc.x.project.model.v.insertRow(0, [
             QStandardItem(str(pid).zfill(4)),
             QStandardItem(dc.s._(pid).name.v),
@@ -713,6 +716,7 @@ class NxProject():
         dc.s.nextpid.v += 1
         dc.spid.v = pid
         dc.sp = dc.s._(pid)
+        dc.s.spid.v = dc.spid.v
 
         # init milestone control data
         mistctrl.mistctrl_new_tree()
@@ -884,6 +888,9 @@ class NxDocument:
             QMessageBox.critical(dc.ui.main.v, title, message)
             dc.x.path.v = None
             return
+        # set selected project
+        dc.spid.v = dc.s.spid.v
+        dc.sp = dc.s._(dc.spid.v)
         applyStates(states.unchanged, dc.ui.project.v)
         applyStates(states.nolast, dc.ui.project.v)
         dc.m.project.projectlist.v.reloadTable()
@@ -897,6 +904,8 @@ class NxDocument:
             title, message = 'Open failed', 'Open failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)
             return
+        dc.spid.v = dc.s.spid.v
+        dc.sp = dc.s._(dc.spid.v)
         applyStates(states.unchanged, dc.ui.project.v)
         applyStates(states.nolast, dc.ui.project.v)
         dc.m.project.projectlist.v.reloadTable()

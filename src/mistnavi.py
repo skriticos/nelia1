@@ -52,27 +52,27 @@ class LabelComputation:
         self.delta_sign = '+'
         self.shortlabel = ''
 
-@logger('(mistnavi) computeMinorLabelItems(major, minor)', 'major', 'minor')
-def computeMinorLabelItems(major, minor):
+@logger('(mistnavi) computeMinorLabelItems(pid, major, minor)', 'pid', 'major', 'minor')
+def computeMinorLabelItems(pid, major, minor):
 
     out = LabelComputation()
 
     # compute feature / issue count
-    for miid in dc.sp.m._(major)._(minor).index.v:
+    for miid in dc.s._(pid).m._(major)._(minor).index.v:
 
-        if dc.sp.m.mi._(miid).mtype.v == 'Feature':
+        if dc.s._(pid).m.mi._(miid).mtype.v == 'Feature':
             out.total_features += 1
 
-            if dc.sp.m.mi._(miid).status.v == 'Open':
+            if dc.s._(pid).m.mi._(miid).status.v == 'Open':
                 out.open_features += 1
 
-        if dc.sp.m.mi._(miid).mtype.v == 'Issue':
+        if dc.s._(pid).m.mi._(miid).mtype.v == 'Issue':
             out.total_issues += 1
 
-            if dc.sp.m.mi._(miid).status.v == 'Open':
+            if dc.s._(pid).m.mi._(miid).status.v == 'Open':
                 out.open_issues += 1
 
-    amajor, aminor = dc.sp.m.active.v
+    amajor, aminor = dc.s._(pid).m.active.v
 
     # compute diamond and delta
 
@@ -85,9 +85,9 @@ def computeMinorLabelItems(major, minor):
         inActive = aminor
         inBetween = 0
         for x in range(major+1, amajor):
-            inBetween += len(dc.sp.m._(x).index.v)
+            inBetween += len(dc.s._(pid).m._(x).index.v)
 
-        inCalc = len(dc.sp.m._(major).index.v) - minor
+        inCalc = len(dc.s._(pid).m._(major).index.v) - minor
         if major == 0:
             inCalc += 1
 
@@ -98,13 +98,13 @@ def computeMinorLabelItems(major, minor):
         out.delta_sign = '+'
         out.delta_major = major - amajor
 
-        inActive = len(dc.sp.m._(amajor).index.v) - aminor
+        inActive = len(dc.s._(pid).m._(amajor).index.v) - aminor
         if amajor == 0:
             inActive += 1
 
         inBetween = 0
         for x in range(amajor+1, major):
-            inBetween += len(dc.sp.m._(x).index.v)
+            inBetween += len(dc.s._(pid).m._(x).index.v)
         inCalc = minor
 
         out.delta_minor = inActive + inBetween + inCalc
@@ -246,7 +246,7 @@ class MilestoneButton(QPushButton):
             self.updateMajorMilestone(major)
 
         smajor, sminor = dc.sp.m.selected.v
-        self.setText(computeMinorLabelItems(smajor, sminor).label)
+        self.setText(computeMinorLabelItems(dc.spid.v, smajor, sminor).label)
 
     @logger('MilestoneButton.updateMajorMilestone(self, major)', 'self', 'major')
     def updateMajorMilestone(self, major):
@@ -259,7 +259,7 @@ class MilestoneButton(QPushButton):
             loop_major_menu.setTitle(computeMajorLabelItems(major).label)
 
             action = QAction(self)
-            label = computeMinorLabelItems(major, minor).label
+            label = computeMinorLabelItems(dc.spid.v, major, minor).label
             action.setText(label)
             # a new context has to be created for the variables in a loop to
             # make this work, see http://stackoverflow.com/questions/2295290
@@ -269,7 +269,7 @@ class MilestoneButton(QPushButton):
             loop_major_menu.addAction(action)
 
         smajor, sminor = dc.sp.m.selected.v
-        self.setText(computeMinorLabelItems(smajor, sminor).label)
+        self.setText(computeMinorLabelItems(dc.spid.v, smajor, sminor).label)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
