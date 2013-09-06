@@ -1,0 +1,32 @@
+#! /usr/bin/python3
+
+@logger('(mistctrl) calibrateRoadmapMi()')
+def calibrateRoadmapMi():
+    """
+        This is called when milestone items are added or removed.
+        It calibrates the roadmap tree and ensures that no two empty milestones
+        follow each other and the last minor milestone is always empty.
+    """
+
+    major, minor = dc.sp.m.selected.v
+
+    nextminor = dc.sp.m._(major).nextminor.v
+
+    if dc.sp.m._(major)._(nextminor - 1).index.v:
+
+        dc.sp.m._(major).index.v |= nextminor
+        dc.sp.m._(major).nextminor.v += 1
+
+    elif not dc.sp.m._(major).(nextminor - 2).index.v:
+
+        dc.sp.m._(major).index.v -= nextminor - 1
+        dc.sp.m._(major).nextminor.v -= 1
+
+.. roadmap.addMi ..
+
+calibrateRoadmapMi()
+
+.. roadmap.deleteMi ..
+
+calibrateRoadmapMi()
+
