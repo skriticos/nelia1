@@ -32,7 +32,8 @@ if __name__ == '__main__':
     for name, fname in (
         ('project', 'forms/project2.ui'),
         ('log',     'forms/log2.ui'),
-        ('roadmap', 'forms/roadmap2.ui')):
+        ('roadmap', 'forms/roadmap2.ui'),
+        ('finalize','forms/finalize2.ui')):
         f = QFile(fname)
         f.open(QFile.ReadOnly)
         dc.ui._(name).v = loader.load(f)

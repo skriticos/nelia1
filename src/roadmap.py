@@ -96,7 +96,20 @@ states._open = {
     'cb_mi_priority': {'enabled': True},
     'cb_mi_category': {'enabled': True},
     'text_milestone_description': {'isreadonly': False},
-    'txt_mi_description': {'isreadonly': False}
+    'txt_mi_description': {'isreadonly': False},
+    'btn_show_project': {'enabled': True},
+    'btn_show_logs': {'enabled': True},
+    'btn_milestone_button': {'enabled': True}
+}
+
+states.dialog = {
+    'btn_mi_new': {'enabled': False},
+    'btn_mi_delete': {'enabled': False},
+    'btn_mi_close': {'enabled': False},
+    'btn_mi_reopen': {'enabled': False},
+    'btn_show_project': {'enabled': False},
+    'btn_show_logs': {'enabled': False},
+    'btn_milestone_button': {'enabled': False}
 }
 
 dc.m.roadmap.states.v = states
@@ -165,6 +178,8 @@ def initCallbacks():
     dc.ui.roadmap.v.btn_mi_desc_minimize.toggled.connect(onMaximizeMilestoneItemDescription)
 
     dc.ui.roadmap.v.btn_milestone_button.selectionChanged.connect(onMilestoneSelectionChanged)
+
+    dc.ui.finalize.v.btn_abort.clicked.connect(onFinalizeAbort)
 
     enableSelectionCallback()
     enableEditCallbacks()
@@ -412,6 +427,18 @@ def onSelectionChanged(new, old):
 
     dc.auto.v = auto_prev
 
+@logger('(roadmap) onFinalizeAbort()')
+def onFinalizeAbort():
+
+    dc.ui.finalize.v.hide()
+    dc.ui.roadmap.v.gridLayout_4.removeWidget(
+        dc.ui.finalize.v)
+    dc.ui.roadmap.v.gridLayout_4.addWidget(
+        dc.ui.roadmap.v.body, 1, 0)
+    dc.ui.roadmap.v.body.show()
+
+    applyStates(states._open, dc.ui.roadmap.v)
+
 @logger('(roadmap) onShowLogs()')
 def onShowLogs():
     dc.ui.roadmap.v.setParent(None)
@@ -457,6 +484,8 @@ CbAux.onFilterRefactorToggled       = onFilterRefactorToggled
 
 CbAux.onMaximizeMilestoneDescription = onMaximizeMilestoneDescription
 CbAux.onMaximizeMilestoneItemDescription = onMaximizeMilestoneItemDescription
+
+CbAux.onFinalizeAbort = onFinalizeAbort
 
 dc.m.roadmap.cbaux.v = CbAux
 
@@ -854,6 +883,38 @@ class NxRoadmap:
     @logger('NxRoadmap.onMiClosed(self)', 'self')
     def onMiClosed(self):
 
+        if dc.sp.m.active.v != dc.sp.m.selected.v:
+            raise Exception('control states are invalid or active / selected'
+                            'milestone tracking is corrupted')
+
+        major, minor = dc.sp.m.active.v
+        opencnt = 0
+        for miid in dc.sp.m._(major)._(minor).index.v:
+
+            if dc.sp.m.mi._(miid).status.v == 'Open':
+                opencnt += 1
+
+        # closing last item
+        if opencnt == 1:
+
+            applyStates(states.dialog, dc.ui.roadmap.v)
+
+            # show finalize dialog
+            dc.ui.roadmap.v.body.hide()
+            dc.ui.roadmap.v.gridLayout_4.removeWidget(
+                dc.ui.roadmap.v.body)
+            dc.ui.roadmap.v.gridLayout_4.addWidget(
+                dc.ui.finalize.v, 1, 0)
+            dc.ui.finalize.v.show()
+
+            dc.ui.finalize.v.btn_finminor.setFocus()
+            if dc.sp.m._(major)._(minor+1).index.v:
+                dc.ui.finalize.v.btn_finmajor.setEnabled(True)
+            else:
+                dc.ui.finalize.v.btn_finmajor.setEnabled(False)
+            return
+
+        # close milestones item
         smiid = dc.x.roadmap.smiid.v
         dc.sp.m.mi._(smiid).status.v = 'Closed'
         setTableValue('roadmap', milist.colStatus, 'Closed')
