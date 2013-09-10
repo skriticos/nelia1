@@ -7,19 +7,6 @@
 # selected milestone (closed, active, future). It provides a two level dropdown
 # menu to enable a milestone selection change to any other milestone of the
 # project.
-#
-# We are using a shadow tree that is updated on milestone changes to avoid
-# lengthly re-calculation.
-#
-# dc.sp.m.shadow._(major)._(minor).v = '♦  vM.N  f:A/B  i:C/D'
-#
-# core data of interest for this module
-# dc.sp.m.mi._(miid).*.v .. [name, status, mtype]
-# dc.sp.m.index.v
-# dc.sp.m._(major).index.v
-# dc.sp.m._(major)._(minor).index.v
-# dc.sp.m.active.v
-# dc.sp.m.selected.v
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from PySide.QtCore import *
@@ -51,6 +38,8 @@ class LabelComputation:
         self.delta_minor = 0
         self.delta_sign = '+'
         self.shortlabel = ''
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 @logger('(mistnavi) computeMinorLabelItems(pid, major, minor)', 'pid', 'major', 'minor')
 def computeMinorLabelItems(pid, major, minor):
@@ -149,6 +138,8 @@ def computeMinorLabelItems(pid, major, minor):
                     out.total_issues)
 
     return out
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 @logger('(mistnavi) computeMajorLabelItems(major)', 'major')
 def computeMajorLabelItems(major):
@@ -251,12 +242,11 @@ class MilestoneButton(QPushButton):
     @logger('MilestoneButton.updateMajorMilestone(self, major)', 'self', 'major')
     def updateMajorMilestone(self, major):
 
+        loop_major_menu = dc.ui.roadmap.menu._(major).v
+        loop_major_menu.clear()
+        loop_major_menu.setTitle(computeMajorLabelItems(major).label)
+
         for minor in dc.sp.m._(major).index.v:
-
-            loop_major_menu = dc.ui.roadmap.menu._(major).v
-
-            loop_major_menu.clear()
-            loop_major_menu.setTitle(computeMajorLabelItems(major).label)
 
             action = QAction(self)
             label = computeMinorLabelItems(dc.spid.v, major, minor).label

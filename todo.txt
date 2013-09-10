@@ -1,6 +1,6 @@
 000  [roadmap]   only allow to close / reopen active milestone milestone items
 001  [mistctrl]  compute milestone tree
-                 o milestone item change calibration
+                 o milestone item change calibration        [done]
                  o finalize minor milestone calibration
                  o finalize major milestone calibration
 002  [roadmap]   implement finalize minor milestone
@@ -11,6 +11,4 @@
 007  [all gui]   [bug] find out why the textChanged callback is sometime not triggering and fix it
 008  [all gui]   syncronize source code structure, remove inconsistencies
 009  [all gui]   move setCentralWidget to onShow functions
-
-*** bug: milestone action add calibration does not work!
 
