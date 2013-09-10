@@ -1,0 +1,46 @@
+#! /usr/bin/python3
+
+"""
+    Integrate finalize dialog on close last roadmap item.
+"""
+
+dc.ui.finalize.v.btn_abort.clicked.connect(onFinalizeAbort)
+
+..
+
+@logger('(roadmap) onFinalizeAbort()')
+def onFinalizeAbort():
+
+    dc.ui.finalize.v.hide()
+    dc.ui.roadmap.v.gridLayout_4.removeWidget(
+        dc.ui.finalize.v)
+    dc.ui.roadmap.v.gridLayout_4.addWidget(
+        dc.ui.roadmap.v.body, 1, 0)
+    dc.ui.roadmap.v.body.show()
+
+.. roadmap.closeMi ..
+
+    if dc.sp.m.active.v != dc.sp.m.selected.v:
+        raise Exception('control states are invalid or active / selected'
+                        'milestone tracking is corrupted')
+
+    opencnt = 0
+    for miid in dc.sp.m._(major)._(minor).index.v:
+
+        if dc.sp.m.mi._(miid).status.v == 'Open':
+            opencnt += 1
+
+    # closing last item
+    if opencnt == 1:
+
+        # show finalize dialog
+        dc.ui.roadmap.v.body.hide()
+        dc.ui.roadmap.v.gridLayout_4.removeWidget(
+            dc.ui.roadmap.v.body)
+        dc.ui.roadmap.v.gridLayout_4.addWidget(
+            dc.ui.finalize.v, 1, 0)
+        return
+
+    # close milestones item
+
+
