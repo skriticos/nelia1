@@ -959,7 +959,7 @@ class NxRoadmap:
 
         # update milestone navi button
         major, minor = dc.sp.m.selected.v
-        calibrateRoadmapMi()
+        mistctrl.calibrateRoadmapMi()
         dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
