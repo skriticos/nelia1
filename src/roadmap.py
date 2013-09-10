@@ -874,6 +874,7 @@ class NxRoadmap:
         milist.reloadTable()
 
         # update milestone navi button
+        mistctrl.calibrateRoadmapMi()
         dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
 
         applyStates(states.selected, dc.ui.roadmap.v)
@@ -958,6 +959,7 @@ class NxRoadmap:
 
         # update milestone navi button
         major, minor = dc.sp.m.selected.v
+        calibrateRoadmapMi()
         dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
