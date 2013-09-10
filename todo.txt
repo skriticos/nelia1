@@ -12,3 +12,5 @@
 008  [all gui]   syncronize source code structure, remove inconsistencies
 009  [all gui]   move setCentralWidget to onShow functions
 
+roadmap control states still incorrect when switching milestones in roadmap
+

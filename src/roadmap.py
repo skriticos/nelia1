@@ -102,6 +102,23 @@ states._open = {
     'btn_milestone_button': {'enabled': True}
 }
 
+# selected milestone item that is located in a non active milestone
+states.nonactivemi = {
+    'btn_mi_new': {'enabled': True},
+    'btn_mi_delete': {'enabled': True},
+    'btn_mi_close': {'enabled': False},
+    'btn_mi_reopen': {'enabled': False},
+    'line_mi_name': {'isreadonly': False},
+    'cb_mi_type': {'enabled': True},
+    'cb_mi_priority': {'enabled': True},
+    'cb_mi_category': {'enabled': True},
+    'text_milestone_description': {'isreadonly': False},
+    'txt_mi_description': {'isreadonly': False},
+    'btn_show_project': {'enabled': True},
+    'btn_show_logs': {'enabled': True},
+    'btn_milestone_button': {'enabled': True}
+}
+
 states.dialog = {
     'btn_mi_new': {'enabled': False},
     'btn_mi_delete': {'enabled': False},
@@ -417,6 +434,10 @@ def onSelectionChanged(new, old):
         if smajor < amajor or (smajor == amajor and sminor < aminor):
 
             applyStates(states.finalized, dc.ui.roadmap.v)
+
+        elif smajor > amajor or (smajor == amajor and sminor > aminor):
+
+            applyStates(states.nonactivemi, dc.ui.roadmap.v)
 
         elif dc.sp.m.mi._(smiid).status.v == 'Closed':
 
@@ -877,7 +898,11 @@ class NxRoadmap:
         mistctrl.calibrateRoadmapMi()
         dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
 
-        applyStates(states.selected, dc.ui.roadmap.v)
+        if dc.sp.m.active.v == dc.sp.m.selected.v:
+            applyStates(states._open, dc.ui.roadmap.v)
+        else:
+            applyStates(states.nonactivemi, dc.ui.roadmap.v)
+
         self.touchRoadmap()
         dc.ui.roadmap.v.line_mi_name.setFocus()
 
