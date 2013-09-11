@@ -1,0 +1,45 @@
+#! /usr/bin/python3
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+@logger('(mistctrl.calibrateMinorMsClosed()')
+def calibrateMinorMsClosed():
+
+    """
+        Invoked when a minor milestone itme is closed. It calibrates the
+        roadmap tree. This is simple, we just increment the minor counter.
+    """
+
+    smajor, sminor = dc.sp.m.selected.v
+    amajor, aminor = dc.sp.m.active.v
+
+    if dc.sp.m.selected.v != dc.sp.m.active.v:
+
+        raise Exception('selected, active missmatch on minor milestone'
+                        'calibration')
+
+    dc.sp.m.active.v = (amajor, aminor + 1)
+    dc.sp.m.selected.v = (amajor, aminor + 1)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+@logger('NxRoadmap.onMinorMilestoneFinalized(self)', 'self')
+def onMinorMilestoneFinalized(self):
+
+    # we start with finisching milestone item closing that was started before
+    # the dialgo appeared. This is the same as the last part of onMiClosed. We
+    # just leave out the table reload, as the following milestone selection
+    # switch will take care of that.
+    smiid = dc.x.roadmap.smiid.v
+    dc.sp.m.mi._(smiid).status.v = 'Closed'
+    self.touchRoadmap()
+    logMiEvent('closed', 'item has been closed')
+
+    # calibrate roadmap tree
+    mistctrl.calibrateMinorMsClosed()
+
+    # reload tabel
+    milist.reloadTable()
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
