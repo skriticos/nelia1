@@ -63,3 +63,24 @@ def calibrateRoadmapMi():
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+@logger('(mistctrl.calibrateMinorMsClosed()')
+def calibrateMinorMsClosed():
+
+    """
+        Invoked when a minor milestone itme is closed. It calibrates the
+        roadmap tree. This is simple, we just increment the minor counter.
+    """
+
+    smajor, sminor = dc.sp.m.selected.v
+    amajor, aminor = dc.sp.m.active.v
+
+    if dc.sp.m.selected.v != dc.sp.m.active.v:
+
+        raise Exception('selected, active missmatch on minor milestone'
+                        'calibration')
+
+    dc.sp.m.active.v = (amajor, aminor + 1)
+    dc.sp.m.selected.v = (amajor, aminor + 1)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
