@@ -637,6 +637,7 @@ def reloadTable():
     if rowcount <= 0:
 
         applyStates(states.startup, dc.ui.roadmap.v)
+        applyStates(states.clearedit, dc.ui.roadmap.v)
         return
 
     # we don't have a selected milestone item id (outside the filter or deleted)
