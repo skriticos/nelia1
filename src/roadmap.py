@@ -129,6 +129,14 @@ states.dialog = {
     'btn_milestone_button': {'enabled': False}
 }
 
+states.clearedit = {
+    'line_mi_name': {'clear': True},
+    'cb_mi_type': {'index': 0},
+    'cb_mi_priority': {'index': 0},
+    'cb_mi_category': {'index': 0},
+    'txt_mi_description': {'clear': True}
+}
+
 dc.m.roadmap.states.v = states
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -256,10 +264,13 @@ class CbAux: pass
 def onMilestoneSelectionChanged(x):
 
     major, minor = dc.sp.m.selected.v
+    if len(dc.sp.m._(major)._(minor).index.v) == 0:
+        applyStates(states.clearedit, dc.ui.roadmap.v)
+    autoprev = dc.auto.v
     dc.auto.v = True
     dc.ui.roadmap.v.text_milestone_description.setHtml(
         dc.sp.m._(major)._(minor).description.v)
-    dc.auto.v = False
+    dc.auto.v = autoprev
 
     dc.m.roadmap.milist.v.reloadTable()
 
@@ -618,6 +629,8 @@ def reloadTable():
     loadLayout('roadmap')
 
     # select active milestone item
+    if dc.x.roadmap.smiid.v not in dc.sp.m._(major)._(minor).index.v:
+        dc.x.roadmap.smiid.v = None
 
     # we don't select anything if we don't have rows
     rowcount = dc.x.roadmap.model.v.rowCount()
@@ -640,9 +653,6 @@ def reloadTable():
         dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
         selection = dc.x.roadmap.view.v.selectionModel().selection()
 
-        smajor, sminor = dc.sp.m.selected.v
-        amajor, aminor = dc.sp.m.active.v
-
         return
 
     # iterate through table rows
@@ -663,9 +673,6 @@ def reloadTable():
             s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
             dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
             selection = dc.x.roadmap.view.v.selectionModel().selection()
-
-            smajor, sminor = dc.sp.m.selected.v
-            amajor, aminor = dc.sp.m.active.v
 
             break
 
@@ -793,6 +800,9 @@ class NxRoadmap:
     @logger('NxRoadmap.touchRoadmap(self)', 'self')
     def touchRoadmap(self):
 
+        if dc.auto.v:
+            return
+
         timestamp = int(time.time())
         smiid = dc.x.roadmap.smiid.v
         dc.sp.m.mi._(smiid).modified.v = timestamp
@@ -803,49 +813,46 @@ class NxRoadmap:
     @logger('NxRoadmap.onNameChanged(self, name)', 'self', 'name')
     def onNameChanged(self, name):
 
-        smiid = dc.x.roadmap.smiid.v
-        dc.sp.m.mi._(smiid).name.v = name
-        setTableValue('roadmap', milist.colName, name)
-        self.touchRoadmap()
-
         if not dc.auto.v:
+            smiid = dc.x.roadmap.smiid.v
+            dc.sp.m.mi._(smiid).name.v = name
+            setTableValue('roadmap', milist.colName, name)
+            self.touchRoadmap()
             dc.x.roadmap.changeflag.name.v = True
 
     @logger('NxRoadmap.onPriorityChanged(self, priority)', 'self', 'priority')
     def onPriorityChanged(self, priority):
 
-        smiid = dc.x.roadmap.smiid.v
-        dc.sp.m.mi._(smiid).priority.v = priority
-        setTableValue('roadmap', milist.colPriority, priority)
-        self.touchRoadmap()
-
         if not dc.auto.v:
+            smiid = dc.x.roadmap.smiid.v
+            dc.sp.m.mi._(smiid).priority.v = priority
+            setTableValue('roadmap', milist.colPriority, priority)
+            self.touchRoadmap()
             dc.x.roadmap.changeflag.priority.v = True
 
     @logger('NxRoadmap.onCategoryChanged(self, category)', 'self', 'category')
     def onCategoryChanged(self, category):
 
-        smiid = dc.x.roadmap.smiid.v
-        dc.sp.m.mi._(smiid).category.v = category
-        setTableValue('roadmap', milist.colCategory, category)
-        self.touchRoadmap()
-
         if not dc.auto.v:
+            smiid = dc.x.roadmap.smiid.v
+            dc.sp.m.mi._(smiid).category.v = category
+            setTableValue('roadmap', milist.colCategory, category)
+            self.touchRoadmap()
             dc.x.roadmap.changeflag.category.v = True
 
     @logger('NxRodamap.onTypeChange(self, v\mtype)', 'self', 'mtype')
     def onTypeChanged(self, mtype):
 
-        smiid = dc.x.roadmap.smiid.v
-        dc.sp.m.mi._(smiid).mtype.v = mtype
-        setTableValue('roadmap', milist.colType, mtype)
-        self.touchRoadmap()
-
-        # update milestone navi button
-        major, minor = dc.sp.m.selected.v
-        dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
-
         if not dc.auto.v:
+            smiid = dc.x.roadmap.smiid.v
+            dc.sp.m.mi._(smiid).mtype.v = mtype
+            setTableValue('roadmap', milist.colType, mtype)
+            self.touchRoadmap()
+
+            # update milestone navi button
+            major, minor = dc.sp.m.selected.v
+            dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
+
             dc.x.roadmap.changeflag.mtype.v = True
 
         # STUB: notify mistctrl about milestone tree change
@@ -853,9 +860,8 @@ class NxRoadmap:
     @logger('NxRoadmap.onMilestoneItemDestriptionChanged(self)', 'self')
     def onMilestoneItemDestriptionChanged(self):
 
-            self.touchRoadmap()
-
             if not dc.auto.v:
+                self.touchRoadmap()
                 dc.x.roadmap.changeflag.milestone_item_description.v = True
 
     @logger('NxRoadmap.onNewMilestoneItem(self)', 'self')
