@@ -240,14 +240,14 @@ QPushButton:disabled{
             <item row="0" column="2">
              <widget class="QPushButton" name="btn_mi_close">
               <property name="text">
-               <string>Close</string>
+               <string>&amp;Close</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
              <widget class="QPushButton" name="btn_mi_delete">
               <property name="text">
-               <string>Delete</string>
+               <string>&amp;Delete</string>
               </property>
              </widget>
             </item>
@@ -274,7 +274,7 @@ QPushButton:disabled{
             <item row="0" column="3">
              <widget class="QPushButton" name="btn_mi_reopen">
               <property name="text">
-               <string>Reopen</string>
+               <string>Re&amp;open</string>
               </property>
              </widget>
             </item>
@@ -397,7 +397,7 @@ height:1px;</string>
               <item row="0" column="1">
                <widget class="QLabel" name="label_7">
                 <property name="text">
-                 <string>Des&amp;cription:</string>
+                 <string>D&amp;escription:</string>
                 </property>
                 <property name="buddy">
                  <cstring>text_milestone_description</cstring>
@@ -658,7 +658,7 @@ height:1px;</string>
               <item row="1" column="0">
                <widget class="QLabel" name="label_6">
                 <property name="text">
-                 <string>Desc&amp;ription:</string>
+                 <string>D&amp;escription:</string>
                 </property>
                 <property name="buddy">
                  <cstring>txt_mi_description</cstring>
