@@ -1,14 +1,8 @@
-000  [roadmap]   only allow to close / reopen active milestone milestone items
-001  [mistctrl]  compute milestone tree
-                 o milestone item change calibration        [done]
-                 o finalize minor milestone calibration
-                 o finalize major milestone calibration
-002  [roadmap]   implement finalize minor milestone
-003  [roadmap]   implement finalize major milestone
-004  [roadmap]   verify milestone selection
-005  [project]   [bug] table layout restore
-006  [all gui]   set sensible table defaults on first startup (column widths, sorting)
+004  [roadmap]   verify milestone selection ??
+005  [project]   [correction] table layout restore
+006  [all gui]   [corrective] set sensible table defaults on first startup (column widths, sorting)
 007  [all gui]   [bug] find out why the textChanged callback is sometime not triggering and fix it
 008  [all gui]   syncronize source code structure, remove inconsistencies
 009  [all gui]   move setCentralWidget to onShow functions
+010  [all]       review log messages
 

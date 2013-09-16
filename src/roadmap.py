@@ -206,6 +206,7 @@ def initCallbacks():
 
     dc.ui.finalize.v.btn_abort.clicked.connect(onFinalizeAbort)
     dc.ui.finalize.v.btn_finminor.clicked.connect(dc.m.roadmap.v.onMinorMilestoneFinalized)
+    dc.ui.finalize.v.btn_finmajor.clicked.connect(dc.m.roadmap.v.onMajorMilestoneFinalized)
 
     enableSelectionCallback()
     enableEditCallbacks()
@@ -1026,8 +1027,34 @@ class NxRoadmap:
         # reload tabel
         milist.reloadTable()
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    @logger('NxRoadmap.onMajorMilestoneFinalized(self)', 'self')
+    def onMajorMilestoneFinalized(self):
+
+        # we start with finisching milestone item closing that was started
+        # before the dialog appeared. This is the same as the last part of
+        # onMiClosed. We just leave out the table reload, as the following
+        # milestone selection switch will take care of that.
+        smiid = dc.x.roadmap.smiid.v
+        dc.sp.m.mi._(smiid).status.v = 'Closed'
+        self.touchRoadmap()
+        logMiEvent('closed', 'item has been closed')
+
+        # calibrate roadmap tree
+        mistctrl.calibrateMajorMsClosed()
+
+        # hide finalize dialog
+        dc.ui.finalize.v.hide()
+        dc.ui.roadmap.v.gridLayout_4.removeWidget(dc.ui.finalize.v)
+        dc.ui.roadmap.v.gridLayout_4.addWidget(dc.ui.roadmap.v.body, 1, 0)
+        dc.ui.roadmap.v.body.show()
+
+        dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
+
+        applyStates(states._open, dc.ui.roadmap.v)
+
+        # reload tabel
+        milist.reloadTable()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -84,3 +84,30 @@ def calibrateMinorMsClosed():
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+@logger('(mistctrl.calibrateMajorMsClosed()')
+def calibrateMajorMsClosed():
+
+    """
+        Invoked when a major milestone itme is closed. It calibrates the
+        roadmap tree.
+    """
+
+    smajor, sminor = dc.sp.m.selected.v
+    amajor, aminor = dc.sp.m.active.v
+
+    if dc.sp.m.selected.v != dc.sp.m.active.v:
+
+        raise Exception('selected, active missmatch on minor milestone'
+                        'calibration')
+
+    # remove next minor in active branch as we close the major branch
+    nextminor = sminor + 1
+    dc.sp.m._(smajor).index.v -= {nextminor}
+    del dc.sp.m._(smajor).__dict__['_{}'.format(nextminor)]
+
+    # set the milestone status
+    dc.sp.m.active.v = (amajor + 1, 0)
+    dc.sp.m.selected.v = (amajor + 1, 0)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
