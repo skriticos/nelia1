@@ -39,6 +39,13 @@ if len(dc.sp.m._(major)._(nextminor).index.v) > 0:
 else:
     dc.ui.finalize.v.btn_finmajor.setEnabled(False)
 
+# working change
+
+nextminor = minor + 1
+if len(dc.sp.m._(major)._(nextminor).index.v) == 0:
+    dc.ui.finalize.v.btn_finmajor.setEnabled(True)
+else:
+    dc.ui.finalize.v.btn_finmajor.setEnabled(False)
 
 
 

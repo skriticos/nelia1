@@ -942,7 +942,8 @@ class NxRoadmap:
             dc.ui.finalize.v.show()
 
             dc.ui.finalize.v.btn_finminor.setFocus()
-            if dc.sp.m._(major)._(minor+1).index.v:
+            nextminor = minor + 1
+            if len(dc.sp.m._(major)._(nextminor).index.v) == 0:
                 dc.ui.finalize.v.btn_finmajor.setEnabled(True)
             else:
                 dc.ui.finalize.v.btn_finmajor.setEnabled(False)
