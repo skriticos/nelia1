@@ -1,0 +1,44 @@
+#! /usr/bin/python3
+
+"""
+    Severity: Critical
+
+    Description:
+
+        Finalize -> move to next major milestone is inactive when it should be
+        active.
+
+    How to reproduce:
+
+        - create new project
+        - switch to roadmap
+        - create milestone item
+          - this needs to create 0.2 with zero milestone items
+        - close milestone item
+        -> the resulting dialog should have move to major milestone enabled, but
+           it's not
+"""
+
+# relevant code section in src/roadmap.py:NxRoadmap.onMiClosed()
+
+major, minor = dc.sp.m.active.v
+
+..
+
+if dc.sp.m._(major)._(minor+1).index.v:
+    dc.ui.finalize.v.btn_finmajor.setEnabled(True)
+else:
+    dc.ui.finalize.v.btn_finmajor.setEnabled(False)
+
+# looks like the if statement is wrong
+# proposed change
+
+nextminor = minor + 1
+if len(dc.sp.m._(major)._(nextminor).index.v) > 0:
+    dc.ui.finalize.v.btn_finmajor.setEnabled(True)
+else:
+    dc.ui.finalize.v.btn_finmajor.setEnabled(False)
+
+
+
+
