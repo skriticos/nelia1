@@ -56,6 +56,34 @@ if __name__ == '__main__':
     NxLog()
     NxRoadmap()
 
+    project_list_header_widths = [
+        50, 200, 100, 150, 100, 100, 100, 150, 150 ]
+    log_list_header_widths = [
+        50, 300, 100, 150, 150 ]
+    milestone_item_list_header_widths = [
+        50, 300, 100, 100, 100, 100, 150, 150 ]
+
+    def applyHeaderWidths(widget, widths):
+        for i, v in enumerate(widths):
+            widget.setColumnWidth(i, v)
+
+
+    if not dc.x.config.loaded.v:
+
+        applyHeaderWidths(dc.ui.project.v.tbl_project_list,
+                          project_list_header_widths)
+        applyHeaderWidths(dc.ui.log.v.tbl_log_list,
+                          log_list_header_widths)
+        applyHeaderWidths(dc.ui.roadmap.v.tbl_mi_list,
+                          milestone_item_list_header_widths)
+
+        dc.x.project.horizontal_header.v.setSortIndicator(
+            7, Qt.SortOrder.DescendingOrder)
+        dc.x.log.horizontal_header.v.setSortIndicator(
+            0, Qt.SortOrder.DescendingOrder)
+        dc.x.roadmap.horizontal_header.v.setSortIndicator(
+            6, Qt.SortOrder.DescendingOrder)
+
     # initialize global shortcuts
     for keys, target in [('Ctrl+w', dc.ui.main.v.close),
                          ('Ctrl+m', logMarker),
