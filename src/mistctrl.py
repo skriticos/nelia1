@@ -56,10 +56,33 @@ def calibrateRoadmapMi():
         dc.sp.m._(major)._(nextminor).index.v = set()
         dc.sp.m._(major)._(nextminor).description.v = ''
 
+        # add a new major milestone if this is the first milestone item in the
+        # first minor milestone of the selected major milestone
+        nextmajor = major + 1
+        if nextmajor not in dc.sp.m.index.v:
+
+            dc.sp.m.index.v |= {nextmajor}
+            dc.sp.m._(nextmajor).index.v = {0}
+            dc.sp.m._(nextmajor).nextminor.v = 1
+            dc.sp.m._(nextmajor)._(0).index.v = set()
+            dc.sp.m._(nextmajor)._(0).description.v = ''
+
+            dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
+
     elif not dc.sp.m._(major)._(nextminor - 2).index.v:
 
         dc.sp.m._(major).index.v -= {nextminor - 1}
         dc.sp.m._(major).nextminor.v -= 1
+
+        # remove next major if removing last milestone item from first minor
+        # milestone of a major milestone
+        if major >= 1 and minor == 0 and len(dc.sp.m._(major)._(minor).index.v) == 0:
+
+            nextmajor = major + 1
+            del dc.sp.m.__dict__['_{}'.format(nextmajor)]
+            dc.sp.m.index.v -= {nextmajor}
+
+            dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

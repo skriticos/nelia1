@@ -17,7 +17,7 @@ import PySide
 
 def log(msg):
     msg = '{:.4f}: {}'.format(time.time(), msg)
-    print(msg)
+    # print(msg)
 
 def logMarker():
     log('********** MARKER **********')
