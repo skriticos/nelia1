@@ -262,8 +262,8 @@ dc.m.roadmap.cbctrl.v = CbCtrl
 
 class CbAux: pass
 
-@logger('(roadmap) onMilestoneSelectionChanged()')
-def onMilestoneSelectionChanged(x):
+@logger('(roadmap) onMilestoneSelectionChanged(x=None)')
+def onMilestoneSelectionChanged(x=None):
 
     major, minor = dc.sp.m.selected.v
     if len(dc.sp.m._(major)._(minor).index.v) == 0:
@@ -1025,7 +1025,7 @@ class NxRoadmap:
         applyStates(states._open, dc.ui.roadmap.v)
 
         # reload tabel
-        milist.reloadTable()
+        onMilestoneSelectionChanged()
 
 
     @logger('NxRoadmap.onMajorMilestoneFinalized(self)', 'self')
@@ -1054,7 +1054,7 @@ class NxRoadmap:
         applyStates(states._open, dc.ui.roadmap.v)
 
         # reload tabel
-        milist.reloadTable()
+        onMilestoneSelectionChanged()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
