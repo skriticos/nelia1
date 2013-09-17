@@ -1,4 +1,3 @@
-000  [add startup option to enable logger]
 004  [roadmap]   verify milestone selection ??
 005  [project]   [correction] table layout restore
 007  [all gui]   [bug] find out why the textChanged callback is sometime not triggering and fix it

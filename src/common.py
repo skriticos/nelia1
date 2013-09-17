@@ -9,6 +9,7 @@
 import time
 import datetime
 import PySide
+import sys
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -16,8 +17,9 @@ import PySide
 # in datacore. set the logger as decorator for all methods
 
 def log(msg):
-    msg = '{:.4f}: {}'.format(time.time(), msg)
-    # print(msg)
+    if '-debug' in sys.argv:
+        msg = '{:.4f}: {}'.format(time.time(), msg)
+        print(msg)
 
 def logMarker():
     log('********** MARKER **********')
