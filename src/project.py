@@ -917,6 +917,7 @@ class NxDocument:
         applyStates(states.nolast, dc.ui.project.v)
         dc.m.project.projectlist.v.reloadTable()
         dc.r.changed.v = False
+        dc.c.lastpath.v = path
 
     @logger('NxDocument.onOpenLastClicked(self)', 'self')
     def onOpenLastClicked(self):
