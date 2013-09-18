@@ -90,7 +90,7 @@ states.changed = {
 }
 
 states.unchanged = {
-    'btn_doc_save_as'       : {'visible': True, 'enabled': False},
+    'btn_doc_save_as'       : {'visible': True, 'enabled': True},
     'btn_doc_save'          : {'visible': True, 'enabled': False},
     'tbl_project_list'      : {'focused': None}
 }
@@ -633,6 +633,7 @@ class NxProject():
         dc.ui.log.v.setParent(None)
         dc.ui.roadmap.v.setParent(None)
         dc.ui.main.v.setCentralWidget(dc.ui.project.v)
+        projectlist.reloadTable()
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the
