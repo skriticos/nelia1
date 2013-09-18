@@ -516,6 +516,16 @@ height:1px;</string>
                  <property name="verticalSpacing">
                   <number>0</number>
                  </property>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Type:</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>cb_mi_type</cstring>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="3" column="0">
                   <widget class="QLabel" name="label_5">
                    <property name="text">
@@ -533,16 +543,6 @@ height:1px;</string>
                    </property>
                    <property name="buddy">
                     <cstring>cb_mi_priority</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_2">
-                   <property name="text">
-                    <string>Type:</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>cb_mi_type</cstring>
                    </property>
                   </widget>
                  </item>
@@ -625,19 +625,6 @@ height:1px;</string>
                     </property>
                    </item>
                   </widget>
-                 </item>
-                 <item row="2" column="2">
-                  <spacer name="horizontalSpacer_4">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
                  </item>
                 </layout>
                </widget>
