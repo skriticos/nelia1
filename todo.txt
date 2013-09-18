@@ -1,4 +1,0 @@
-007  [all gui]   [bug] find out why the textChanged callback is sometime not triggering and fix it
-008  [all gui]   syncronize source code structure, remove inconsistencies
-010  [all]       review log messages
-

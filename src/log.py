@@ -180,6 +180,8 @@ def onSelectionChanged(new, old):
 
     enableEditCallbacks()
 
+    dc.x.log.row.v = index.row()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,6 +242,7 @@ def reloadTable():
     if not dc.sp.log.index.v:
         loadLayout('log')
         applyStates(states.startup, dc.ui.log.v)
+        dc.x.log.row.v = -1
         return
 
     for lid in dc.sp.log.index.v:

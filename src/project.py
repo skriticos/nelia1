@@ -347,6 +347,8 @@ def onSelectionChanged(new, old):
 
     applyStates(states.selected, dc.ui.project.v)
 
+    dc.x.project.row.v = index.row()
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -471,6 +473,7 @@ def reloadTable(toggled=False):
     if rowcount <= 0:
 
         applyStates(states.startup, dc.ui.project.v)
+        dc.x.project.row.v = -1
         return
 
     # we don't have a selected project id (outside the filter or deleted)

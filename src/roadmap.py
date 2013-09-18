@@ -496,6 +496,8 @@ def onSelectionChanged(new, old):
         else:
             applyStates(states._open, dc.ui.roadmap.v)
 
+        dc.x.roadmap.row.v = index.row()
+
     dc.auto.v = auto_prev
 
 @logger('(roadmap) onFinalizeAbort()')
@@ -650,6 +652,7 @@ def reloadTable():
 
         applyStates(states.startup, dc.ui.roadmap.v)
         applyStates(states.clearedit, dc.ui.roadmap.v)
+        dc.x.roadmap.row.v = -1
         return
 
     # we don't have a selected milestone item id (outside the filter or deleted)

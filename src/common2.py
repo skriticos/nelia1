@@ -53,8 +53,10 @@ def loadLayout(module):
 
 @logger('setTableValue(module, col, value)', 'module', 'col', 'value')
 def setTableValue(module, col, value):
-    row = dc.x._(module).selection_model.v.currentIndex().row()
-    if row > -1:
+
+    row = dc.x._(module).row.v
+
+    if row != None and row > -1:
         dc.x._(module).model.v.setItem(row, col, QStandardItem(value))
     else:
         # Famous last words: this should never happen
