@@ -17,6 +17,7 @@ from PySide import QtUiTools
 from datacore import *
 from datacore import _dcdump
 from common import *
+from common2 import *
 
 from project import NxProject, NxDocument
 from log     import NxLog
@@ -26,6 +27,7 @@ from roadmap import NxRoadmap
 
 if __name__ == '__main__':
 
+    dc.auto.v = True
     dc.x.app.v = app = QApplication(sys.argv)
 
     loader = QtUiTools.QUiLoader()
@@ -84,6 +86,14 @@ if __name__ == '__main__':
         dc.x.roadmap.horizontal_header.v.setSortIndicator(
             6, Qt.SortOrder.DescendingOrder)
 
+        saveLayout('project')
+        saveLayout('log')
+        saveLayout('roadmap')
+
+    dc.m.project.projectlist.v.initProjectFilterControls()
+    dc.m.log.loglist.v.initLogFilterControls()
+    dc.m.roadmap.milist.v.initRoadmapFilterControls()
+
     # initialize global shortcuts
     for keys, target in [('Ctrl+w', dc.ui.main.v.close),
                          ('Ctrl+m', logMarker),
@@ -98,6 +108,8 @@ if __name__ == '__main__':
     timer = QTimer()
     timer.start(500)
     timer.timeout.connect(lambda: None)
+
+    dc.auto.v = False
 
     sys.exit(app.exec_())
 

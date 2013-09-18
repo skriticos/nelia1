@@ -125,6 +125,9 @@ def onLogMaxToggled(state):
 @logger('(log) onFilterUserToggled(checked)', 'checked')
 def onFilterUserToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.log.filters.v.add('User')
     else:
@@ -134,6 +137,9 @@ def onFilterUserToggled(checked):
 @logger('(log) onFilterMilestoneToggled(checked)', 'checked')
 def onFilterMilestoneToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.log.filters.v.add('Milestone')
     else:
@@ -142,6 +148,9 @@ def onFilterMilestoneToggled(checked):
 
 @logger('(log) onFilterTrackToggled(checked', 'checked')
 def onFilterTrackToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.log.filters.v.add('Track')
@@ -230,19 +239,19 @@ def initTable():
     dc.x.log.selection_model.v = dc.x.log.view.v.selectionModel()
     dc.x.log.horizontal_header.v = dc.x.log.view.v.horizontalHeader()
 
-    # if a canfiguration is loaded, we set up the widget
-    if dc.c.log.header.width.v:
+@logger('loglist.initLogFilterControls()')
+def initLogFilterControls():
 
-        # restore table sorting and headers
-        loadLayout('log')
+    # restore table sorting and headers
+    loadLayout('log')
 
-        # restore filter control states
-        if 'User' in dc.c.log.filters.v:
-            dc.ui.log.v.btn_log_user.setChecked(True)
-        if 'Track' in dc.c.log.filters.v:
-            dc.ui.log.v.btn_log_tracking.setChecked(True)
-        if 'Milestone' in dc.c.log.filters.v:
-            dc.ui.log.v.btn_log_milestone.setChecked(True)
+    # restore filter control states
+    if 'User' in dc.c.log.filters.v:
+        dc.ui.log.v.btn_log_user.setChecked(True)
+    if 'Track' in dc.c.log.filters.v:
+        dc.ui.log.v.btn_log_tracking.setChecked(True)
+    if 'Milestone' in dc.c.log.filters.v:
+        dc.ui.log.v.btn_log_milestone.setChecked(True)
 
 # used in with setTableValue
 loglist.colLid       = 0
@@ -327,6 +336,7 @@ def reloadTable():
             break
 
 loglist.initTable = initTable
+loglist.initLogFilterControls = initLogFilterControls
 loglist.reloadTable = reloadTable
 dc.m.log.loglist.v = loglist
 
@@ -378,6 +388,9 @@ class NxLog:
     @logger('NxLog.onSummaryChanged(self, summary)', 'self', 'summary')
     def onSummaryChanged(self, summary):
 
+        if dc.auto.v:
+            return
+
         lid = dc.x.log.slid.v
         dc.sp.log._(lid).summary.v = summary
         setTableValue('log', loglist.colSummary, summary)
@@ -386,10 +399,11 @@ class NxLog:
     @logger('NxLog.onDescriptionChanged(self)', 'self')
     def onDescriptionChanged(self):
 
-        self.touchLog()
+        if dc.auto.v:
+            return
 
-        if not dc.auto.v:
-            dc.x.log.changeflag.log_description.v = True
+        self.touchLog()
+        dc.x.log.changeflag.log_description.v = True
 
     @logger('NxLog.onNewLogClicked(self)', 'self')
     def onNewLogClicked(self):

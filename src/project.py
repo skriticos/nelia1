@@ -226,6 +226,9 @@ class util: pass
 @logger('onPriorityLowToggled(checked)', 'checked')
 def onPriorityLowToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.project.filters.priority.v |= {1, 2, 3}
     else:
@@ -235,6 +238,9 @@ def onPriorityLowToggled(checked):
 
 @logger('onPriorityMediumToggled(checked)', 'checked')
 def onPriorityMediumToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.project.filters.priority.v |= {4, 5, 6}
@@ -246,6 +252,9 @@ def onPriorityMediumToggled(checked):
 @logger('onPriorityHighToggled(checked)', 'checked')
 def onPriorityHighToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.project.filters.priority.v |= {7, 8, 9}
     else:
@@ -255,6 +264,9 @@ def onPriorityHighToggled(checked):
 
 @logger('onChallengeLowToggled(checked)', 'checked')
 def onChallengeLowToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.project.filters.challenge.v |= {1, 2, 3}
@@ -266,6 +278,9 @@ def onChallengeLowToggled(checked):
 @logger('onChallengeMediumToggled(checked)', 'checked')
 def onChallengeMediumToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.project.filters.challenge.v |= {4, 5, 6}
     else:
@@ -275,6 +290,9 @@ def onChallengeMediumToggled(checked):
 
 @logger('onChallengeHighToggled(checked)', 'checked')
 def onChallengeHighToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.project.filters.challenge.v |= {7, 8, 9}
@@ -394,25 +412,25 @@ def initTable():
     dc.x.project.selection_model.v   = dc.x.project.view.v.selectionModel()
     dc.x.project.horizontal_header.v = dc.x.project.view.v.horizontalHeader()
 
-    # if a configuration is loaded, we set up the widget
-    if dc.c.project.header.width.v:
+@logger('projectlist.initProjectFilterControls()')
+def initProjectFilterControls():
 
-        # restore table sorting and headers widths
-        loadLayout('project')
+    # restore table sorting and headers widths
+    loadLayout('project')
 
-        # restore filter control states
-        if 1 in dc.c.project.filters.priority.v:
-            dc.ui.project.v.btn_prio_low.setChecked(True)
-        if 4 in dc.c.project.filters.priority.v:
-            dc.ui.project.v.btn_prio_medium.setChecked(True)
-        if 7 in dc.c.project.filters.priority.v:
-            dc.ui.project.v.btn_prio_high.setChecked(True)
-        if 1 in dc.c.project.filters.challenge.v:
-            dc.ui.project.v.btn_challenge_low.setChecked(True)
-        if 4 in dc.c.project.filters.challenge.v:
-            dc.ui.project.v.btn_challenge_medium.setChecked(True)
-        if 7 in dc.c.project.filters.challenge.v:
-            dc.ui.project.v.btn_challenge_hard.setChecked(True)
+    # restore filter control states
+    if 1 in dc.c.project.filters.priority.v:
+        dc.ui.project.v.btn_prio_low.setChecked(True)
+    if 4 in dc.c.project.filters.priority.v:
+        dc.ui.project.v.btn_prio_medium.setChecked(True)
+    if 7 in dc.c.project.filters.priority.v:
+        dc.ui.project.v.btn_prio_high.setChecked(True)
+    if 1 in dc.c.project.filters.challenge.v:
+        dc.ui.project.v.btn_challenge_low.setChecked(True)
+    if 4 in dc.c.project.filters.challenge.v:
+        dc.ui.project.v.btn_challenge_medium.setChecked(True)
+    if 7 in dc.c.project.filters.challenge.v:
+        dc.ui.project.v.btn_challenge_hard.setChecked(True)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # used in with setTableValue
@@ -432,12 +450,16 @@ def reloadTable(toggled=False):
 
     saveLayout('project')
 
+    dc.auto.v = True
+
     # clear table
     disableSelectionCallback()
     dc.x.project.model.v.clear()
     dc.x.project.selection_model.v.reset()
     enableSelectionCallback()
     dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
+
+    dc.auto.v = False
 
     # populate table with projects (that are in filter selection)
     # we start off by iterating through all projects
@@ -515,6 +537,7 @@ def reloadTable(toggled=False):
             break
 
 projectlist.initTable = initTable
+projectlist.initProjectFilterControls = initProjectFilterControls
 projectlist.reloadTable = reloadTable
 dc.m.project.projectlist.v = projectlist
 
@@ -525,7 +548,7 @@ dc.m.project.projectlist.v = projectlist
 class EfNameFocusOut(QObject):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.FocusOut:
-            if dc.x.project.changeflag.name.v:
+            if dc.x.project.changeflag.name.v and dc.sp != None:
                 dc.m.log.v.addAutoLog('Track', 'Name changed',
                         'Project name changed to {}'.format(dc.sp.name.v))
             dc.x.project.changeflag.name.v = False
@@ -535,7 +558,7 @@ ef_name_focus_out = EfNameFocusOut()
 class EfCategoryFocusOut(QObject):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.FocusOut:
-            if dc.x.project.changeflag.category.v:
+            if dc.x.project.changeflag.category.v and dc.sp != None:
                 dc.m.log.v.addAutoLog('Track', 'Category changed',
                         'Project category changed to {}'.format(dc.sp.category.v))
             dc.x.project.changeflag.category.v = False
@@ -545,7 +568,7 @@ ef_category_focus_out = EfCategoryFocusOut()
 class EfTypeFocusOut(QObject):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.FocusOut:
-            if dc.x.project.changeflag.ptype.v:
+            if dc.x.project.changeflag.ptype.v and dc.sp != None:
                 dc.m.log.v.addAutoLog('Track', 'Type changed',
                         'Project type changed to {}'.format(dc.sp.ptype.v))
             dc.x.project.changeflag.ptype.v = False
@@ -555,7 +578,7 @@ ef_type_focus_out = EfTypeFocusOut()
 class EfPriorityFocusOut(QObject):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.FocusOut:
-            if dc.x.project.changeflag.priority.v:
+            if dc.x.project.changeflag.priority.v and dc.sp != None:
                 dc.m.log.v.addAutoLog('Track', 'Priority changed',
                         'Project priority changed to {}'.format(dc.sp.priority.v))
             dc.x.project.changeflag.priority.v = False
@@ -565,7 +588,7 @@ ef_priority_focus_out = EfPriorityFocusOut()
 class EfChallengeFocusOut(QObject):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.FocusOut:
-            if dc.x.project.changeflag.challenge.v:
+            if dc.x.project.changeflag.challenge.v and dc.sp != None:
                 dc.m.log.v.addAutoLog('Track', 'Challenge changed',
                         'Project challenge changed to {}'.format(dc.sp.challenge.v))
             dc.x.project.changeflag.challenge.v = False
@@ -575,7 +598,7 @@ ef_challenge_focus_out = EfChallengeFocusOut()
 class EfProjectDescriptionFocusOut(QObject):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.Type.FocusOut:
-            if dc.x.project.changeflag.project_description.v:
+            if dc.x.project.changeflag.project_description.v and dc.sp != None:
                 description = dc.ui.project.v.text_project_info.toHtml()
                 dc.sp.description.v = description
             dc.x.project.changeflag.project_description.v = False
@@ -648,59 +671,70 @@ class NxProject():
     @logger('NxProject.onProjectNameChanged(self, name)', 'self', 'name')
     def onProjectNameChanged(self, name):
 
+        if dc.auto.v:
+            return
+
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
-        if not dc.auto.v:
-            dc.x.project.changeflag.name.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colName, name)
+        dc.x.project.changeflag.name.v = True # used for unFocus callback (log)
 
     @logger('NxProject.onProjectTypeChanged(self, ptype)', 'self', 'ptype')
     def onProjectTypeChanged(self, ptype):
 
+        if dc.auto.v:
+            return
+
         dc.sp.ptype.v = ptype
-        if not dc.auto.v:
-            dc.x.project.changeflag.ptype.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colType, ptype)
+        dc.x.project.changeflag.ptype.v = True # used for unFocus callback (log)
 
     @logger('NxProject.onProjectCategoryChanged(self, category)',
             'self', 'category')
     def onProjectCategoryChanged(self, category):
 
+        if dc.auto.v:
+            return
+
         dc.sp.category.v = category
-        if not dc.auto.v:
-            dc.x.project.changeflag.category.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colCategory, category)
+        dc.x.project.changeflag.category.v = True # used for unFocus callback (log)
 
     @logger('NxProject.onProjectPriorityChanged(self, priority)',
             'self', 'priority')
     def onProjectPriorityChanged(self, priority):
 
+        if dc.auto.v:
+            return
+
         dc.sp.priority.v = priority
-        if not dc.auto.v:
-            dc.x.project.changeflag.priority.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colPritoriy, str(priority))
+        dc.x.project.changeflag.priority.v = True # used for unFocus callback (log)
 
     @logger('NxProject.onProjectChallengeChanged(self, challenge)',
             'self', 'challenge')
     def onProjectChallengeChanged(self, challenge):
 
+        if dc.auto.v:
+            return
+
         dc.sp.challenge.v = challenge
-        if not dc.auto.v:
-            dc.x.project.changeflag.challenge.v = True # used for unFocus callback (log)
         self.touchProject()
         setTableValue('project', projectlist.colChallenge, str(challenge))
+        dc.x.project.changeflag.challenge.v = True # used for unFocus callback (log)
 
     @logger('NxProject.onProjectDescriptionChanged(self)', 'self')
     def onProjectDescriptionChanged(self):
 
-        self.touchProject()
+        if dc.auto.v:
+            return
 
-        if not dc.auto.v:
-            dc.x.project.changeflag.project_description.v = True
+        self.touchProject()
+        dc.x.project.changeflag.project_description.v = True
 
     # Create a new project
 

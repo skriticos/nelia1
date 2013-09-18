@@ -279,6 +279,9 @@ def onMilestoneSelectionChanged(x=None):
 @logger('(roadmap) onFilterFeatureToggled(checked)', 'checked')
 def onFilterFeatureToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.roadmap.filters.v.add('Feature')
     else:
@@ -287,6 +290,9 @@ def onFilterFeatureToggled(checked):
 
 @logger('(roadmap) onFilterIssueToggled(checked)', 'checked')
 def onFilterIssueToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.roadmap.filters.v.add('Issue')
@@ -297,6 +303,9 @@ def onFilterIssueToggled(checked):
 @logger('(roadmap) onFilterOpenToggled(checked)', 'checked')
 def onFilterOpenToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.roadmap.filters.v.add('Open')
     else:
@@ -305,6 +314,9 @@ def onFilterOpenToggled(checked):
 
 @logger('(roadmap) onFilterClosedToggled(checked)', 'checked')
 def onFilterClosedToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.roadmap.filters.v.add('Closed')
@@ -315,6 +327,9 @@ def onFilterClosedToggled(checked):
 @logger('(roadmap) onFilterLowToggled(checked)', 'checked')
 def onFilterLowToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.roadmap.filters.v.add('Low')
     else:
@@ -323,6 +338,9 @@ def onFilterLowToggled(checked):
 
 @logger('(roadmap) onFilterMediumToggled(checked)', 'checked')
 def onFilterMediumToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.roadmap.filters.v.add('Medium')
@@ -333,6 +351,9 @@ def onFilterMediumToggled(checked):
 @logger('(roadmap) onFilterHighToggled(checked)', 'checked')
 def onFilterHighToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.roadmap.filters.v.add('High')
     else:
@@ -341,6 +362,9 @@ def onFilterHighToggled(checked):
 
 @logger('(roadmap) onFilterCoreToggled(checked)', 'checked')
 def onFilterCoreToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.roadmap.filters.v.add('Core')
@@ -351,6 +375,9 @@ def onFilterCoreToggled(checked):
 @logger('(roadmap) onFilterAuxiliaryToggled(checked)', 'checked')
 def onFilterAuxiliaryToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.roadmap.filters.v.add('Auxiliary')
     else:
@@ -359,6 +386,9 @@ def onFilterAuxiliaryToggled(checked):
 
 @logger('(roadmap) onFilterSecurityToggled(checked)', 'checked')
 def onFilterSecurityToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.roadmap.filters.v.add('Security')
@@ -369,6 +399,9 @@ def onFilterSecurityToggled(checked):
 @logger('(roadmap) onFilterCorrectiveToggled(checked)', 'checked')
 def onFilterCorrectiveToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.roadmap.filters.v.add('Corrective')
     else:
@@ -378,6 +411,9 @@ def onFilterCorrectiveToggled(checked):
 @logger('(roadmap) onFilterArchitectureToggled(checked)', 'checked')
 def onFilterArchitectureToggled(checked):
 
+    if dc.auto.v:
+        return
+
     if checked:
         dc.c.roadmap.filters.v.add('Architecture')
     else:
@@ -386,6 +422,9 @@ def onFilterArchitectureToggled(checked):
 
 @logger('(roadmap) onFilterRefactorToggled(checked)', 'checked')
 def onFilterRefactorToggled(checked):
+
+    if dc.auto.v:
+        return
 
     if checked:
         dc.c.roadmap.filters.v.add('Refactor')
@@ -559,38 +598,38 @@ def initTable():
     dc.x.roadmap.selection_model.v = view.selectionModel()
     dc.x.roadmap.horizontal_header.v = view.horizontalHeader()
 
-    # if a canfiguration is loaded, we set up the widget
-    if dc.c.roadmap.header.width.v:
+@logger('milist.initRoadmapFilterControls()')
+def initRoadmapFilterControls():
 
-        # restore table sorting and headers
-        loadLayout('roadmap')
+    # restore table sorting and headers
+    loadLayout('roadmap')
 
-        if 'Feature' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_feature.setChecked(True)
-        if 'Issue' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_issue.setChecked(True)
-        if 'Open' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_open.setChecked(True)
-        if 'Closed' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_closed.setChecked(True)
-        if 'Low' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_low.setChecked(True)
-        if 'Medium' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_medium.setChecked(True)
-        if 'High' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_high.setChecked(True)
-        if 'Core' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_core.setChecked(True)
-        if 'Auxiliary' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_auxiliary.setChecked(True)
-        if 'Security' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_security.setChecked(True)
-        if 'Corrective' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_corrective.setChecked(True)
-        if 'Architecture' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_architecture.setChecked(True)
-        if 'Refactor' in dc.c.roadmap.filters.v:
-            dc.ui.roadmap.v.btn_filter_refactor.setChecked(True)
+    if 'Feature' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_feature.setChecked(True)
+    if 'Issue' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_issue.setChecked(True)
+    if 'Open' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_open.setChecked(True)
+    if 'Closed' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_closed.setChecked(True)
+    if 'Low' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_low.setChecked(True)
+    if 'Medium' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_medium.setChecked(True)
+    if 'High' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_high.setChecked(True)
+    if 'Core' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_core.setChecked(True)
+    if 'Auxiliary' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_auxiliary.setChecked(True)
+    if 'Security' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_security.setChecked(True)
+    if 'Corrective' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_corrective.setChecked(True)
+    if 'Architecture' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_architecture.setChecked(True)
+    if 'Refactor' in dc.c.roadmap.filters.v:
+        dc.ui.roadmap.v.btn_filter_refactor.setChecked(True)
 
 @logger('milist.reloadTable()')
 def reloadTable():
@@ -680,6 +719,7 @@ def reloadTable():
             break
 
 milist.initTable = initTable
+milist.initRoadmapFilterControls = initRoadmapFilterControls
 milist.reloadTable = reloadTable
 dc.m.roadmap.milist.v = milist
 
