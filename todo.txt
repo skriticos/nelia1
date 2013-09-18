@@ -1,7 +1,4 @@
-004  [roadmap]   verify milestone selection ??
-005  [project]   [correction] table layout restore
 007  [all gui]   [bug] find out why the textChanged callback is sometime not triggering and fix it
 008  [all gui]   syncronize source code structure, remove inconsistencies
-009  [all gui]   move setCentralWidget to onShow functions
 010  [all]       review log messages
 

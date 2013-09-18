@@ -188,11 +188,6 @@ def enableAllCallbacks():
     w.btn_doc_open_last .clicked.connect(dc.m.document.v.onOpenLastClicked)
     w.btn_doc_save      .clicked.connect(dc.m.document.v.onSaveClicked)
 
-    # navi callbacks
-    w = dc.ui.project.v
-    w.btn_show_logs             .clicked.connect(onShowLogs)
-    w.btn_show_roadmap          .clicked.connect(onShowRoadmap)
-
     # filter callbacks
     w = dc.ui.project.v
     w.btn_prio_low          .toggled.connect(onPriorityLowToggled)
@@ -351,33 +346,6 @@ def onSelectionChanged(new, old):
     enableEditCallbacks()
 
     applyStates(states.selected, dc.ui.project.v)
-
-# switch to log and roadmap views
-# I have decided to load the project logs / roadmap only when navigating to
-# these widgets instead of real-time during selection change to avoid
-# latency with larger entries. setParent(None) prevents a segfault.
-
-@logger('onShowLogs()')
-def onShowLogs():
-    dc.ui.project.v.setParent(None)
-    dc.m.log.onShown.v()
-    dc.ui.main.v.setCentralWidget(dc.ui.log.v)
-
-@logger('onShowRoadmap()')
-def onShowRoadmap():
-    dc.ui.project.v.setParent(None)
-    dc.m.roadmap.cbaux.v.onShow()
-    dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
-
-@logger('(project) onShow()')
-def onShow():
-
-    projectlist.reloadTable()
-    dc.ui.project.v.tbl_project_list.setFocus()
-
-util.onShow = onShow
-
-dc.m.project.util.v = util
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
@@ -648,6 +616,19 @@ class NxProject():
         dc.ui.project.v.sb_project_priority.installEventFilter(ef_priority_focus_out)
         dc.ui.project.v.sb_project_challenge.installEventFilter(ef_challenge_focus_out)
         dc.ui.project.v.text_project_info.installEventFilter(ef_project_deisription_focus_out)
+
+    @logger('NxProject.initNavi(self)', 'self')
+    def initNavi(self):
+
+        dc.ui.project.v.btn_show_logs.clicked.connect(dc.m.log.v.onShow)
+        dc.ui.project.v.btn_show_roadmap.clicked.connect(dc.m.roadmap.v.onShow)
+
+    @logger('NxProject.onShow(self)', 'self')
+    def onShow(self):
+
+        dc.ui.log.v.setParent(None)
+        dc.ui.roadmap.v.setParent(None)
+        dc.ui.main.v.setCentralWidget(dc.ui.project.v)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the

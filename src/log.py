@@ -88,11 +88,6 @@ def enableAllCallbacks():
     w.btn_log_new               .clicked.connect(dc.m.log.v.onNewLogClicked)
     w.btn_log_delete            .clicked.connect(dc.m.log.v.onDeleteLogClicked)
 
-    # navi callbacks
-    w = dc.ui.log.v
-    w.btn_show_roadmap          .clicked.connect(onShowRoadmap)
-    w.btn_show_project          .clicked.connect(onShowProject)
-
     w = dc.ui.log.v
     w.btn_log_maximize          .toggled.connect(onLogMaxToggled)
 
@@ -184,36 +179,6 @@ def onSelectionChanged(new, old):
         applyStates(states.nonuser, dc.ui.log.v)
 
     enableEditCallbacks()
-
-
-### NAVI CALLBACKS ###
-
-@logger('(log) onShowLogs()')
-def onShowRoadmap():
-
-    dc.ui.log.v.setParent(dc.m.mainwindow.v)
-    dc.m.roadmap.cbaux.v.onShow()
-    dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
-
-@logger('(log) onShowProject()')
-def onShowProject():
-
-    dc.ui.log.v.setParent(dc.m.mainwindow.v)
-    dc.ui.main.v.setCentralWidget(dc.ui.project.v)
-    dc.m.project.util.v.onShow()
-
-# Called when view changes to log.
-
-@logger('(log) onShown()')
-def onShown():
-
-    if dc.x.lpid.v != dc.spid.v:
-        dc.x.lpid.v = dc.spid.v
-
-        dc.ui.log.v.lbl_project_name.setText(dc.sp.name.v)
-        loglist.reloadTable()
-
-dc.m.log.onShown.v = onShown
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
@@ -373,6 +338,23 @@ class NxLog:
 
         dc.x.log.changeflag.log_description.v = False
         dc.ui.log.v.text_log_message.installEventFilter(ef_log_desription_focus_out)
+
+    @logger('NxRoadmap.initNavi(self)', 'self')
+    def initNavi(self):
+        dc.ui.log.v.btn_show_roadmap.clicked.connect(dc.m.roadmap.v.onShow)
+        dc.ui.log.v.btn_show_project.clicked.connect(dc.m.project.v.onShow)
+
+    @logger('NxLog.onShow(self)', 'self')
+    def onShow(self):
+        dc.ui.project.v.setParent(None)
+        dc.ui.roadmap.v.setParent(None)
+        dc.ui.main.v.setCentralWidget(dc.ui.log.v)
+
+        if dc.x.lpid.v != dc.spid.v:
+            dc.x.lpid.v = dc.spid.v
+
+            dc.ui.log.v.lbl_project_name.setText(dc.sp.name.v)
+            loglist.reloadTable()
 
     @logger('NxLog.touchLog(self)', 'self')
     def touchLog(self):

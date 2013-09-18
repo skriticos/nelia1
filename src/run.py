@@ -58,6 +58,10 @@ if __name__ == '__main__':
     NxLog()
     NxRoadmap()
 
+    dc.m.project.v.initNavi()
+    dc.m.log.v.initNavi()
+    dc.m.roadmap.v.initNavi()
+
     project_list_header_widths = [
         50, 200, 100, 150, 100, 100, 100, 150, 150 ]
     log_list_header_widths = [

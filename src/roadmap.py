@@ -178,8 +178,6 @@ class CbCtrl: pass
 def initCallbacks():
 
     # loads allways on callbacks
-    dc.ui.roadmap.v.btn_show_project.clicked.connect(onShowProject)
-    dc.ui.roadmap.v.btn_show_logs.clicked.connect(onShowLogs)
     dc.ui.roadmap.v.btn_mi_new.clicked.connect(dc.m.roadmap.v.onNewMilestoneItem)
     dc.ui.roadmap.v.btn_mi_close.clicked.connect(dc.m.roadmap.v.onMiClosed)
     dc.ui.roadmap.v.btn_mi_reopen.clicked.connect(dc.m.roadmap.v.onMiReopen)
@@ -512,34 +510,7 @@ def onFinalizeAbort():
 
     applyStates(states._open, dc.ui.roadmap.v)
 
-@logger('(roadmap) onShowLogs()')
-def onShowLogs():
-    dc.ui.roadmap.v.setParent(None)
-    dc.m.log.onShown.v()
-    dc.ui.main.v.setCentralWidget(dc.ui.log.v)
-
-@logger('(roadmap) onShowProject()')
-def onShowProject():
-
-    dc.ui.roadmap.v.setParent(None)
-    dc.ui.log.v.setParent(dc.m.mainwindow.v)
-    dc.ui.main.v.setCentralWidget(dc.ui.project.v)
-    dc.m.project.util.v.onShow()
-
-@logger('(roadmap) onShow()')
-def onShow():
-
-    dc.ui.roadmap.v.lbl_project_name.setText(dc.sp.name.v)
-    if dc.x.rpid.v != dc.spid.v:
-        dc.x.rpid.v = dc.spid.v
-
-        dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
-        onMilestoneSelectionChanged('')
-
 CbAux.onSelectionChanged    = onSelectionChanged
-CbAux.onShow                = onShow
-CbAux.onShowLogs            = onShowLogs
-CbAux.onShowProject         = onShowProject
 
 CbAux.onFilterFeatureToggled        = onFilterFeatureToggled
 CbAux.onFilterIssueToggled          = onFilterIssueToggled
@@ -831,6 +802,26 @@ class NxRoadmap:
             ef_milestone_desription_focus_out)
         dc.ui.roadmap.v.txt_mi_description.installEventFilter(
             ef_milestone_item_desription_focus_out)
+
+    @logger('NxRoadmap.initNavi(self)', 'self')
+    def initNavi(self):
+
+        dc.ui.roadmap.v.btn_show_project.clicked.connect(dc.m.project.v.onShow)
+        dc.ui.roadmap.v.btn_show_logs.clicked.connect(dc.m.log.v.onShow)
+
+    @logger('NxRoadmap.onShow(self)', 'self')
+    def onShow(self):
+
+        dc.ui.project.v.setParent(None)
+        dc.ui.log.v.setParent(None)
+        dc.ui.main.v.setCentralWidget(dc.ui.roadmap.v)
+
+        if dc.x.rpid.v != dc.spid.v:
+            dc.x.rpid.v = dc.spid.v
+
+            dc.ui.roadmap.v.lbl_project_name.setText(dc.sp.name.v)
+            dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
+            onMilestoneSelectionChanged('')
 
     @logger('NxRoadmap.onMilestoneDescriptionChanged(self)', 'self')
     def onMilestoneDescriptionChanged(self):
