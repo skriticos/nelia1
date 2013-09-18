@@ -876,13 +876,16 @@ class NxDocument:
     @logger('NxDocument.onSaveClicked(self)', 'self')
     def onSaveClicked(self):
 
-        result = dcsave(dc.x.path.v)
-        if isinstance(result, Exception):
-            title, message = 'Save failed', 'Save failed! ' + str(result)
-            QMessageBox.critical(dc.ui.main.v, title, message)
-            return
-        dc.r.changed.v = False
-        applyStates(states.unchanged, dc.ui.project.v)
+        if dc.x.path.v:
+            result = dcsave(dc.x.path.v)
+            if isinstance(result, Exception):
+                title, message = 'Save failed', 'Save failed! ' + str(result)
+                QMessageBox.critical(dc.ui.main.v, title, message)
+                return
+            dc.r.changed.v = False
+            applyStates(states.unchanged, dc.ui.project.v)
+        else:
+            self.onSaveAsClicked()
 
     @logger('NxDocument.onOpenClicked(self)', 'self')
     def onOpenClicked(self):
