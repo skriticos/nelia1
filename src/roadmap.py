@@ -989,9 +989,9 @@ class NxRoadmap:
         dc.sp.m.mi._(smiid).status.v = 'Closed'
         setTableValue('roadmap', milist.colStatus, 'Closed')
         self.touchRoadmap()
-        milist.reloadTable()
-
         logMiEvent('closed', 'item has been closed')
+
+        milist.reloadTable()
 
         # update milestone navi button
         major, minor = dc.sp.m.selected.v
