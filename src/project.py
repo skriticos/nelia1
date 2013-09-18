@@ -603,7 +603,8 @@ class NxProject():
         if dc.x.config.loaded.v:
             loadLayout('project')
             if dc.c.lastpath.v:
-                applyStates(states.last, dc.ui.project.v)
+                if os.path.exists(dc.c.lastpath.v):
+                    applyStates(states.last, dc.ui.project.v)
 
         enableAllCallbacks()
 
