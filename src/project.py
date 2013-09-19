@@ -418,6 +418,8 @@ projectlist.colCreated   = 8
 @logger('projectlist.reloadTable(toggled=False)')
 def reloadTable(toggled=False):
 
+    dc.ui.project.v.tbl_project_list.setFocus()
+
     saveLayout('project')
 
     dc.auto.v = True

@@ -607,6 +607,8 @@ def initRoadmapFilterControls():
 @logger('milist.reloadTable()')
 def reloadTable():
 
+    dc.ui.roadmap.v.tbl_mi_list.setFocus()
+
     saveLayout('roadmap')
 
     disableSelectionCallback()

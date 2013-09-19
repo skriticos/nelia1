@@ -230,7 +230,12 @@ loglist.colCreated   = 4
 @logger('loglist.reloadTable()')
 def reloadTable():
 
+    dc.ui.log.v.tbl_log_list.setFocus()
+
     saveLayout('log')
+
+    autoprev = dc.auto.v
+    dc.auto.v = True
 
     # clear table
     disableSelectionCallback()
@@ -238,6 +243,8 @@ def reloadTable():
     dc.x.log.selection_model.v.reset()
     enableSelectionCallback()
     dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
+
+    dc.auto.v = False
 
     if not dc.sp.log.index.v:
         loadLayout('log')
