@@ -847,7 +847,7 @@ class NxRoadmap:
         dc.sp.m.mi._(smiid).modified.v = timestamp
         x = convert(timestamp)
         setTableValue('roadmap', milist.colModified, x)
-        dc.m.project.v.touchProject()
+        dc.m.project.v.touchProject('roadmap.touchRoadmap')
 
     @logger('NxRoadmap.onNameChanged(self, name)', 'self', 'name')
     def onNameChanged(self, name):
@@ -1024,7 +1024,7 @@ class NxRoadmap:
         major, minor = dc.sp.m.selected.v
         dc.sp.m._(major)._(minor).index.v.discard(smiid)
         del dc.sp.m.mi.__dict__['_{}'.format(smiid)]
-        dc.m.project.v.touchProject()
+        dc.m.project.v.touchProject('roadmap.onDeleteMilestoneItem')
         dc.x.roadmap.smiid.v = 0
         milist.reloadTable()
 

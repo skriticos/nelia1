@@ -22,108 +22,6 @@ import mistctrl                       # milestone control module for new project
 import mistnavi
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# STATES
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# We start with the declaration of the widget states.
-# These are applield with the applyStates method from the common module.
-# applyStates(states.startup, dc.ui.project.v)
-
-class states: pass
-
-# Did I mention that the names I come up with are a bit vague sometimes? So this
-# is the startup state. The state is set on startup.. and on load documnt.. and
-# on last project delete.
-
-states.startup = {
-        'btn_doc_new'           : {'visible': True, 'enabled': False},
-        'btn_doc_open'          : {'visible': True, 'enabled': True},
-        'btn_doc_open_last'     : {'visible': True, 'enabled': False},
-        'btn_doc_save'          : {'visible': True, 'enabled': False},
-        'btn_doc_save_as'       : {'visible': True, 'enabled': False},
-        'btn_project_delete'    : {'visible': True, 'enabled': False},
-        'btn_project_new'       : {'visible': True, 'enabled': True},
-        'btn_show_roadmap'      : {'visible': True, 'enabled': False},
-        'btn_show_logs'         : {'visible': True, 'enabled': False},
-        'tbl_project_list'      : {'visible': True, 'enabled': True},
-        'selected_project_group': {'visible': True, 'enabled': False},
-        'line_selected_project' : {'clear': True},
-        'line_project_name'     : {'clear': True},
-        'cb_project_type'       : {'index': 0},
-        'cb_project_category'   : {'index': 0},
-        'sb_project_priority'   : {'value': 1},
-        'sb_project_challenge'  : {'value': 1}
-    }
-
-# If the loaded configuration contains the path to a last saved document, enable
-# this control. Sub-state to startup. Is disaled once a project is selected.
-# This is a substate of startup.
-
-states.last = {
-    'btn_doc_open_last'     : {'visible': True, 'enabled': True},
-}
-
-
-states.nolast = {
-    'btn_doc_open_last'     : {'visible': True, 'enabled': False}
-}
-
-# Once a project is created or a document is loaded (wich implies a selected
-# project), the project controls are enabled and the document can be saved.
-
-states.selected = {
-    'btn_doc_new'           : {'visible': True, 'enabled': True},
-    'btn_doc_save_as'       : {'visible': True, 'enabled': False},
-    'btn_doc_save'          : {'visible': True, 'enabled': False},
-    'btn_doc_open'          : {'visible': True, 'enabled': True},
-    'btn_doc_open_last'     : {'visible': True, 'enabled': False},
-    'btn_project_delete'    : {'visible': True, 'enabled': True},
-    'btn_project_new'       : {'visible': True, 'enabled': True},
-    'btn_show_roadmap'      : {'visible': True, 'enabled': True},
-    'btn_show_logs'         : {'visible': True, 'enabled': True},
-    'tbl_project_list'      : {'visible': True, 'enabled': True},
-    'selected_project_group': {'visible': True, 'enabled': True}
-}
-
-states.changed = {
-    'btn_doc_save_as'       : {'visible': True, 'enabled': True},
-    'btn_doc_save'          : {'visible': True, 'enabled': True}
-}
-
-states.unchanged = {
-    'btn_doc_save_as'       : {'visible': True, 'enabled': True},
-    'btn_doc_save'          : {'visible': True, 'enabled': False},
-    'tbl_project_list'      : {'focused': None}
-}
-
-# Clean edit widgets when creating new project (make sure to create the project
-# data structure before applying this) or you'll enjoy a trip to errorland.
-
-states.new_project = {
-    'line_selected_project' : {'text': ''},
-    'line_project_name'     : {'text': ''},
-    'cb_project_type'       : {'index': 0},
-    'cb_project_category'   : {'index': 0},
-    'sb_project_priority'   : {'value': 1},
-    'sb_project_challenge'  : {'value': 1},
-    'text_project_info'     : {'clear': True}
-}
-
-# There is a maximize toggle button on top of the selected project description
-# text box. The following two states switch between normal and maximized for
-# this widget (by hiding the project list and the edit widgets)
-
-states.description_normal = {
-    'project_meta': {'visible': True, 'enabled': True},
-    'project_list': {'visible': True, 'enabled': True},
-    'gl_info':      {'margins': (0, 0, 0, 0)}
-}
-states.description_maximized = {
-    'project_meta': {'visible': False, 'enabled': True},
-    'project_list': {'visible': False, 'enabled': True},
-    'gl_info':      {'margins': (0, 0, 15, 0)}
-}
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CALLBACK CONTROL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -141,7 +39,6 @@ def enableSelectionCallback():
 def disableSelectionCallback():
 
     m = dc.x.project.selection_model.v
-    m.selectionChanged.disconnect(onSelectionChanged)
 
 # The edit control callbacks are switched off when a new project is selected in
 # the project table. This is reqired to avoid infinite loops and gremlins eating
@@ -301,9 +198,11 @@ def onChallengeHighToggled(checked):
 @logger('NxProject.onInfoMaxToggled(state)', 'state')
 def onInfoMaxToggled(state):
     if state:
-        applyStates(states.description_maximized, dc.ui.project.v)
+        dc.states.project.maximized.v = True
+        dc.m.project.v.updateStates('onInfoMaxToggled')
     else:
-        applyStates(states.description_normal, dc.ui.project.v)
+        dc.states.project.maximized.v = False
+        dc.m.project.v.updateStates('onInfoMaxToggled')
 
 # Sort by modification date when control is clicked.
 
@@ -319,35 +218,46 @@ def onSortProjectList():
 @logger('NxProject.onSelectionChanged(new, old)', 'new', 'old')
 def onSelectionChanged(new, old):
 
+    if dc.auto.v:
+        return
+
     # check for valid index
     indexes = new.indexes()
-    if not indexes:
+    if not indexes or not dc.spid.v:
+        dc.states.project.selected.v = False
+        dc.m.project.v.updateStates()
         return
 
     # get selected pid from table model
     index = indexes[0]
-    dc.spid.v = int(dc.x.project.model.v.itemFromIndex(index).text())
-    dc.sp = dc.s._(dc.spid.v)
-    dc.s.spid.v = dc.spid.v
+    pid = int(dc.x.project.model.v.itemFromIndex(index).text())
+    if pid != dc.spid.v or dc.states.project.newload.v:
 
-    # populate edit fields on selection change
-    disableEditCallbacks()
-    dc.auto.v = True
-    dc.ui.project.v.line_project_name.setText(dc.sp.name.v)
-    dc.ui.project.v.line_selected_project.setText(dc.sp.name.v)
-    dc.ui.project.v.sb_project_priority.setValue(dc.sp.priority.v)
-    dc.ui.project.v.sb_project_challenge.setValue(dc.sp.challenge.v)
-    dc.ui.project.v.cb_project_type.setCurrentIndex(
-            dc.ui.project.v.cb_project_type.findText(dc.sp.ptype.v))
-    dc.ui.project.v.cb_project_category.setCurrentIndex(
-            dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
-    dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
-    dc.auto.v = False
-    enableEditCallbacks()
+        dc.spid.v = pid
+        dc.sp = dc.s._(dc.spid.v)
+        dc.s.spid.v = dc.spid.v
 
-    applyStates(states.selected, dc.ui.project.v)
+        # populate edit fields on selection change
+        disableEditCallbacks()
+        dc.auto.v = True
+        dc.ui.project.v.line_project_name.setText(dc.sp.name.v)
+        dc.ui.project.v.line_selected_project.setText(dc.sp.name.v)
+        dc.ui.project.v.sb_project_priority.setValue(dc.sp.priority.v)
+        dc.ui.project.v.sb_project_challenge.setValue(dc.sp.challenge.v)
+        dc.ui.project.v.cb_project_type.setCurrentIndex(
+                dc.ui.project.v.cb_project_type.findText(dc.sp.ptype.v))
+        dc.ui.project.v.cb_project_category.setCurrentIndex(
+                dc.ui.project.v.cb_project_category.findText(dc.sp.category.v))
+        dc.ui.project.v.text_project_info.setText(dc.sp.description.v)
+        dc.auto.v = False
+        enableEditCallbacks()
 
-    dc.x.project.row.v = index.row()
+    row = index.row()
+    if row != dc.x.project.row.v:
+
+        dc.states.project.selected.v = True
+        dc.m.project.v.updateStates('onSelectionChanged')
+        dc.x.project.row.v = index.row()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
@@ -418,10 +328,9 @@ projectlist.colCreated   = 8
 @logger('projectlist.reloadTable(toggled=False)')
 def reloadTable(toggled=False):
 
-    dc.ui.project.v.tbl_project_list.setFocus()
-
     saveLayout('project')
 
+    autoprev = dc.auto.v
     dc.auto.v = True
 
     # clear table
@@ -431,7 +340,7 @@ def reloadTable(toggled=False):
     enableSelectionCallback()
     dc.x.project.model.v.setHorizontalHeaderLabels(projectlist.headers)
 
-    dc.auto.v = False
+    dc.auto.v = autoprev
 
     # populate table with projects (that are in filter selection)
     # we start off by iterating through all projects
@@ -472,14 +381,14 @@ def reloadTable(toggled=False):
 
     # we don't select anything if we don't have rows
     rowcount = dc.x.project.model.v.rowCount()
+    dc.states.project.noupdate.v = True
     if rowcount <= 0:
 
-        applyStates(states.startup, dc.ui.project.v)
         dc.x.project.row.v = -1
-        return
+        dc.states.project.selected.v = False
 
     # we don't have a selected project id (outside the filter or deleted)
-    if not dc.spid.v:
+    elif not dc.spid.v:
 
         index = dc.x.project.model.v.index(0, 0)
         pid = int(dc.x.project.model.v.data(index))
@@ -490,24 +399,25 @@ def reloadTable(toggled=False):
         dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
         # note: this triggers onSelectionChanged
         selection = dc.x.project.view.v.selectionModel().selection()
-        applyStates(states.selected, dc.ui.project.v)
 
-        return
+    else:
 
-    # iterate through table rows
-    for rowcnt in range(dc.x.project.model.v.rowCount()):
+        for rowcnt in range(dc.x.project.model.v.rowCount()):
 
-        index = dc.x.project.model.v.index(rowcnt, 0)
-        pid = int(dc.x.project.model.v.data(index))
+            index = dc.x.project.model.v.index(rowcnt, 0)
+            pid = int(dc.x.project.model.v.data(index))
 
-        # if we have a match, select it and abort
-        if pid == dc.spid.v:
+            # if we have a match, select it and abort
+            if pid == dc.spid.v:
 
-            s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
-            dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
-            # note: this triggers onSelectionChanged
-            selection = dc.x.project.view.v.selectionModel().selection()
-            break
+                s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+                dc.x.project.selection_model.v.setCurrentIndex(index, s|r)
+                # note: this triggers onSelectionChanged
+                selection = dc.x.project.view.v.selectionModel().selection()
+                break
+    dc.states.project.noupdate.v = False
+
+    dc.m.project.v.updateStates('reloadTable')
 
 projectlist.initTable = initTable
 projectlist.initProjectFilterControls = initProjectFilterControls
@@ -601,12 +511,19 @@ class NxProject():
         # apply state (enable/dissable widgets)
         dc.spid.v = 0
         projectlist.initTable()
-        applyStates(states.startup, dc.ui.project.v)
-        if dc.x.config.loaded.v:
+
+        if dc.c.config.loaded.v:
             loadLayout('project')
-            if dc.c.lastpath.v:
-                if os.path.exists(dc.c.lastpath.v):
-                    applyStates(states.last, dc.ui.project.v)
+
+        dc.states.project.changed.v     = False
+        dc.states.project.focustable.v  = False
+        dc.states.project.maximized.v   = False
+        dc.states.project.newproject.v  = False
+        dc.states.project.noupdate.v    = False
+        dc.states.project.selected.v    = False
+        dc.states.project.newload.v     = False
+        dc.states.project.startup.v     = True
+        self.updateStates('__init__')
 
         enableAllCallbacks()
 
@@ -637,20 +554,135 @@ class NxProject():
         dc.ui.main.v.setCentralWidget(dc.ui.project.v)
         projectlist.reloadTable()
 
+    @logger('NxProject.updateStates(self, source)', 'self', 'source')
+    def updateStates(self, source):
+
+        if dc.states.project.noupdate.v == True:
+
+            return
+
+        if dc.states.project.startup.v:
+
+            applyStates({
+                'btn_doc_new'           : {'enabled': True},
+                'btn_doc_open'          : {'enabled': True},
+                'btn_doc_save'          : {'enabled': False},
+                'btn_doc_save_as'       : {'enabled': True},
+                'btn_project_delete'    : {'enabled': False},
+                'btn_project_new'       : {'enabled': True},
+                'btn_show_roadmap'      : {'enabled': False},
+                'btn_show_logs'         : {'enabled': False},
+                'tbl_project_list'      : {'enabled': True},
+                'selected_project_group': {'enabled': False},
+                'line_selected_project' : {'clear': True},
+                'line_project_name'     : {'clear': True},
+                'text_project_info'     : {'clear': True},
+                'cb_project_type'       : {'index': 0},
+                'cb_project_category'   : {'index': 0},
+                'sb_project_priority'   : {'value': 1},
+                'sb_project_challenge'  : {'value': 1}}, dc.ui.project.v)
+
+            if os.path.exists(str(dc.c.lastpath.v)):
+
+                applyStates({'btn_doc_open_last': {'enabled': True}},
+                            dc.ui.project.v)
+
+            dc.states.project.startup.v = False
+            return
+
+        if dc.states.project.newproject.v:
+
+            applyStates({
+                'line_selected_project' : {'clear': True},
+                'line_project_name'     : {'clear': True},
+                'text_project_info'     : {'clear': True},
+                'cb_project_type'       : {'index': 0},
+                'cb_project_category'   : {'index': 0},
+                'sb_project_priority'   : {'value': 1},
+                'sb_project_challenge'  : {'value': 1}}, dc.ui.project.v)
+
+            dc.states.project.newproject.v = False
+
+        if dc.states.project.maximized.v:
+            applyStates({
+                'btn_doc_new'           : {'enabled': False},
+                'btn_doc_open'          : {'enabled': False},
+                'btn_doc_open_last'     : {'enabled': False},
+                'btn_doc_save'          : {'enabled': False},
+                'btn_doc_save_as'       : {'enabled': False},
+                'btn_project_delete'    : {'enabled': False},
+                'btn_project_new'       : {'enabled': False},
+                'btn_show_roadmap'      : {'enabled': False},
+                'btn_show_logs'         : {'enabled': False},
+                'project_meta': {'visible': False, 'enabled': True},
+                'project_list': {'visible': False, 'enabled': True},
+                'gl_info':      {'margins': (0, 0, 15, 0)}}, dc.ui.project.v)
+            return
+
+        if dc.states.project.selected.v:
+            applyStates({
+                'btn_doc_new'           : {'enabled': True},
+                'btn_doc_open'          : {'enabled': True},
+                'btn_doc_open_last'     : {'enabled': False},
+                'btn_doc_save'          : {'enabled': False},
+                'btn_doc_save_as'       : {'enabled': True},
+                'btn_project_delete'    : {'enabled': True},
+                'btn_project_new'       : {'enabled': True},
+                'btn_show_roadmap'      : {'enabled': True},
+                'tbl_project_list'      : {'enabled': True},
+                'selected_project_group': {'enabled': True},
+                'project_meta'          : {'visible': True, 'enabled': True},
+                'project_list'          : {'visible': True, 'enabled': True},
+                'gl_info'               : {'margins': (0, 0, 0, 0)},
+                'btn_show_logs'         : {'enabled': True}}, dc.ui.project.v)
+        else:
+            applyStates({
+                'btn_doc_new'           : {'enabled': True},
+                'btn_doc_open'          : {'enabled': True},
+                'btn_doc_open_last'     : {'enabled': False},
+                'btn_doc_save'          : {'enabled': False},
+                'btn_doc_save_as'       : {'enabled': True},
+                'btn_project_delete'    : {'enabled': False},
+                'btn_project_new'       : {'enabled': True, 'focused': True},
+                'btn_show_roadmap'      : {'enabled': False},
+                'btn_show_logs'         : {'enabled': False},
+                'tbl_project_list'      : {'enabled': True},
+                'selected_project_group': {'enabled': False},
+                'project_meta'          : {'visible': True, 'enabled': True},
+                'project_list'          : {'visible': True, 'enabled': True},
+                'gl_info'               : {'margins': (0, 0, 0, 0)},
+                'line_selected_project' : {'clear': True},
+                'line_project_name'     : {'clear': True},
+                'cb_project_type'       : {'index': 0},
+                'cb_project_category'   : {'index': 0},
+                'sb_project_priority'   : {'value': 1},
+                'sb_project_challenge'  : {'value': 1}}, dc.ui.project.v)
+
+        if dc.states.project.changed.v:
+            applyStates({'btn_doc_save': {'enabled': True}}, dc.ui.project.v)
+        else:
+            applyStates({'btn_doc_save': {'enabled': False}}, dc.ui.project.v)
+
+        if dc.states.project.focustable.v:
+
+            dc.states.project.focustable.v = False
+            applyStates({
+                'tbl_project_list': {'enabled': True, 'focused': True}},
+                dc.ui.project.v)
+
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Updates the project modification date in the project table and sets the
     # changed value. This is called by all persistent data operations of the
     # document.
 
-    @logger('NxProject.touchProject(self)', 'self')
-    def touchProject(self):
+    @logger('NxProject.touchProject(self, source=\'Unknown\')', 'self')
+    def touchProject(self, source):
 
         timestamp = int(time.time())
         dc.sp.modified.v = timestamp
-        dc.r.changed.v = True
+        dc.states.project.changed.v = True
         setTableValue('project', projectlist.colModified, convert(timestamp))
-        applyStates(states.nolast, dc.ui.project.v)
-        applyStates(states.changed, dc.ui.project.v)
+        self.updateStates('touchProject')
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # The following callbacks are used when currently selected project
@@ -664,7 +696,7 @@ class NxProject():
 
         dc.sp.name.v = name
         dc.ui.project.v.line_selected_project.setText(name)
-        self.touchProject()
+        self.touchProject('onProjectNameChanged')
         setTableValue('project', projectlist.colName, name)
         dc.x.project.changeflag.name.v = True # used for unFocus callback (log)
 
@@ -675,7 +707,7 @@ class NxProject():
             return
 
         dc.sp.ptype.v = ptype
-        self.touchProject()
+        self.touchProject('onProjectTypeChanged')
         setTableValue('project', projectlist.colType, ptype)
         dc.x.project.changeflag.ptype.v = True # used for unFocus callback (log)
 
@@ -687,7 +719,7 @@ class NxProject():
             return
 
         dc.sp.category.v = category
-        self.touchProject()
+        self.touchProject('onProjectCategoryChanged')
         setTableValue('project', projectlist.colCategory, category)
         dc.x.project.changeflag.category.v = True # used for unFocus callback (log)
 
@@ -699,7 +731,7 @@ class NxProject():
             return
 
         dc.sp.priority.v = priority
-        self.touchProject()
+        self.touchProject('onProjectPriorityChanged')
         setTableValue('project', projectlist.colPritoriy, str(priority))
         dc.x.project.changeflag.priority.v = True # used for unFocus callback (log)
 
@@ -711,7 +743,7 @@ class NxProject():
             return
 
         dc.sp.challenge.v = challenge
-        self.touchProject()
+        self.touchProject('onProjectChallengeChanged')
         setTableValue('project', projectlist.colChallenge, str(challenge))
         dc.x.project.changeflag.challenge.v = True # used for unFocus callback (log)
 
@@ -721,7 +753,7 @@ class NxProject():
         if dc.auto.v:
             return
 
-        self.touchProject()
+        self.touchProject('onProjectDescriptionChanged')
         dc.x.project.changeflag.project_description.v = True
 
     # Create a new project
@@ -754,22 +786,22 @@ class NxProject():
         dc.sp.created.v     = timestamp
         dc.sp.modified.v    = timestamp
 
-        # reset states
-        applyStates(states.new_project, dc.ui.project.v)
-
         # init log control data
         dc.sp.nextlid.v     = 1
         dc.sp.log.index.v   = set()
 
+        # set state
+        dc.states.project.changed.v = True
+        dc.states.project.newproject.v = True
+        dc.x.project.changeflag.name.v = False
+        projectlist.reloadTable()
+
         dc.m.log.v.addAutoLog('Track', 'Project created',
                               'Project has been created')
 
-        # set state
-        applyStates(states.selected, dc.ui.project.v)
-        applyStates(states.changed, dc.ui.project.v)
-        projectlist.reloadTable()
+        # states refuses to set this the first time, second is fine though..
+        # weird. Setting manually.
         dc.ui.project.v.line_project_name.setFocus()
-        dc.x.project.changeflag.name.v = True
 
     # Delete selected project
 
@@ -791,7 +823,8 @@ class NxProject():
         dc.spid.v = 0
 
         # state
-        dc.r.changed.v = True
+        dc.states.project.changed.v = True
+        dc.states.project.focustable.v = True
         projectlist.reloadTable()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -815,11 +848,9 @@ class NxDocument:
     @logger('NxDocument.onAboutToQuit(self)', 'self')
     def onAboutToQuit(self):
 
-        if dc.r.changed.v:
-            if not dc.x.path.v:
-                dc.x.path.v = os.path.join(dc.x.default.path.v,
-                       '.{}.tmp.nelia1'.format(str(int(time.time()))))
-            dcsave()
+        if dc.states.project.changed.v:
+            if dc.x.path.v:
+                dcsave()
         dcsaveconfig()
 
     @logger('NxDocument.reset(self)', 'self')
@@ -842,7 +873,7 @@ class NxDocument:
     @logger('NxDocument.onNewDocumentClicked(self)', 'self')
     def onNewDocumentClicked(self):
 
-        if dc.r.changed.v:
+        if dc.states.project.changed.v:
             q = 'Discard changes?'
             m = 'Creating a new document will discard your changes. ' \
                 + 'Do you want to proceed?'
@@ -850,12 +881,10 @@ class NxDocument:
             response = QMessageBox.question(dc.ui.main.v, q, m, yes|no)
             if response == QMessageBox.StandardButton.No:
                 return
-        dc.auto.v = True
         self.reset()
-        applyStates(states.startup, dc.ui.project.v)
-        applyStates(states.nolast, dc.ui.project.v)
+        dc.states.project.newproject.v = True
+        dc.states.project.focustable.v = True
         dc.m.project.projectlist.v.reloadTable()
-        dc.auto.v = False
 
     @logger('NxDocument.onSaveAsClicked(self)', 'self')
     def onSaveAsClicked(self):
@@ -874,8 +903,9 @@ class NxDocument:
             QMessageBox.critical(dc.ui.main.v, title, message)
             return
         dc.x.path.v = path
-        dc.r.changed.v = False
-        applyStates(states.unchanged, dc.ui.project.v)
+        dc.states.project.changed.v = False
+        dc.states.project.focustable.v = True
+        dc.m.project.v.updateStates('onSaveAsClicked')
 
     @logger('NxDocument.onSaveClicked(self)', 'self')
     def onSaveClicked(self):
@@ -886,15 +916,16 @@ class NxDocument:
                 title, message = 'Save failed', 'Save failed! ' + str(result)
                 QMessageBox.critical(dc.ui.main.v, title, message)
                 return
-            dc.r.changed.v = False
-            applyStates(states.unchanged, dc.ui.project.v)
+            dc.states.project.changed.v = False
+            dc.states.project.focustable.v = True
+            dc.m.project.v.updateStates('onSaveClicked')
         else:
             self.onSaveAsClicked()
 
     @logger('NxDocument.onOpenClicked(self)', 'self')
     def onOpenClicked(self):
 
-        if dc.r.changed.v:
+        if dc.states.project.changed.v:
             q = 'Discard changes?'
             m = 'Opening a file will discard your changes. ' \
                 + 'Do you want to proceed?'
@@ -913,14 +944,15 @@ class NxDocument:
             QMessageBox.critical(dc.ui.main.v, title, message)
             dc.x.path.v = None
             return
+        dc.c.lastpath.v = path
         # set selected project
         dc.spid.v = dc.s.spid.v
         dc.sp = dc.s._(dc.spid.v)
-        applyStates(states.unchanged, dc.ui.project.v)
-        applyStates(states.nolast, dc.ui.project.v)
+        dc.states.project.newproject.v = True
+        dc.states.project.changed.v = False
+        dc.states.project.focustable.v = True
+        dc.states.project.newload.v = True
         dc.m.project.projectlist.v.reloadTable()
-        dc.r.changed.v = False
-        dc.c.lastpath.v = path
 
     @logger('NxDocument.onOpenLastClicked(self)', 'self')
     def onOpenLastClicked(self):
@@ -932,10 +964,10 @@ class NxDocument:
             return
         dc.spid.v = dc.s.spid.v
         dc.sp = dc.s._(dc.spid.v)
-        applyStates(states.unchanged, dc.ui.project.v)
-        applyStates(states.nolast, dc.ui.project.v)
+        dc.states.project.changed.v = False
+        dc.states.project.focustable.v = True
+        dc.states.project.newload.v = True
         dc.m.project.projectlist.v.reloadTable()
-        dc.r.changed.v = False
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

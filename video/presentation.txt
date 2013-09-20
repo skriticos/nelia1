@@ -1,21 +1,15 @@
 -- show logo and name --
 
-Hello. In this video I'll introduce the Linux desktop application Nelia1.
-It's a personal project tracking tool. When I say personal, I mean small and
-seed projects that only you work on. Think about all the awesome ideas that
-you have during coding, but have a different focus at the time. With Nelia1
-you can quickly capture them then proceed with whatever you code and follow
-up later. Also, your set of utility libraries and tools that you generally
-use, with Nelia1 you can easily keep track of them.
+Hi. Nelia1 is an application to track features and issues in milestones. It's
+written with a single user in mind and focuses on providing a good overview for
+current and future personal development projects.
 
 -- blend in Nelia1 window --
 
-This is how the application looks when you start it up.
-*** controls ***
-*** project list ***
-*** project description ***
-
-I'll create two quick sample project entries for demonstration.
+The main window shows a listing of projects in the currently open document. This
+list gives a quick view of the project names, types, category, priority,
+challenge and active version. The active version contains the version number and
+the open and total number of features and issues.
 
 -- open the new project dialog --
 

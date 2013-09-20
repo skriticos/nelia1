@@ -375,7 +375,7 @@ class NxLog:
         x = convert(timestamp)
         setTableValue('log', loglist.colModified, x)
         dc.ui.log.v.lbl_log_modified.setText(x)
-        dc.m.project.v.touchProject()
+        dc.m.project.v.touchProject('log.touchLog')
 
     @logger('NxLog.onSummaryChanged(self, summary)', 'self', 'summary')
     def onSummaryChanged(self, summary):
@@ -424,7 +424,7 @@ class NxLog:
 
         # state
         loglist.reloadTable()
-        dc.m.project.v.touchProject()
+        dc.m.project.v.touchProject('log.onDeleteLogClicked')
 
     # addAutoLog is the programatic interface to add log messages to the log
     # module. It is used by this class for user log creation as well as the
@@ -452,7 +452,7 @@ class NxLog:
         dc.sp.log._(lid).description.v = message
 
         loglist.reloadTable()
-        dc.m.project.v.touchProject()
+        dc.m.project.v.touchProject('log.addAutoLog')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
