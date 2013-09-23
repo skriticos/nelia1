@@ -12,48 +12,6 @@ from common import *
 from common2 import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# STATES
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-class states: pass
-
-states.startup = {
-    'lbl_log_type':     {'clear': True},
-    'lbl_log_created':  {'clear': True},
-    'lbl_log_modified': {'clear': True},
-    'btn_log_delete':   {'enabled': False},
-    'text_log_message': {'clear': True, 'enabled': False},
-    'line_log_summary': {'clear': True, 'enabled': False}
-}
-
-states.selected = {
-    'text_log_message': {'clear': True, 'enabled': True},
-    'line_log_summary': {'clear': True, 'enabled': True},
-    'btn_log_delete' :  {'enabled': True}
-}
-
-states.user = {
-    'text_log_message': {'enabled': True},
-    'line_log_summary': {'enabled': True}
-}
-
-states.nonuser = {
-    'text_log_message': {'enabled': False},
-    'line_log_summary': {'enabled': False}
-}
-
-states.description_normal = {
-    'log_meta':       {'visible': True, 'enabled': True},
-    'group_log_list': {'visible': True, 'enabled': True},
-    'gl_info':        {'margins': (0, 0, 0, 0)}
-}
-states.description_maximized = {
-    'log_meta':       {'visible': False, 'enabled': True},
-    'group_log_list': {'visible': False, 'enabled': True},
-    'gl_info':        {'margins': (0, 10, 15, 0)}
-}
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CALLBACK CONTROL
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -109,11 +67,8 @@ def enableAllCallbacks():
 @logger('(log) onInfoMaxToggled(state)', 'state')
 def onLogMaxToggled(state):
 
-    if state:
-        applyStates(states.description_maximized, dc.ui.log.v)
-    else:
-        applyStates(states.description_normal, dc.ui.log.v)
-
+    dc.states.log.maximized.v = state
+    dc.m.log.v.updateStates('onLogMaxToggled')
 
 ### FILTER TOGGLE CALLBACKS ###
 
@@ -159,11 +114,16 @@ def onSelectionChanged(new, old):
     # check for valid index
     indexes = new.indexes()
     if not indexes:
+        dc.states.log.selected.userlog.v = False
+        dc.states.log.selected.applog.v = False
+        dc.m.log.v.updateStates('onSelectionChanged')
         return
 
     # get selected lid from table model
     index = indexes[0]
-    slid = dc.x.log.slid.v = int(dc.x.log.model.v.itemFromIndex(index).text())
+    slid = int(dc.x.log.model.v.itemFromIndex(index).text())
+
+    dc.x.log.slid.v = slid
 
     # populate edit fields on selection change
     disableEditCallbacks()
@@ -172,15 +132,25 @@ def onSelectionChanged(new, old):
     dc.ui.log.v.lbl_log_modified.setText(convert(dc.sp.log._(slid).modified.v))
     dc.ui.log.v.line_log_summary.setText(dc.sp.log._(slid).summary.v)
     dc.ui.log.v.text_log_message.setText(dc.sp.log._(slid).description.v)
-
-    if dc.sp.log._(slid).ltype.v == 'User':
-        applyStates(states.user, dc.ui.log.v)
-    else:
-        applyStates(states.nonuser, dc.ui.log.v)
-
     enableEditCallbacks()
 
-    dc.x.log.row.v = index.row()
+    row = index.row()
+
+    if row != dc.x.log.row.v:
+
+        dc.x.log.row.v = row
+
+    if dc.sp.log._(slid).ltype.v == 'User':
+
+        dc.states.log.selected.userlog.v = True
+        dc.states.log.selected.applog.v = False
+
+    else:
+
+        dc.states.log.selected.userlog.v = False
+        dc.states.log.selected.applog.v = True
+
+    dc.m.log.v.updateStates('onSelectionChanged')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
@@ -246,15 +216,10 @@ def reloadTable():
 
     dc.auto.v = False
 
-    if not dc.sp.log.index.v:
-        loadLayout('log')
-        applyStates(states.startup, dc.ui.log.v)
-        dc.x.log.row.v = -1
-        return
-
     for lid in dc.sp.log.index.v:
 
         if dc.sp.log._(lid).ltype.v not in dc.c.log.filters.v:
+
             dc.x.log.slid.v = 0
             continue
 
@@ -266,49 +231,42 @@ def reloadTable():
             QStandardItem(convert(dc.sp.log._(lid).created.v))
         ])
 
-    loadLayout('log')
-
     # we don't select anything if we don't have rows
     rowcount = dc.x.log.model.v.rowCount()
     if rowcount <= 0:
 
-        applyStates(states.startup, dc.ui.log.v)
-        return
+        dc.states.log.startup.v = True
 
     # we don't have a selected log id (outside the filter or deleted)
-    if not dc.x.log.slid.v:
+    elif not dc.x.log.slid.v:
 
         index = dc.x.log.model.v.index(0, 0)
         lid   = int(dc.x.log.model.v.data(index))
         dc.x.log.slid.v = lid
 
-        disableEditCallbacks()
-        applyStates(states.selected, dc.ui.log.v)
-        enableEditCallbacks()
-
         s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
         dc.x.log.selection_model.v.setCurrentIndex(index, s|r)
         selection = dc.x.log.view.v.selectionModel().selection()
 
-        return
+    else:
 
-    # iterate through table rows
-    for rowcnt in range(dc.x.log.model.v.rowCount()):
+        # iterate through table rows
+        for rowcnt in range(dc.x.log.model.v.rowCount()):
 
-        index = dc.x.log.model.v.index(rowcnt, 0)
-        lid = int(dc.x.log.model.v.data(index))
+            index = dc.x.log.model.v.index(rowcnt, 0)
+            lid = int(dc.x.log.model.v.data(index))
 
-        # if we have a match, select it and abort
-        if lid == dc.x.log.slid.v:
+            # if we have a match, select it and abort
+            if lid == dc.x.log.slid.v:
 
-            disableEditCallbacks()
-            applyStates(states.selected, dc.ui.log.v)
-            enableEditCallbacks()
+                s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+                dc.x.log.selection_model.v.setCurrentIndex(index, s|r)
+                selection = dc.x.log.view.v.selectionModel().selection()
+                break
 
-            s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
-            dc.x.log.selection_model.v.setCurrentIndex(index, s|r)
-            selection = dc.x.log.view.v.selectionModel().selection()
-            break
+    loadLayout('log')
+    dc.states.log.noupdate.v = False
+    dc.m.log.v.updateStates('reloadTable')
 
 loglist.initTable = initTable
 loglist.initLogFilterControls = initLogFilterControls
@@ -342,7 +300,17 @@ class NxLog:
         dc.m.log.v = self
         if not isinstance(dc.c.log.filters.v, set):
             dc.c.log.filters.v = {'User', 'Milestone', 'Track'}
-        applyStates(states.startup, dc.ui.log.v)
+
+        dc.states.log.focustable.v          = False
+        dc.states.log.maximized.v           = False
+        dc.states.log.newuserlog.v          = False
+        dc.states.log.noupdate.v            = False
+        dc.states.log.selected.applog.v	    = False
+        dc.states.log.selected.userlog.v	= False
+        dc.states.log.startup.v	            = True
+
+        self.updateStates('NxLog.__init__')
+
         loglist.initTable()
         enableAllCallbacks()
 
@@ -351,11 +319,13 @@ class NxLog:
 
     @logger('NxRoadmap.initNavi(self)', 'self')
     def initNavi(self):
+
         dc.ui.log.v.btn_show_roadmap.clicked.connect(dc.m.roadmap.v.onShow)
         dc.ui.log.v.btn_show_project.clicked.connect(dc.m.project.v.onShow)
 
     @logger('NxLog.onShow(self)', 'self')
     def onShow(self):
+
         dc.ui.project.v.setParent(None)
         dc.ui.roadmap.v.setParent(None)
         dc.ui.main.v.setCentralWidget(dc.ui.log.v)
@@ -365,6 +335,97 @@ class NxLog:
 
             dc.ui.log.v.lbl_project_name.setText(dc.sp.name.v)
             loglist.reloadTable()
+
+    @logger('NxLog.updateStates(self, source)', 'self', 'source')
+    def updateStates(self, source):
+
+        if dc.states.log.noupdate.v:
+
+            return
+
+        if dc.states.log.focustable.v:
+
+            dc.states.log.focustable.v = False
+
+            applyStates({
+                'tbl_log_list': {'focused': True}}, dc.ui.log.v)
+
+        if dc.states.log.startup.v:
+
+            dc.states.log.startup.v = False
+
+            applyStates({
+                'btn_log_new':      {'enabled': True, 'focused': True},
+                'btn_log_delete':   {'enabled': False},
+                'btn_show_project': {'enabled': True},
+                'btn_show_roadmap': {'enabled': True},
+                'log_meta':         {'visible': True},
+                'line_log_summary': {'enabled': False, 'clear': True},
+                'text_log_message': {'enabled': False, 'clear': True},
+                'lbl_log_type':     {'clear': True},
+                'lbl_log_created':  {'clear': True},
+                'lbl_log_modified': {'clear': True},
+                'group_log_list':   {'visible': True}}, dc.ui.log.v)
+
+            return
+
+        if dc.states.log.newuserlog.v:
+
+            dc.states.log.newuserlog.v = False
+
+            applyStates({
+                'btn_log_new':      {'enabled': True},
+                'btn_log_delete':   {'enabled': True},
+                'btn_show_project': {'enabled': True},
+                'btn_show_roadmap': {'enabled': True},
+                'log_meta':         {'visible': True},
+                'line_log_summary': {'enabled': True, 'clear': True},
+                'text_log_message': {'enabled': True, 'clear': True},
+                'group_log_list':   {'visible': True}}, dc.ui.log.v)
+
+            return
+
+        if dc.states.log.maximized.v:
+
+            applyStates({
+                'btn_log_new':      {'enabled': False},
+                'btn_log_delete':   {'enabled': False},
+                'btn_show_project': {'enabled': False},
+                'btn_show_roadmap': {'enabled': False},
+                'log_meta':         {'visible': False},
+                'line_log_summary': {'enabled': True},
+                'text_log_message': {'enabled': True},
+                'group_log_list':   {'visible': False}}, dc.ui.log.v)
+
+            return
+
+        if dc.states.log.selected.userlog.v:
+
+            applyStates({
+                'btn_log_new':      {'enabled': True},
+                'btn_log_delete':   {'enabled': True},
+                'btn_show_project': {'enabled': True},
+                'btn_show_roadmap': {'enabled': True},
+                'log_meta':         {'visible': True},
+                'line_log_summary': {'enabled': True},
+                'text_log_message': {'enabled': True},
+                'group_log_list':   {'visible': True}}, dc.ui.log.v)
+
+            return
+
+        if dc.states.log.selected.applog.v:
+
+            applyStates({
+                'btn_log_new':      {'enabled': True},
+                'btn_log_delete':   {'enabled': True},
+                'btn_show_project': {'enabled': True},
+                'btn_show_roadmap': {'enabled': True},
+                'log_meta':         {'visible': True},
+                'line_log_summary': {'enabled': False},
+                'text_log_message': {'enabled': False},
+                'group_log_list':   {'visible': True}}, dc.ui.log.v)
+
+            return
 
     @logger('NxLog.touchLog(self)', 'self')
     def touchLog(self):
@@ -400,6 +461,8 @@ class NxLog:
     @logger('NxLog.onNewLogClicked(self)', 'self')
     def onNewLogClicked(self):
 
+        dc.states.log.newuserlog.v = True
+        self.updateStates('onNewLogClicked')
         self.addAutoLog('User', '', '')
         dc.ui.log.v.line_log_summary.setFocus()
 
@@ -424,6 +487,9 @@ class NxLog:
 
         # state
         loglist.reloadTable()
+        if not dc.sp.log.index.v:
+            dc.states.log.startup.v = True
+        self.updateStates('onDeleteLogClicked')
         dc.m.project.v.touchProject('log.onDeleteLogClicked')
 
     # addAutoLog is the programatic interface to add log messages to the log
@@ -451,8 +517,8 @@ class NxLog:
         dc.sp.log._(lid).summary.v     = summary
         dc.sp.log._(lid).description.v = message
 
-        loglist.reloadTable()
         dc.m.project.v.touchProject('log.addAutoLog')
+        loglist.reloadTable()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

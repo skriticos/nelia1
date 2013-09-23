@@ -225,13 +225,15 @@ def onSelectionChanged(new, old):
     indexes = new.indexes()
     if not indexes or not dc.spid.v:
         dc.states.project.selected.v = False
-        dc.m.project.v.updateStates()
+        dc.m.project.v.updateStates('onSelectionChanged')
         return
 
     # get selected pid from table model
     index = indexes[0]
     pid = int(dc.x.project.model.v.itemFromIndex(index).text())
     if pid != dc.spid.v or dc.states.project.newload.v:
+
+        dc.states.project.newload.v = False
 
         dc.spid.v = pid
         dc.sp = dc.s._(dc.spid.v)
@@ -257,7 +259,7 @@ def onSelectionChanged(new, old):
 
         dc.states.project.selected.v = True
         dc.m.project.v.updateStates('onSelectionChanged')
-        dc.x.project.row.v = index.row()
+        dc.x.project.row.v = row
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY CLASSES
@@ -328,6 +330,8 @@ projectlist.colCreated   = 8
 @logger('projectlist.reloadTable(toggled=False)')
 def reloadTable(toggled=False):
 
+    dc.ui.project.v.tbl_project_list.setFocus()
+
     saveLayout('project')
 
     autoprev = dc.auto.v
@@ -371,8 +375,6 @@ def reloadTable(toggled=False):
             QStandardItem(convert(dc.s._(pid).modified.v)),
             QStandardItem(convert(dc.s._(pid).created.v)) ])
 
-    loadLayout('project')
-
     # now we have the table as required, now set the selection This is a bit
     # tricky at times. If we have the selection within the visible with the
     # current filter settings, then we just search and select that line.
@@ -415,8 +417,9 @@ def reloadTable(toggled=False):
                 # note: this triggers onSelectionChanged
                 selection = dc.x.project.view.v.selectionModel().selection()
                 break
-    dc.states.project.noupdate.v = False
 
+    loadLayout('project')
+    dc.states.project.noupdate.v = False
     dc.m.project.v.updateStates('reloadTable')
 
 projectlist.initTable = initTable
@@ -867,8 +870,8 @@ class NxDocument:
 
         dc.spid.v = 0
 
-        dc.x.lpid.v = 0
-        dc.x.rpid.v = 0
+        dc.x.log.slid.v = 0
+        dc.x.roadmap.smiid.v = 0
 
     @logger('NxDocument.onNewDocumentClicked(self)', 'self')
     def onNewDocumentClicked(self):
