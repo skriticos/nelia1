@@ -144,7 +144,10 @@ def _dcdump(node=None, path=''):
             print('dc.' + path + '.v = ', node.v)
     for x in node.__dict__.keys():
         if isinstance(node.__dict__[x], _dcNode):
-            _dcdump(node=node.__dict__[x], path=path + bool(path)*'.' + x)
+            try:
+                _dcdump(node=node.__dict__[x], path=path + bool(path)*'.' + x)
+            except:
+                raise Exception('datacore inconsistency found at: {}, {}'.format(path, x))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -101,6 +101,8 @@ def applyStates(states, widget):
             pd[control].setFocus()
         if 'isreadonly' in state:
             pd[control].setReadOnly(state['isreadonly'])
+        if 'iswritable' in state:
+            pd[control].setReadOnly(not state['iswritable'])
     dc.auto.v = autoprev
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -206,14 +206,11 @@ def reloadTable():
 
     autoprev = dc.auto.v
     dc.auto.v = True
-
-    # clear table
     disableSelectionCallback()
     dc.x.log.model.v.clear()
     dc.x.log.selection_model.v.reset()
     enableSelectionCallback()
     dc.x.log.model.v.setHorizontalHeaderLabels(loglist.headers)
-
     dc.auto.v = False
 
     for lid in dc.sp.log.index.v:
@@ -230,6 +227,8 @@ def reloadTable():
             QStandardItem(convert(dc.sp.log._(lid).modified.v)),
             QStandardItem(convert(dc.sp.log._(lid).created.v))
         ])
+
+    loadLayout('log')
 
     # we don't select anything if we don't have rows
     rowcount = dc.x.log.model.v.rowCount()
@@ -264,8 +263,6 @@ def reloadTable():
                 selection = dc.x.log.view.v.selectionModel().selection()
                 break
 
-    loadLayout('log')
-    dc.states.log.noupdate.v = False
     dc.m.log.v.updateStates('reloadTable')
 
 loglist.initTable = initTable

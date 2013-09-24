@@ -21,125 +21,6 @@ import mistctrl                       # milestone control module for new project
 from mistnavi import MilestoneButton
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# STATES
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-class states: pass
-
-states.startup = {
-    'btn_mi_delete': {'enabled': False},
-    'btn_mi_close':  {'enabled': False},
-    'btn_mi_reopen': {'enabled': False},
-    'group_selected_milestone': {'enabled': False}
-}
-
-states.selected = {
-    'btn_mi_delete': {'enabled': True},
-    'btn_mi_close': {'enabled': True},
-    'group_selected_milestone': {'enabled': True}
-}
-
-states.milestone_description_maximized = {
-    'group_log_list': {'visible': False},
-    'group_selected_milestone': {'visible': False},
-    'text_milestone_description': {'focused': None}
-}
-
-states.selected_milestone_item_description_maximized = {
-    'group_log_list': {'visible': False},
-    'group_milestone_description': {'visible': False},
-    'group_edit_attr': {'visible': False},
-    'txt_mi_description': {'focused': None}
-}
-
-states.all_unmaximized = {
-    'group_log_list': {'visible': True},
-    'group_selected_milestone': {'visible': True},
-    'group_milestone_description': {'visible': True},
-    'group_edit_attr': {'visible': True},
-    'tbl_mi_list': {'focused': None}
-}
-
-states.finalized = {
-    'btn_mi_new': {'enabled': False},
-    'btn_mi_delete': {'enabled': False},
-    'btn_mi_close': {'enabled': False},
-    'btn_mi_reopen': {'enabled': False},
-    'line_mi_name': {'isreadonly': True},
-    'cb_mi_type': {'enabled': False},
-    'cb_mi_priority': {'enabled': False},
-    'cb_mi_category': {'enabled': False},
-    'text_milestone_description': {'isreadonly': True},
-    'txt_mi_description': {'isreadonly': True}
-}
-
-states.closed = {
-    'btn_mi_new': {'enabled': False},
-    'btn_mi_delete': {'enabled': False},
-    'btn_mi_close': {'enabled': False},
-    'btn_mi_reopen': {'enabled': True},
-    'line_mi_name': {'isreadonly': True},
-    'cb_mi_type': {'enabled': False},
-    'cb_mi_priority': {'enabled': False},
-    'cb_mi_category': {'enabled': False},
-    'text_milestone_description': {'isreadonly': True},
-    'txt_mi_description': {'isreadonly': True}
-}
-
-states._open = {
-    'btn_mi_new': {'enabled': True},
-    'btn_mi_delete': {'enabled': True},
-    'btn_mi_close': {'enabled': True},
-    'btn_mi_reopen': {'enabled': False},
-    'line_mi_name': {'isreadonly': False},
-    'cb_mi_type': {'enabled': True},
-    'cb_mi_priority': {'enabled': True},
-    'cb_mi_category': {'enabled': True},
-    'text_milestone_description': {'isreadonly': False},
-    'txt_mi_description': {'isreadonly': False},
-    'btn_show_project': {'enabled': True},
-    'btn_show_logs': {'enabled': True},
-    'btn_milestone_button': {'enabled': True}
-}
-
-# selected milestone item that is located in a non active milestone
-states.nonactivemi = {
-    'btn_mi_new': {'enabled': True},
-    'btn_mi_delete': {'enabled': True},
-    'btn_mi_close': {'enabled': False},
-    'btn_mi_reopen': {'enabled': False},
-    'line_mi_name': {'isreadonly': False},
-    'cb_mi_type': {'enabled': True},
-    'cb_mi_priority': {'enabled': True},
-    'cb_mi_category': {'enabled': True},
-    'text_milestone_description': {'isreadonly': False},
-    'txt_mi_description': {'isreadonly': False},
-    'btn_show_project': {'enabled': True},
-    'btn_show_logs': {'enabled': True},
-    'btn_milestone_button': {'enabled': True}
-}
-
-states.dialog = {
-    'btn_mi_new': {'enabled': False},
-    'btn_mi_delete': {'enabled': False},
-    'btn_mi_close': {'enabled': False},
-    'btn_mi_reopen': {'enabled': False},
-    'btn_show_project': {'enabled': False},
-    'btn_show_logs': {'enabled': False},
-    'btn_milestone_button': {'enabled': False}
-}
-
-states.clearedit = {
-    'line_mi_name': {'clear': True},
-    'cb_mi_type': {'index': 0},
-    'cb_mi_priority': {'index': 0},
-    'cb_mi_category': {'index': 0},
-    'txt_mi_description': {'clear': True}
-}
-
-dc.m.roadmap.states.v = states
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UTILITY FUNCTIONS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -263,16 +144,22 @@ class CbAux: pass
 @logger('(roadmap) onMilestoneSelectionChanged(x=None)')
 def onMilestoneSelectionChanged(x=None):
 
-    major, minor = dc.sp.m.selected.v
-    if len(dc.sp.m._(major)._(minor).index.v) == 0:
-        applyStates(states.clearedit, dc.ui.roadmap.v)
+    smajor, sminor = dc.sp.m.selected.v
+    amajor, aminor = dc.sp.m.active.v
+    if smajor < amajor or (smajor == amajor and sminor < aminor):
+        dc.states.roadmap.selected.finalized.v = True
+    else:
+        dc.states.roadmap.selected.none_.v = True
+    dc.m.roadmap.v.updateStates('onMilestoneSelectionChanged')
+
+    dc.m.roadmap.milist.v.reloadTable()
+
     autoprev = dc.auto.v
     dc.auto.v = True
+    major, minor = dc.sp.m.selected.v
     dc.ui.roadmap.v.text_milestone_description.setHtml(
         dc.sp.m._(major)._(minor).description.v)
     dc.auto.v = autoprev
-
-    dc.m.roadmap.milist.v.reloadTable()
 
 @logger('(roadmap) onFilterFeatureToggled(checked)', 'checked')
 def onFilterFeatureToggled(checked):
@@ -433,72 +320,61 @@ def onFilterRefactorToggled(checked):
 @logger('(roadmap) onMaximizeMilestoneDescription(setMaximized)', 'setMaximized')
 def onMaximizeMilestoneDescription(setMaximized):
 
-    if setMaximized:
-        applyStates(states.milestone_description_maximized, dc.ui.roadmap.v)
-    else:
-        applyStates(states.all_unmaximized, dc.ui.roadmap.v)
+    dc.states.roadmap.maxmilestonedesc.v = setMaximized
+    dc.m.roadmap.v.updateStates('onMaximizeMilestoneDescription')
 
 @logger('(roadmap) onMaximizeMilestoneItemDescription(setMaximized)', 'setMaximized')
 def onMaximizeMilestoneItemDescription(setMaximized):
 
-    if setMaximized:
-        applyStates(states.selected_milestone_item_description_maximized, dc.ui.roadmap.v)
-    else:
-        applyStates(states.all_unmaximized, dc.ui.roadmap.v)
+    dc.states.roadmap.maxmidesc.v = setMaximized
+    dc.m.roadmap.v.updateStates('onMaximizeMilestoneItemDescription')
 
 @logger('(roadmap) onSelectionChanged()')
 def onSelectionChanged(new, old):
 
-    auto_prev = dc.auto.v
-    dc.auto.v = True
-
     # check for valid index
     indexes = new.indexes()
-    if indexes:
+    if not indexes:
 
-        # get selected lid from table model
+        dc.states.roadmap.startup.v = True
+        dc.m.roadmap.v.updateStates('onSelectionChanged')
+        return
 
-        index = indexes[0]
-        smiid = dc.x.roadmap.smiid.v \
-             = int(dc.x.roadmap.model.v.itemFromIndex(index).text())
+    # get selected lid from table model
 
-        # populate edit fields on selection change
+    index = indexes[0]
+    smiid = dc.x.roadmap.smiid.v \
+         = int(dc.x.roadmap.model.v.itemFromIndex(index).text())
 
-        disableEditCallbacks()
+    # populate edit fields on selection change
+    disableEditCallbacks()
+    ui = dc.ui.roadmap.v
+    ui.line_mi_name.setText(dc.sp.m.mi._(smiid).name.v)
+    ui.cb_mi_type.setCurrentIndex(
+            ui.cb_mi_type.findText(dc.sp.m.mi._(smiid).mtype.v))
+    ui.cb_mi_priority.setCurrentIndex(
+            ui.cb_mi_priority.findText(dc.sp.m.mi._(smiid).priority.v))
+    ui.cb_mi_category.setCurrentIndex(
+            ui.cb_mi_category.findText(dc.sp.m.mi._(smiid).category.v))
+    ui.txt_mi_description.setText(dc.sp.m.mi._(smiid).description.v)
+    enableEditCallbacks()
 
-        ui = dc.ui.roadmap.v
-        ui.line_mi_name.setText(dc.sp.m.mi._(smiid).name.v)
-        ui.cb_mi_type.setCurrentIndex(
-                ui.cb_mi_type.findText(dc.sp.m.mi._(smiid).mtype.v))
-        ui.cb_mi_priority.setCurrentIndex(
-                ui.cb_mi_priority.findText(dc.sp.m.mi._(smiid).priority.v))
-        ui.cb_mi_category.setCurrentIndex(
-                ui.cb_mi_category.findText(dc.sp.m.mi._(smiid).category.v))
-        ui.txt_mi_description.setText(dc.sp.m.mi._(smiid).description.v)
+    row = index.row()
+    if row != dc.x.roadmap.row.v:
+        dc.x.roadmap.row.v = row
 
-        enableEditCallbacks()
+    smajor, sminor = dc.sp.m.selected.v
+    amajor, aminor = dc.sp.m.active.v
+    if smajor < amajor or (smajor == amajor and sminor < aminor):
+        dc.states.roadmap.selected.finalized.v = True
+    elif smajor > amajor or (smajor == amajor and sminor > aminor):
+        dc.states.roadmap.selected.future.v = True
+    elif dc.sp.m.mi._(smiid).status.v == 'Closed':
+        dc.states.roadmap.selected.closed.v = True
+    else:
+        dc.states.roadmap.selected.open_.v = True
 
-        smajor, sminor = dc.sp.m.selected.v
-        amajor, aminor = dc.sp.m.active.v
-
-        if smajor < amajor or (smajor == amajor and sminor < aminor):
-
-            applyStates(states.finalized, dc.ui.roadmap.v)
-
-        elif smajor > amajor or (smajor == amajor and sminor > aminor):
-
-            applyStates(states.nonactivemi, dc.ui.roadmap.v)
-
-        elif dc.sp.m.mi._(smiid).status.v == 'Closed':
-
-            applyStates(states.closed, dc.ui.roadmap.v)
-
-        else:
-            applyStates(states._open, dc.ui.roadmap.v)
-
-        dc.x.roadmap.row.v = index.row()
-
-    dc.auto.v = auto_prev
+    dc.m.roadmap.v.updateStates('onSelectionChanged')
 
 @logger('(roadmap) onFinalizeAbort()')
 def onFinalizeAbort():
@@ -510,7 +386,8 @@ def onFinalizeAbort():
         dc.ui.roadmap.v.body, 1, 0)
     dc.ui.roadmap.v.body.show()
 
-    applyStates(states._open, dc.ui.roadmap.v)
+    dc.states.roadmap.selected.open_.v = True
+    dc.m.roadmap.v.updateStates('onFinalizeAbort')
 
 CbAux.onSelectionChanged    = onSelectionChanged
 
@@ -611,11 +488,14 @@ def reloadTable():
 
     saveLayout('roadmap')
 
+    autoprev = dc.auto.v
+    dc.auto.v = True
     disableSelectionCallback()
     dc.x.roadmap.model.v.clear()
     dc.x.roadmap.selection_model.v.reset()
     dc.x.roadmap.model.v.setHorizontalHeaderLabels(milist.headers)
     enableSelectionCallback()
+    dc.auto.v = autoprev
 
     major, minor = dc.sp.m.selected.v
     for miid in dc.sp.m._(major)._(minor).index.v:
@@ -652,20 +532,21 @@ def reloadTable():
     rowcount = dc.x.roadmap.model.v.rowCount()
     if rowcount <= 0:
 
-        applyStates(states.startup, dc.ui.roadmap.v)
-        applyStates(states.clearedit, dc.ui.roadmap.v)
         dc.x.roadmap.row.v = -1
-        return
+
+        smajor, sminor = dc.sp.m.selected.v
+        amajor, aminor = dc.sp.m.active.v
+        if smajor < amajor or (smajor == amajor and sminor < aminor):
+            dc.states.roadmap.selected.nonefin.v = True
+        else:
+            dc.states.roadmap.selected.none_.v = True
+
 
     # we don't have a selected milestone item id (outside the filter or deleted)
-    if not dc.x.roadmap.smiid.v:
+    elif not dc.x.roadmap.smiid.v:
 
         index = dc.x.roadmap.model.v.index(0, 0)
         smiid = dc.x.roadmap.smiid.v = int(dc.x.roadmap.model.v.data(index))
-
-        disableEditCallbacks()
-        applyStates(states.selected, dc.ui.roadmap.v)
-        enableEditCallbacks()
 
         s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
         dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
@@ -673,26 +554,25 @@ def reloadTable():
 
         return
 
-    # iterate through table rows
-    for rowcnt in range(dc.x.roadmap.model.v.rowCount()):
+    else:
 
-        index = dc.x.roadmap.model.v.index(rowcnt, 0)
-        miid = int(dc.x.roadmap.model.v.data(index))
+        # iterate through table rows
+        for rowcnt in range(dc.x.roadmap.model.v.rowCount()):
 
-        # if we have a match, select it and abort
-        if miid == dc.x.roadmap.smiid.v:
+            index = dc.x.roadmap.model.v.index(rowcnt, 0)
+            miid = int(dc.x.roadmap.model.v.data(index))
 
-            smiid = miid
+            # if we have a match, select it and abort
+            if miid == dc.x.roadmap.smiid.v:
 
-            disableEditCallbacks()
-            applyStates(states.selected, dc.ui.roadmap.v)
-            enableEditCallbacks()
+                smiid = miid
+                s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
+                dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
+                selection = dc.x.roadmap.view.v.selectionModel().selection()
 
-            s, r = QItemSelectionModel.Select, QItemSelectionModel.Rows
-            dc.x.roadmap.selection_model.v.setCurrentIndex(index, s|r)
-            selection = dc.x.roadmap.view.v.selectionModel().selection()
+                break
 
-            break
+    dc.m.roadmap.v.updateStates('reloadTable')
 
 milist.initTable = initTable
 milist.initRoadmapFilterControls = initRoadmapFilterControls
@@ -775,7 +655,6 @@ class NxRoadmap:
     def __init__(self):
 
         dc.m.roadmap.v = self
-        applyStates(states.startup, dc.ui.roadmap.v)
         milist.initTable()
 
         dc.ui.roadmap.v.btn_milestone_button.close()
@@ -798,6 +677,20 @@ class NxRoadmap:
         dc.x.roadmap.changeflag.category.v = False
         dc.x.roadmap.changeflag.milestone_description.v = False
         dc.x.roadmap.changeflag.milestone_item_description.v = False
+
+        dc.states.roadmap.dialog.v	            = False
+        dc.states.roadmap.focustable.v	        = False
+        dc.states.roadmap.maxmidesc.v	        = False
+        dc.states.roadmap.maxmilestonedesc.v    = False
+        dc.states.roadmap.newmi.v	            = False
+        dc.states.roadmap.noupdate.v	        = False
+        dc.states.roadmap.selected.closed.v	    = False
+        dc.states.roadmap.selected.finalized.v	= False
+        dc.states.roadmap.selected.future.v	    = False
+        dc.states.roadmap.selected.open_.v	    = False
+        dc.states.roadmap.selected.none_.v	    = False
+        dc.states.roadmap.startup.v	            = True
+        self.updateStates('__init__')
 
         dc.ui.roadmap.v.line_mi_name.installEventFilter(ef_name_focus_out)
         dc.ui.roadmap.v.cb_mi_type.installEventFilter(ef_type_focus_out)
@@ -827,6 +720,313 @@ class NxRoadmap:
             dc.ui.roadmap.v.lbl_project_name.setText(dc.sp.name.v)
             dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
             onMilestoneSelectionChanged('')
+            milist.reloadTable()
+
+    @logger('NxRoadmap.updateStates(self, source)', 'self', 'source')
+    def updateStates(self, source):
+
+        if dc.states.roadmap.noupdate.v:
+
+            return
+
+        if dc.states.roadmap.focustable.v:
+
+            applyStates({
+                'tbl_mi_list': {'focused': True}}, dc.ui.roadmap.v)
+
+        if dc.states.roadmap.startup.v:
+
+            dc.states.roadmap.startup.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': True},
+                'btn_show_project':     {'enabled': True},
+                'btn_show_logs':        {'enabled': True},
+                'btn_mi_new':           {'enabled': True},
+                'btn_mi_delete':        {'enabled': False},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': True},
+                'line_mi_name':         {'iswritable': False, 'clear': True},
+                'cb_mi_type':           {'enabled': False, 'index': 0},
+                'cb_mi_priority':       {'enabled': False, 'index': 0},
+                'cb_mi_category':       {'enabled': False, 'index': 0},
+                'text_milestone_description':
+                                        {'iswritable': True, 'clear': True},
+                'txt_mi_description':   {'iswritable': False, 'clear': True}},
+                dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.newmi.v:
+
+            dc.states.roadmap.newmi.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': True},
+                'btn_show_project':     {'enabled': True},
+                'btn_show_logs':        {'enabled': True},
+                'btn_mi_new':           {'enabled': True},
+                'btn_mi_delete':        {'enabled': True},
+                'btn_mi_close':         {'enabled': True},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': True},
+                'line_mi_name':         {'iswritable': True, 'clear': True},
+                'cb_mi_type':           {'enabled': True, 'index': 0},
+                'cb_mi_priority':       {'enabled': True, 'index': 0},
+                'cb_mi_category':       {'enabled': True, 'index': 0},
+                'text_milestone_description':
+                                        {'iswritable': True},
+                'txt_mi_description':   {'iswritable': True, 'clear': True}},
+                dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.maxmilestonedesc.v:
+
+            applyStates({
+                'btn_milestone_button': {'enabled': False},
+                'btn_show_project':     {'enabled': False},
+                'btn_show_logs':        {'enabled': False},
+                'btn_mi_new':           {'enabled': False},
+                'btn_mi_delete':        {'enabled': False},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': False},
+                'group_mi_list':        {'visible': False},
+                'line_mi_name':         {},
+                'cb_mi_type':           {},
+                'cb_mi_priority':       {},
+                'cb_mi_category':       {},
+                'text_milestone_description':
+                                        {'iswritable': True},
+                'txt_mi_description':   {}}, dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.maxmidesc.v:
+
+            applyStates({
+                'btn_milestone_button': {'enabled': False},
+                'btn_show_project':     {'enabled': False},
+                'btn_show_logs':        {'enabled': False},
+                'btn_mi_new':           {'enabled': False},
+                'btn_mi_delete':        {'enabled': False},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': False},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': False},
+                'line_mi_name':         {},
+                'cb_mi_type':           {},
+                'cb_mi_priority':       {},
+                'cb_mi_category':       {},
+                'text_milestone_description':
+                                        {'iswritable': True},
+                'txt_mi_description':   {}}, dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.selected.open_.v:
+
+            dc.states.roadmap.selected.open_.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': True},
+                'btn_show_project':     {'enabled': True},
+                'btn_show_logs':        {'enabled': True},
+                'btn_mi_new':           {'enabled': True},
+                'btn_mi_delete':        {'enabled': True},
+                'btn_mi_close':         {'enabled': True},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': True},
+                'line_mi_name':         {'iswritable': True},
+                'cb_mi_type':           {'enabled': True},
+                'cb_mi_priority':       {'enabled': True},
+                'cb_mi_category':       {'enabled': True},
+                'text_milestone_description':
+                                        {'iswritable': True},
+                'txt_mi_description':   {'iswritable': True}}, dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.selected.closed.v:
+
+            dc.states.roadmap.selected.closed.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': True},
+                'btn_show_project':     {'enabled': True},
+                'btn_show_logs':        {'enabled': True},
+                'btn_mi_new':           {'enabled': True},
+                'btn_mi_delete':        {'enabled': True},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': True},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': True},
+                'line_mi_name':         {'iswritable': False},
+                'cb_mi_type':           {'enabled': False},
+                'cb_mi_priority':       {'enabled': False},
+                'cb_mi_category':       {'enabled': False},
+                'text_milestone_description':
+                                        {'iswritable': True},
+                'txt_mi_description':   {'iswritable': False}}, dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.selected.none_.v:
+
+            dc.states.roadmap.selected.none_.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': True},
+                'btn_show_project':     {'enabled': True},
+                'btn_show_logs':        {'enabled': True},
+                'btn_mi_new':           {'enabled': True},
+                'btn_mi_delete':        {'enabled': False},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': True},
+                'line_mi_name':         {'iswritable': False, 'clear': True},
+                'cb_mi_type':           {'enabled': False, 'index': 0},
+                'cb_mi_priority':       {'enabled': False, 'index': 0},
+                'cb_mi_category':       {'enabled': False, 'index': 0},
+                'text_milestone_description':
+                                        {'iswritable': True},
+                'txt_mi_description':   {'iswritable': False, 'clear': True}},
+                dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.selected.nonefin.v:
+
+            dc.states.roadmap.selected.nonefin.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': True},
+                'btn_show_project':     {'enabled': True},
+                'btn_show_logs':        {'enabled': True},
+                'btn_mi_new':           {'enabled': False},
+                'btn_mi_delete':        {'enabled': False},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': True},
+                'line_mi_name':         {'iswritable': False, 'clear': True},
+                'cb_mi_type':           {'enabled': False, 'index': 0},
+                'cb_mi_priority':       {'enabled': False, 'index': 0},
+                'cb_mi_category':       {'enabled': False, 'index': 0},
+                'text_milestone_description':
+                                        {'iswritable': False},
+                'txt_mi_description':   {'iswritable': False, 'clear': True}},
+                dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.selected.finalized.v:
+
+            dc.states.roadmap.selected.finalized.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': True},
+                'btn_show_project':     {'enabled': True},
+                'btn_show_logs':        {'enabled': True},
+                'btn_mi_new':           {'enabled': False},
+                'btn_mi_delete':        {'enabled': False},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': True},
+                'line_mi_name':         {'iswritable': False},
+                'cb_mi_type':           {'enabled': False},
+                'cb_mi_priority':       {'enabled': False},
+                'cb_mi_category':       {'enabled': False},
+                'text_milestone_description':
+                                        {'iswritable': False},
+                'txt_mi_description':   {'iswritable': False}}, dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.selected.future.v:
+
+            dc.states.roadmap.selected.future.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': True},
+                'btn_show_project':     {'enabled': True},
+                'btn_show_logs':        {'enabled': True},
+                'btn_mi_new':           {'enabled': True},
+                'btn_mi_delete':        {'enabled': True},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description':
+                                        {'visible': True},
+                'group_selected_milestone':
+                                        {'visible': True},
+                'group_mi_list':        {'visible': True},
+                'line_mi_name':         {'iswritable': True},
+                'cb_mi_type':           {'enabled': True},
+                'cb_mi_priority':       {'enabled': True},
+                'cb_mi_category':       {'enabled': True},
+                'text_milestone_description':
+                                        {'iswritable': True},
+                'txt_mi_description':   {'iswritable': True}}, dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.dialog.v:
+
+            dc.states.roadmap.dialog.v = False
+
+            applyStates({
+                'btn_milestone_button': {'enabled': False},
+                'btn_show_project':     {'enabled': False},
+                'btn_show_logs':        {'enabled': False},
+                'btn_mi_new':           {'enabled': False},
+                'btn_mi_delete':        {'enabled': False},
+                'btn_mi_close':         {'enabled': False},
+                'btn_mi_reopen':        {'enabled': False},
+                'group_milestone_description': {},
+                'group_selected_milestone': {},
+                'group_mi_list':        {},
+                'line_mi_name':         {},
+                'cb_mi_type':           {},
+                'cb_mi_priority':       {},
+                'cb_mi_category':       {},
+                'text_milestone_description': {},
+                'txt_mi_description':   {}}, dc.ui.roadmap.v)
+
+            return
 
     @logger('NxRoadmap.onMilestoneDescriptionChanged(self)', 'self')
     def onMilestoneDescriptionChanged(self):
@@ -932,7 +1132,6 @@ class NxRoadmap:
         dc.sp.m.mi._(miid).modified.v = timestamp
 
         # log entry
-
         logMiEvent('created', 'item created')
 
         # update view
@@ -942,12 +1141,6 @@ class NxRoadmap:
         # update milestone navi button
         mistctrl.calibrateRoadmapMi()
         dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
-
-        if dc.sp.m.active.v == dc.sp.m.selected.v:
-            applyStates(states._open, dc.ui.roadmap.v)
-        else:
-            applyStates(states.nonactivemi, dc.ui.roadmap.v)
-
         self.touchRoadmap()
         dc.ui.roadmap.v.line_mi_name.setFocus()
 
@@ -968,7 +1161,8 @@ class NxRoadmap:
         # closing last item
         if opencnt == 1:
 
-            applyStates(states.dialog, dc.ui.roadmap.v)
+            dc.states.roadmap.dialog.v = True
+            self.updateStates('onMiClosed')
 
             # show finalize dialog
             dc.ui.roadmap.v.body.hide()
@@ -992,9 +1186,7 @@ class NxRoadmap:
         setTableValue('roadmap', milist.colStatus, 'Closed')
         self.touchRoadmap()
         logMiEvent('closed', 'item has been closed')
-
         milist.reloadTable()
-
         # update milestone navi button
         major, minor = dc.sp.m.selected.v
         dc.ui.roadmap.v.btn_milestone_button.updateMajorMilestone(major)
@@ -1056,13 +1248,11 @@ class NxRoadmap:
             dc.ui.roadmap.v.body, 1, 0)
         dc.ui.roadmap.v.body.show()
 
+        dc.states.roadmap.startup.v = True
+        self.updateStates('onMinorMilestoneFinalized')
+
         dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
-
-        applyStates(states._open, dc.ui.roadmap.v)
-
-        # reload tabel
-        onMilestoneSelectionChanged()
-
+        milist.reloadTable()
 
     @logger('NxRoadmap.onMajorMilestoneFinalized(self)', 'self')
     def onMajorMilestoneFinalized(self):
@@ -1085,12 +1275,11 @@ class NxRoadmap:
         dc.ui.roadmap.v.gridLayout_4.addWidget(dc.ui.roadmap.v.body, 1, 0)
         dc.ui.roadmap.v.body.show()
 
+        dc.states.roadmap.startup.v = True
+        self.updateStates('onMajorMilestoneFinalized')
+
         dc.ui.roadmap.v.btn_milestone_button.updateMenuTree()
-
-        applyStates(states._open, dc.ui.roadmap.v)
-
-        # reload tabel
-        onMilestoneSelectionChanged()
+        milist.reloadTable()
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
