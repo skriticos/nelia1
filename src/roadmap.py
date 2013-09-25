@@ -1272,6 +1272,10 @@ class NxRoadmap:
         self.touchRoadmap()
         logMiEvent('closed', 'item has been closed')
 
+        amajor, aminor = dc.sp.m.active.v
+        dc.m.log.v.addAutoLog('Milestone', 'Minor milestone finalized',
+                  'Minor milestone {}.{} finalized.'.format(amajor, aminor))
+
         # calibrate roadmap tree
         mistctrl.calibrateMinorMsClosed()
 
@@ -1300,6 +1304,10 @@ class NxRoadmap:
         dc.sp.m.mi._(smiid).status.v = 'Closed'
         self.touchRoadmap()
         logMiEvent('closed', 'item has been closed')
+
+        amajor, aminor = dc.sp.m.active.v
+        dc.m.log.v.addAutoLog('Milestone', 'Major milestone finalized',
+                  'Major milestone {} finalized.'.format(amajor))
 
         # calibrate roadmap tree
         mistctrl.calibrateMajorMsClosed()
