@@ -1,14 +1,27 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos <seth.kriticos+nelia1@gmail.com>
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# The application uses a somewhat eccentric data storage and communication
+# mechanism: the datacore. The datacore basically contains all configuration,
+# document data and most of the runtime data including references to all modules
+# and utilies, state data and everything else relating to data.
 #
-# DataCore unifies all data used through the application. Think of it as a big
-# dictionary with all non-local data (documents, configuration, runtime, gui,
-# etc.). You access values with dc.key.subkey.v. You create new subkeys just by
-# refering to them the first time. Keys in the dc.s.. branch are stored into a
-# document file. Keys within the dc.c branch are stored into the configuration
-# file. All other keys are runtime dc.ui -> ui, dc.m -> modules, dc.x -> general
-# runtime, dc.<any other key> -> runtime.
+# The datacore is basically a big, self expanding tree. The root node is
+# imported at the top of every sourcefile (from datacore import dc).
+#
+# Creating new nodes is done by simply refering to the:
+#
+#       dc.foo.bar.v = 'baz'
+#
+# This creates subnodes foo and for and assigns a value (always stored in .v).
+# _dcdump is a debug utility that is used to print a listing of a datacore
+# branch.
+#
+#       _dcdump(dc.foo.bar, 'foo.bar')
+#
+# This will dump all data that is below this datacore node.
+#
+# Document and configuration serialization is also handled by datacore.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import os
@@ -18,11 +31,6 @@ import gzip
 from common import log, logger
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# This is the heart of the DataCore. It's a class that recursively creates
-# sub-instances (dc being the root instance). So, if you say dc.x.y.v = 10, then
-# dc will create a member x which will create a member y which will assign 10 to
-# it's v key. v is always the value key. To get the value back, you just say
-# dc.x.y.v .
 
 class _dcNode:
 
@@ -78,13 +86,11 @@ class _dcNode:
                 self.__dict__[key] = value
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# initialize initial datacore data
+# initialize initial datacore
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# dc is the rootnode to access the datacore though the application.
-# it's imported with from datacore import dc and shares the same data through
-# the modules (no more annoying passing data all around. just address datacore).
 dc = _dcNode('dc')
-dc.x, dc.c, dc.r, dc.s
+dc.x, dc.s, dc.m, dc.states, dc.ui, dc.spid, dc.sp
 
 dc.c.lastpath.v = None
 dc.x.appname.v = 'nelia1'
@@ -93,8 +99,8 @@ dc.x.config.basepath.v = os.path.join(dc.x.home.v, '.config', dc.x.appname.v)
 dc.x.config.filepath.v = os.path.join(dc.x.config.basepath.v, '{}.config'.format(dc.x.appname.v))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# The following four methods save/load an applicaiton document or the
-# configuration.
+# document and configuration save / load
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 @logger('dcsave(path=None)')
 def dcsave(path=None):
@@ -132,8 +138,6 @@ def dcloadconfig():
     dc.x.config.loaded.v = True
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# This method can be used for debugging. It shows all or part of the datacore
-# tree (hides None data nodes).
 
 def _dcdump(node=None, path=''):
     if not node: node = dc
