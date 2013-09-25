@@ -320,13 +320,21 @@ def onFilterRefactorToggled(checked):
 @logger('(roadmap) onMaximizeMilestoneDescription(setMaximized)', 'setMaximized')
 def onMaximizeMilestoneDescription(setMaximized):
 
-    dc.states.roadmap.maxmilestonedesc.v = setMaximized
+    if setMaximized:
+        dc.states.roadmap.maxmilestonedesc.v = setMaximized
+    else:
+        dc.states.roadmap.unmaximized.v = True
+
     dc.m.roadmap.v.updateStates('onMaximizeMilestoneDescription')
 
 @logger('(roadmap) onMaximizeMilestoneItemDescription(setMaximized)', 'setMaximized')
 def onMaximizeMilestoneItemDescription(setMaximized):
 
-    dc.states.roadmap.maxmidesc.v = setMaximized
+    if setMaximized:
+        dc.states.roadmap.maxmidesc.v = setMaximized
+    else:
+        dc.states.roadmap.unmaximized.v = True
+
     dc.m.roadmap.v.updateStates('onMaximizeMilestoneItemDescription')
 
 @logger('(roadmap) onSelectionChanged()')
@@ -689,6 +697,7 @@ class NxRoadmap:
         dc.states.roadmap.selected.future.v	    = False
         dc.states.roadmap.selected.open_.v	    = False
         dc.states.roadmap.selected.none_.v	    = False
+        dc.states.roadmap.unmaximized.v         = False
         dc.states.roadmap.startup.v	            = True
         self.updateStates('__init__')
 
@@ -792,6 +801,8 @@ class NxRoadmap:
 
         if dc.states.roadmap.maxmilestonedesc.v:
 
+            dc.states.roadmap.maxmilestonedesc.v = False
+
             applyStates({
                 'btn_milestone_button': {'enabled': False},
                 'btn_show_project':     {'enabled': False},
@@ -817,6 +828,8 @@ class NxRoadmap:
 
         if dc.states.roadmap.maxmidesc.v:
 
+            dc.states.roadmap.maxmidesc.v = False
+
             applyStates({
                 'btn_milestone_button': {'enabled': False},
                 'btn_show_project':     {'enabled': False},
@@ -837,6 +850,28 @@ class NxRoadmap:
                 'text_milestone_description':
                                         {'iswritable': True},
                 'txt_mi_description':   {}}, dc.ui.roadmap.v)
+
+            return
+
+        if dc.states.roadmap.unmaximized.v:
+
+            dc.states.roadmap.unmaximized.v = False
+
+            smajor, sminor = dc.sp.m.selected.v
+            amajor, aminor = dc.sp.m.active.v
+
+            if smajor < amajor or (smajor == amajor and sminor < aminor):
+                dc.states.roadmap.selected.finalized.v = True
+            elif smajor > amajor or (smajor == amajor and sminor > aminor):
+                dc.states.roadmap.selected.future.v = True
+            elif not dc.x.roadmap.smiid.v:
+                dc.states.roadmap.selcetde.none_.v = True
+            elif dc.sp.m.mi._(dc.x.roadmap.smiid.x).status.v == 'Closed':
+                dc.states.roadmap.selected.closed.v = True
+            else:
+                dc.states.roadmap.selected.open_.v = True
+
+            self.updateStates('updateStates')
 
             return
 
