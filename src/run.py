@@ -29,6 +29,11 @@ if __name__ == '__main__':
 
     dc.auto.v = True
     dc.x.app.v = app = QApplication(sys.argv)
+    dcloadconfig()
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # init gui
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     loader = QtUiTools.QUiLoader()
     for name, fname in (
@@ -42,17 +47,16 @@ if __name__ == '__main__':
         f.close()
     loader.deleteLater()
 
-    # create main window and set project as initial central widget
     dc.ui.main.v = QMainWindow()
     dc.ui.main.v.setWindowTitle('Nelia1')
     dc.ui.main.v.setWindowIcon(QIcon('img/nelia-icon32.png'))
     dc.ui.main.v.setGeometry(100,100,800,600)
     dc.ui.main.v.setCentralWidget(dc.ui.project.v)
 
-    # load configuration
-    dcloadconfig()
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # init modules
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    # load child widget control classes
     NxDocument()
     NxProject()
     NxLog()
@@ -62,12 +66,9 @@ if __name__ == '__main__':
     dc.m.log.v.initNavi()
     dc.m.roadmap.v.initNavi()
 
-    project_list_header_widths = [
-        50, 200, 100, 150, 100, 100, 100, 150, 150 ]
-    log_list_header_widths = [
-        50, 300, 100, 150, 150 ]
-    milestone_item_list_header_widths = [
-        50, 300, 100, 100, 100, 100, 150, 150 ]
+    project_list_header_widths          = [ 50, 200, 100, 150, 100, 100, 100, 150, 150 ]
+    log_list_header_widths              = [ 50, 300, 100, 150, 150 ]
+    milestone_item_list_header_widths   = [ 50, 300, 100, 100, 100, 100, 150, 150 ]
 
     def applyHeaderWidths(widget, widths):
         for i, v in enumerate(widths):
@@ -98,14 +99,20 @@ if __name__ == '__main__':
     dc.m.log.loglist.v.initLogFilterControls()
     dc.m.roadmap.milist.v.initRoadmapFilterControls()
 
-    # initialize global shortcuts
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # init global shortcuts
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     for keys, target in [('Ctrl+w', dc.ui.main.v.close),
                          ('Ctrl+m', logMarker),
                          ('Ctrl+d', _dcdump)]:
         shortcut = QShortcut(QKeySequence(keys), dc.ui.main.v)
         shortcut.activated.connect(target)
 
-    # show widget and give back control to run to initialize main loop
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # enter main loop
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     dc.ui.main.v.show()
 
     # this interrupt is required to make system signal handling working
