@@ -1,9 +1,8 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Common utility functions that do not reqire datacore. Datacore imporrts this,
-# so not importing datacore here is a hard requirement for the application to
-# work.
+# Utility functions that don't require datacore. Datacore is using the log
+# functions and would cause an infinite import recursion if used in this file.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import time
@@ -12,9 +11,6 @@ import PySide
 import sys
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# logging (debugging). dumps all calls during runtime, including data assignment
-# in datacore. set the logger as decorator for all methods
 
 def log(msg):
     if '-debug' in sys.argv:
@@ -48,10 +44,10 @@ def logger(name, *argnames):
 
 @logger('convert(item)', 'item')
 def convert(item):
-    # convert timestamps (int)
+
     if isinstance(item, int):
         return datetime.datetime.fromtimestamp(item).isoformat()
-    # we can't pickle PySide objects :(
+
     if item == 'PySide.QtCore.Qt.SortOrder.DescendingOrder':
         return PySide.QtCore.Qt.SortOrder.DescendingOrder
     if item == 'PySide.QtCore.Qt.SortOrder.AscendingOrder':
