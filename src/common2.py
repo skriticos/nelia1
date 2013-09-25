@@ -1,7 +1,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # (c) 2013, Sebastian Bartos, seth.kriticos+nelia1@gmail.com
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Common methods that require datacore instance.
+# Common methods that require datacore.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 from PySide.QtCore import *
@@ -11,21 +11,23 @@ from datacore import dc
 from common import *
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# SAVE / LOAD LAYOUT OF TABLE
+# save / load layout of table
+#
+# Tables use the same datacore layout in all three gui control modules:
+#
+#   dc.c._(module).*, dc.x._(module).*
+#
+# These methods unify header with and sort order configuration saving and
+# loading.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# we assume that the GUI module widget tables have the same naming convention in
-# datacore.
 
 @logger('saveLayout(module)', 'module')
 def saveLayout(module):
 
-    # save header widths
     dc.c._(module).header.width.v = list()
     for i in range(dc.x._(module).model.v.columnCount()):
         dc.c._(module).header.width.v.append(dc.x._(module).view.v.columnWidth(i))
 
-    # save sort column / order
     sort  = dc.x._(module).horizontal_header.v.sortIndicatorSection()
     order = dc.x._(module).horizontal_header.v.sortIndicatorOrder().__repr__()
     dc.c._(module).sort.column.v = sort
@@ -34,22 +36,16 @@ def saveLayout(module):
 @logger('loadLayout(module)', 'module')
 def loadLayout(module):
 
-    # load header widths
     for i, v in enumerate(dc.c._(module).header.width.v):
         dc.x._(module).view.v.setColumnWidth(i, v)
 
-    # load sorting
     if dc.c._(module).sort.column.v:
         dc.x._(module).horizontal_header.v.setSortIndicator(
             dc.c._(module).sort.column.v, convert(dc.c._(module).sort.order.v))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# TABLE VALUE
+# set table value
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-# This sets a cell value in the currently selected table item.
-# Don't feed this method anything 'non-string' as value, or it will throw
-# segmentation faults at you!
 
 @logger('setTableValue(module, col, value)', 'module', 'col', 'value')
 def setTableValue(module, col, value):
@@ -63,25 +59,22 @@ def setTableValue(module, col, value):
         log('NO ROW SELECTED')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Applies a suite of states to widgets.
+# Applies states to widgets.
 #
-#   enabled: en/disable widget, bool
-#   visible: show/hide wiget, bool
-#   margins: set margins (n,n,n,n)
-#   text: set text (for input boxes and labels)
-#   clear: clear widget
-#   index: set index for comboboxes
-#   value: set value for spinboxes
+#   applyStates({'myButton': {'enabled': True, 'visible': True}, dc.ui.myWidget.v)
+#
+# This example applies enabled and visible attribute on the myButton button in
+# the myWidget widget.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 @logger('applyStates(states, widget)', 'states', 'widget')
 def applyStates(states, widget):
 
     autoprev = dc.auto.v
     dc.auto.v = True
-    # loop through controls (widgets)
+
     for control, state in states.items():
 
-        # loop through state attributes
         pd = widget.__dict__
         if 'enabled' in state:
             pd[control].setEnabled(state['enabled'])
