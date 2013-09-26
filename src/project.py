@@ -855,6 +855,22 @@ class NxDocument:
         if dc.states.project.changed.v:
             if dc.x.path.v:
                 dcsave()
+            else:
+                t = 'Save Document?'
+                q = 'Do you want to save the document before exiting?'
+                yes, no = QMessageBox.Yes, QMessageBox.No
+                response = QMessageBox.question(dc.ui.project.v, t, q, yes|no)
+                if response == QMessageBox.StandardButton.Yes:
+                    t = 'Save nelia1 document'
+                    q = 'Nelia Files (*{})'.format(dc.x.extension.v)
+                    path = QFileDialog.getSaveFileName(dc.ui.main.v, t, dc.x.default.path.v, q)[0]
+                    if path == '':
+                        return
+                    extension_start = len(path) - len(dc.x.extension.v)
+                    if path.rfind(dc.x.extension.v) != extension_start:
+                        path += dc.x.extension.v
+                    result = dcsave(path)
+                    dc.x.path.v = path
         dcsaveconfig()
 
     @logger('NxDocument.reset(self)', 'self')
