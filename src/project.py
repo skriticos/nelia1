@@ -570,6 +570,7 @@ class NxProject():
                 'btn_doc_new'           : {'enabled': True},
                 'btn_doc_open'          : {'enabled': True},
                 'btn_doc_save'          : {'enabled': False},
+                'btn_doc_open_last'     : {'enabled': False},
                 'btn_doc_save_as'       : {'enabled': True},
                 'btn_project_delete'    : {'enabled': False},
                 'btn_project_new'       : {'enabled': True},
