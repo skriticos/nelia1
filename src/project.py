@@ -951,27 +951,31 @@ class NxDocument:
                 + 'Do you want to proceed?'
             yes, no = QMessageBox.Yes, QMessageBox.No
             response = QMessageBox.question(dc.ui.main.v, q, m, yes|no)
-            if response == QMessageBox.StandardButton.No: return
+            if response == QMessageBox.StandardButton.No:
+                return
+
         title  = 'Open nelia1 document'
         select = 'Nelia Files (*{})'.format(dc.x.extension.v)
         path = QFileDialog.getOpenFileName(
             dc.ui.project.v, title, dc.x.default.path.v, select)[0]
         if not path:
             return
+
         result = dcload(path)
         if isinstance(result, Exception):
             title, message = 'open failed', 'open failed! ' + str(result)
             QMessageBox.critical(dc.ui.main.v, title, message)
             dc.x.path.v = None
             return
+
         dc.c.lastpath.v = path
-        # set selected project
         dc.spid.v = dc.s.spid.v
         dc.sp = dc.s._(dc.spid.v)
         dc.states.project.newproject.v = True
         dc.states.project.changed.v = False
         dc.states.project.focustable.v = True
         dc.states.project.newload.v = True
+        dc.m.project.v.updateStates('NxDocument.onOpenClicked')
         dc.m.project.projectlist.v.reloadTable()
 
     @logger('NxDocument.onOpenLastClicked(self)', 'self')
