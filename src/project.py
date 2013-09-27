@@ -628,7 +628,7 @@ class NxProject():
 
         if dc.states.project.selected.v:
             applyStates({
-                'btn_info_max'          : {'enabled': False},
+                'btn_info_max'          : {'enabled': True},
                 'btn_doc_new'           : {'enabled': True},
                 'btn_doc_open'          : {'enabled': True},
                 'btn_doc_open_last'     : {'enabled': False},
