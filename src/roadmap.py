@@ -834,7 +834,7 @@ class NxRoadmap:
             dc.states.roadmap.maxmidesc.v = False
 
             applyStates({
-                'btn_mi_desc_minimize': {'enabled': False},
+                'btn_mi_desc_minimize': {'enabled': True},
                 'btn_milestone_button': {'enabled': False},
                 'btn_show_project':     {'enabled': False},
                 'btn_show_logs':        {'enabled': False},
