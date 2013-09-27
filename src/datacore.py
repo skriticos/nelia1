@@ -107,7 +107,10 @@ def dcsave(path=None):
     if not path and not dc.x.path.v:
         raise ValueError('Storepath not defined')
     if path: dc.x.path.v = path
-    pdat = pickle.dumps(dc.s.__serialize__(), 3)
+    try:
+        pdat = pickle.dumps(dc.s.__serialize__(), 3)
+    except:
+        pass
     cdat = gzip.compress(pdat)
     with open(dc.x.path.v, 'wb') as f: f.write(cdat)
     dc.c.lastpath.v = dc.x.path.v
