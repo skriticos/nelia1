@@ -352,6 +352,7 @@ class NxLog:
             dc.states.log.startup.v = False
 
             applyStates({
+                'btn_log_maximize': {'enabled': False},
                 'btn_log_new':      {'enabled': True, 'focused': True},
                 'btn_log_delete':   {'enabled': False},
                 'btn_show_project': {'enabled': True},
@@ -371,6 +372,7 @@ class NxLog:
             dc.states.log.newuserlog.v = False
 
             applyStates({
+                'btn_log_maximize': {'enabled': True},
                 'btn_log_new':      {'enabled': True},
                 'btn_log_delete':   {'enabled': True},
                 'btn_show_project': {'enabled': True},
@@ -385,6 +387,7 @@ class NxLog:
         if dc.states.log.maximized.v:
 
             applyStates({
+                'btn_log_maximize': {'enabled': True},
                 'btn_log_new':      {'enabled': False},
                 'btn_log_delete':   {'enabled': False},
                 'btn_show_project': {'enabled': False},
@@ -399,6 +402,7 @@ class NxLog:
         if dc.states.log.selected.userlog.v:
 
             applyStates({
+                'btn_log_maximize': {'enabled': True},
                 'btn_log_new':      {'enabled': True},
                 'btn_log_delete':   {'enabled': True},
                 'btn_show_project': {'enabled': True},
@@ -413,6 +417,7 @@ class NxLog:
         if dc.states.log.selected.applog.v:
 
             applyStates({
+                'btn_log_maximize': {'enabled': True},
                 'btn_log_new':      {'enabled': True},
                 'btn_log_delete':   {'enabled': True},
                 'btn_show_project': {'enabled': True},

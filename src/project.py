@@ -567,6 +567,7 @@ class NxProject():
         if dc.states.project.startup.v:
 
             applyStates({
+                'btn_info_max'          : {'enabled': False},
                 'btn_doc_new'           : {'enabled': True},
                 'btn_doc_open'          : {'enabled': True},
                 'btn_doc_save'          : {'enabled': False},
@@ -597,6 +598,7 @@ class NxProject():
         if dc.states.project.newproject.v:
 
             applyStates({
+                'btn_info_max'          : {'enabled': True},
                 'line_selected_project' : {'clear': True},
                 'line_project_name'     : {'clear': True},
                 'text_project_info'     : {'clear': True},
@@ -609,6 +611,7 @@ class NxProject():
 
         if dc.states.project.maximized.v:
             applyStates({
+                'btn_info_max'          : {'enabled': True},
                 'btn_doc_new'           : {'enabled': False},
                 'btn_doc_open'          : {'enabled': False},
                 'btn_doc_open_last'     : {'enabled': False},
@@ -625,6 +628,7 @@ class NxProject():
 
         if dc.states.project.selected.v:
             applyStates({
+                'btn_info_max'          : {'enabled': False},
                 'btn_doc_new'           : {'enabled': True},
                 'btn_doc_open'          : {'enabled': True},
                 'btn_doc_open_last'     : {'enabled': False},
@@ -641,6 +645,7 @@ class NxProject():
                 'btn_show_logs'         : {'enabled': True}}, dc.ui.project.v)
         else:
             applyStates({
+                'btn_info_max'          : {'enabled': False},
                 'btn_doc_new'           : {'enabled': True},
                 'btn_doc_open'          : {'enabled': True},
                 'btn_doc_open_last'     : {'enabled': False},

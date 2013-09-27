@@ -748,6 +748,7 @@ class NxRoadmap:
             dc.states.roadmap.startup.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': False},
                 'btn_milestone_button': {'enabled': True},
                 'btn_show_project':     {'enabled': True},
                 'btn_show_logs':        {'enabled': True},
@@ -776,6 +777,7 @@ class NxRoadmap:
             dc.states.roadmap.newmi.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': True},
                 'btn_milestone_button': {'enabled': True},
                 'btn_show_project':     {'enabled': True},
                 'btn_show_logs':        {'enabled': True},
@@ -804,6 +806,7 @@ class NxRoadmap:
             dc.states.roadmap.maxmilestonedesc.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': True},
                 'btn_milestone_button': {'enabled': False},
                 'btn_show_project':     {'enabled': False},
                 'btn_show_logs':        {'enabled': False},
@@ -831,6 +834,7 @@ class NxRoadmap:
             dc.states.roadmap.maxmidesc.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': False},
                 'btn_milestone_button': {'enabled': False},
                 'btn_show_project':     {'enabled': False},
                 'btn_show_logs':        {'enabled': False},
@@ -865,7 +869,7 @@ class NxRoadmap:
             elif smajor > amajor or (smajor == amajor and sminor > aminor):
                 dc.states.roadmap.selected.future.v = True
             elif not dc.x.roadmap.smiid.v:
-                dc.states.roadmap.selcetde.none_.v = True
+                dc.states.roadmap.selected.none_.v = True
             elif dc.sp.m.mi._(dc.x.roadmap.smiid.x).status.v == 'Closed':
                 dc.states.roadmap.selected.closed.v = True
             else:
@@ -880,6 +884,7 @@ class NxRoadmap:
             dc.states.roadmap.selected.open_.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': True},
                 'btn_milestone_button': {'enabled': True},
                 'btn_show_project':     {'enabled': True},
                 'btn_show_logs':        {'enabled': True},
@@ -907,6 +912,7 @@ class NxRoadmap:
             dc.states.roadmap.selected.closed.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': True},
                 'btn_milestone_button': {'enabled': True},
                 'btn_show_project':     {'enabled': True},
                 'btn_show_logs':        {'enabled': True},
@@ -934,6 +940,7 @@ class NxRoadmap:
             dc.states.roadmap.selected.none_.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': False},
                 'btn_milestone_button': {'enabled': True},
                 'btn_show_project':     {'enabled': True},
                 'btn_show_logs':        {'enabled': True},
@@ -962,6 +969,7 @@ class NxRoadmap:
             dc.states.roadmap.selected.nonefin.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': True},
                 'btn_milestone_button': {'enabled': True},
                 'btn_show_project':     {'enabled': True},
                 'btn_show_logs':        {'enabled': True},
@@ -990,6 +998,7 @@ class NxRoadmap:
             dc.states.roadmap.selected.finalized.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': True},
                 'btn_milestone_button': {'enabled': True},
                 'btn_show_project':     {'enabled': True},
                 'btn_show_logs':        {'enabled': True},
@@ -1017,6 +1026,7 @@ class NxRoadmap:
             dc.states.roadmap.selected.future.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': True},
                 'btn_milestone_button': {'enabled': True},
                 'btn_show_project':     {'enabled': True},
                 'btn_show_logs':        {'enabled': True},
@@ -1044,6 +1054,7 @@ class NxRoadmap:
             dc.states.roadmap.dialog.v = False
 
             applyStates({
+                'btn_mi_desc_minimize': {'enabled': False},
                 'btn_milestone_button': {'enabled': False},
                 'btn_show_project':     {'enabled': False},
                 'btn_show_logs':        {'enabled': False},
