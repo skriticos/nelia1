@@ -1,0 +1,8 @@
+Format: http://dep.debian.net/deps/dep5
+Upstream-Name: nelia1
+Source:
+
+Files: *
+Copyright: 2013 Sebastian Bartos <seth.kriticos@gmail.com>
+License: Proprietary
+ All rights reserved
