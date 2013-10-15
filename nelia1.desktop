@@ -3,6 +3,6 @@ Name=Nelia1
 Exec=/opt/nelia1/nelia1
 Path=/opt/nelia1/
 Terminal=false
-Icon=/opt/nelia1/img/nelia-250.png
+Icon=/opt/nelia1/img/nelia1-icon-512x512.png
 Type=Application
 Categories=Development
