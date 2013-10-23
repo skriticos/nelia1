@@ -1,8 +1,10 @@
 [Desktop Entry]
 Name=Nelia1
-Exec=/opt/nelia1/nelia1
+Exec=/opt/nelia1/nelia1 %U
 Path=/opt/nelia1/
 Terminal=false
 Icon=/opt/nelia1/img/nelia1-icon-512x512.png
 Type=Application
 Categories=Development
+
+MimeType=application/nelia1;

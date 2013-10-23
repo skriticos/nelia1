@@ -123,15 +123,13 @@ if __name__ == '__main__':
             pa.append(s)
         p = ' '.join(pa)
         p = os.path.expanduser(p)
-        print(p)
         if os.path.exists(p):
 
             dcload(p)
             dc.spid.v = dc.s.spid.v
             dc.sp = dc.s._(dc.spid.v)
+            dc.states.project.selected.v = True
             dc.states.project.changed.v = False
-            dc.states.project.focustable.v = True
-            dc.states.project.newload.v = True
             dc.m.project.projectlist.v.reloadTable()
 
     # this interrupt is required to make system signal handling working

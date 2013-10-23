@@ -1,3 +1,12 @@
+nelia1 (1.0-3) stable; urgency=low
+
+  * fixed missing sorting on roadmap table
+  * open files from command line
+  * nelia1 mime type
+  * nelia1 file association
+
+ -- Sebastian Bartos <seth.kriticos@gmail.com>  Wed, 23 Oct 2013 16:00:00 +0200
+
 nelia1 (1.0-2) stable; urgency=low
 
   * Initial packaged release

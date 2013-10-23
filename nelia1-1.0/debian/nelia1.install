@@ -1,5 +1,7 @@
-src/*                   opt/nelia1/src
-img/*                   opt/nelia1/img
-forms/*                 opt/nelia1/forms
-nelia1                  opt/nelia1
-nelia1.desktop		usr/share/applications
+src/*                           opt/nelia1/src
+img/nelia1-icon-512x512.png     opt/nelia1/img
+img/application-nelia1.svg      usr/share/icons/ubuntu-mono-dark/mimes/24
+forms/*                         opt/nelia1/forms
+nelia1                          opt/nelia1
+nelia1.desktop		        usr/share/applications
+mime/*                          usr/share/mime/packages
